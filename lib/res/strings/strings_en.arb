@@ -1,0 +1,16 @@
+{
+    "appTitle": "SmartUAQ",
+    "close": "Close",
+    "thanks": "Thanks",
+    "sorry": "Sorry",
+    "done": "Done",
+    "share":"Share",
+    "download":"Download",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "appUpdateTitle":"Update your application",
+    "appUpdateBody":"We improve performance and fix some bugs to make your experience seamless",
+    "whatareyoulookingfor":"What are you looking for?",
+    "documentSuccessfullySaved":"Document successfully saved"
+    
+}

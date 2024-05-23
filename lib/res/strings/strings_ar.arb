@@ -1,0 +1,15 @@
+{
+    "appTitle": "SmartUAQ",
+    "done": "حفظ",
+    "close": "اغلاق",
+    "thanks": "شكرًا",
+    "sorry": "عذرًا لقد حدث خطأ",
+    "share":"مشاركة",
+    "download":"تحميل",
+    "submit": "تقديم",
+    "cancel": "إلغاء",
+    "appUpdateTitle":"قم بتحديث تطبيقك",
+    "appUpdateBody":"نحن نعمل على تحسين الأداء وإصلاح بعض المشاكل لنجعل تجربتك سلسة",
+    "whatareyoulookingfor":"ما الذي تبحث عنه؟",
+    "documentSuccessfullySaved":"تم حفظ المستند بنجاح"
+}
