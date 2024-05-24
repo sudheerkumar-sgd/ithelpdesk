@@ -1,8 +1,8 @@
 // ignore_for_file: must_be_immutable
 
-import 'package:smartuaq/core/constants/constants.dart';
-import 'package:smartuaq/core/enum/enum.dart';
-import 'package:smartuaq/domain/entities/base_entity.dart';
+import 'package:ithelpdesk/core/constants/constants.dart';
+import 'package:ithelpdesk/core/enum/enum.dart';
+import 'package:ithelpdesk/domain/entities/base_entity.dart';
 
 class ServiceCategoryListEntity extends BaseEntity {
   List<ServiceEntity> serviceCategories = [];

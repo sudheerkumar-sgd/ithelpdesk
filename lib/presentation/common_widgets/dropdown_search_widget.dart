@@ -1,10 +1,10 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:flutter/material.dart';
-import 'package:smartuaq/core/extensions/build_context_extension.dart';
-import 'package:smartuaq/core/extensions/text_style_extension.dart';
-import 'package:smartuaq/presentation/common_widgets/right_icon_text_widget.dart';
-import 'package:smartuaq/res/drawables/drawable_assets.dart';
+import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
+import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
+import 'package:ithelpdesk/presentation/common_widgets/right_icon_text_widget.dart';
+import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
 
 const double defaultHeight = 27;
 

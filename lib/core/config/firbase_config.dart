@@ -8,7 +8,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:smartuaq/firebase_options.dart';
+import 'package:ithelpdesk/firebase_options.dart';
 
 //Define the background message handler
 @pragma('vm:entry-point')
@@ -99,7 +99,7 @@ class FirbaseConfig {
       sound: true,
     );
 
-    messaging.subscribeToTopic('SMARTUAQ');
+    messaging.subscribeToTopic('ITHELPDESK');
     initFlutterLocalNotifications();
     if (kDebugMode) {
       FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);

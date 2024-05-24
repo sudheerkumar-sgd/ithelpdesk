@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:smartuaq/data/local/app_settings_db.dart';
-import 'package:smartuaq/data/local/user_data_db.dart';
+import 'package:ithelpdesk/data/local/app_settings_db.dart';
+import 'package:ithelpdesk/data/local/user_data_db.dart';
 import '../../../res/resources.dart';
 
 extension LocalizedBuildContext on BuildContext {

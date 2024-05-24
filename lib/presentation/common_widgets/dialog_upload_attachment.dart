@@ -4,11 +4,11 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:smartuaq/core/constants/data_constants.dart';
-import 'package:smartuaq/core/extensions/build_context_extension.dart';
-import 'package:smartuaq/core/extensions/text_style_extension.dart';
-import 'package:smartuaq/presentation/common_widgets/alert_dialog_widget.dart';
-import 'package:smartuaq/presentation/utils/dialogs.dart';
+import 'package:ithelpdesk/core/constants/data_constants.dart';
+import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
+import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
+import 'package:ithelpdesk/presentation/common_widgets/alert_dialog_widget.dart';
+import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 import '../../../../core/common/log.dart';
 import '../../../../res/drawables/background_box_decoration.dart';
 

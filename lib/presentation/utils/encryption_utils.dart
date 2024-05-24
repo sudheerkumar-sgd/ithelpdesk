@@ -5,7 +5,7 @@ import 'dart:typed_data';
 import 'package:encrypt/encrypt.dart' as encrypt;
 
 import 'package:encrypt/encrypt.dart';
-import 'package:smartuaq/core/common/log.dart';
+import 'package:ithelpdesk/core/common/log.dart';
 
 const chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz';
 

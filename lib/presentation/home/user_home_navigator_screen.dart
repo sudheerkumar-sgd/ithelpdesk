@@ -1,8 +1,8 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:flutter/material.dart';
-import 'package:smartuaq/presentation/common_widgets/base_screen_widget.dart';
-import 'package:smartuaq/presentation/home/user_home_screen.dart';
+import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
+import 'package:ithelpdesk/presentation/home/user_home_screen.dart';
 
 class UserHomeNavigatorScreen extends BaseScreenWidget {
   UserHomeNavigatorScreen({Key? key}) : super(key: key);

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:smartuaq/core/common/common_utils.dart';
-import 'package:smartuaq/core/constants/constants.dart';
-import 'package:smartuaq/core/extensions/build_context_extension.dart';
-import 'package:smartuaq/core/extensions/text_style_extension.dart';
-import 'package:smartuaq/presentation/common_widgets/image_widget.dart';
-import 'package:smartuaq/res/drawables/drawable_assets.dart';
+import 'package:ithelpdesk/core/common/common_utils.dart';
+import 'package:ithelpdesk/core/constants/constants.dart';
+import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
+import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
+import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
+import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
 
 class BackAppBarWidget extends StatefulWidget implements PreferredSizeWidget {
   final String title;

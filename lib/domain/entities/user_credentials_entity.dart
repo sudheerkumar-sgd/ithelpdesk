@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:smartuaq/core/constants/constants.dart';
+import 'package:ithelpdesk/core/constants/constants.dart';
 
 class UserCredentialsEntity {
   static UserCredentialsEntity? userCredentialsEntity;

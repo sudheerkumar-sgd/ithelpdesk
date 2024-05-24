@@ -1,10 +1,10 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:flutter/material.dart';
-import 'package:smartuaq/core/constants/constants.dart';
-import 'package:smartuaq/core/extensions/build_context_extension.dart';
-import 'package:smartuaq/core/extensions/text_style_extension.dart';
-import 'package:smartuaq/presentation/utils/dialogs.dart';
+import 'package:ithelpdesk/core/constants/constants.dart';
+import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
+import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
+import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 
 class MultiSelectDialogWidget<T> extends StatelessWidget {
   final List<T> list;

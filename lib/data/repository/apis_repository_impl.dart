@@ -2,13 +2,13 @@ import 'dart:convert';
 
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:smartuaq/core/common/file_utils.dart';
-import 'package:smartuaq/core/error/failures.dart';
-import 'package:smartuaq/core/network/network_info.dart';
-import 'package:smartuaq/data/model/api_response_model.dart';
-import 'package:smartuaq/data/model/base_model.dart';
-import 'package:smartuaq/data/remote/remote_data_source.dart';
-import 'package:smartuaq/domain/repository/apis_repository.dart';
+import 'package:ithelpdesk/core/common/file_utils.dart';
+import 'package:ithelpdesk/core/error/failures.dart';
+import 'package:ithelpdesk/core/network/network_info.dart';
+import 'package:ithelpdesk/data/model/api_response_model.dart';
+import 'package:ithelpdesk/data/model/base_model.dart';
+import 'package:ithelpdesk/data/remote/remote_data_source.dart';
+import 'package:ithelpdesk/domain/repository/apis_repository.dart';
 
 class ApisRepositoryImpl extends ApisRepository {
   final RemoteDataSource dataSource;

@@ -1,7 +1,7 @@
 // ignore_for_file: must_be_immutable
 
-import 'package:smartuaq/data/model/base_model.dart';
-import 'package:smartuaq/domain/entities/single_data_entity.dart';
+import 'package:ithelpdesk/data/model/base_model.dart';
+import 'package:ithelpdesk/domain/entities/single_data_entity.dart';
 
 class SingleDataModel extends BaseModel {
   dynamic value;

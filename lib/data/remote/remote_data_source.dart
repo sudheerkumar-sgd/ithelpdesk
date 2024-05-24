@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:smartuaq/core/common/log.dart';
-import 'package:smartuaq/core/error/exceptions.dart';
-import 'package:smartuaq/data/remote/dio_logging_interceptor.dart';
+import 'package:ithelpdesk/core/common/log.dart';
+import 'package:ithelpdesk/core/error/exceptions.dart';
+import 'package:ithelpdesk/data/remote/dio_logging_interceptor.dart';
 
 abstract class RemoteDataSource {
   Future<dynamic> get(

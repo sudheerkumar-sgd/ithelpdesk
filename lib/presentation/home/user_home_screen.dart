@@ -1,15 +1,15 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:flutter/material.dart';
-import 'package:smartuaq/core/common/log.dart';
-import 'package:smartuaq/core/extensions/build_context_extension.dart';
-import 'package:smartuaq/domain/entities/requests_entity.dart';
-import 'package:smartuaq/domain/entities/services_entity.dart';
-import 'package:smartuaq/injection_container.dart';
-import 'package:smartuaq/presentation/bloc/services/services_bloc.dart';
-import 'package:smartuaq/presentation/common_widgets/base_screen_widget.dart';
-import 'package:smartuaq/presentation/common_widgets/user_app_bar.dart';
-import 'package:smartuaq/res/resources.dart';
+import 'package:ithelpdesk/core/common/log.dart';
+import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
+import 'package:ithelpdesk/domain/entities/requests_entity.dart';
+import 'package:ithelpdesk/domain/entities/services_entity.dart';
+import 'package:ithelpdesk/injection_container.dart';
+import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
+import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
+import 'package:ithelpdesk/presentation/common_widgets/user_app_bar.dart';
+import 'package:ithelpdesk/res/resources.dart';
 
 class UserHomeScreen extends BaseScreenWidget {
   UserHomeScreen({super.key});
@@ -33,9 +33,6 @@ class UserHomeScreen extends BaseScreenWidget {
   @override
   Widget build(BuildContext context) {
     Resources resources = context.resources;
-    logFirbaseScreenView(
-      screenName: 'user home screen',
-    );
     return SafeArea(
         child: Container(
       padding: EdgeInsets.symmetric(horizontal: context.resources.dimen.dp25),

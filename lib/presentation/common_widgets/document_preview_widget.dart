@@ -2,12 +2,12 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:smartuaq/core/common/file_utils.dart';
-import 'package:smartuaq/core/extensions/build_context_extension.dart';
-import 'package:smartuaq/core/extensions/text_style_extension.dart';
-import 'package:smartuaq/presentation/common_widgets/alert_dialog_widget.dart';
-import 'package:smartuaq/presentation/utils/dialogs.dart';
-import 'package:smartuaq/res/drawables/background_box_decoration.dart';
+import 'package:ithelpdesk/core/common/file_utils.dart';
+import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
+import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
+import 'package:ithelpdesk/presentation/common_widgets/alert_dialog_widget.dart';
+import 'package:ithelpdesk/presentation/utils/dialogs.dart';
+import 'package:ithelpdesk/res/drawables/background_box_decoration.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:share_plus/share_plus.dart';
 

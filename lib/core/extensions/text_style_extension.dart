@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:smartuaq/core/extensions/build_context_extension.dart';
+import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 
 extension TextStyleHelper on BuildContext {
   TextStyle? get titleLarge => Theme.of(this).textTheme.titleLarge;

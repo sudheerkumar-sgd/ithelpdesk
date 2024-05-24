@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
-import 'package:smartuaq/presentation/start/splash_screen.dart';
+import 'package:ithelpdesk/presentation/home/user_main_screen.dart';
+import 'package:ithelpdesk/presentation/start/splash_screen.dart';
 
 class AppRoutes {
   static String initialRoute = '/splash';
@@ -14,6 +15,8 @@ class AppRoutes {
   static Map<String, WidgetBuilder> getRoutes() {
     return {
       AppRoutes.initialRoute: (context) => const SplashScreen(),
+      AppRoutes.startRoute: (context) => const SplashScreen(),
+      AppRoutes.userMainRoute: (context) => const UserMainScreen(),
     };
   }
 }

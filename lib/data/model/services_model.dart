@@ -1,8 +1,8 @@
 // ignore_for_file: must_be_immutable
 
-import 'package:smartuaq/core/common/log.dart';
-import 'package:smartuaq/data/model/base_model.dart';
-import 'package:smartuaq/domain/entities/services_entity.dart';
+import 'package:ithelpdesk/core/common/log.dart';
+import 'package:ithelpdesk/data/model/base_model.dart';
+import 'package:ithelpdesk/domain/entities/services_entity.dart';
 
 class ServiceCategoryListModel extends BaseModel {
   List<ServiceEntity> services = [];

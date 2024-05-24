@@ -1,10 +1,10 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:smartuaq/core/error/failures.dart';
-import 'package:smartuaq/domain/entities/api_entity.dart';
-import 'package:smartuaq/domain/entities/login_entity.dart';
-import 'package:smartuaq/domain/entities/request_form_entities.dart';
-import 'package:smartuaq/domain/usecase/requests_usecase.dart';
+import 'package:ithelpdesk/core/error/failures.dart';
+import 'package:ithelpdesk/domain/entities/api_entity.dart';
+import 'package:ithelpdesk/domain/entities/login_entity.dart';
+import 'package:ithelpdesk/domain/entities/request_form_entities.dart';
+import 'package:ithelpdesk/domain/usecase/requests_usecase.dart';
 part 'requests_state.dart';
 
 class RequestsBloc extends Cubit<RequestsState> {

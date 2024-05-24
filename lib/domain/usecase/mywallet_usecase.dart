@@ -1,15 +1,15 @@
 import 'package:dartz/dartz.dart';
-import 'package:smartuaq/core/config/flavor_config.dart';
-import 'package:smartuaq/core/error/failures.dart';
-import 'package:smartuaq/data/model/api_response_model.dart';
-import 'package:smartuaq/data/model/mywallet_model.dart';
-import 'package:smartuaq/data/model/requests_model.dart';
-import 'package:smartuaq/data/remote/api_urls.dart';
-import 'package:smartuaq/domain/entities/api_entity.dart';
-import 'package:smartuaq/domain/entities/mywallet_entity.dart';
-import 'package:smartuaq/domain/entities/requests_entity.dart';
-import 'package:smartuaq/domain/repository/apis_repository.dart';
-import 'package:smartuaq/domain/usecase/base_usecase.dart';
+import 'package:ithelpdesk/core/config/flavor_config.dart';
+import 'package:ithelpdesk/core/error/failures.dart';
+import 'package:ithelpdesk/data/model/api_response_model.dart';
+import 'package:ithelpdesk/data/model/mywallet_model.dart';
+import 'package:ithelpdesk/data/model/requests_model.dart';
+import 'package:ithelpdesk/data/remote/api_urls.dart';
+import 'package:ithelpdesk/domain/entities/api_entity.dart';
+import 'package:ithelpdesk/domain/entities/mywallet_entity.dart';
+import 'package:ithelpdesk/domain/entities/requests_entity.dart';
+import 'package:ithelpdesk/domain/repository/apis_repository.dart';
+import 'package:ithelpdesk/domain/usecase/base_usecase.dart';
 
 class MyWalletUseCase extends BaseUseCase {
   final ApisRepository apisRepository;

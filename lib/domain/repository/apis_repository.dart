@@ -1,6 +1,6 @@
-import 'package:smartuaq/core/error/failures.dart';
-import 'package:smartuaq/data/model/api_response_model.dart';
-import 'package:smartuaq/data/model/base_model.dart';
+import 'package:ithelpdesk/core/error/failures.dart';
+import 'package:ithelpdesk/data/model/api_response_model.dart';
+import 'package:ithelpdesk/data/model/base_model.dart';
 import 'package:dartz/dartz.dart';
 
 abstract class ApisRepository {

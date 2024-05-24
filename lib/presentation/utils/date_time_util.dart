@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:smartuaq/core/extensions/build_context_extension.dart';
+import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 
 import 'dialogs.dart';
 

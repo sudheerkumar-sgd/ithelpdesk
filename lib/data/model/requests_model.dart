@@ -1,8 +1,8 @@
 // ignore_for_file: must_be_immutable
 
-import 'package:smartuaq/core/common/common_utils.dart';
-import 'package:smartuaq/data/model/base_model.dart';
-import 'package:smartuaq/domain/entities/requests_entity.dart';
+import 'package:ithelpdesk/core/common/common_utils.dart';
+import 'package:ithelpdesk/data/model/base_model.dart';
+import 'package:ithelpdesk/domain/entities/requests_entity.dart';
 
 class RequestsListModel extends BaseModel {
   List<RequestsEntity> requests = [];

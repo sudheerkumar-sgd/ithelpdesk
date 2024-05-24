@@ -1,4 +1,4 @@
-import 'package:smartuaq/domain/entities/login_entity.dart';
+import 'package:ithelpdesk/domain/entities/login_entity.dart';
 
 const String fontFamilyEN = "Poppins";
 const String fontFamilyAR = "AR_GE_SS";

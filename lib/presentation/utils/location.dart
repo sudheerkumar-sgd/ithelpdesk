@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:geolocator/geolocator.dart';
-import 'package:smartuaq/core/common/log.dart';
+import 'package:ithelpdesk/core/common/log.dart';
 
 class Location {
   static Future<bool> checkGps() async {

@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:smartuaq/core/constants/constants.dart';
+import 'package:ithelpdesk/core/constants/constants.dart';
 
 const String unknownErroeMessage = 'An unknown error has occured';
 

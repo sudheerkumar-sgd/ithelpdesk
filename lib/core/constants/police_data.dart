@@ -1,4 +1,4 @@
-import 'package:smartuaq/res/drawables/drawable_assets.dart';
+import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
 
 const myCityData = {
   "nameEn": "",

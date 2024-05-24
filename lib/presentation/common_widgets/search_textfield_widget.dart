@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:smartuaq/core/constants/constants.dart';
-import 'package:smartuaq/core/extensions/build_context_extension.dart';
-import 'package:smartuaq/core/extensions/text_style_extension.dart';
-import 'package:smartuaq/presentation/common_widgets/image_widget.dart';
+import 'package:ithelpdesk/core/constants/constants.dart';
+import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
+import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
+import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
 
 const double defaultHeight = 40;
 

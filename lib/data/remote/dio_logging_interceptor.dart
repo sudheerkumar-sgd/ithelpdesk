@@ -5,10 +5,10 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:smartuaq/core/config/base_url_config.dart';
-import 'package:smartuaq/core/config/flavor_config.dart';
-import 'package:smartuaq/core/constants/constants.dart';
-import 'package:smartuaq/presentation/utils/encryption_utils.dart';
+import 'package:ithelpdesk/core/config/base_url_config.dart';
+import 'package:ithelpdesk/core/config/flavor_config.dart';
+import 'package:ithelpdesk/core/constants/constants.dart';
+import 'package:ithelpdesk/presentation/utils/encryption_utils.dart';
 
 class DioLoggingInterceptor extends InterceptorsWrapper {
   @override

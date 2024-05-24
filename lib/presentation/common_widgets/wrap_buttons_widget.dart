@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:smartuaq/core/extensions/build_context_extension.dart';
-import 'package:smartuaq/core/extensions/text_style_extension.dart';
+import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
+import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 
 class WrapButtonsWidget extends StatelessWidget {
   final ValueNotifier<int> selectedIndex;

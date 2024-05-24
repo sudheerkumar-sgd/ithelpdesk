@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:smartuaq/core/constants/constants.dart';
-import 'package:smartuaq/core/extensions/build_context_extension.dart';
-import 'package:smartuaq/presentation/home/user_main_screen.dart';
-import 'package:smartuaq/res/resources.dart';
+import 'package:ithelpdesk/core/constants/constants.dart';
+import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
+import 'package:ithelpdesk/presentation/home/user_main_screen.dart';
+import 'package:ithelpdesk/res/resources.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});

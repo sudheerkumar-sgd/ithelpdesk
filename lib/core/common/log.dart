@@ -1,6 +1,6 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
-import 'package:smartuaq/core/constants/constants.dart';
+import 'package:ithelpdesk/core/constants/constants.dart';
 
 void printLog(Object log) {
   if (kDebugMode) {

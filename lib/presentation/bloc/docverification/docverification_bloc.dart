@@ -1,9 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:smartuaq/core/error/failures.dart';
-import 'package:smartuaq/domain/entities/api_entity.dart';
-import 'package:smartuaq/domain/entities/mywallet_entity.dart';
-import 'package:smartuaq/domain/usecase/docverification_usecase.dart';
+import 'package:ithelpdesk/core/error/failures.dart';
+import 'package:ithelpdesk/domain/entities/api_entity.dart';
+import 'package:ithelpdesk/domain/entities/mywallet_entity.dart';
+import 'package:ithelpdesk/domain/usecase/docverification_usecase.dart';
 part 'docverification_state.dart';
 
 class DocVerificationBloc extends Cubit<DocVerificationState> {

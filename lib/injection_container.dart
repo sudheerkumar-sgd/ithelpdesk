@@ -1,21 +1,21 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
-import 'package:smartuaq/core/config/flavor_config.dart';
-import 'package:smartuaq/core/network/network_info.dart';
-import 'package:smartuaq/data/remote/dio_logging_interceptor.dart';
-import 'package:smartuaq/data/remote/remote_data_source.dart';
-import 'package:smartuaq/data/repository/apis_repository_impl.dart';
-import 'package:smartuaq/domain/repository/apis_repository.dart';
-import 'package:smartuaq/domain/usecase/docverification_usecase.dart';
-import 'package:smartuaq/domain/usecase/mywallet_usecase.dart';
-import 'package:smartuaq/domain/usecase/requests_usecase.dart';
-import 'package:smartuaq/domain/usecase/services_usecase.dart';
-import 'package:smartuaq/domain/usecase/login_usecase.dart';
-import 'package:smartuaq/presentation/bloc/docverification/docverification_bloc.dart';
-import 'package:smartuaq/presentation/bloc/login/login_bloc.dart';
-import 'package:smartuaq/presentation/bloc/mywallet/mywallet_bloc.dart';
-import 'package:smartuaq/presentation/bloc/services/requests_bloc.dart';
-import 'package:smartuaq/presentation/bloc/services/services_bloc.dart';
+import 'package:ithelpdesk/core/config/flavor_config.dart';
+import 'package:ithelpdesk/core/network/network_info.dart';
+import 'package:ithelpdesk/data/remote/dio_logging_interceptor.dart';
+import 'package:ithelpdesk/data/remote/remote_data_source.dart';
+import 'package:ithelpdesk/data/repository/apis_repository_impl.dart';
+import 'package:ithelpdesk/domain/repository/apis_repository.dart';
+import 'package:ithelpdesk/domain/usecase/docverification_usecase.dart';
+import 'package:ithelpdesk/domain/usecase/mywallet_usecase.dart';
+import 'package:ithelpdesk/domain/usecase/requests_usecase.dart';
+import 'package:ithelpdesk/domain/usecase/services_usecase.dart';
+import 'package:ithelpdesk/domain/usecase/login_usecase.dart';
+import 'package:ithelpdesk/presentation/bloc/docverification/docverification_bloc.dart';
+import 'package:ithelpdesk/presentation/bloc/login/login_bloc.dart';
+import 'package:ithelpdesk/presentation/bloc/mywallet/mywallet_bloc.dart';
+import 'package:ithelpdesk/presentation/bloc/services/requests_bloc.dart';
+import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
 
 final sl = GetIt.instance;
 

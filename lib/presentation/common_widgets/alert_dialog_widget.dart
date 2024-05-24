@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:smartuaq/core/extensions/build_context_extension.dart';
-import 'package:smartuaq/core/extensions/text_style_extension.dart';
-import 'package:smartuaq/presentation/common_widgets/image_widget.dart';
-import 'package:smartuaq/res/drawables/drawable_assets.dart';
+import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
+import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
+import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
+import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
 
 import '../../../res/drawables/background_box_decoration.dart';
 

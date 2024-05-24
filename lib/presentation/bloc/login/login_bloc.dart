@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:smartuaq/domain/entities/login_entity.dart';
-import 'package:smartuaq/domain/usecase/login_usecase.dart';
+import 'package:ithelpdesk/domain/entities/login_entity.dart';
+import 'package:ithelpdesk/domain/usecase/login_usecase.dart';
 import '../../../core/error/failures.dart';
 import '../../../domain/entities/api_entity.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

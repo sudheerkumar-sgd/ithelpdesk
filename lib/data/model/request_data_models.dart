@@ -2,8 +2,8 @@
 
 import 'dart:convert';
 
-import 'package:smartuaq/data/model/base_model.dart';
-import 'package:smartuaq/domain/entities/request_form_entities.dart';
+import 'package:ithelpdesk/data/model/base_model.dart';
+import 'package:ithelpdesk/domain/entities/request_form_entities.dart';
 
 class RequestDataModel extends BaseModel {
   int? id;

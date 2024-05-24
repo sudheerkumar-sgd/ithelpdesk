@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:smartuaq/core/common/common_utils.dart';
-import 'package:smartuaq/core/extensions/build_context_extension.dart';
-import 'package:smartuaq/core/extensions/text_style_extension.dart';
+import 'package:ithelpdesk/core/common/common_utils.dart';
+import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
+import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 
 class InfoLoaderWidget extends StatelessWidget {
   final String message;

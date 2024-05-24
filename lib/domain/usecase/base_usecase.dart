@@ -1,15 +1,15 @@
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
-import 'package:smartuaq/core/config/flavor_config.dart';
-import 'package:smartuaq/core/error/failures.dart';
-import 'package:smartuaq/data/model/api_response_model.dart';
-import 'package:smartuaq/data/model/login_model.dart';
-import 'package:smartuaq/data/model/request_data_models.dart';
-import 'package:smartuaq/data/remote/api_urls.dart';
-import 'package:smartuaq/domain/entities/api_entity.dart';
-import 'package:smartuaq/domain/entities/login_entity.dart';
-import 'package:smartuaq/domain/entities/request_form_entities.dart';
-import 'package:smartuaq/domain/repository/apis_repository.dart';
+import 'package:ithelpdesk/core/config/flavor_config.dart';
+import 'package:ithelpdesk/core/error/failures.dart';
+import 'package:ithelpdesk/data/model/api_response_model.dart';
+import 'package:ithelpdesk/data/model/login_model.dart';
+import 'package:ithelpdesk/data/model/request_data_models.dart';
+import 'package:ithelpdesk/data/remote/api_urls.dart';
+import 'package:ithelpdesk/domain/entities/api_entity.dart';
+import 'package:ithelpdesk/domain/entities/login_entity.dart';
+import 'package:ithelpdesk/domain/entities/request_form_entities.dart';
+import 'package:ithelpdesk/domain/repository/apis_repository.dart';
 
 abstract class BaseUseCase {
   Future<Either<Failure, ApiEntity<UserEntity>>> getUserData(

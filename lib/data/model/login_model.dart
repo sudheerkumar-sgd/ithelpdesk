@@ -1,7 +1,7 @@
 // ignore_for_file: must_be_immutable
 
-import 'package:smartuaq/data/model/base_model.dart';
-import 'package:smartuaq/domain/entities/login_entity.dart';
+import 'package:ithelpdesk/data/model/base_model.dart';
+import 'package:ithelpdesk/domain/entities/login_entity.dart';
 
 class LoginModel extends BaseModel {
   String? fullnameAr;

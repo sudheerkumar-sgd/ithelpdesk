@@ -1,5 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:smartuaq/core/constants/constants.dart';
+import 'package:ithelpdesk/core/constants/constants.dart';
 
 class UserDataDB {
   static const String name = 'db_app_settings';

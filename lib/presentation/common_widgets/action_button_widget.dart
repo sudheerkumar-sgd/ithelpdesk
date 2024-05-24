@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:smartuaq/core/extensions/build_context_extension.dart';
-import 'package:smartuaq/core/extensions/text_style_extension.dart';
-import 'package:smartuaq/res/drawables/background_box_decoration.dart';
+import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
+import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
+import 'package:ithelpdesk/res/drawables/background_box_decoration.dart';
 
 class ActionButtonWidget extends StatelessWidget {
   final String text;

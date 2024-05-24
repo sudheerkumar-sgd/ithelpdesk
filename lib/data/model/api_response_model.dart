@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
-import 'package:smartuaq/data/model/base_model.dart';
-import 'package:smartuaq/domain/entities/api_entity.dart';
-import 'package:smartuaq/domain/entities/base_entity.dart';
+import 'package:ithelpdesk/data/model/base_model.dart';
+import 'package:ithelpdesk/domain/entities/api_entity.dart';
+import 'package:ithelpdesk/domain/entities/base_entity.dart';
 
 // ignore: must_be_immutable
 class ApiResponse<T extends BaseModel> extends Equatable {

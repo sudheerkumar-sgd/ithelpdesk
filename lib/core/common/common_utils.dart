@@ -8,15 +8,15 @@ import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
-import 'package:smartuaq/core/common/log.dart';
-import 'package:smartuaq/core/config/flavor_config.dart';
-import 'package:smartuaq/core/constants/constants.dart';
+import 'package:ithelpdesk/core/common/log.dart';
+import 'package:ithelpdesk/core/config/flavor_config.dart';
+import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:map_launcher/map_launcher.dart';
-import 'package:smartuaq/core/extensions/build_context_extension.dart';
-import 'package:smartuaq/data/local/user_data_db.dart';
-import 'package:smartuaq/presentation/common_widgets/alert_dialog_widget.dart';
-import 'package:smartuaq/presentation/utils/dialogs.dart';
-import 'package:smartuaq/presentation/utils/location.dart';
+import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
+import 'package:ithelpdesk/data/local/user_data_db.dart';
+import 'package:ithelpdesk/presentation/common_widgets/alert_dialog_widget.dart';
+import 'package:ithelpdesk/presentation/utils/dialogs.dart';
+import 'package:ithelpdesk/presentation/utils/location.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:mime/mime.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -100,7 +100,7 @@ launchAppUrl() {
   if (Platform.isAndroid || Platform.isIOS) {
     final url = Uri.parse(
       Platform.isAndroid
-          ? "market://details?id=uae.gov.smartuaq"
+          ? "market://details?id=uaq.gov.ithelpdesk"
           : "https://apps.apple.com/app/id1063110068",
     );
     launchUrl(
@@ -124,8 +124,8 @@ launchWebUrl(String url) {
 
 String getAppUrl() {
   return Platform.isAndroid
-      ? 'https://play.google.com/store/apps/details?id=uae.gov.smartuaq'
-      : 'https://apps.apple.com/ae/app/smartuaq/id1063110068';
+      ? 'https://play.google.com/store/apps/details?id=uaq.gov.ithelpdesk'
+      : 'https://apps.apple.com/ae/app/ithelpdesk/id1063110068';
 }
 
 double distance(double lat1, double lon1, double lat2, double lon2) {

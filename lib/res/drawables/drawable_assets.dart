@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:smartuaq/core/enum/enum.dart';
-import 'package:smartuaq/core/extensions/build_context_extension.dart';
+import 'package:ithelpdesk/core/enum/enum.dart';
+import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 
 class DrawableAssets {
   static const drawablePath = 'assets/images/';

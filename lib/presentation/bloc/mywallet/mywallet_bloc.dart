@@ -1,13 +1,13 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:smartuaq/core/enum/enum.dart';
-import 'package:smartuaq/core/error/failures.dart';
-import 'package:smartuaq/domain/entities/api_entity.dart';
-import 'package:smartuaq/domain/entities/mywallet_entity.dart';
-import 'package:smartuaq/domain/entities/request_form_entities.dart';
-import 'package:smartuaq/domain/entities/requests_entity.dart';
-import 'package:smartuaq/domain/usecase/mywallet_usecase.dart';
+import 'package:ithelpdesk/core/enum/enum.dart';
+import 'package:ithelpdesk/core/error/failures.dart';
+import 'package:ithelpdesk/domain/entities/api_entity.dart';
+import 'package:ithelpdesk/domain/entities/mywallet_entity.dart';
+import 'package:ithelpdesk/domain/entities/request_form_entities.dart';
+import 'package:ithelpdesk/domain/entities/requests_entity.dart';
+import 'package:ithelpdesk/domain/usecase/mywallet_usecase.dart';
 part 'mywallet_state.dart';
 
 class MyWalletBloc extends Cubit<MyWalletState> {

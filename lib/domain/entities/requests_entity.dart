@@ -1,10 +1,10 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:flutter/material.dart';
-import 'package:smartuaq/core/constants/constants.dart';
-import 'package:smartuaq/core/constants/data_constants.dart';
-import 'package:smartuaq/domain/entities/base_entity.dart';
-import 'package:smartuaq/res/resources.dart';
+import 'package:ithelpdesk/core/constants/constants.dart';
+import 'package:ithelpdesk/core/constants/data_constants.dart';
+import 'package:ithelpdesk/domain/entities/base_entity.dart';
+import 'package:ithelpdesk/res/resources.dart';
 
 class RequestsListEntity extends BaseEntity {
   List<RequestsEntity> requests = [];
