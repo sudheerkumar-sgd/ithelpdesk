@@ -71,7 +71,7 @@ class ThemeRedColors extends BaseColors {
   Color get bottomSheetIconUnSelected => const Color(0xff9E9E9E);
 
   @override
-  Color get appScaffoldBg => colorWhite;
+  Color get appScaffoldBg => const Color(0xFFF7F8F9);
 
   @override
   Color get colorF5C3C3 => const Color(0xffF5C3C3);
@@ -114,4 +114,10 @@ class ThemeRedColors extends BaseColors {
 
   @override
   Color get iconBgColorLight => const Color(0xff9E9E9E).withOpacity(0.15);
+
+  @override
+  Color get sideBarItemSelected => const Color(0xff446FF2);
+
+  @override
+  Color get sideBarItemUnselected => const Color(0xffD1DAE2);
 }

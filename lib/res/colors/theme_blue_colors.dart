@@ -50,16 +50,16 @@ class ThemeBlueColors extends BaseColors {
   Color get bgGradientStart => const Color(0xFF175CD3);
 
   @override
-  Color get textColor => const Color(0xFF2B2C34);
+  Color get textColor => const Color(0xFF323C47);
 
   @override
-  Color get textColorLight => const Color(0xFF979797);
+  Color get textColorLight => const Color(0xFFA9B9C6);
 
   @override
-  Color get viewBgColor => const Color(0xff0E4CB7);
+  Color get viewBgColor => const Color(0xff446FF2);
 
   @override
-  Color get viewBgColorLight => const Color(0xff175CD3);
+  Color get viewBgColorLight => const Color(0xff7FB1FF);
 
   @override
   Color get colorEDECEC => const Color(0xffEDECEC);
@@ -71,7 +71,7 @@ class ThemeBlueColors extends BaseColors {
   Color get bottomSheetIconUnSelected => const Color(0xff9E9E9E);
 
   @override
-  Color get appScaffoldBg => colorWhite;
+  Color get appScaffoldBg => const Color(0xFFF7F8F9);
 
   @override
   Color get colorF5C3C3 => const Color(0xFFD0E4F6);
@@ -114,4 +114,10 @@ class ThemeBlueColors extends BaseColors {
 
   @override
   Color get iconBgColorLight => const Color(0xff9E9E9E).withOpacity(0.15);
+
+  @override
+  Color get sideBarItemSelected => const Color(0xff446FF2);
+
+  @override
+  Color get sideBarItemUnselected => const Color(0xffD1DAE2);
 }

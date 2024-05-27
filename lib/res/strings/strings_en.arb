@@ -11,6 +11,15 @@
     "appUpdateTitle":"Update your application",
     "appUpdateBody":"We improve performance and fix some bugs to make your experience seamless",
     "whatareyoulookingfor":"What are you looking for?",
-    "documentSuccessfullySaved":"Document successfully saved"
+    "documentSuccessfullySaved":"Document successfully saved",
+    "home":"Home",
+    "report":"Report",
+    "directory":"Directory",
+    "profile":"Profile",
+    "searchHere":"Search here...",
+    "supportSummary":"Support Summary",
+    "supportSummaryDes":"The dashboard about the IT Helpdesk Support Tickets",
+    "createNewRequest":"Create New Request",
+    "home":"Home"
     
 }

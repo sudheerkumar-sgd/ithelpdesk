@@ -71,9 +71,15 @@ abstract class BaseColors {
 
   Color get iconBgColorLight;
 
+  Color get sideBarItemSelected;
+
+  Color get sideBarItemUnselected;
+
   Color get completed => const Color(0xFF3ECA6E);
 
   Color get rejected => const Color(0xFFFF0000);
 
   Color get pending => const Color(0xFFFF8832);
+
+  Color get hintColor => const Color(0xFF737791);
 }

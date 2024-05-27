@@ -5,7 +5,6 @@ import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/data/local/app_settings_db.dart';
 import 'package:ithelpdesk/res/colors/base_clors.dart';
-import 'package:ithelpdesk/res/colors/theme_peach_colors.dart';
 import 'package:ithelpdesk/res/dimentions/font_dimension.dart';
 import 'package:ithelpdesk/res/dimentions/font_dimension_big.dart';
 import 'package:ithelpdesk/res/dimentions/font_dimension_small.dart';
@@ -14,7 +13,6 @@ import 'package:ithelpdesk/res/theme/theme_blue.dart';
 import 'package:ithelpdesk/res/theme/theme_peach.dart';
 import 'package:ithelpdesk/res/theme/theme_red.dart';
 import 'colors/theme_blue_colors.dart';
-import 'colors/theme_red_colors.dart';
 import 'dimentions/app_dimension.dart';
 import 'dimentions/font_dimension_default.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -25,12 +23,8 @@ class Resources {
   Resources(this.context);
 
   BaseColors get color {
-    final theme = context.appSettingsDB.get(AppSettingsDB.appThemeKey);
-    return (theme == ThemeEnum.blue.name)
-        ? ThemeBlueColors()
-        : (theme == ThemeEnum.red.name)
-            ? ThemeRedColors()
-            : ThemePeachColors();
+    //final theme = context.appSettingsDB.get(AppSettingsDB.appThemeKey);
+    return ThemeBlueColors();
   }
 
   ApplicationTheme get theme {

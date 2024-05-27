@@ -47,12 +47,6 @@ class ServicesBloc extends Cubit<ServicesState> {
         (r) => OnNotificationsResponse(notifications: r)));
   }
 
-  Future<void> getFavoritesdData({required UserDataDB userDB}) async {
-    final result = await servicesUseCase.getFavoritesData(userDB: userDB);
-    emit(result.fold((l) => OnApiError(message: _getErrorMessage(l)),
-        (r) => OnFavoriteSuccess(favoriteServices: r)));
-  }
-
   Future<void> saveFavoritesdData(
       {required UserDataDB userDB,
       required List<ServiceEntity> favorites,
@@ -75,13 +69,6 @@ class ServicesBloc extends Cubit<ServicesState> {
       emit(result.fold((l) => OnApiError(message: _getErrorMessage(l)),
           (r) => OnFavoriteSuccess(favoriteServices: r)));
     }
-  }
-
-  Future<bool> isServiceFavorite(
-      {required UserDataDB userDB, required int serviceID}) async {
-    final result = await servicesUseCase.isServiceFavorite(
-        userDB: userDB, serviceId: serviceID);
-    return result.fold((l) => false, (r) => r);
   }
 
   Future<void> getServicesFromLocal() async {

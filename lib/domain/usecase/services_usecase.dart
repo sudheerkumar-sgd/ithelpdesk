@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:ithelpdesk/core/config/base_url_config.dart';
 import 'package:ithelpdesk/core/config/flavor_config.dart';
-import 'package:ithelpdesk/core/constants/data_constants.dart';
 import 'package:ithelpdesk/core/error/failures.dart';
 import 'package:ithelpdesk/data/local/user_data_db.dart';
 import 'package:ithelpdesk/data/model/api_response_model.dart';
@@ -118,25 +117,6 @@ class ServicesUseCase extends BaseUseCase {
     });
   }
 
-  Future<Either<Failure, List<ServiceEntity>>> getFavoritesData(
-      {required UserDataDB userDB}) async {
-    try {
-      var favoriteData =
-          userDB.get(UserDataDB.userFavorites, defaultValue: []) as List;
-      if (favoriteData.isEmpty) {
-        userDB.put(UserDataDB.userFavorites, defaultfavorites);
-        favoriteData = defaultfavorites;
-      }
-      final result = favoriteData
-          .map((eventJson) =>
-              ServiceModel.fromFavoriteJson(eventJson).toEntity())
-          .toList();
-      return Right(result);
-    } catch (e) {
-      return Left(ServerFailure(e.toString()));
-    }
-  }
-
   Future<Either<Failure, List<ServiceEntity>>> saveFavoritesData(
       {required UserDataDB userDB,
       required List<ServiceEntity> toBeAddfavorites}) async {
@@ -190,30 +170,6 @@ class ServicesUseCase extends BaseUseCase {
           .map((eventJson) => ServiceModel.fromJson(eventJson).toEntity())
           .toList();
       return Right(result);
-    } catch (e) {
-      return Left(ServerFailure(e.toString()));
-    }
-  }
-
-  Future<Either<Failure, bool>> isServiceFavorite(
-      {required UserDataDB userDB, required int serviceId}) async {
-    try {
-      var favoriteData =
-          userDB.get(UserDataDB.userFavorites, defaultValue: []) as List;
-      if (favoriteData.isEmpty) {
-        userDB.put(UserDataDB.userFavorites, defaultfavorites);
-        favoriteData = defaultfavorites;
-      }
-      final result = favoriteData
-          .map((eventJson) =>
-              ServiceModel.fromFavoriteJson(eventJson).toEntity())
-          .toList();
-      final service = result
-          .where(
-            (element) => element.id == serviceId,
-          )
-          .firstOrNull;
-      return Right(service != null);
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }

@@ -74,6 +74,7 @@ dependencies:
   firebase_analytics: ^10.10.5
   firebase_crashlytics: ^3.5.5
   package_info_plus: ^8.0.0
+  animated_sidebar: ^1.0.1
 
 dev_dependencies:
   flutter_test:
@@ -99,7 +100,7 @@ flutter:
   generate: true
 
   # To add assets to your application, add an assets section, like this:
-  #assets:
+  assets:
   # app files:
   # app audios:
   # app images gif:
@@ -107,7 +108,15 @@ flutter:
   # app images png:
      
   # app images svg:
-  
+     - assets/images/ic_logo.svg
+     - assets/images/ic_home.svg
+     - assets/images/ic_report.svg
+     - assets/images/ic_report.png
+     - assets/images/ic_directory.svg
+     - assets/images/ic_user.svg
+     - assets/images/ic_notification.svg
+     - assets/images/ic_user_circle.svg
+     - assets/images/ic_search.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

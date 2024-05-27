@@ -1,27 +1,14 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:flutter/material.dart';
-import 'package:ithelpdesk/core/common/log.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
-import 'package:ithelpdesk/domain/entities/requests_entity.dart';
-import 'package:ithelpdesk/domain/entities/services_entity.dart';
-import 'package:ithelpdesk/injection_container.dart';
-import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
+import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
+import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
-import 'package:ithelpdesk/presentation/common_widgets/user_app_bar.dart';
 import 'package:ithelpdesk/res/resources.dart';
 
 class UserHomeScreen extends BaseScreenWidget {
   UserHomeScreen({super.key});
-  final _servicesBloc = sl<ServicesBloc>();
-  MostUsedServicesEntity? mostUsedServices;
-  final ValueNotifier<List<ServiceEntity>> _favoriteServices =
-      ValueNotifier([]);
-  final ValueNotifier<bool> _isRequestsLoaded = ValueNotifier(false);
-  List<RequestsEntity> _requests = [];
-  List<ServiceEntity> allServices = [];
-  final ValueNotifier _isFavoriteEdited = ValueNotifier<bool>(false);
-  final requestNumberTextController = TextEditingController();
   late FocusNode requestStatusFocusNode;
 
   void onRequestValueChanged(String value) {
@@ -34,27 +21,43 @@ class UserHomeScreen extends BaseScreenWidget {
   Widget build(BuildContext context) {
     Resources resources = context.resources;
     return SafeArea(
-        child: Container(
-      padding: EdgeInsets.symmetric(horizontal: context.resources.dimen.dp25),
-      child: Scaffold(
-        backgroundColor: context.resources.color.colorWhite,
-        appBar: UserAppBarWidget(
-          wish: 'welcome',
-          title: 'userDisplayName',
-          showSearch: true,
-          padding:
-              EdgeInsets.symmetric(horizontal: context.resources.dimen.dp25),
+        child: Scaffold(
+      backgroundColor: context.resources.color.appScaffoldBg,
+      body: Padding(
+        padding: EdgeInsets.all(resources.dimen.dp20),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text.rich(
+                  TextSpan(
+                      text: '${resources.string.supportSummary}\n',
+                      style: context.textFontWeight600,
+                      children: [
+                        TextSpan(
+                            text: '${resources.string.supportSummaryDes}\n',
+                            style: context.textFontWeight400
+                                .onFontSize(resources.fontSize.dp12)
+                                .onColor(resources.color.textColorLight)
+                                .onHeight(1))
+                      ]),
+                ),
+                ActionButtonWidget(
+                  text: resources.string.createNewRequest,
+                  padding: EdgeInsets.symmetric(
+                      horizontal: context.resources.dimen.dp30,
+                      vertical: context.resources.dimen.dp7),
+                )
+              ],
+            )
+          ],
         ),
-        body: const SizedBox(),
       ),
     ));
   }
 
   @override
-  doDispose() {
-    _favoriteServices.dispose();
-    _servicesBloc.close();
-    _isFavoriteEdited.dispose();
-    _isRequestsLoaded.dispose();
-  }
+  doDispose() {}
 }

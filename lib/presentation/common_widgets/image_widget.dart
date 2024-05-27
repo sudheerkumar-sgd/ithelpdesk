@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_svg/svg.dart';
 
 class ImageWidget {
@@ -38,7 +39,7 @@ class ImageWidget {
             colorFilter = ColorFilter.mode(backgroundTint!, BlendMode.srcIn);
           }
           return SvgPicture.asset(
-            path,
+            kIsWeb ? path.replaceAll('assets/', '') : path,
             width: width,
             height: height,
             fit: boxType ?? BoxFit.contain,
@@ -46,7 +47,7 @@ class ImageWidget {
           );
         } else {
           return Image.asset(
-            path,
+            kIsWeb ? path.replaceAll('assets/', '') : path,
             width: width,
             height: height,
             fit: boxType,

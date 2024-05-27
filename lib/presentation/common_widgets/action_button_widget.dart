@@ -21,7 +21,7 @@ class ActionButtonWidget extends StatelessWidget {
               vertical: context.resources.dimen.dp7),
       decoration: BackgroundBoxDecoration(
               boxColor: color ?? context.resources.color.viewBgColor,
-              radious: context.resources.dimen.dp15)
+              radious: context.resources.dimen.dp10)
           .roundedCornerBox,
       child: Text(
         text,
