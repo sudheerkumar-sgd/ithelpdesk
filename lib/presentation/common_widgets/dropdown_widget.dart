@@ -79,13 +79,17 @@ class DropDownWidget<T> extends StatelessWidget {
                       horizontal: context.resources.dimen.dp10),
                   fillColor: fillColor ?? const Color(0xFFF7F6F6),
                   border: OutlineInputBorder(
-                    borderSide: BorderSide.none,
+                    borderSide: BorderSide(
+                        color: context.resources.color.sideBarItemUnselected,
+                        width: 1),
                     borderRadius: BorderRadius.all(
                       Radius.circular(context.resources.dimen.dp10),
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide.none,
+                    borderSide: BorderSide(
+                        color: context.resources.color.sideBarItemUnselected,
+                        width: 1),
                     borderRadius: BorderRadius.all(
                       Radius.circular(context.resources.dimen.dp10),
                     ),
@@ -137,15 +141,20 @@ class DropDownWidget<T> extends StatelessWidget {
                 items: list.map<DropdownMenuItem<T>>((T value) {
                   return DropdownMenuItem<T>(
                     value: value,
-                    child: Text(
-                      overflow: TextOverflow.clip,
-                      value.toString(),
-                      style: context.textFontWeight400.onFontFamily(
-                          fontFamily: fontFamily.isNotEmpty
-                              ? fontFamily
-                              : context.resources.isLocalEn
-                                  ? fontFamilyEN
-                                  : fontFamilyAR),
+                    child: Center(
+                      child: Text(
+                        overflow: TextOverflow.clip,
+                        textAlign: TextAlign.center,
+                        value.toString(),
+                        style: context.textFontWeight400
+                            .onFontFamily(
+                                fontFamily: fontFamily.isNotEmpty
+                                    ? fontFamily
+                                    : context.resources.isLocalEn
+                                        ? fontFamilyEN
+                                        : fontFamilyAR)
+                            .onHeight(1.7),
+                      ),
                     ),
                   );
                 }).toList(),

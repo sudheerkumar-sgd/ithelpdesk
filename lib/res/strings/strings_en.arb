@@ -20,6 +20,14 @@
     "supportSummary":"Support Summary",
     "supportSummaryDes":"The dashboard about the IT Helpdesk Support Tickets",
     "createNewRequest":"Create New Request",
+    "notAssignedRequests":"Not Assigned\nRequests",
+    "openRequests":"Open\nRequests",
+    "closedRequests":"Closed\nRequests",
+    "noOfRequests":"No. of\nRequests",
+    "ticketsSummary":"Tickets Summary",
+    "ticketsSummaryDes":"The dashboard about the IT Helpdesk Support Tickets",
+    "category":"Category",
+    "itHelpdeskSupportTickets":"IT Helpdesk Support Tickets",
     "home":"Home"
     
 }

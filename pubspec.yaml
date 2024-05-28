@@ -75,6 +75,7 @@ dependencies:
   firebase_crashlytics: ^3.5.5
   package_info_plus: ^8.0.0
   animated_sidebar: ^1.0.1
+  fl_chart: ^0.68.0
 
 dev_dependencies:
   flutter_test:
@@ -117,6 +118,10 @@ flutter:
      - assets/images/ic_notification.svg
      - assets/images/ic_user_circle.svg
      - assets/images/ic_search.svg
+     - assets/images/ic_not_assigned_requests.svg
+     - assets/images/ic_open_requests.svg
+     - assets/images/ic_closed_requests.svg
+     - assets/images/ic_no._of_requests.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
