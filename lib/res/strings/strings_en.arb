@@ -28,6 +28,17 @@
     "ticketsSummaryDes":"The dashboard about the IT Helpdesk Support Tickets",
     "category":"Category",
     "itHelpdeskSupportTickets":"IT Helpdesk Support Tickets",
+    "latestTickets":"Latest Tickets",
+    "latestTicketsDes":"Latest Tickets (Showing 01 to 08 of 48 Tickets)",
+    "sortBy":"Sort By",
+    "id":"ID",
+    "employeeName":"Employee Name",
+    "subjects":"Subjects",
+    "status":"Status",
+    "priority":"Priority",
+    "assignee":"Assignee",
+    "department":"Department",
+    "createDate":"Create Date",
     "home":"Home"
     
 }

@@ -8,6 +8,7 @@ class BackgroundBoxDecoration {
   Color? shadowColor;
   double? shadowBlurRadius;
   Offset? shadowOffset;
+  BoxBorder? boxBorder;
   BackgroundBoxDecoration(
       {this.boxColor,
       this.boarderColor,
@@ -15,22 +16,25 @@ class BackgroundBoxDecoration {
       this.radious,
       this.shadowColor,
       this.shadowBlurRadius,
-      this.shadowOffset});
+      this.shadowOffset,
+      this.boxBorder});
   BoxDecoration get roundedCornerBox {
     return BoxDecoration(
         color: boxColor,
-        border: Border.all(
-            color: boarderColor ?? const Color(0x00000000),
-            width: boarderWidth ?? 0),
+        border: boxBorder ??
+            Border.all(
+                color: boarderColor ?? const Color(0x00000000),
+                width: boarderWidth ?? 0),
         borderRadius: BorderRadius.all(Radius.circular(radious ?? 4)));
   }
 
   BoxDecoration get topCornersBox {
     return BoxDecoration(
         color: boxColor,
-        border: Border.all(
-            color: boarderColor ?? const Color(0x00000000),
-            width: boarderWidth ?? 0),
+        border: boxBorder ??
+            Border.all(
+                color: boarderColor ?? const Color(0x00000000),
+                width: boarderWidth ?? 0),
         borderRadius: BorderRadius.only(
             topLeft: Radius.circular(radious ?? 4),
             topRight: Radius.circular(radious ?? 4)));
@@ -39,9 +43,10 @@ class BackgroundBoxDecoration {
   BoxDecoration get bottomCornersBox {
     return BoxDecoration(
         color: boxColor,
-        border: Border.all(
-            color: boarderColor ?? const Color(0x00000000),
-            width: boarderWidth ?? 0),
+        border: boxBorder ??
+            Border.all(
+                color: boarderColor ?? const Color(0x00000000),
+                width: boarderWidth ?? 0),
         borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(radious ?? 4),
             bottomRight: Radius.circular(radious ?? 4)));
@@ -50,9 +55,10 @@ class BackgroundBoxDecoration {
   BoxDecoration get rightCornersBox {
     return BoxDecoration(
         color: boxColor,
-        border: Border.all(
-            color: boarderColor ?? const Color(0x00000000),
-            width: boarderWidth ?? 0),
+        border: boxBorder ??
+            Border.all(
+                color: boarderColor ?? const Color(0x00000000),
+                width: boarderWidth ?? 0),
         borderRadius: BorderRadius.only(
             bottomRight: Radius.circular(radious ?? 4),
             topRight: Radius.circular(radious ?? 4)));
@@ -61,9 +67,10 @@ class BackgroundBoxDecoration {
   BoxDecoration get leftCornersBox {
     return BoxDecoration(
         color: boxColor,
-        border: Border.all(
-            color: boarderColor ?? const Color(0x00000000),
-            width: boarderWidth ?? 0),
+        border: boxBorder ??
+            Border.all(
+                color: boarderColor ?? const Color(0x00000000),
+                width: boarderWidth ?? 0),
         borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(radious ?? 4),
             topLeft: Radius.circular(radious ?? 4)));
