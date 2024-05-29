@@ -13,7 +13,6 @@ class SearchTextfieldWidget extends StatelessWidget {
   final TextInputType? textInputType;
   final TextEditingController? textController;
   final String? prefixIconPath;
-  final FocusNode? focusNode;
   final bool isEnabled;
   const SearchTextfieldWidget(
       {this.height = defaultHeight,
@@ -22,7 +21,6 @@ class SearchTextfieldWidget extends StatelessWidget {
       this.textController,
       this.prefixIconPath,
       this.textInputType,
-      this.focusNode,
       this.isEnabled = true,
       super.key});
 
@@ -39,7 +37,6 @@ class SearchTextfieldWidget extends StatelessWidget {
               keyboardType: textInputType,
               controller: textController,
               textAlignVertical: TextAlignVertical.center,
-              focusNode: focusNode,
               validator: (value) {
                 if (errorMessage.isNotEmpty &&
                     (value == null || value.isEmpty)) {

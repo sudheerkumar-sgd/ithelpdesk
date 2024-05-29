@@ -39,7 +39,7 @@ class ImageWidget {
             colorFilter = ColorFilter.mode(backgroundTint!, BlendMode.srcIn);
           }
           return SvgPicture.asset(
-            kIsWeb ? path.replaceAll('assets/', '') : path,
+            (kIsWeb && kDebugMode) ? path.replaceAll('assets/', '') : path,
             width: width,
             height: height,
             fit: boxType ?? BoxFit.contain,
@@ -47,7 +47,7 @@ class ImageWidget {
           );
         } else {
           return Image.asset(
-            kIsWeb ? path.replaceAll('assets/', '') : path,
+            (kIsWeb && kDebugMode) ? path.replaceAll('assets/', '') : path,
             width: width,
             height: height,
             fit: boxType,
