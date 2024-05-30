@@ -18,7 +18,7 @@ class SplashScreen extends StatelessWidget {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
         statusBarColor: resources.color.colorWhite,
         statusBarIconBrightness: Brightness.dark));
-    Future.delayed(const Duration(seconds: 3), () {
+    Future.delayed(const Duration(seconds: 0), () {
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const UserMainScreen()),
           (_) => false);

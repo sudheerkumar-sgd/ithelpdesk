@@ -21,9 +21,6 @@ class LineChartWidget extends StatelessWidget {
           preventCurveOverShooting: true,
           barWidth: 2),
     ];
-    final betweenBarsData = [
-      BetweenBarsData(fromIndex: 1, toIndex: 30),
-    ];
     return LineChart(
       LineChartData(
         lineBarsData: lineBarsData,

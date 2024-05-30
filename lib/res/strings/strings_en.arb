@@ -39,6 +39,7 @@
     "assignee":"Assignee",
     "department":"Department",
     "createDate":"Create Date",
+    "create":"Create",
     "home":"Home"
     
 }

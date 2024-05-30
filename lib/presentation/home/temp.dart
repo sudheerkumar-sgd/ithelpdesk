@@ -1,4 +1,7 @@
+import 'dart:js';
+
 import 'package:flutter/material.dart';
+import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
@@ -124,6 +127,31 @@ class UserScreen extends StatelessWidget {
       body: Container(
         color: Colors.blue,
         child: Center(child: Text('User screen')),
+      ),
+    );
+  }
+}
+
+class CustomNavBar extends StatefulWidget {
+  const CustomNavBar({super.key});
+
+  @override
+  _CustomNavBarState createState() => _CustomNavBarState();
+}
+
+class _CustomNavBarState extends State<CustomNavBar> {
+  @override
+  Widget build(BuildContext context) {
+    if (Scaffold.of(context).isDrawerOpen) {
+      Scaffold.of(context).openEndDrawer(); //animation error
+      setState(() {});
+    }
+
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: context.resources.dimen.dp10),
+      child: IconButton(
+        icon: const Icon(Icons.menu),
+        onPressed: () => Scaffold.of(context).openDrawer(),
       ),
     );
   }

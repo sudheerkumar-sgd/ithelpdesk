@@ -2,13 +2,17 @@
 
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/presentation/common_widgets/alert_dialog_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
+import 'package:ithelpdesk/presentation/common_widgets/msearch_user_app_bar.dart';
 import 'package:ithelpdesk/presentation/common_widgets/search_user_app_bar.dart';
 import 'package:ithelpdesk/presentation/common_widgets/side_bar.dart';
+import 'package:ithelpdesk/presentation/home/temp.dart';
 import 'package:ithelpdesk/presentation/home/user_home_navigator_screen.dart';
 import 'package:ithelpdesk/presentation/utils/NavbarNotifier.dart';
 import 'package:ithelpdesk/presentation/utils/dialogs.dart';
@@ -29,6 +33,7 @@ class _MainScreenState extends State<UserMainScreen> {
   final ValueNotifier<int> _selectedIndex = ValueNotifier<int>(0);
   BaseScreenWidget? currentScreen;
   int activeTab = 0;
+  double sideBarWidth = 200;
 
   final List<SidebarItem> items = [
     SidebarItem(icon: Icons.home, text: 'Home'),
@@ -99,21 +104,38 @@ class _MainScreenState extends State<UserMainScreen> {
         },
       );
     });
+    final isWebMobile = kIsWeb &&
+        (defaultTargetPlatform == TargetPlatform.iOS ||
+            defaultTargetPlatform == TargetPlatform.android);
+
     return Scaffold(
       backgroundColor: resources.color.colorWhite,
+      drawer: SizedBox(
+        width: 200,
+        child: SideBar(
+          onItemSelected: (p0) {},
+        ),
+      ),
       body: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-              width: min(getScrrenSize(context).width * 0.2, 200),
-              child: SideBar(onItemSelected: (index) {
-                _selectedIndex.value = index;
-              })),
+          if (isDesktop(context))
+            SizedBox(
+              width: 150,
+              child: SideBar(
+                onItemSelected: (p0) {},
+              ),
+            ),
           Expanded(
             child: Column(
               children: [
-                const SearchUserAppBarWidget(
-                  userName: 'Sudheer Kumar A',
-                ),
+                isDesktop(context)
+                    ? const SearchUserAppBarWidget(
+                        userName: 'Sudheer Kumar A',
+                      )
+                    : MSearchUserAppBarWidget(
+                        userName: 'Sudheer Kumar A',
+                      ),
                 ValueListenableBuilder(
                     valueListenable: _selectedIndex,
                     builder: (context, index, child) {

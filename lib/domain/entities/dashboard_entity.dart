@@ -26,4 +26,11 @@ class TicketEntity extends BaseEntity {
         "department": department ?? '',
         "createDate": createDate ?? '',
       };
+  Map<String, dynamic> toMobileJson() => {
+        "id": id ?? '',
+        "subject": subject ?? '',
+        "status": status ?? '',
+        "priority": priority ?? '',
+        "createDate": createDate ?? '',
+      };
 }

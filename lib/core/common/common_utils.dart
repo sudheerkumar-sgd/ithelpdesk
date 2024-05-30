@@ -238,6 +238,10 @@ Size getScrrenSize(BuildContext context) {
   return MediaQuery.of(context).size;
 }
 
+bool isDesktop(BuildContext context) {
+  return MediaQuery.of(context).size.width > 500;
+}
+
 Map<String, dynamic> getFCMMessageData(
     {required String to,
     required String title,

@@ -7,7 +7,7 @@ class AppRoutes {
   static String startRoute = '/start';
   static String loginRoute = '/login';
   static String guestMainRoute = '/guestMain';
-  static String userMainRoute = '/userMain';
+  static String userMainRoute = '/dashboard';
   static String homeRoute = '/home';
   static String tourRoute = '/tour';
 

@@ -6,7 +6,7 @@ import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
 
 const double defaultHeight = 20;
 
-class SearchTextfieldWidget extends StatelessWidget {
+class SearchTextfieldWidget extends StatefulWidget {
   final double height;
   final String? hintText;
   final String errorMessage;
@@ -25,6 +25,11 @@ class SearchTextfieldWidget extends StatelessWidget {
       super.key});
 
   @override
+  State<SearchTextfieldWidget> createState() => _SearchTextfieldWidgetState();
+}
+
+class _SearchTextfieldWidgetState extends State<SearchTextfieldWidget> {
+  @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -32,15 +37,17 @@ class SearchTextfieldWidget extends StatelessWidget {
         Align(
           alignment: Alignment.center,
           child: TextFormField(
-              enabled: isEnabled,
+              enabled: widget.isEnabled,
               maxLines: 1,
-              keyboardType: textInputType,
-              controller: textController,
+              keyboardType: widget.textInputType,
+              controller: widget.textController,
               textAlignVertical: TextAlignVertical.center,
               validator: (value) {
-                if (errorMessage.isNotEmpty &&
+                if (widget.errorMessage.isNotEmpty &&
                     (value == null || value.isEmpty)) {
-                  return errorMessage.isNotEmpty ? errorMessage : null;
+                  return widget.errorMessage.isNotEmpty
+                      ? widget.errorMessage
+                      : null;
                 }
                 return null;
               },
@@ -50,7 +57,8 @@ class SearchTextfieldWidget extends StatelessWidget {
                 contentPadding: EdgeInsets.symmetric(
                     vertical: context.resources.dimen.dp10,
                     horizontal: context.resources.dimen.dp15),
-                hintText: hintText ?? context.resources.string.searchHere,
+                hintText:
+                    widget.hintText ?? context.resources.string.searchHere,
                 hintStyle: context.textFontWeight400
                     .onFontSize(context.resources.fontSize.dp12)
                     .onFontFamily(
@@ -58,15 +66,15 @@ class SearchTextfieldWidget extends StatelessWidget {
                             ? fontFamilyEN
                             : fontFamilyAR)
                     .onColor(context.resources.color.hintColor),
-                prefixIconConstraints:
-                    BoxConstraints(maxHeight: height, minHeight: height),
-                prefixIcon: (prefixIconPath ?? '').isNotEmpty
+                prefixIconConstraints: BoxConstraints(
+                    maxHeight: widget.height, minHeight: widget.height),
+                prefixIcon: (widget.prefixIconPath ?? '').isNotEmpty
                     ? Padding(
                         padding: context.resources.isLocalEn
                             ? const EdgeInsets.only(left: 5.0, right: 5.0)
                             : const EdgeInsets.only(right: 5.0, left: 5.0),
                         child: ImageWidget(
-                          path: prefixIconPath ?? '',
+                          path: widget.prefixIconPath ?? '',
                         ).loadImage,
                       )
                     : null,

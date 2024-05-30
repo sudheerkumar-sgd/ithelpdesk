@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
+import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:ithelpdesk/app.dart';
 import 'package:ithelpdesk/core/config/base_url_config.dart';
@@ -24,5 +25,6 @@ void main() async {
         policeDomainBaseUrl: baseUrlPoliceDomain),
   );
   await di.init();
+  usePathUrlStrategy();
   runApp(Phoenix(child: const App()));
 }

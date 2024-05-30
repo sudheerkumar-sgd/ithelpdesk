@@ -19,10 +19,16 @@ class SideBar extends StatelessWidget {
             valueListenable: _selectedIndex,
             builder: (context, index, child) {
               return ListView(children: <Widget>[
-                ImageWidget(
-                        path: DrawableAssets.icLogo,
-                        padding: const EdgeInsets.symmetric(horizontal: 40))
-                    .loadImageWithMoreTapArea,
+                SizedBox(
+                  height: resources.dimen.dp20,
+                ),
+                SizedBox(
+                  height: 50,
+                  child: ImageWidget(
+                          path: DrawableAssets.icLogo,
+                          padding: const EdgeInsets.symmetric(horizontal: 20))
+                      .loadImageWithMoreTapArea,
+                ),
                 SizedBox(
                   height: resources.dimen.dp20,
                 ),
