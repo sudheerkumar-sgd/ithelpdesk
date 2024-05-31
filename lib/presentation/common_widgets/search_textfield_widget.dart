@@ -37,6 +37,7 @@ class _SearchTextfieldWidgetState extends State<SearchTextfieldWidget> {
         Align(
           alignment: Alignment.center,
           child: TextFormField(
+              key: GlobalKey(),
               enabled: widget.isEnabled,
               maxLines: 1,
               keyboardType: widget.textInputType,

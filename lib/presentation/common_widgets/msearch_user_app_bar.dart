@@ -10,8 +10,9 @@ class MSearchUserAppBarWidget extends StatelessWidget
     implements PreferredSizeWidget {
   final String userName;
   final EdgeInsets? padding;
-  final _key = GlobalKey();
-  MSearchUserAppBarWidget({required this.userName, this.padding, super.key});
+  static final _formKey = GlobalKey<FormState>();
+  const MSearchUserAppBarWidget(
+      {required this.userName, this.padding, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -23,17 +24,16 @@ class MSearchUserAppBarWidget extends StatelessWidget
         children: [
           Row(
             children: [
-              if (!isDesktop(context))
-                IconButton(
-                  icon: const Icon(Icons.menu),
-                  onPressed: () => Scaffold.of(context).openDrawer(),
-                ),
+              IconButton(
+                icon: const Icon(Icons.menu),
+                onPressed: () => Scaffold.of(context).openDrawer(),
+              ),
               SizedBox(
                 width: resources.dimen.dp10,
               ),
               Expanded(
                 child: Form(
-                  key: _key,
+                  key: _formKey,
                   child: const SearchTextfieldWidget(
                     prefixIconPath: DrawableAssets.icSearch,
                   ),

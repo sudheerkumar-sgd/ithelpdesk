@@ -10,8 +10,6 @@ import 'package:ithelpdesk/res/dimentions/font_dimension_big.dart';
 import 'package:ithelpdesk/res/dimentions/font_dimension_small.dart';
 import 'package:ithelpdesk/res/theme/app_theme.dart';
 import 'package:ithelpdesk/res/theme/theme_blue.dart';
-import 'package:ithelpdesk/res/theme/theme_peach.dart';
-import 'package:ithelpdesk/res/theme/theme_red.dart';
 import 'colors/theme_blue_colors.dart';
 import 'dimentions/app_dimension.dart';
 import 'dimentions/font_dimension_default.dart';
@@ -28,12 +26,8 @@ class Resources {
   }
 
   ApplicationTheme get theme {
-    final theme = context.appSettingsDB.get(AppSettingsDB.appThemeKey);
-    return (theme == ThemeEnum.red.name)
-        ? ThemeRed.instance
-        : (theme == ThemeEnum.blue.name)
-            ? ThemeBlue.instance
-            : ThemePeach.instance;
+    //final theme = context.appSettingsDB.get(AppSettingsDB.appThemeKey);
+    return ThemeBlue.instance;
   }
 
   AppDimension get dimen {
@@ -79,9 +73,10 @@ class Resources {
   }
 
   ThemeEnum getTheme() {
-    final theme = context.appSettingsDB
-        .get(AppSettingsDB.appThemeKey, defaultValue: ThemeEnum.peach.name);
-    return ThemeEnum.values.byName(theme);
+    // final theme = context.appSettingsDB
+    //     .get(AppSettingsDB.appThemeKey, defaultValue: ThemeEnum.peach.name);
+    // return ThemeEnum.values.byName(theme);
+    return ThemeEnum.blue;
   }
 
   Color get iconBgColor => color.iconTintColor;

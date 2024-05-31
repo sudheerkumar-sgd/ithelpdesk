@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:ithelpdesk/domain/entities/login_entity.dart';
 
 const String fontFamilyEN = "Poppins";
@@ -8,3 +10,4 @@ bool showSplash = true;
 List<EstablishmentEntity> userEstablishments = [];
 bool isServicesLoaded = false;
 String appVersion = '';
+Size screenSize = const Size(550, 730);

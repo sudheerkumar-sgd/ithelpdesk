@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
+import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
@@ -10,6 +11,8 @@ class SearchUserAppBarWidget extends StatelessWidget
     implements PreferredSizeWidget {
   final String userName;
   final EdgeInsets? padding;
+  static final _formKey = GlobalKey<FormState>();
+
   const SearchUserAppBarWidget(
       {required this.userName, this.padding, super.key});
 
@@ -24,13 +27,16 @@ class SearchUserAppBarWidget extends StatelessWidget
         children: [
           Row(
             children: [
-              const Expanded(
-                child: SearchTextfieldWidget(
-                  prefixIconPath: DrawableAssets.icSearch,
+              Expanded(
+                child: Form(
+                  key: _formKey,
+                  child: const SearchTextfieldWidget(
+                    prefixIconPath: DrawableAssets.icSearch,
+                  ),
                 ),
               ),
               SizedBox(
-                width: getScrrenSize(context).width * .10,
+                width: screenSize.width * .10,
               ),
               ImageWidget(
                       path: DrawableAssets.icNotification,

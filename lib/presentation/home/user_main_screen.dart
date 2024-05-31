@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
+import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/presentation/common_widgets/alert_dialog_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
@@ -110,42 +111,46 @@ class _MainScreenState extends State<UserMainScreen> {
 
     return Scaffold(
       backgroundColor: resources.color.colorWhite,
+      resizeToAvoidBottomInset: false,
       drawer: SizedBox(
         width: 200,
         child: SideBar(
           onItemSelected: (p0) {},
         ),
       ),
-      body: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (isDesktop(context))
-            SizedBox(
-              width: 150,
-              child: SideBar(
-                onItemSelected: (p0) {},
+      body: LayoutBuilder(builder: (context, size) {
+        screenSize = size.biggest;
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (isDesktop(context, size: size.biggest))
+              SizedBox(
+                width: 150,
+                child: SideBar(
+                  onItemSelected: (p0) {},
+                ),
+              ),
+            Expanded(
+              child: Column(
+                children: [
+                  isDesktop(context)
+                      ? const SearchUserAppBarWidget(
+                          userName: 'Sudheer Kumar A',
+                        )
+                      : const MSearchUserAppBarWidget(
+                          userName: 'Sudheer Kumar A',
+                        ),
+                  ValueListenableBuilder(
+                      valueListenable: _selectedIndex,
+                      builder: (context, index, child) {
+                        return Expanded(child: getScreen(index));
+                      }),
+                ],
               ),
             ),
-          Expanded(
-            child: Column(
-              children: [
-                isDesktop(context)
-                    ? const SearchUserAppBarWidget(
-                        userName: 'Sudheer Kumar A',
-                      )
-                    : MSearchUserAppBarWidget(
-                        userName: 'Sudheer Kumar A',
-                      ),
-                ValueListenableBuilder(
-                    valueListenable: _selectedIndex,
-                    builder: (context, index, child) {
-                      return Expanded(child: getScreen(index));
-                    }),
-              ],
-            ),
-          ),
-        ],
-      ),
+          ],
+        );
+      }),
     );
   }
 }

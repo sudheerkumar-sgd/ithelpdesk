@@ -305,7 +305,7 @@ class UserHomeScreen extends BaseScreenWidget {
 
     return SafeArea(
         child: Scaffold(
-      resizeToAvoidBottomInset: true,
+      resizeToAvoidBottomInset: false,
       backgroundColor: context.resources.color.appScaffoldBg,
       body: Padding(
         padding: EdgeInsets.all(resources.dimen.dp20),
@@ -396,7 +396,8 @@ class UserHomeScreen extends BaseScreenWidget {
                               Text(
                                 requestTypes[newIndex]['count'].toString(),
                                 textAlign: TextAlign.center,
-                                style: context.textFontWeight700,
+                                style: context.textFontWeight700
+                                    .onFontSize(resources.fontSize.dp16),
                               ),
                               Text(
                                 requestTypes[newIndex]['name'].toString(),
@@ -465,9 +466,9 @@ class UserHomeScreen extends BaseScreenWidget {
                         .onFontSize(resources.fontSize.dp10),
                   ),
                   DropDownWidget<String>(
-                    width: 80,
+                    width: 100,
                     height: 28,
-                    list: const ['2022', '2023', '2024'],
+                    list: const ['Created Date', 'priority', 'status'],
                     iconSize: 20,
                     fontStyle: context.textFontWeight400
                         .onFontSize(resources.fontSize.dp10),
