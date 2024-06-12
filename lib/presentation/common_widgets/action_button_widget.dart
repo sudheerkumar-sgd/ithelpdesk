@@ -7,9 +7,21 @@ class ActionButtonWidget extends StatelessWidget {
   final String text;
   final double? width;
   final Color? color;
+  final Color? textColor;
+  final double? textSize;
+  final Decoration? decoration;
+  final double? radious;
   final EdgeInsets? padding;
   const ActionButtonWidget(
-      {required this.text, this.width, this.color, this.padding, super.key});
+      {required this.text,
+      this.width,
+      this.color,
+      this.padding,
+      this.radious,
+      this.decoration,
+      this.textColor,
+      this.textSize,
+      super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,15 +31,16 @@ class ActionButtonWidget extends StatelessWidget {
           EdgeInsets.symmetric(
               horizontal: context.resources.dimen.dp100,
               vertical: context.resources.dimen.dp7),
-      decoration: BackgroundBoxDecoration(
-              boxColor: color ?? context.resources.color.viewBgColor,
-              radious: context.resources.dimen.dp10)
-          .roundedCornerBox,
+      decoration: decoration ??
+          BackgroundBoxDecoration(
+            boxColor: color ?? context.resources.color.viewBgColor,
+            radious: radious ?? context.resources.dimen.dp10,
+          ).roundedCornerBox,
       child: Text(
         text,
         style: context.textFontWeight600
-            .onFontSize(context.resources.fontSize.dp14)
-            .onColor(context.resources.color.colorWhite),
+            .onFontSize(textSize ?? context.resources.fontSize.dp14)
+            .onColor(textColor ?? context.resources.color.colorWhite),
         textAlign: TextAlign.center,
       ),
     );

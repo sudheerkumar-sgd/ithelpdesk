@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:ithelpdesk/presentation/home/user_home_navigator_screen.dart';
 
 class NavbarNotifier extends ChangeNotifier {
   int _index = 0;
@@ -21,11 +22,20 @@ class NavbarNotifier extends ChangeNotifier {
   // pop routes from the nested navigator stack and not the main stack
   // this is done based on the currentIndex of the bottom navbar
   // if the backButton is pressed on the initial route the app will be terminated
-  FutureOr<bool> onUserBackButtonPressed(int index) async {
+  FutureOr<bool> onBackButtonPressed(int index) async {
+    bool exitingApp = true;
     switch (index) {
+      case 0:
+        if (UserHomeNavigatorScreen.homeKey.currentState != null &&
+            UserHomeNavigatorScreen.homeKey.currentState!.canPop()) {
+          UserHomeNavigatorScreen.homeKey.currentState!.maybePop();
+          exitingApp = false;
+        }
+        break;
       default:
         return false;
     }
+    return exitingApp;
   }
 
   // pops all routes except first, if there are more than 1 route in each navigator stack

@@ -124,6 +124,8 @@ flutter:
      - assets/images/ic_open_requests.svg
      - assets/images/ic_closed_requests.svg
      - assets/images/ic_no._of_requests.svg
+     - assets/images/ic_plus_circle.svg
+     - assets/images/ic_close_circle.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

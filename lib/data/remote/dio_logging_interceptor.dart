@@ -4,30 +4,24 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:ithelpdesk/core/config/base_url_config.dart';
 import 'package:ithelpdesk/core/config/flavor_config.dart';
-import 'package:ithelpdesk/core/constants/constants.dart';
-import 'package:ithelpdesk/presentation/utils/encryption_utils.dart';
 
 class DioLoggingInterceptor extends InterceptorsWrapper {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    if (options.baseUrl == baseUrlPoliceDomain) {
-      final encryptionUtils = EncryptionUtils();
-      String basicAuth =
-          'Basic ${base64.encode(utf8.encode('${encryptionUtils.decryptAES(dotenv.env['policeBaseAuthUsername'] ?? '')}:${encryptionUtils.decryptAES(dotenv.env['policeBaseAuthUsername'] ?? '')}'))}';
-      options.headers.addAll({
-        HttpHeaders.authorizationHeader: basicAuth,
-      });
-    } else if (userToken.isNotEmpty) {
-      options.headers.addAll({
-        HttpHeaders.authorizationHeader: 'Bearer $userToken',
-        'lang': isSelectedLocalEn ? 'en' : 'ar',
-        'channel': 2,
-        HttpHeaders.acceptHeader: "*/*",
-      });
-    }
+    // if (options.baseUrl == baseUrlPoliceDomain) {
+    //   final encryptionUtils = EncryptionUtils();
+    //   String basicAuth =
+    //       'Basic ${base64.encode(utf8.encode('${encryptionUtils.decryptAES(dotenv.env['policeBaseAuthUsername'] ?? '')}:${encryptionUtils.decryptAES(dotenv.env['policeBaseAuthUsername'] ?? '')}'))}';
+    //   options.headers.addAll({
+    //     HttpHeaders.authorizationHeader: basicAuth,
+    //   });
+    // } else if (userToken.isNotEmpty) {
+    options.headers.addAll({
+      HttpHeaders.contentTypeHeader: 'application/json',
+      HttpHeaders.acceptHeader: "*/*",
+    });
+    // }
 
     if (FlavorConfig.instance.flavor == Flavor.DEVELOPMENT) {
       print(

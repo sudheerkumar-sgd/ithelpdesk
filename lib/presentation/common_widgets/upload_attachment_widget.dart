@@ -26,6 +26,7 @@ class UploadAttachmentWidget extends StatelessWidget {
   final TextEditingController textController = TextEditingController();
   final BorderSide borderSide;
   final Color? fillColor;
+  final double? borderRadius;
   final Function(UploadResponseEntity?)? onSelected;
   final Function? suffixIconClick;
   final UploadOptions? fileType;
@@ -45,6 +46,7 @@ class UploadAttachmentWidget extends StatelessWidget {
       this.isMandetory = false,
       this.fillColor,
       this.borderSide = BorderSide.none,
+      this.borderRadius,
       this.onSelected,
       this.suffixIconClick,
       this.fileType,
@@ -156,13 +158,29 @@ class UploadAttachmentWidget extends StatelessWidget {
                     border: OutlineInputBorder(
                       borderSide: borderSide,
                       borderRadius: BorderRadius.all(
-                        Radius.circular(context.resources.dimen.dp10),
+                        Radius.circular(
+                            borderRadius ?? context.resources.dimen.dp10),
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderSide: borderSide,
                       borderRadius: BorderRadius.all(
-                        Radius.circular(context.resources.dimen.dp10),
+                        Radius.circular(
+                            borderRadius ?? context.resources.dimen.dp10),
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: borderSide,
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(
+                            borderRadius ?? context.resources.dimen.dp10),
+                      ),
+                    ),
+                    disabledBorder: OutlineInputBorder(
+                      borderSide: borderSide,
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(
+                            borderRadius ?? context.resources.dimen.dp10),
                       ),
                     ),
                     errorStyle: TextStyle(

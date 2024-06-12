@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ithelpdesk/core/constants/data_constants.dart';
@@ -25,36 +27,41 @@ class DialogUploadAttachmentWidget extends StatelessWidget {
       super.key});
 
   _getFile(BuildContext context, UploadOptions selectedOption) async {
-    String filePath = '';
     String fileName = '';
-    if (selectedOption == UploadOptions.file) {
-      FilePickerResult? result;
-      if (allowedExtensions.isNotEmpty) {
-        result = await FilePicker.platform.pickFiles(
-            type: FileType.custom, allowedExtensions: allowedExtensions);
-      } else {
-        result = await FilePicker.platform.pickFiles();
-      }
-      if (result != null) {
-        fileName = result.files.single.name;
-        filePath = result.files.single.path ?? '';
-      }
+    String filePath = '';
+    Uint8List? fileBytes;
+    // if (selectedOption == UploadOptions.file) {
+    FilePickerResult? result;
+    if (allowedExtensions.isNotEmpty) {
+      result = await FilePicker.platform.pickFiles(
+          type: FileType.custom, allowedExtensions: allowedExtensions);
     } else {
-      try {
-        final ImagePicker picker = ImagePicker();
-        final XFile? pickedFile = await picker.pickImage(
-          source: selectedOption == UploadOptions.takephoto
-              ? ImageSource.camera
-              : ImageSource.gallery,
-          maxWidth: 1024,
-          maxHeight: 1024,
-        );
-        fileName = pickedFile?.name ?? '';
-        filePath = pickedFile?.path ?? '';
-      } catch (e) {
-        printLog(e.toString());
+      result = await FilePicker.platform.pickFiles();
+    }
+    if (result != null) {
+      fileName = result.files.first.name;
+      if (!kIsWeb) {
+        filePath = result.files.first.path ?? '';
+      } else {
+        fileBytes = result.files.first.bytes;
       }
     }
+    // } else {
+    //   try {
+    //     final ImagePicker picker = ImagePicker();
+    //     final XFile? pickedFile = await picker.pickImage(
+    //       source: selectedOption == UploadOptions.takephoto
+    //           ? ImageSource.camera
+    //           : ImageSource.gallery,
+    //       maxWidth: 1024,
+    //       maxHeight: 1024,
+    //     );
+    //     fileName = pickedFile?.name ?? '';
+    //     filePath = pickedFile?.path ?? '';
+    //   } catch (e) {
+    //     printLog(e.toString());
+    //   }
+    // }
     if (filePath.isNotEmpty) {
       File file = File(filePath);
       if (file.lengthSync() <= maxSize * maxUploadFilesize) {
@@ -64,6 +71,21 @@ class DialogUploadAttachmentWidget extends StatelessWidget {
           'fileType': fileName.substring(
               fileName.lastIndexOf('.') == -1 ? 0 : fileName.lastIndexOf('.')),
           'fileNamebase64data': base64.encode(bytes),
+        };
+        if (context.mounted) {
+          Navigator.pop(context, data);
+        }
+      } else if (context.mounted) {
+        Dialogs.showInfoDialog(context, PopupType.fail,
+            "Upload file should not be more then $maxSize mb");
+      }
+    } else if (fileBytes?.isNotEmpty == true) {
+      if ((fileBytes?.lengthInBytes ?? 0) <= maxSize * maxUploadFilesize) {
+        final data = {
+          'fileName': fileName,
+          'fileType': fileName.substring(
+              fileName.lastIndexOf('.') == -1 ? 0 : fileName.lastIndexOf('.')),
+          'fileNamebase64data': base64.encode(fileBytes!),
         };
         if (context.mounted) {
           Navigator.pop(context, data);

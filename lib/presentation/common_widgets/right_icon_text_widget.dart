@@ -23,6 +23,7 @@ class RightIconTextWidget extends StatelessWidget {
   final FocusNode? focusNode;
   final bool isMandetory;
   final BorderSide borderSide;
+  final double? borderRadius;
   final Color? fillColor;
   final Function(String)? onChanged;
   final Function? suffixIconClick;
@@ -47,6 +48,7 @@ class RightIconTextWidget extends StatelessWidget {
       this.isMandetory = false,
       this.fillColor,
       this.borderSide = BorderSide.none,
+      this.borderRadius,
       this.onChanged,
       this.suffixIconClick,
       this.regex,
@@ -142,13 +144,19 @@ class RightIconTextWidget extends StatelessWidget {
               border: OutlineInputBorder(
                 borderSide: borderSide,
                 borderRadius: BorderRadius.all(
-                  Radius.circular(context.resources.dimen.dp10),
+                  Radius.circular(borderRadius ?? context.resources.dimen.dp10),
                 ),
               ),
               focusedBorder: OutlineInputBorder(
                 borderSide: borderSide,
                 borderRadius: BorderRadius.all(
-                  Radius.circular(context.resources.dimen.dp10),
+                  Radius.circular(borderRadius ?? context.resources.dimen.dp10),
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: borderSide,
+                borderRadius: BorderRadius.all(
+                  Radius.circular(borderRadius ?? context.resources.dimen.dp10),
                 ),
               ),
               errorStyle: TextStyle(

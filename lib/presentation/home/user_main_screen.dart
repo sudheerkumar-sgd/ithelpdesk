@@ -1,8 +1,5 @@
 // ignore_for_file: must_be_immutable
 
-import 'dart:math';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
@@ -13,7 +10,6 @@ import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/msearch_user_app_bar.dart';
 import 'package:ithelpdesk/presentation/common_widgets/search_user_app_bar.dart';
 import 'package:ithelpdesk/presentation/common_widgets/side_bar.dart';
-import 'package:ithelpdesk/presentation/home/temp.dart';
 import 'package:ithelpdesk/presentation/home/user_home_navigator_screen.dart';
 import 'package:ithelpdesk/presentation/utils/NavbarNotifier.dart';
 import 'package:ithelpdesk/presentation/utils/dialogs.dart';
@@ -50,7 +46,7 @@ class _MainScreenState extends State<UserMainScreen> {
 
   void _onItemTapped(int index) {
     if (_selectedIndex.value == index) {
-      _navbarNotifier.onUserBackButtonPressed(_selectedIndex.value);
+      _navbarNotifier.onBackButtonPressed(_selectedIndex.value);
     }
     _selectedIndex.value = index;
   }
@@ -105,52 +101,58 @@ class _MainScreenState extends State<UserMainScreen> {
         },
       );
     });
-    final isWebMobile = kIsWeb &&
-        (defaultTargetPlatform == TargetPlatform.iOS ||
-            defaultTargetPlatform == TargetPlatform.android);
+    // final isWebMobile = kIsWeb &&
+    //     (defaultTargetPlatform == TargetPlatform.iOS ||
+    //         defaultTargetPlatform == TargetPlatform.android);
 
-    return Scaffold(
-      backgroundColor: resources.color.colorWhite,
-      resizeToAvoidBottomInset: false,
-      drawer: SizedBox(
-        width: 200,
-        child: SideBar(
-          onItemSelected: (p0) {},
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) async {
+        await _navbarNotifier.onBackButtonPressed(_selectedIndex.value);
+      },
+      child: Scaffold(
+        backgroundColor: resources.color.colorWhite,
+        resizeToAvoidBottomInset: false,
+        drawer: SizedBox(
+          width: 200,
+          child: SideBar(
+            onItemSelected: (p0) {},
+          ),
         ),
-      ),
-      body: LayoutBuilder(builder: (context, size) {
-        screenSize = size.biggest;
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (isDesktop(context, size: size.biggest))
-              SizedBox(
-                width: 150,
-                child: SideBar(
-                  onItemSelected: (p0) {},
+        body: LayoutBuilder(builder: (context, size) {
+          screenSize = size.biggest;
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (isDesktop(context, size: size.biggest))
+                SizedBox(
+                  width: 150,
+                  child: SideBar(
+                    onItemSelected: (p0) {},
+                  ),
+                ),
+              Expanded(
+                child: Column(
+                  children: [
+                    isDesktop(context)
+                        ? const SearchUserAppBarWidget(
+                            userName: 'Sudheer Kumar A',
+                          )
+                        : const MSearchUserAppBarWidget(
+                            userName: 'Sudheer Kumar A',
+                          ),
+                    ValueListenableBuilder(
+                        valueListenable: _selectedIndex,
+                        builder: (context, index, child) {
+                          return Expanded(child: getScreen(index));
+                        }),
+                  ],
                 ),
               ),
-            Expanded(
-              child: Column(
-                children: [
-                  isDesktop(context)
-                      ? const SearchUserAppBarWidget(
-                          userName: 'Sudheer Kumar A',
-                        )
-                      : const MSearchUserAppBarWidget(
-                          userName: 'Sudheer Kumar A',
-                        ),
-                  ValueListenableBuilder(
-                      valueListenable: _selectedIndex,
-                      builder: (context, index, child) {
-                        return Expanded(child: getScreen(index));
-                      }),
-                ],
-              ),
-            ),
-          ],
-        );
-      }),
+            ],
+          );
+        }),
+      ),
     );
   }
 }

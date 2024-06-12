@@ -8,7 +8,7 @@
           "name": "ItHelpDesk web",
           "type": "dart",
           "request": "launch",
-          "program": "lib/main.dart",
+          "program": "lib/main_development.dart",
           "args": [
             "-d",
             "chrome"

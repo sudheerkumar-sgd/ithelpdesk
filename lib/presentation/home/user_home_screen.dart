@@ -1,24 +1,26 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/common/log.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
+import 'package:ithelpdesk/injection_container.dart';
+import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
 import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dropdown_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
+import 'package:ithelpdesk/presentation/create_request/create_new_request.dart';
 import 'package:ithelpdesk/res/drawables/background_box_decoration.dart';
 import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
 
 class UserHomeScreen extends BaseScreenWidget {
   UserHomeScreen({super.key});
   late FocusNode requestStatusFocusNode;
+  ServicesBloc _servicesBloc = sl<ServicesBloc>();
 
   void onRequestValueChanged(String value) {
     if (value.trim().length == 6) {
@@ -222,6 +224,9 @@ class UserHomeScreen extends BaseScreenWidget {
   @override
   Widget build(BuildContext context) {
     final resources = context.resources;
+    Future.delayed(Duration.zero, () {
+      _servicesBloc.getServices();
+    });
     final requestTypesRows = isDesktop(context) ? 1 : 2;
     final requestTypesColumns = isDesktop(context) ? 4 : 2;
     final requestTypes = [
@@ -336,16 +341,21 @@ class UserHomeScreen extends BaseScreenWidget {
                     flex: 1,
                     child: LayoutBuilder(builder: (context, size) {
                       printLog(size.maxWidth);
-                      return ActionButtonWidget(
-                        width: size.maxWidth < 210 ? 100 : null,
-                        text: size.maxWidth > 210
-                            ? resources.string.createNewRequest
-                            : resources.string.create,
-                        padding: EdgeInsets.symmetric(
-                            horizontal: size.maxWidth > 210
-                                ? context.resources.dimen.dp30
-                                : context.resources.dimen.dp10,
-                            vertical: context.resources.dimen.dp7),
+                      return InkWell(
+                        onTap: () {
+                          CreateNewRequest.start(context);
+                        },
+                        child: ActionButtonWidget(
+                          width: size.maxWidth < 210 ? 100 : null,
+                          text: size.maxWidth > 210
+                              ? resources.string.createNewRequest
+                              : resources.string.create,
+                          padding: EdgeInsets.symmetric(
+                              horizontal: size.maxWidth > 210
+                                  ? context.resources.dimen.dp30
+                                  : context.resources.dimen.dp10,
+                              vertical: context.resources.dimen.dp7),
+                        ),
                       );
                     }),
                   )

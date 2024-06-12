@@ -25,6 +25,7 @@ class DropDownWidget<T> extends StatelessWidget {
   final Color? fillColor;
   final bool isMandetory;
   final double? iconSize;
+  final double? borderRadius;
   DropDownWidget(
       {required this.list,
       this.height,
@@ -41,6 +42,7 @@ class DropDownWidget<T> extends StatelessWidget {
       this.isMandetory = false,
       this.selectedValue,
       this.iconSize,
+      this.borderRadius,
       this.callback,
       super.key});
 
@@ -90,7 +92,8 @@ class DropDownWidget<T> extends StatelessWidget {
                           color: context.resources.color.sideBarItemUnselected,
                           width: 1),
                       borderRadius: BorderRadius.all(
-                        Radius.circular(context.resources.dimen.dp10),
+                        Radius.circular(
+                            borderRadius ?? context.resources.dimen.dp10),
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
@@ -98,7 +101,8 @@ class DropDownWidget<T> extends StatelessWidget {
                           color: context.resources.color.sideBarItemUnselected,
                           width: 1),
                       borderRadius: BorderRadius.all(
-                        Radius.circular(context.resources.dimen.dp10),
+                        Radius.circular(
+                            borderRadius ?? context.resources.dimen.dp10),
                       ),
                     ),
                     enabledBorder: OutlineInputBorder(
@@ -106,7 +110,8 @@ class DropDownWidget<T> extends StatelessWidget {
                           color: context.resources.color.sideBarItemUnselected,
                           width: 1),
                       borderRadius: BorderRadius.all(
-                        Radius.circular(context.resources.dimen.dp10),
+                        Radius.circular(
+                            borderRadius ?? context.resources.dimen.dp10),
                       ),
                     ),
                     errorStyle: TextStyle(

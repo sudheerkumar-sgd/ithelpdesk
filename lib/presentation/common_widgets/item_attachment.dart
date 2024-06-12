@@ -68,7 +68,7 @@ class ItemAttachment extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: ImageWidget(
-                      width: 13, height: 13, path: DrawableAssets.icClose)
+                      width: 13, height: 13, path: DrawableAssets.icCloseCircle)
                   .loadImage,
             ),
           ),
