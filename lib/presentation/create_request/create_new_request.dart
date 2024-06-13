@@ -1,6 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart';
@@ -32,6 +31,8 @@ class CreateNewRequest extends BaseScreenWidget {
       resources.string.eservices,
       resources.string.system
     ];
+    final noOfCategoryRows = isDesktop(context) ? 1 : 2;
+    final noOfCategoryRowItems = isDesktop(context) ? 4 : 2;
     return Scaffold(
         backgroundColor: resources.color.appScaffoldBg,
         body: Padding(
@@ -85,129 +86,63 @@ class CreateNewRequest extends BaseScreenWidget {
                   child: ValueListenableBuilder(
                       valueListenable: _ticketCategory,
                       builder: (context, value, child) {
-                        return Row(
+                        return Column(
                           children: [
-                            Expanded(
-                              child: InkWell(
-                                onTap: () {
-                                  _ticketCategory.value = 0;
-                                },
-                                child: ActionButtonWidget(
-                                  text: resources.string.supportITRequest,
-                                  decoration: value != 0
-                                      ? BackgroundBoxDecoration(
-                                              boxColor:
-                                                  resources.color.colorWhite,
-                                              boarderColor: resources
-                                                  .color.textColorLight,
-                                              boarderWidth: resources.dimen.dp1,
-                                              radious: 0)
-                                          .roundedCornerBox
-                                      : null,
-                                  textColor: value != 0
-                                      ? resources.color.textColor
-                                      : null,
-                                  textSize: resources.dimen.dp12,
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: context.resources.dimen.dp20,
-                                      vertical: context.resources.dimen.dp7),
-                                  radious: 0,
-                                ),
+                            for (int c = 0; c < noOfCategoryRows; c++) ...{
+                              Row(
+                                children: [
+                                  for (int r = 0;
+                                      r < noOfCategoryRowItems;
+                                      r++) ...[
+                                    Expanded(
+                                      child: InkWell(
+                                        onTap: () {
+                                          _ticketCategory.value =
+                                              r + (c * noOfCategoryRowItems);
+                                        },
+                                        child: ActionButtonWidget(
+                                          text: categories[
+                                              r + (c * noOfCategoryRowItems)],
+                                          decoration: value !=
+                                                  r + (c * noOfCategoryRowItems)
+                                              ? BackgroundBoxDecoration(
+                                                      boxColor: resources
+                                                          .color.colorWhite,
+                                                      boarderColor: resources
+                                                          .color.textColorLight,
+                                                      boarderWidth:
+                                                          resources.dimen.dp1,
+                                                      radious: 0)
+                                                  .roundedCornerBox
+                                              : null,
+                                          textColor: value !=
+                                                  r + (c * noOfCategoryRowItems)
+                                              ? resources.color.textColor
+                                              : null,
+                                          textSize: resources.dimen.dp12,
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal:
+                                                  context.resources.dimen.dp10,
+                                              vertical:
+                                                  context.resources.dimen.dp7),
+                                          radious: 0,
+                                        ),
+                                      ),
+                                    ),
+                                    if (r < noOfCategoryRowItems - 1) ...[
+                                      SizedBox(
+                                        width: resources.dimen.dp20,
+                                      )
+                                    ]
+                                  ]
+                                ],
                               ),
-                            ),
-                            SizedBox(
-                              width: resources.dimen.dp20,
-                            ),
-                            Expanded(
-                              child: InkWell(
-                                onTap: () {
-                                  _ticketCategory.value = 1;
-                                },
-                                child: ActionButtonWidget(
-                                  text: resources.string.itISOCRS,
-                                  decoration: value != 1
-                                      ? BackgroundBoxDecoration(
-                                              boxColor:
-                                                  resources.color.colorWhite,
-                                              boarderColor: resources
-                                                  .color.textColorLight,
-                                              boarderWidth: resources.dimen.dp1,
-                                              radious: 0)
-                                          .roundedCornerBox
-                                      : null,
-                                  textColor: value != 1
-                                      ? resources.color.textColor
-                                      : null,
-                                  textSize: resources.dimen.dp12,
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: context.resources.dimen.dp20,
-                                      vertical: context.resources.dimen.dp7),
-                                  radious: 0,
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              width: resources.dimen.dp20,
-                            ),
-                            Expanded(
-                              child: InkWell(
-                                onTap: () {
-                                  _ticketCategory.value = 2;
-                                },
-                                child: ActionButtonWidget(
-                                  text: resources.string.eservices,
-                                  decoration: value != 2
-                                      ? BackgroundBoxDecoration(
-                                              boxColor:
-                                                  resources.color.colorWhite,
-                                              boarderColor: resources
-                                                  .color.textColorLight,
-                                              boarderWidth: resources.dimen.dp1,
-                                              radious: 0)
-                                          .roundedCornerBox
-                                      : null,
-                                  textColor: value != 2
-                                      ? resources.color.textColor
-                                      : null,
-                                  textSize: resources.dimen.dp12,
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: context.resources.dimen.dp20,
-                                      vertical: context.resources.dimen.dp7),
-                                  radious: 0,
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              width: resources.dimen.dp20,
-                            ),
-                            Expanded(
-                              child: InkWell(
-                                onTap: () {
-                                  _ticketCategory.value = 3;
-                                },
-                                child: ActionButtonWidget(
-                                  text: resources.string.system,
-                                  decoration: value != 3
-                                      ? BackgroundBoxDecoration(
-                                              boxColor:
-                                                  resources.color.colorWhite,
-                                              boarderColor: resources
-                                                  .color.textColorLight,
-                                              boarderWidth: resources.dimen.dp1,
-                                              radious: 0)
-                                          .roundedCornerBox
-                                      : null,
-                                  textColor: value != 3
-                                      ? resources.color.textColor
-                                      : null,
-                                  textSize: resources.dimen.dp12,
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: context.resources.dimen.dp20,
-                                      vertical: context.resources.dimen.dp7),
-                                  radious: 0,
-                                ),
-                              ),
-                            )
+                              if (c < noOfCategoryRows - 1) ...[
+                                SizedBox(
+                                  height: resources.dimen.dp20,
+                                )
+                              ]
+                            },
                           ],
                         );
                       }),
