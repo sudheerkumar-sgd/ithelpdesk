@@ -58,6 +58,10 @@
     "description":"Description",
     "uploadFile":"Upload File",
     "description":"Description",
+    "issueType":"Issue Type",
+    "serviceName":"Service Name",
+    "requestNo":"Request No.",
+    "latestUpdate":"Latest Update",
     "home":"Home"
     
 }

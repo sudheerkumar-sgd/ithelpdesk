@@ -13,7 +13,8 @@ import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart
 import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dropdown_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
-import 'package:ithelpdesk/presentation/create_request/create_new_request.dart';
+import 'package:ithelpdesk/presentation/requests/create_new_request.dart';
+import 'package:ithelpdesk/presentation/requests/view_request.dart';
 import 'package:ithelpdesk/res/drawables/background_box_decoration.dart';
 import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
 
@@ -32,15 +33,20 @@ class UserHomeScreen extends BaseScreenWidget {
     final list = List<Widget>.empty(growable: true);
     (isDesktop(context) ? ticketEntity.toJson() : ticketEntity.toMobileJson())
         .forEach((key, value) {
-      list.add(Padding(
-        padding: EdgeInsets.symmetric(vertical: context.resources.dimen.dp20),
-        child: Text(
-          '$value',
-          textAlign: TextAlign.center,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: context.textFontWeight600
-              .onFontSize(context.resources.fontSize.dp10),
+      list.add(InkWell(
+        onTap: () {
+          ViewRequest.start(context);
+        },
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: context.resources.dimen.dp20),
+          child: Text(
+            '$value',
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: context.textFontWeight600
+                .onFontSize(context.resources.fontSize.dp10),
+          ),
         ),
       ));
     });

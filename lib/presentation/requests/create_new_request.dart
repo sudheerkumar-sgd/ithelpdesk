@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
@@ -21,6 +22,7 @@ class CreateNewRequest extends BaseScreenWidget {
 
   CreateNewRequest({super.key});
   final ValueNotifier _ticketCategory = ValueNotifier(-1);
+  final ValueNotifier _subjectChanged = ValueNotifier(null);
 
   @override
   Widget build(BuildContext context) {
@@ -170,78 +172,136 @@ class CreateNewRequest extends BaseScreenWidget {
                 SizedBox(
                   height: resources.dimen.dp10,
                 ),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                      vertical: resources.dimen.dp15,
-                      horizontal: resources.dimen.dp20),
-                  color: resources.color.colorWhite,
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                              child: DropDownWidget(
-                            list: const [
-                              'Reset Password',
-                              'System Update',
-                              'Network access'
+                ValueListenableBuilder(
+                    valueListenable: _ticketCategory,
+                    builder: (context, value, child) {
+                      return Container(
+                        padding: EdgeInsets.symmetric(
+                            vertical: resources.dimen.dp15,
+                            horizontal: resources.dimen.dp20),
+                        color: resources.color.colorWhite,
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                    child: DropDownWidget(
+                                  list: const [
+                                    'Reset Password',
+                                    'System Update',
+                                    'Network access'
+                                  ],
+                                  labelText: resources.string.subCategory,
+                                  borderRadius: 0,
+                                  fillColor: resources.color.colorWhite,
+                                )),
+                                SizedBox(
+                                  width: value == 2
+                                      ? resources.dimen.dp20
+                                      : resources.dimen.dp40,
+                                ),
+                                if (value == 2) ...[
+                                  Expanded(
+                                      child: DropDownWidget(
+                                    list: const ['High', 'Medium', 'Low'],
+                                    labelText: resources.string.issueType,
+                                    borderRadius: 0,
+                                    fillColor: resources.color.colorWhite,
+                                  )),
+                                  SizedBox(width: resources.dimen.dp20),
+                                ],
+                                Expanded(
+                                    child: DropDownWidget(
+                                  list: const ['High', 'Medium', 'Low'],
+                                  labelText: resources.string.priority,
+                                  borderRadius: 0,
+                                  fillColor: resources.color.colorWhite,
+                                )),
+                              ],
+                            ),
+                            SizedBox(
+                              height: resources.dimen.dp10,
+                            ),
+                            RightIconTextWidget(
+                              labelText: resources.string.contactNoTelephoneExt,
+                              fillColor: resources.color.colorWhite,
+                              borderSide: BorderSide(
+                                  color: context
+                                      .resources.color.sideBarItemUnselected,
+                                  width: 1),
+                              borderRadius: 0,
+                            ),
+                            SizedBox(
+                              height: resources.dimen.dp10,
+                            ),
+                            if (value == 2) ...[
+                              DropDownWidget(
+                                list: const ['High', 'Medium', 'Low'],
+                                labelText: resources.string.serviceName,
+                                borderRadius: 0,
+                                fillColor: resources.color.colorWhite,
+                              ),
+                              SizedBox(
+                                height: resources.dimen.dp10,
+                              ),
+                              RightIconTextWidget(
+                                labelText: resources.string.requestNo,
+                                fillColor: resources.color.colorWhite,
+                                borderSide: BorderSide(
+                                    color: context
+                                        .resources.color.sideBarItemUnselected,
+                                    width: 1),
+                                borderRadius: 0,
+                              ),
+                              SizedBox(
+                                height: resources.dimen.dp10,
+                              ),
                             ],
-                            labelText: resources.string.subCategory,
-                            borderRadius: 0,
-                            fillColor: resources.color.colorWhite,
-                          )),
-                          SizedBox(
-                            width: resources.dimen.dp40,
-                          ),
-                          Expanded(
-                              child: DropDownWidget(
-                            list: const ['High', 'Medium', 'Low'],
-                            labelText: resources.string.priority,
-                            borderRadius: 0,
-                            fillColor: resources.color.colorWhite,
-                          )),
-                        ],
-                      ),
-                      SizedBox(
-                        height: resources.dimen.dp10,
-                      ),
-                      RightIconTextWidget(
-                        labelText: resources.string.contactNoTelephoneExt,
-                        fillColor: resources.color.colorWhite,
-                        borderSide: BorderSide(
-                            color:
-                                context.resources.color.sideBarItemUnselected,
-                            width: 1),
-                        borderRadius: 0,
-                      ),
-                      SizedBox(
-                        height: resources.dimen.dp10,
-                      ),
-                      RightIconTextWidget(
-                        labelText: resources.string.subject,
-                        fillColor: resources.color.colorWhite,
-                        borderSide: BorderSide(
-                            color:
-                                context.resources.color.sideBarItemUnselected,
-                            width: 1),
-                        borderRadius: 0,
-                      ),
-                      SizedBox(
-                        height: resources.dimen.dp10,
-                      ),
-                      RightIconTextWidget(
-                        labelText: resources.string.description,
-                        fillColor: resources.color.colorWhite,
-                        maxLines: 8,
-                        borderSide: BorderSide(
-                            color:
-                                context.resources.color.sideBarItemUnselected,
-                            width: 1),
-                        borderRadius: 0,
-                      ),
-                    ],
-                  ),
-                ),
+                            DropDownWidget(
+                              list: const ['High', 'Medium', 'Low', 'other'],
+                              labelText: resources.string.subject,
+                              borderRadius: 0,
+                              fillColor: resources.color.colorWhite,
+                              callback: (value) {
+                                _subjectChanged.value = value;
+                              },
+                            ),
+                            ValueListenableBuilder(
+                                valueListenable: _subjectChanged,
+                                builder: (context, value, child) {
+                                  return value == 'other'
+                                      ? Padding(
+                                          padding: EdgeInsets.only(
+                                              top: resources.dimen.dp10),
+                                          child: RightIconTextWidget(
+                                            fillColor:
+                                                resources.color.colorWhite,
+                                            borderSide: BorderSide(
+                                                color: context.resources.color
+                                                    .sideBarItemUnselected,
+                                                width: 1),
+                                            borderRadius: 0,
+                                          ),
+                                        )
+                                      : const SizedBox();
+                                }),
+                            SizedBox(
+                              height: resources.dimen.dp10,
+                            ),
+                            RightIconTextWidget(
+                              labelText: resources.string.description,
+                              fillColor: resources.color.colorWhite,
+                              maxLines: 8,
+                              borderSide: BorderSide(
+                                  color: context
+                                      .resources.color.sideBarItemUnselected,
+                                  width: 1),
+                              borderRadius: 0,
+                            ),
+                          ],
+                        ),
+                      );
+                    }),
                 SizedBox(
                   height: resources.dimen.dp20,
                 ),
