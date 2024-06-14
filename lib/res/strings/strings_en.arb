@@ -62,6 +62,12 @@
     "serviceName":"Service Name",
     "requestNo":"Request No.",
     "latestUpdate":"Latest Update",
+    "returnText":"Return",
+    "transfer":"Transfer",
+    "hold":"Hold",
+    "reject":"Reject",
+    "chargeable":"Chargeable",
+    "comments":"Comments",
     "home":"Home"
     
 }
