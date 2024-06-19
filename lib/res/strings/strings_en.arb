@@ -68,6 +68,12 @@
     "reject":"Reject",
     "chargeable":"Chargeable",
     "comments":"Comments",
+    "forwardTo":"Forward to",
+    "user":"User",
+    "section":"Section",
+    "employee":"Employee",
+    "selectDepartment":"Select Department",
+    "selectEmployeeName":"Select Employee Name",
     "home":"Home"
     
 }

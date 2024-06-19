@@ -240,7 +240,7 @@ Size getScrrenSize(BuildContext context) {
 
 bool isDesktop(BuildContext context, {Size? size}) {
   size ??= screenSize;
-  return size.width > 500;
+  return size.width > 600;
 }
 
 Map<String, dynamic> getFCMMessageData(

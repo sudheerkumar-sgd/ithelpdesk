@@ -90,48 +90,60 @@ class Dialogs {
       {EdgeInsets insetPadding =
           const EdgeInsets.symmetric(horizontal: 40.0, vertical: 24.0),
       bool canPop = true,
-      bool showClose = true}) async {
+      bool showClose = true,
+      double? maxWidth}) async {
     return showDialog(
       context: context,
       builder: (context) => PopScope(
         canPop: canPop,
-        child: Dialog(
-          backgroundColor: context.resources.color.appScaffoldBg,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(
-                  Radius.circular(context.resources.dimen.dp15))),
-          insetPadding: insetPadding,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (showClose)
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: ImageWidget(
-                              path: DrawableAssets.icCross,
-                              padding: EdgeInsets.only(
-                                  left: isSelectedLocalEn
-                                      ? context.resources.dimen.dp5
-                                      : 0,
-                                  right: isSelectedLocalEn
-                                      ? 0
-                                      : context.resources.dimen.dp5,
-                                  top: context.resources.dimen.dp5,
-                                  bottom: context.resources.dimen.dp15))
-                          .loadImageWithMoreTapArea,
+        child: Align(
+          alignment: Alignment.center,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: maxWidth ?? double.infinity),
+            child: Material(
+              type: MaterialType.card,
+              color: context.resources.color.colorWhite,
+              elevation: DialogTheme.of(context).elevation ?? 4,
+              shadowColor: DialogTheme.of(context).shadowColor,
+              surfaceTintColor: DialogTheme.of(context).surfaceTintColor,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(
+                      Radius.circular(context.resources.dimen.dp5))),
+              clipBehavior: Clip.none,
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (showClose)
+                      Align(
+                        alignment: Alignment.topRight,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: ImageWidget(
+                                  path: DrawableAssets.icCross,
+                                  padding: EdgeInsets.only(
+                                      left: isSelectedLocalEn
+                                          ? context.resources.dimen.dp5
+                                          : 0,
+                                      right: isSelectedLocalEn
+                                          ? 0
+                                          : context.resources.dimen.dp5,
+                                      top: context.resources.dimen.dp5,
+                                      bottom: context.resources.dimen.dp15))
+                              .loadImageWithMoreTapArea,
+                        ),
+                      ),
+                    widget,
+                    SizedBox(
+                      height: context.resources.dimen.dp10,
                     ),
-                  ),
-                widget,
-                SizedBox(
-                  height: context.resources.dimen.dp10,
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),

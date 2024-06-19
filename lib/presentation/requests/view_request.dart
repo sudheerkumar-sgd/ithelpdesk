@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
@@ -7,6 +9,8 @@ import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dropdown_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/item_service_steps.dart';
 import 'package:ithelpdesk/presentation/common_widgets/right_icon_text_widget.dart';
+import 'package:ithelpdesk/presentation/requests/widgets/ticket_transfer_widget.dart';
+import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 import 'package:page_transition/page_transition.dart';
 
 class ViewRequest extends BaseScreenWidget {
@@ -22,10 +26,166 @@ class ViewRequest extends BaseScreenWidget {
   final ValueNotifier _subjectChanged = ValueNotifier(null);
   final ValueNotifier _isChargeable = ValueNotifier(false);
 
+  Widget _getDataForm(BuildContext context, int ticketType) {
+    final resources = context.resources;
+    return Container(
+      padding: EdgeInsets.symmetric(
+          vertical: resources.dimen.dp15, horizontal: resources.dimen.dp20),
+      color: resources.color.colorWhite,
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                  child: DropDownWidget(
+                list: const [
+                  'Reset Password',
+                  'System Update',
+                  'Network access'
+                ],
+                labelText: resources.string.subCategory,
+                borderRadius: 0,
+                fillColor: resources.color.colorWhite,
+              )),
+              SizedBox(
+                width: ticketType == 2
+                    ? resources.dimen.dp20
+                    : resources.dimen.dp40,
+              ),
+              if (ticketType == 2) ...[
+                Expanded(
+                    child: DropDownWidget(
+                  list: const ['High', 'Medium', 'Low'],
+                  labelText: resources.string.issueType,
+                  borderRadius: 0,
+                  fillColor: resources.color.colorWhite,
+                )),
+                SizedBox(width: resources.dimen.dp20),
+              ],
+              Expanded(
+                  child: DropDownWidget(
+                list: const ['High', 'Medium', 'Low'],
+                labelText: resources.string.priority,
+                borderRadius: 0,
+                fillColor: resources.color.colorWhite,
+              )),
+            ],
+          ),
+          SizedBox(
+            height: resources.dimen.dp10,
+          ),
+          RightIconTextWidget(
+            labelText: resources.string.contactNoTelephoneExt,
+            fillColor: resources.color.colorWhite,
+            borderSide: BorderSide(
+                color: context.resources.color.sideBarItemUnselected, width: 1),
+            borderRadius: 0,
+          ),
+          SizedBox(
+            height: resources.dimen.dp10,
+          ),
+          if (ticketType == 2) ...[
+            DropDownWidget(
+              list: const ['High', 'Medium', 'Low'],
+              labelText: resources.string.serviceName,
+              borderRadius: 0,
+              fillColor: resources.color.colorWhite,
+            ),
+            SizedBox(
+              height: resources.dimen.dp10,
+            ),
+            RightIconTextWidget(
+              labelText: resources.string.requestNo,
+              fillColor: resources.color.colorWhite,
+              borderSide: BorderSide(
+                  color: context.resources.color.sideBarItemUnselected,
+                  width: 1),
+              borderRadius: 0,
+            ),
+            SizedBox(
+              height: resources.dimen.dp10,
+            ),
+          ],
+          DropDownWidget(
+            list: const ['High', 'Medium', 'Low', 'other'],
+            labelText: resources.string.subject,
+            borderRadius: 0,
+            fillColor: resources.color.colorWhite,
+            callback: (value) {
+              _subjectChanged.value = value;
+            },
+          ),
+          ValueListenableBuilder(
+              valueListenable: _subjectChanged,
+              builder: (context, value, child) {
+                return value == 'other'
+                    ? Padding(
+                        padding: EdgeInsets.only(top: resources.dimen.dp10),
+                        child: RightIconTextWidget(
+                          fillColor: resources.color.colorWhite,
+                          borderSide: BorderSide(
+                              color:
+                                  context.resources.color.sideBarItemUnselected,
+                              width: 1),
+                          borderRadius: 0,
+                        ),
+                      )
+                    : const SizedBox();
+              }),
+          SizedBox(
+            height: resources.dimen.dp10,
+          ),
+          RightIconTextWidget(
+            labelText: resources.string.description,
+            fillColor: resources.color.colorWhite,
+            maxLines: 8,
+            borderSide: BorderSide(
+                color: context.resources.color.sideBarItemUnselected, width: 1),
+            borderRadius: 0,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _getStatusWidget(
+      BuildContext context, List<Map<String, String>> steps) {
+    final resources = context.resources;
+    return Container(
+      color: resources.color.colorWhite,
+      padding: EdgeInsets.symmetric(
+          vertical: resources.dimen.dp15, horizontal: resources.dimen.dp20),
+      margin:
+          EdgeInsets.only(left: isDesktop(context) ? resources.dimen.dp20 : 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            resources.string.latestUpdate,
+            style: context.textFontWeight600,
+          ),
+          SizedBox(
+            height: resources.dimen.dp20,
+          ),
+          for (int i = 0; i < steps.length; i++) ...[
+            ItemServiceSteps(
+              stepColor: i < steps.length - 1
+                  ? resources.color.colorGreen26B757
+                  : resources.color.pending,
+              stepText: steps[i]['name'] ?? '',
+              stepSubText: '${steps[i]['title']}\n23 March 2024, 11:00 AM',
+              isLastStep: i == steps.length - 1,
+            )
+          ]
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final resources = context.resources;
-    const value = 2;
+    const ticketType = 2;
     final steps = [
       {
         'name': 'Sudheer Kumar Akula',
@@ -105,7 +265,7 @@ class ViewRequest extends BaseScreenWidget {
                       ),
                     ),
                     Expanded(
-                      flex: 1,
+                      flex: isDesktop(context) ? 1 : 0,
                       child: Padding(
                         padding: EdgeInsets.only(left: resources.dimen.dp20),
                         child: Row(
@@ -133,172 +293,27 @@ class ViewRequest extends BaseScreenWidget {
                   height: resources.dimen.dp10,
                 ),
                 IntrinsicHeight(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        flex: 3,
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                              vertical: resources.dimen.dp15,
-                              horizontal: resources.dimen.dp20),
-                          color: resources.color.colorWhite,
-                          child: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                      child: DropDownWidget(
-                                    list: const [
-                                      'Reset Password',
-                                      'System Update',
-                                      'Network access'
-                                    ],
-                                    labelText: resources.string.subCategory,
-                                    borderRadius: 0,
-                                    fillColor: resources.color.colorWhite,
-                                  )),
-                                  SizedBox(
-                                    width: value == 2
-                                        ? resources.dimen.dp20
-                                        : resources.dimen.dp40,
-                                  ),
-                                  if (value == 2) ...[
-                                    Expanded(
-                                        child: DropDownWidget(
-                                      list: const ['High', 'Medium', 'Low'],
-                                      labelText: resources.string.issueType,
-                                      borderRadius: 0,
-                                      fillColor: resources.color.colorWhite,
-                                    )),
-                                    SizedBox(width: resources.dimen.dp20),
-                                  ],
-                                  Expanded(
-                                      child: DropDownWidget(
-                                    list: const ['High', 'Medium', 'Low'],
-                                    labelText: resources.string.priority,
-                                    borderRadius: 0,
-                                    fillColor: resources.color.colorWhite,
-                                  )),
-                                ],
-                              ),
-                              SizedBox(
-                                height: resources.dimen.dp10,
-                              ),
-                              RightIconTextWidget(
-                                labelText:
-                                    resources.string.contactNoTelephoneExt,
-                                fillColor: resources.color.colorWhite,
-                                borderSide: BorderSide(
-                                    color: context
-                                        .resources.color.sideBarItemUnselected,
-                                    width: 1),
-                                borderRadius: 0,
-                              ),
-                              SizedBox(
-                                height: resources.dimen.dp10,
-                              ),
-                              if (value == 2) ...[
-                                DropDownWidget(
-                                  list: const ['High', 'Medium', 'Low'],
-                                  labelText: resources.string.serviceName,
-                                  borderRadius: 0,
-                                  fillColor: resources.color.colorWhite,
-                                ),
-                                SizedBox(
-                                  height: resources.dimen.dp10,
-                                ),
-                                RightIconTextWidget(
-                                  labelText: resources.string.requestNo,
-                                  fillColor: resources.color.colorWhite,
-                                  borderSide: BorderSide(
-                                      color: context.resources.color
-                                          .sideBarItemUnselected,
-                                      width: 1),
-                                  borderRadius: 0,
-                                ),
-                                SizedBox(
-                                  height: resources.dimen.dp10,
-                                ),
-                              ],
-                              DropDownWidget(
-                                list: const ['High', 'Medium', 'Low', 'other'],
-                                labelText: resources.string.subject,
-                                borderRadius: 0,
-                                fillColor: resources.color.colorWhite,
-                                callback: (value) {
-                                  _subjectChanged.value = value;
-                                },
-                              ),
-                              ValueListenableBuilder(
-                                  valueListenable: _subjectChanged,
-                                  builder: (context, value, child) {
-                                    return value == 'other'
-                                        ? Padding(
-                                            padding: EdgeInsets.only(
-                                                top: resources.dimen.dp10),
-                                            child: RightIconTextWidget(
-                                              fillColor:
-                                                  resources.color.colorWhite,
-                                              borderSide: BorderSide(
-                                                  color: context.resources.color
-                                                      .sideBarItemUnselected,
-                                                  width: 1),
-                                              borderRadius: 0,
-                                            ),
-                                          )
-                                        : const SizedBox();
-                                  }),
-                              SizedBox(
-                                height: resources.dimen.dp10,
-                              ),
-                              RightIconTextWidget(
-                                labelText: resources.string.description,
-                                fillColor: resources.color.colorWhite,
-                                maxLines: 8,
-                                borderSide: BorderSide(
-                                    color: context
-                                        .resources.color.sideBarItemUnselected,
-                                    width: 1),
-                                borderRadius: 0,
-                              ),
-                            ],
-                          ),
+                  child: isDesktop(context)
+                      ? Row(
+                          children: [
+                            Expanded(
+                              child: _getDataForm(context, ticketType),
+                            ),
+                            SizedBox(
+                              width: 280,
+                              child: _getStatusWidget(context, steps),
+                            )
+                          ],
+                        )
+                      : Column(
+                          children: [
+                            _getStatusWidget(context, steps),
+                            SizedBox(
+                              height: resources.dimen.dp20,
+                            ),
+                            _getDataForm(context, ticketType),
+                          ],
                         ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          color: resources.color.colorWhite,
-                          padding: EdgeInsets.symmetric(
-                              vertical: resources.dimen.dp15,
-                              horizontal: resources.dimen.dp20),
-                          margin: EdgeInsets.only(left: resources.dimen.dp20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                resources.string.latestUpdate,
-                                style: context.textFontWeight600,
-                              ),
-                              SizedBox(
-                                height: resources.dimen.dp20,
-                              ),
-                              for (int i = 0; i < steps.length; i++) ...[
-                                ItemServiceSteps(
-                                  stepColor: i < steps.length - 1
-                                      ? resources.color.colorGreen26B757
-                                      : resources.color.pending,
-                                  stepText: steps[i]['name'] ?? '',
-                                  stepSubText:
-                                      '${steps[i]['title']}\n23 March 2024, 11:00 AM',
-                                  isLastStep: i == steps.length - 1,
-                                )
-                              ]
-                            ],
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
                 ),
                 SizedBox(
                   height: resources.dimen.dp20,
@@ -359,22 +374,29 @@ class ViewRequest extends BaseScreenWidget {
                         children: [
                           for (int r = 0; r < actionButtonColumns; r++) ...[
                             Expanded(
-                              child: ActionButtonWidget(
-                                text: (actionButtons[
-                                                r + (c * actionButtonColumns)]
-                                            ['name'] ??
-                                        '')
-                                    .toString(),
-                                color:
-                                    actionButtons[r + (c * actionButtonColumns)]
-                                        ['color'] as Color,
-                                radious: 0,
-                                textColor:
-                                    r == 0 ? resources.color.textColor : null,
-                                textSize: resources.fontSize.dp12,
-                                padding: EdgeInsets.symmetric(
-                                    vertical: resources.dimen.dp7,
-                                    horizontal: resources.dimen.dp10),
+                              child: InkWell(
+                                onTap: () {
+                                  Dialogs.showDialogWithClose(
+                                      context, TicketTransferWidget(),
+                                      maxWidth: 300);
+                                },
+                                child: ActionButtonWidget(
+                                  text: (actionButtons[
+                                                  r + (c * actionButtonColumns)]
+                                              ['name'] ??
+                                          '')
+                                      .toString(),
+                                  color: actionButtons[
+                                          r + (c * actionButtonColumns)]
+                                      ['color'] as Color,
+                                  radious: 0,
+                                  textColor:
+                                      r == 0 ? resources.color.textColor : null,
+                                  textSize: resources.fontSize.dp12,
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: resources.dimen.dp7,
+                                      horizontal: resources.dimen.dp10),
+                                ),
                               ),
                             ),
                             if (r < actionButtonColumns - 1) ...[
