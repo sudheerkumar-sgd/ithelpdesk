@@ -40,6 +40,9 @@ class DrawableAssets {
   static const icClosedRequests = '${drawablePath}ic_closed_requests.svg';
   static const icNoOfRequests = '${drawablePath}ic_no._of_requests.svg';
   static const icPlusCircle = '${drawablePath}ic_plus_circle.svg';
+  static const icMessage = '${drawablePath}ic_message.svg';
+  static const icView = '${drawablePath}ic_view.svg';
+  static const icDelete = '${drawablePath}ic_delete.svg';
 
   static String getCloseDrawable(BuildContext context) {
     return DrawableAssets.icClose;

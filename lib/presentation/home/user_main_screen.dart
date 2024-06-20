@@ -1,9 +1,7 @@
 // ignore_for_file: must_be_immutable
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
-import 'package:ithelpdesk/core/common/log.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/presentation/common_widgets/alert_dialog_widget.dart';
@@ -11,7 +9,9 @@ import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/msearch_user_app_bar.dart';
 import 'package:ithelpdesk/presentation/common_widgets/search_user_app_bar.dart';
 import 'package:ithelpdesk/presentation/common_widgets/side_bar.dart';
+import 'package:ithelpdesk/presentation/directory/directory_navigator_screen.dart';
 import 'package:ithelpdesk/presentation/home/user_home_navigator_screen.dart';
+import 'package:ithelpdesk/presentation/reports/reports_navigator_screen.dart';
 import 'package:ithelpdesk/presentation/utils/NavbarNotifier.dart';
 import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 import 'package:ithelpdesk/res/resources.dart';
@@ -57,6 +57,12 @@ class _MainScreenState extends State<UserMainScreen> {
       currentScreen?.doDispose();
     }
     switch (index) {
+      case 0:
+        currentScreen = UserHomeNavigatorScreen();
+      case 1:
+        currentScreen = ReportsNavigatorScreen();
+      case 2:
+        currentScreen = DirectoryNavigatorScreen();
       default:
         currentScreen = UserHomeNavigatorScreen();
     }
@@ -117,7 +123,9 @@ class _MainScreenState extends State<UserMainScreen> {
         drawer: SizedBox(
           width: 200,
           child: SideBar(
-            onItemSelected: (p0) {},
+            onItemSelected: (p0) {
+              _onItemTapped(p0);
+            },
           ),
         ),
         body: LayoutBuilder(builder: (context, size) {
@@ -129,7 +137,9 @@ class _MainScreenState extends State<UserMainScreen> {
                 SizedBox(
                   width: 150,
                   child: SideBar(
-                    onItemSelected: (p0) {},
+                    onItemSelected: (p0) {
+                      _onItemTapped(p0);
+                    },
                   ),
                 ),
               Expanded(

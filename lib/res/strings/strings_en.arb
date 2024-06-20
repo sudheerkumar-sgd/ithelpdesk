@@ -74,6 +74,15 @@
     "employee":"Employee",
     "selectDepartment":"Select Department",
     "selectEmployeeName":"Select Employee Name",
+    "activeRequests":"Active\nRequests",
+    "dueRequests":"Due\nRequests",
+    "allRequests":"All\nRequests",
+    "export":"Export",
+    "print":"Print",
+    "designation":"Designation",
+    "emailID":"Email ID",
+    "itSupportDirecotry":"IT Support Direcotry",
+    "itSupportDirecotryDes":"Umm Al Quwain Department - IT Support Direcotry",
     "home":"Home"
     
 }

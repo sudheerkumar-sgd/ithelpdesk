@@ -9,6 +9,7 @@ class ActionButtonWidget extends StatelessWidget {
   final Color? color;
   final Color? textColor;
   final double? textSize;
+  final int? maxLines;
   final Decoration? decoration;
   final double? radious;
   final EdgeInsets? padding;
@@ -21,6 +22,7 @@ class ActionButtonWidget extends StatelessWidget {
       this.decoration,
       this.textColor,
       this.textSize,
+      this.maxLines,
       super.key});
 
   @override
@@ -38,6 +40,7 @@ class ActionButtonWidget extends StatelessWidget {
           ).roundedCornerBox,
       child: Text(
         text,
+        maxLines: maxLines,
         style: context.textFontWeight600
             .onFontSize(textSize ?? context.resources.fontSize.dp14)
             .onColor(textColor ?? context.resources.color.colorWhite),

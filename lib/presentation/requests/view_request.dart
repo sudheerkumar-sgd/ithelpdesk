@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
@@ -378,7 +376,7 @@ class ViewRequest extends BaseScreenWidget {
                                 onTap: () {
                                   Dialogs.showDialogWithClose(
                                       context, TicketTransferWidget(),
-                                      maxWidth: 300);
+                                      maxWidth: 350);
                                 },
                                 child: ActionButtonWidget(
                                   text: (actionButtons[

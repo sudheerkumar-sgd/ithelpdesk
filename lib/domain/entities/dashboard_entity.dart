@@ -16,7 +16,7 @@ class TicketEntity extends BaseEntity {
   @override
   List<Object?> get props => [id];
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson({bool showActionButtons = false}) => {
         "id": id ?? '',
         "employeeName": employeeName ?? '',
         "subject": subject ?? '',
@@ -25,12 +25,14 @@ class TicketEntity extends BaseEntity {
         "assignee": assignee ?? '',
         "department": department ?? '',
         "createDate": createDate ?? '',
+        "showActionButtons": showActionButtons,
       };
-  Map<String, dynamic> toMobileJson() => {
+  Map<String, dynamic> toMobileJson({bool showActionButtons = false}) => {
         "id": id ?? '',
         "subject": subject ?? '',
         "status": status ?? '',
         "priority": priority ?? '',
         "createDate": createDate ?? '',
+        "showActionButtons": showActionButtons,
       };
 }

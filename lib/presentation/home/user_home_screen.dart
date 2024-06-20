@@ -13,45 +13,15 @@ import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart
 import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dropdown_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
+import 'package:ithelpdesk/presentation/common_widgets/report_list_widget.dart';
 import 'package:ithelpdesk/presentation/requests/create_new_request.dart';
 import 'package:ithelpdesk/presentation/requests/view_request.dart';
-import 'package:ithelpdesk/res/drawables/background_box_decoration.dart';
 import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
 
 class UserHomeScreen extends BaseScreenWidget {
   UserHomeScreen({super.key});
   late FocusNode requestStatusFocusNode;
-  ServicesBloc _servicesBloc = sl<ServicesBloc>();
-
-  void onRequestValueChanged(String value) {
-    if (value.trim().length == 6) {
-      requestStatusFocusNode.canRequestFocus = !requestStatusFocusNode.hasFocus;
-    }
-  }
-
-  List<Widget> _getTicketData(BuildContext context, TicketEntity ticketEntity) {
-    final list = List<Widget>.empty(growable: true);
-    (isDesktop(context) ? ticketEntity.toJson() : ticketEntity.toMobileJson())
-        .forEach((key, value) {
-      list.add(InkWell(
-        onTap: () {
-          ViewRequest.start(context);
-        },
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: context.resources.dimen.dp20),
-          child: Text(
-            '$value',
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: context.textFontWeight600
-                .onFontSize(context.resources.fontSize.dp10),
-          ),
-        ),
-      ));
-    });
-    return list;
-  }
+  final ServicesBloc _servicesBloc = sl<ServicesBloc>();
 
   Widget getLineChart(BuildContext context) {
     final resources = context.resources;
@@ -494,38 +464,13 @@ class UserHomeScreen extends BaseScreenWidget {
               SizedBox(
                 height: resources.dimen.dp20,
               ),
-              Table(
-                columnWidths: ticketsTableColunwidths,
-                children: [
-                  TableRow(
-                      children: List.generate(
-                          ticketsHeaderData.length,
-                          (index) => Padding(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: resources.dimen.dp10),
-                                child: Text(
-                                  ticketsHeaderData[index],
-                                  textAlign: TextAlign.center,
-                                  style: context.textFontWeight600
-                                      .onColor(resources.color.textColorLight)
-                                      .onFontSize(resources.fontSize.dp10),
-                                ),
-                              ))),
-                  for (var i = 0; i < ticketsData.length; i++) ...[
-                    TableRow(
-                        decoration: BackgroundBoxDecoration(
-                                boxColor: resources.color.colorWhite,
-                                boxBorder: Border(
-                                    top: BorderSide(
-                                        color: resources.color.appScaffoldBg,
-                                        width: 5),
-                                    bottom: BorderSide(
-                                        color: resources.color.appScaffoldBg,
-                                        width: 5)))
-                            .roundedCornerBox,
-                        children: _getTicketData(context, ticketsData[i])),
-                  ]
-                ],
+              ReportListWidget(
+                ticketsHeaderData: ticketsHeaderData,
+                ticketsData: ticketsData,
+                ticketsTableColunwidths: ticketsTableColunwidths,
+                onTicketSelected: (p0) {
+                  ViewRequest.start(context);
+                },
               )
             ],
           ),

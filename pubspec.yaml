@@ -127,6 +127,9 @@ flutter:
      - assets/images/ic_plus_circle.svg
      - assets/images/ic_close_circle.svg
      - assets/images/ic_cross.svg
+     - assets/images/ic_message.svg
+     - assets/images/ic_view.svg
+     - assets/images/ic_delete.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

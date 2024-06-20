@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:ithelpdesk/presentation/directory/directory_navigator_screen.dart';
 import 'package:ithelpdesk/presentation/home/user_home_navigator_screen.dart';
+import 'package:ithelpdesk/presentation/reports/reports_navigator_screen.dart';
 
 class NavbarNotifier extends ChangeNotifier {
   int _index = 0;
@@ -29,6 +31,20 @@ class NavbarNotifier extends ChangeNotifier {
         if (UserHomeNavigatorScreen.homeKey.currentState != null &&
             UserHomeNavigatorScreen.homeKey.currentState!.canPop()) {
           UserHomeNavigatorScreen.homeKey.currentState!.maybePop();
+          exitingApp = false;
+        }
+        break;
+      case 1:
+        if (ReportsNavigatorScreen.reportKey.currentState != null &&
+            ReportsNavigatorScreen.reportKey.currentState!.canPop()) {
+          ReportsNavigatorScreen.reportKey.currentState!.maybePop();
+          exitingApp = false;
+        }
+        break;
+      case 2:
+        if (DirectoryNavigatorScreen.directoryKey.currentState != null &&
+            DirectoryNavigatorScreen.directoryKey.currentState!.canPop()) {
+          DirectoryNavigatorScreen.directoryKey.currentState!.maybePop();
           exitingApp = false;
         }
         break;

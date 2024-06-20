@@ -70,17 +70,22 @@ class TicketTransferWidget extends StatelessWidget {
         ),
         DropDownWidget(
             isEnabled: true,
-            list: const ["test", "test2", "test2"],
+            list: const ["test", "test2", "test3"],
             labelText: resources.string.department,
-            hintText: resources.string.selectDepartment),
+            hintText: resources.string.selectDepartment,
+            fillColor: resources.color.colorWhite,
+            borderRadius: 0),
         SizedBox(
           height: resources.dimen.dp10,
         ),
         DropDownWidget(
-            isEnabled: true,
-            list: const ["test", "test2", "test2"],
-            labelText: resources.string.employee,
-            hintText: resources.string.selectEmployeeName),
+          isEnabled: true,
+          list: const ["test", "test2", "test3"],
+          labelText: resources.string.employee,
+          hintText: resources.string.selectEmployeeName,
+          fillColor: resources.color.colorWhite,
+          borderRadius: 0,
+        ),
         SizedBox(
           height: resources.dimen.dp20,
         ),
