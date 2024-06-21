@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
-import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
 import 'package:ithelpdesk/domain/entities/directory_entity.dart';
 import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
@@ -92,7 +91,7 @@ class DirectoryScreen extends BaseScreenWidget {
                   context.textFontWeight600.onFontSize(resources.fontSize.dp10),
             ),
             SizedBox(
-              width: resources.dimen.dp5,
+              width: resources.dimen.dp10,
             ),
             Expanded(
               child: DropDownWidget(
@@ -102,6 +101,7 @@ class DirectoryScreen extends BaseScreenWidget {
                   'MD',
                   'DED',
                 ],
+                hintText: resources.string.selectDepartment,
                 iconSize: 20,
                 fontStyle: context.textFontWeight400
                     .onFontSize(resources.fontSize.dp10),

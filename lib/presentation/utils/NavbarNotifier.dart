@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:ithelpdesk/presentation/directory/directory_navigator_screen.dart';
 import 'package:ithelpdesk/presentation/home/user_home_navigator_screen.dart';
+import 'package:ithelpdesk/presentation/profile/profile_navigator_screen.dart';
 import 'package:ithelpdesk/presentation/reports/reports_navigator_screen.dart';
 
 class NavbarNotifier extends ChangeNotifier {
@@ -45,6 +46,13 @@ class NavbarNotifier extends ChangeNotifier {
         if (DirectoryNavigatorScreen.directoryKey.currentState != null &&
             DirectoryNavigatorScreen.directoryKey.currentState!.canPop()) {
           DirectoryNavigatorScreen.directoryKey.currentState!.maybePop();
+          exitingApp = false;
+        }
+        break;
+      case 3:
+        if (ProfileNavigatorScreen.profileKey.currentState != null &&
+            ProfileNavigatorScreen.profileKey.currentState!.canPop()) {
+          ProfileNavigatorScreen.profileKey.currentState!.maybePop();
           exitingApp = false;
         }
         break;

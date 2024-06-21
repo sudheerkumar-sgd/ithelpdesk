@@ -83,6 +83,12 @@
     "emailID":"Email ID",
     "itSupportDirecotry":"IT Support Direcotry",
     "itSupportDirecotryDes":"Umm Al Quwain Department - IT Support Direcotry",
+    "userProfile":"User Profile",
+    "fullName":"Full Name",
+    "title":"Title",
+    "managerName":"Manager Name",
+    "yearOfService":"Year of Service",
+    "telephoneExt":"Telephone Ext",
     "home":"Home"
     
 }

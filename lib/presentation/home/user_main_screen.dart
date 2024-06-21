@@ -11,6 +11,7 @@ import 'package:ithelpdesk/presentation/common_widgets/search_user_app_bar.dart'
 import 'package:ithelpdesk/presentation/common_widgets/side_bar.dart';
 import 'package:ithelpdesk/presentation/directory/directory_navigator_screen.dart';
 import 'package:ithelpdesk/presentation/home/user_home_navigator_screen.dart';
+import 'package:ithelpdesk/presentation/profile/profile_navigator_screen.dart';
 import 'package:ithelpdesk/presentation/reports/reports_navigator_screen.dart';
 import 'package:ithelpdesk/presentation/utils/NavbarNotifier.dart';
 import 'package:ithelpdesk/presentation/utils/dialogs.dart';
@@ -63,6 +64,8 @@ class _MainScreenState extends State<UserMainScreen> {
         currentScreen = ReportsNavigatorScreen();
       case 2:
         currentScreen = DirectoryNavigatorScreen();
+      case 3:
+        currentScreen = ProfileNavigatorScreen();
       default:
         currentScreen = UserHomeNavigatorScreen();
     }
