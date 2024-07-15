@@ -12,12 +12,12 @@ class OnLoading extends ServicesState {
   List<Object?> get props => [];
 }
 
-class OnServicesSuccess extends ServicesState {
-  final ApiEntity<ServiceCategoryListEntity> serviceCategoriesEntity;
+class OnDashboardSuccess extends ServicesState {
+  final ApiEntity<DashboardEntity> dashboardEntity;
 
-  OnServicesSuccess({required this.serviceCategoriesEntity});
+  OnDashboardSuccess({required this.dashboardEntity});
   @override
-  List<Object?> get props => [serviceCategoriesEntity];
+  List<Object?> get props => [dashboardEntity];
 }
 
 class OnMostUsedServicesSuccess extends ServicesState {

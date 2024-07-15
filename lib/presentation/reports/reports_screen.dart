@@ -171,28 +171,17 @@ class ReportsScreen extends BaseScreenWidget {
             5: const FlexColumnWidth(3),
           };
     final ticketsData = [
-      TicketEntity(1, 'Ujjawal Jha', 'Network Notworking', 'pending', 'high',
-          'Syed', 'SGD', '12-05-2023'),
-      TicketEntity(2, 'Ujjawal Jha', 'Network Notworking', 'pending', 'high',
-          'Mustak', 'SGD', '12-05-2023'),
-      TicketEntity(3, 'Mustak', 'Network Notworking', 'pending', 'high',
-          'Akbar', 'SGD', '12-05-2023'),
-      TicketEntity(4, 'Ujjawal Jha', 'Network Notworking', 'pending', 'high',
-          'Syed', 'SGD', '12-05-2023'),
-      TicketEntity(5, 'Kamran', 'Network Notworking', 'pending', 'high', 'Syed',
-          'SGD', '12-05-2023'),
-      TicketEntity(6, 'Sudheer Kumar A', 'Network Notworking', 'pending',
-          'high', 'Tarek', 'SGD', '12-05-2023'),
-      TicketEntity(7, 'Tarek', 'Network Notworking', 'pending', 'high', 'Syed',
-          'SGD', '12-05-2023'),
-      TicketEntity(8, 'Ibrahim', 'Network Notworking', 'pending', 'high',
-          'Mooza', 'SGD', '12-05-2023'),
-      TicketEntity(9, 'Anu Chandrika Surat', 'Network Notworking', 'pending',
-          'high', 'Syed', 'SGD', '12-05-2023'),
-      TicketEntity(10, 'Mooza Binyeem', 'Network Notworking', 'pending', 'high',
-          'Syed', 'SGD', '12-05-2023'),
-      TicketEntity(11, 'Abdul Muneeb', 'Network Notworking', 'pending', 'high',
-          'Syed', 'SGD', '12-05-2023'),
+      TicketEntity(),
+      TicketEntity(),
+      TicketEntity(),
+      TicketEntity(),
+      TicketEntity(),
+      TicketEntity(),
+      TicketEntity(),
+      TicketEntity(),
+      TicketEntity(),
+      TicketEntity(),
+      TicketEntity(),
     ];
 
     return Scaffold(
@@ -257,7 +246,7 @@ class ReportsScreen extends BaseScreenWidget {
               ),
               ReportListWidget(
                 ticketsHeaderData: ticketsHeaderData,
-                ticketsData: ticketsData,
+                ticketsData: [],
                 ticketsTableColunwidths: ticketsTableColunwidths,
                 showActionButtons: true,
               )

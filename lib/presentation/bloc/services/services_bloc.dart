@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/domain/entities/base_entity.dart';
+import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
 import 'package:ithelpdesk/domain/entities/login_entity.dart';
 import 'package:ithelpdesk/domain/entities/requests_entity.dart';
 import 'package:ithelpdesk/domain/entities/services_entity.dart';
@@ -16,12 +16,11 @@ class ServicesBloc extends Cubit<ServicesState> {
   final ServicesUseCase servicesUseCase;
   ServicesBloc({required this.servicesUseCase}) : super(Init());
 
-  Future<void> getServices() async {
+  Future<void> getDashboardData() async {
     emit(OnLoading());
     final result = await servicesUseCase.getDashboardData(requestParams: {});
     emit(result.fold((l) => OnApiError(message: _getErrorMessage(l)), (r) {
-      isServicesLoaded = true;
-      return OnServicesSuccess(serviceCategoriesEntity: r);
+      return OnDashboardSuccess(dashboardEntity: r);
     }));
   }
 

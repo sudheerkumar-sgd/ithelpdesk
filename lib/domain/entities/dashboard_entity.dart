@@ -2,29 +2,64 @@
 
 import 'package:ithelpdesk/domain/entities/base_entity.dart';
 
+class DashboardEntity extends BaseEntity {
+  int? id;
+  int? notAssignedRequests;
+  int? openRequests;
+  int? closedRequests;
+  int? totalRequests;
+  List<TicketsByMonthEntity>? ticketsByMonth;
+  List<TicketsByCategoryEntity>? ticketsByCategory;
+  List<TicketEntity>? latestTickets;
+}
+
+class TicketsByMonthEntity extends BaseEntity {
+  int? month;
+  int? count;
+}
+
+class TicketsByCategoryEntity extends BaseEntity {
+  int? category;
+  int? count;
+}
+
 class TicketEntity extends BaseEntity {
   int? id;
-  String? employeeName;
   String? subject;
-  String? status;
-  String? priority;
-  String? assignee;
-  String? department;
-  String? createDate;
-  TicketEntity(this.id, this.employeeName, this.subject, this.status,
-      this.priority, this.assignee, this.department, this.createDate);
-  @override
-  List<Object?> get props => [id];
+  int? categoryID;
+  int? subCategoryID;
+  String? date;
+  int? departmentID;
+  int? priority;
+  String? mobileNumber;
+  int? userID;
+  int? level;
+  int? assignedTo;
+  int? previousAssignee;
+  int? transferBy;
+  String? assignedDate;
+  String? forwardedDate;
+  bool? isChargeable;
+  bool? isDeleted;
+  String? dueDate;
+  String? finalComments;
+  int? status;
+  String? createdOn;
+  String? reopenedOn;
+  String? closedOn;
+  String? updatedOn;
+  int? requestType;
+  String? computerName;
 
   Map<String, dynamic> toJson({bool showActionButtons = false}) => {
         "id": id ?? '',
-        "employeeName": employeeName ?? '',
+        "employeeName": userID ?? '',
         "subject": subject ?? '',
         "status": status ?? '',
         "priority": priority ?? '',
-        "assignee": assignee ?? '',
-        "department": department ?? '',
-        "createDate": createDate ?? '',
+        "assignee": assignedTo ?? '',
+        "department": departmentID ?? '',
+        "createDate": createdOn ?? '',
         "showActionButtons": showActionButtons,
       };
   Map<String, dynamic> toMobileJson({bool showActionButtons = false}) => {
@@ -32,7 +67,7 @@ class TicketEntity extends BaseEntity {
         "subject": subject ?? '',
         "status": status ?? '',
         "priority": priority ?? '',
-        "createDate": createDate ?? '',
+        "createDate": createdOn ?? '',
         "showActionButtons": showActionButtons,
       };
 }

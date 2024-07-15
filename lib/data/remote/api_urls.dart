@@ -90,4 +90,4 @@ const String happinessMeterApiUrl =
 const String submitHappinessMeterApiUrl =
     ':$port56711/HappinessMeter/api/happinessMeterAnswer';
 
-const String dashboardApiUrl = 'WeatherForecast';
+const String dashboardApiUrl = 'Dashboard/GetDashboard';

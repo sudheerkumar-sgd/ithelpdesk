@@ -2,6 +2,7 @@
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/common/log.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
@@ -22,6 +23,11 @@ class UserHomeScreen extends BaseScreenWidget {
   UserHomeScreen({super.key});
   late FocusNode requestStatusFocusNode;
   final ServicesBloc _servicesBloc = sl<ServicesBloc>();
+
+  DashboardEntity? _dashboardEntity;
+  final ValueNotifier<bool> _onDataChange = ValueNotifier(false);
+  List<Map<String, Object>> _requestTypes = [];
+  List<TicketEntity> ticketsData = [];
 
   Widget getLineChart(BuildContext context) {
     final resources = context.resources;
@@ -201,30 +207,30 @@ class UserHomeScreen extends BaseScreenWidget {
   Widget build(BuildContext context) {
     final resources = context.resources;
     Future.delayed(Duration.zero, () {
-      _servicesBloc.getServices();
+      _servicesBloc.getDashboardData();
     });
     final requestTypesRows = isDesktop(context) ? 1 : 2;
     final requestTypesColumns = isDesktop(context) ? 4 : 2;
-    final requestTypes = [
+    _requestTypes = [
       {
         'name': resources.string.notAssignedRequests,
         'icon_path': DrawableAssets.icNotAssignedRequests,
-        'count': 4
+        'count': 0
       },
       {
         'name': resources.string.openRequests,
         'icon_path': DrawableAssets.icOpenRequests,
-        'count': 13
+        'count': 0
       },
       {
         'name': resources.string.closedRequests,
         'icon_path': DrawableAssets.icClosedRequests,
-        'count': 9
+        'count': 0
       },
       {
         'name': resources.string.noOfRequests,
         'icon_path': DrawableAssets.icNoOfRequests,
-        'count': 25
+        'count': 0
       },
     ];
 
@@ -259,220 +265,238 @@ class UserHomeScreen extends BaseScreenWidget {
             3: const FlexColumnWidth(2),
             4: const FlexColumnWidth(2),
           };
-    final ticketsData = [
-      TicketEntity(1, 'Ujjawal Jha', 'Network Notworking', 'pending', 'high',
-          'Syed', 'SGD', '12-05-2023'),
-      TicketEntity(2, 'Ujjawal Jha', 'Network Notworking', 'pending', 'high',
-          'Mustak', 'SGD', '12-05-2023'),
-      TicketEntity(3, 'Mustak', 'Network Notworking', 'pending', 'high',
-          'Akbar', 'SGD', '12-05-2023'),
-      TicketEntity(4, 'Ujjawal Jha', 'Network Notworking', 'pending', 'high',
-          'Syed', 'SGD', '12-05-2023'),
-      TicketEntity(5, 'Kamran', 'Network Notworking', 'pending', 'high', 'Syed',
-          'SGD', '12-05-2023'),
-      TicketEntity(6, 'Sudheer Kumar A', 'Network Notworking', 'pending',
-          'high', 'Tarek', 'SGD', '12-05-2023'),
-      TicketEntity(7, 'Tarek', 'Network Notworking', 'pending', 'high', 'Syed',
-          'SGD', '12-05-2023'),
-      TicketEntity(8, 'Ibrahim', 'Network Notworking', 'pending', 'high',
-          'Mooza', 'SGD', '12-05-2023'),
-      TicketEntity(9, 'Anu Chandrika Surat', 'Network Notworking', 'pending',
-          'high', 'Syed', 'SGD', '12-05-2023'),
-      TicketEntity(10, 'Mooza Binyeem', 'Network Notworking', 'pending', 'high',
-          'Syed', 'SGD', '12-05-2023'),
-      TicketEntity(11, 'Abdul Muneeb', 'Network Notworking', 'pending', 'high',
-          'Syed', 'SGD', '12-05-2023'),
-    ];
 
     return SafeArea(
         child: Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: context.resources.color.appScaffoldBg,
-      body: Padding(
-        padding: EdgeInsets.all(resources.dimen.dp20),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
+      body: BlocProvider(
+        create: (context) => _servicesBloc,
+        child: BlocListener<ServicesBloc, ServicesState>(
+          listener: (context, state) {
+            if (state is OnDashboardSuccess) {
+              _dashboardEntity = state.dashboardEntity.entity;
+              _requestTypes[0]['count'] =
+                  _dashboardEntity?.notAssignedRequests ?? 0;
+              _requestTypes[1]['count'] = _dashboardEntity?.openRequests ?? 0;
+              _requestTypes[2]['count'] = _dashboardEntity?.closedRequests ?? 0;
+              _requestTypes[3]['count'] = _dashboardEntity?.totalRequests ?? 0;
+              ticketsData = _dashboardEntity?.latestTickets ?? [];
+              _onDataChange.value = !(_onDataChange.value);
+            }
+          },
+          child: Padding(
+            padding: EdgeInsets.all(resources.dimen.dp20),
+            child: SingleChildScrollView(
+              child: Column(
                 children: [
-                  Flexible(
-                    flex: 2,
-                    child: Text.rich(
-                      TextSpan(
-                          text: '${resources.string.supportSummary}\n',
-                          style: context.textFontWeight600,
-                          children: [
-                            TextSpan(
-                                text: '${resources.string.supportSummaryDes}\n',
-                                style: context.textFontWeight400
-                                    .onFontSize(resources.fontSize.dp12)
-                                    .onColor(resources.color.textColorLight)
-                                    .onHeight(1))
-                          ]),
-                    ),
-                  ),
-                  Flexible(
-                    flex: 1,
-                    child: LayoutBuilder(builder: (context, size) {
-                      printLog(size.maxWidth);
-                      return InkWell(
-                        onTap: () {
-                          CreateNewRequest.start(context);
-                        },
-                        child: ActionButtonWidget(
-                          width: size.maxWidth < 210 ? 100 : null,
-                          text: size.maxWidth > 210
-                              ? resources.string.createNewRequest
-                              : resources.string.create,
-                          padding: EdgeInsets.symmetric(
-                              horizontal: size.maxWidth > 210
-                                  ? context.resources.dimen.dp30
-                                  : context.resources.dimen.dp10,
-                              vertical: context.resources.dimen.dp7),
-                        ),
-                      );
-                    }),
-                  )
-                ],
-              ),
-              SizedBox(
-                height: resources.dimen.dp20,
-              ),
-              for (var i = 0; i < requestTypesRows; i++) ...[
-                Row(
-                  children: List.generate(requestTypesColumns, (index) {
-                    final newIndex = index + (i * requestTypesColumns);
-                    return Expanded(
-                      child: InkWell(
-                        child: Container(
-                          color: resources.color.colorWhite,
-                          margin: EdgeInsets.only(
-                            left: index == requestTypesColumns - 1
-                                ? resources.dimen.dp15
-                                : index == 0
-                                    ? 0
-                                    : index == requestTypesColumns - 2
-                                        ? resources.dimen.dp15
-                                        : resources.dimen.dp5,
-                            right: index < requestTypesColumns - 2
-                                ? index == 0
-                                    ? resources.dimen.dp15
-                                    : resources.dimen.dp5
-                                : index < requestTypesColumns - 1
-                                    ? resources.dimen.dp5
-                                    : 0,
-                            top: i > 0 ? resources.dimen.dp20 : 0,
-                          ),
-                          padding: EdgeInsets.all(resources.dimen.dp10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Align(
-                                alignment: Alignment.topRight,
-                                child: ImageWidget(
-                                        path: requestTypes[newIndex]
-                                                ['icon_path']
-                                            .toString(),
-                                        width: 20,
-                                        height: 20)
-                                    .loadImage,
-                              ),
-                              Text(
-                                requestTypes[newIndex]['count'].toString(),
-                                textAlign: TextAlign.center,
-                                style: context.textFontWeight700
-                                    .onFontSize(resources.fontSize.dp16),
-                              ),
-                              Text(
-                                requestTypes[newIndex]['name'].toString(),
-                                textAlign: TextAlign.center,
-                                maxLines: 2,
-                                overflow: TextOverflow.visible,
-                                style: context.textFontWeight600
-                                    .onFontSize(resources.fontSize.dp10)
-                                    .onHeight(1.1),
-                              ),
-                            ],
-                          ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Flexible(
+                        flex: 2,
+                        child: Text.rich(
+                          TextSpan(
+                              text: '${resources.string.supportSummary}\n',
+                              style: context.textFontWeight600,
+                              children: [
+                                TextSpan(
+                                    text:
+                                        '${resources.string.supportSummaryDes}\n',
+                                    style: context.textFontWeight400
+                                        .onFontSize(resources.fontSize.dp12)
+                                        .onColor(resources.color.textColorLight)
+                                        .onHeight(1))
+                              ]),
                         ),
                       ),
-                    );
-                  }),
-                ),
-              ],
-              SizedBox(
-                height: resources.dimen.dp20,
-              ),
-              isDesktop(context)
-                  ? Row(
-                      children: [
-                        Flexible(flex: 4, child: getLineChart(context)),
-                        SizedBox(
-                          width: resources.dimen.dp20,
-                        ),
-                        Flexible(flex: 2, child: getPieChart(context))
-                      ],
-                    )
-                  : Column(
-                      children: [
-                        getLineChart(context),
-                        SizedBox(
-                          height: resources.dimen.dp20,
-                        ),
-                        getPieChart(context)
-                      ],
-                    ),
-              SizedBox(
-                height: resources.dimen.dp20,
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Text.rich(
-                      TextSpan(
-                          text: '${resources.string.latestTickets}\n',
-                          style: context.textFontWeight600
-                              .onFontSize(resources.fontSize.dp12),
+                      Flexible(
+                        flex: 1,
+                        child: LayoutBuilder(builder: (context, size) {
+                          printLog(size.maxWidth);
+                          return InkWell(
+                            onTap: () {
+                              CreateNewRequest.start(context);
+                            },
+                            child: ActionButtonWidget(
+                              width: size.maxWidth < 210 ? 100 : null,
+                              text: size.maxWidth > 210
+                                  ? resources.string.createNewRequest
+                                  : resources.string.create,
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: size.maxWidth > 210
+                                      ? context.resources.dimen.dp30
+                                      : context.resources.dimen.dp10,
+                                  vertical: context.resources.dimen.dp7),
+                            ),
+                          );
+                        }),
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    height: resources.dimen.dp20,
+                  ),
+                  ValueListenableBuilder(
+                      valueListenable: _onDataChange,
+                      builder: (context, onDataChange, child) {
+                        return Column(
                           children: [
-                            TextSpan(
-                                text: '${resources.string.latestTicketsDes}\n',
-                                style: context.textFontWeight400
-                                    .onFontSize(resources.fontSize.dp10)
-                                    .onColor(resources.color.textColorLight)
-                                    .onHeight(1))
-                          ]),
-                    ),
+                            for (var i = 0; i < requestTypesRows; i++) ...[
+                              Row(
+                                children:
+                                    List.generate(requestTypesColumns, (index) {
+                                  final newIndex =
+                                      index + (i * requestTypesColumns);
+                                  return Expanded(
+                                    child: InkWell(
+                                      child: Container(
+                                        color: resources.color.colorWhite,
+                                        margin: EdgeInsets.only(
+                                          left: index == requestTypesColumns - 1
+                                              ? resources.dimen.dp15
+                                              : index == 0
+                                                  ? 0
+                                                  : index ==
+                                                          requestTypesColumns -
+                                                              2
+                                                      ? resources.dimen.dp15
+                                                      : resources.dimen.dp5,
+                                          right: index < requestTypesColumns - 2
+                                              ? index == 0
+                                                  ? resources.dimen.dp15
+                                                  : resources.dimen.dp5
+                                              : index < requestTypesColumns - 1
+                                                  ? resources.dimen.dp5
+                                                  : 0,
+                                          top: i > 0 ? resources.dimen.dp20 : 0,
+                                        ),
+                                        padding: EdgeInsets.all(
+                                            resources.dimen.dp10),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.topRight,
+                                              child: ImageWidget(
+                                                      path: _requestTypes[
+                                                                  newIndex]
+                                                              ['icon_path']
+                                                          .toString(),
+                                                      width: 20,
+                                                      height: 20)
+                                                  .loadImage,
+                                            ),
+                                            Text(
+                                              _requestTypes[newIndex]['count']
+                                                  .toString(),
+                                              textAlign: TextAlign.center,
+                                              style: context.textFontWeight700
+                                                  .onFontSize(
+                                                      resources.fontSize.dp16),
+                                            ),
+                                            Text(
+                                              _requestTypes[newIndex]['name']
+                                                  .toString(),
+                                              textAlign: TextAlign.center,
+                                              maxLines: 2,
+                                              overflow: TextOverflow.visible,
+                                              style: context.textFontWeight600
+                                                  .onFontSize(
+                                                      resources.fontSize.dp10)
+                                                  .onHeight(1.1),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }),
+                              ),
+                            ],
+                          ],
+                        );
+                      }),
+                  SizedBox(
+                    height: resources.dimen.dp20,
                   ),
-                  Text(
-                    '${resources.string.sortBy}: ',
-                    style: context.textFontWeight600
-                        .onFontSize(resources.fontSize.dp10),
+                  isDesktop(context)
+                      ? Row(
+                          children: [
+                            Flexible(flex: 4, child: getLineChart(context)),
+                            SizedBox(
+                              width: resources.dimen.dp20,
+                            ),
+                            Flexible(flex: 2, child: getPieChart(context))
+                          ],
+                        )
+                      : Column(
+                          children: [
+                            getLineChart(context),
+                            SizedBox(
+                              height: resources.dimen.dp20,
+                            ),
+                            getPieChart(context)
+                          ],
+                        ),
+                  SizedBox(
+                    height: resources.dimen.dp20,
                   ),
-                  DropDownWidget<String>(
-                    width: 100,
-                    height: 28,
-                    list: const ['Created Date', 'priority', 'status'],
-                    iconSize: 20,
-                    fontStyle: context.textFontWeight400
-                        .onFontSize(resources.fontSize.dp10),
-                  )
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Text.rich(
+                          TextSpan(
+                              text: '${resources.string.latestTickets}\n',
+                              style: context.textFontWeight600
+                                  .onFontSize(resources.fontSize.dp12),
+                              children: [
+                                TextSpan(
+                                    text:
+                                        '${resources.string.latestTicketsDes}\n',
+                                    style: context.textFontWeight400
+                                        .onFontSize(resources.fontSize.dp10)
+                                        .onColor(resources.color.textColorLight)
+                                        .onHeight(1))
+                              ]),
+                        ),
+                      ),
+                      Text(
+                        '${resources.string.sortBy}: ',
+                        style: context.textFontWeight600
+                            .onFontSize(resources.fontSize.dp10),
+                      ),
+                      DropDownWidget<String>(
+                        width: 100,
+                        height: 28,
+                        list: const ['Created Date', 'priority', 'status'],
+                        iconSize: 20,
+                        fontStyle: context.textFontWeight400
+                            .onFontSize(resources.fontSize.dp10),
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    height: resources.dimen.dp20,
+                  ),
+                  ValueListenableBuilder(
+                      valueListenable: _onDataChange,
+                      builder: (context, onDataChange, child) {
+                        return ReportListWidget(
+                          ticketsHeaderData: ticketsHeaderData,
+                          ticketsData: ticketsData,
+                          ticketsTableColunwidths: ticketsTableColunwidths,
+                          onTicketSelected: (p0) {
+                            ViewRequest.start(context);
+                          },
+                        );
+                      })
                 ],
               ),
-              SizedBox(
-                height: resources.dimen.dp20,
-              ),
-              ReportListWidget(
-                ticketsHeaderData: ticketsHeaderData,
-                ticketsData: ticketsData,
-                ticketsTableColunwidths: ticketsTableColunwidths,
-                onTicketSelected: (p0) {
-                  ViewRequest.start(context);
-                },
-              )
-            ],
+            ),
           ),
         ),
       ),
