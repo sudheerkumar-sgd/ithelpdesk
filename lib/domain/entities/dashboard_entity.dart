@@ -14,8 +14,8 @@ class DashboardEntity extends BaseEntity {
 }
 
 class TicketsByMonthEntity extends BaseEntity {
-  int? month;
-  int? count;
+  double? month;
+  double? count;
 }
 
 class TicketsByCategoryEntity extends BaseEntity {
@@ -30,20 +30,22 @@ class TicketEntity extends BaseEntity {
   int? subCategoryID;
   String? date;
   int? departmentID;
-  int? priority;
+  String? departmentName;
+  String? priority;
   String? mobileNumber;
   int? userID;
-  int? level;
-  int? assignedTo;
+  String? creator;
+  String? level;
+  String? assignedTo;
   int? previousAssignee;
-  int? transferBy;
+  String? transferBy;
   String? assignedDate;
   String? forwardedDate;
   bool? isChargeable;
   bool? isDeleted;
   String? dueDate;
   String? finalComments;
-  int? status;
+  String? status;
   String? createdOn;
   String? reopenedOn;
   String? closedOn;
@@ -53,12 +55,12 @@ class TicketEntity extends BaseEntity {
 
   Map<String, dynamic> toJson({bool showActionButtons = false}) => {
         "id": id ?? '',
-        "employeeName": userID ?? '',
+        "employeeName": creator ?? '',
         "subject": subject ?? '',
         "status": status ?? '',
         "priority": priority ?? '',
         "assignee": assignedTo ?? '',
-        "department": departmentID ?? '',
+        "department": departmentName ?? '',
         "createDate": createdOn ?? '',
         "showActionButtons": showActionButtons,
       };

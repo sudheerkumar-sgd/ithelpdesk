@@ -54,8 +54,8 @@ class DashboardModel extends BaseModel {
 }
 
 class TicketsByMonthModel extends BaseModel {
-  int? month;
-  int? count;
+  double? month;
+  double? count;
 
   TicketsByMonthModel.fromJson(Map<String, dynamic> json) {
     month = json['month'];
@@ -111,20 +111,22 @@ class TicketsModel extends BaseModel {
   String? date;
   String? description;
   int? departmentID;
-  int? priority;
+  String? departmentName;
+  String? priority;
   String? mobileNumber;
   int? userID;
-  int? level;
-  int? assignedTo;
+  String? creator;
+  String? level;
+  String? assignedTo;
   int? previousAssignee;
-  int? transferBy;
+  String? transferBy;
   String? assignedDate;
   String? forwardedDate;
   bool? isChargeable;
   bool? isDeleted;
   String? dueDate;
   String? finalComments;
-  int? status;
+  String? status;
   String? createdOn;
   String? reopenedOn;
   String? closedOn;
@@ -142,9 +144,11 @@ class TicketsModel extends BaseModel {
     date = json['date'];
     description = json['description'];
     departmentID = json['departmentID'];
+    departmentName = json['departmentName'];
     priority = json['priority'];
     mobileNumber = json['mobileNumber'];
     userID = json['userID'];
+    creator = json['creator'];
     level = json['level'];
     assignedTo = json['assignedTo'];
     previousAssignee = json['previousAssignee'];
@@ -176,9 +180,11 @@ class TicketsModel extends BaseModel {
     ticketsEntity.date = date;
     ticketsEntity.description = description;
     ticketsEntity.departmentID = departmentID;
+    ticketsEntity.departmentName = departmentName;
     ticketsEntity.priority = priority;
     ticketsEntity.mobileNumber = mobileNumber;
     ticketsEntity.userID = userID;
+    ticketsEntity.creator = creator;
     ticketsEntity.level = level;
     ticketsEntity.assignedTo = assignedTo;
     ticketsEntity.previousAssignee = previousAssignee;

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
-import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
 import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dropdown_widget.dart';
@@ -170,19 +169,6 @@ class ReportsScreen extends BaseScreenWidget {
             4: const FlexColumnWidth(2),
             5: const FlexColumnWidth(3),
           };
-    final ticketsData = [
-      TicketEntity(),
-      TicketEntity(),
-      TicketEntity(),
-      TicketEntity(),
-      TicketEntity(),
-      TicketEntity(),
-      TicketEntity(),
-      TicketEntity(),
-      TicketEntity(),
-      TicketEntity(),
-      TicketEntity(),
-    ];
 
     return Scaffold(
       resizeToAvoidBottomInset: false,

@@ -20,6 +20,11 @@ class DioLoggingInterceptor extends InterceptorsWrapper {
     options.headers.addAll({
       HttpHeaders.contentTypeHeader: 'application/json',
       HttpHeaders.acceptHeader: "*/*",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Credentials": true,
+      "Access-Control-Allow-Headers":
+          "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS"
     });
     // }
 

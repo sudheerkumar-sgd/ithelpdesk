@@ -29,8 +29,17 @@ class UserHomeScreen extends BaseScreenWidget {
   List<Map<String, Object>> _requestTypes = [];
   List<TicketEntity> ticketsData = [];
 
-  Widget getLineChart(BuildContext context) {
+  Widget getLineChart(
+      BuildContext context, List<TicketsByMonthEntity> ticketsByMonthEntity) {
     final resources = context.resources;
+    final lineChartData = List<FlSpot>.empty(growable: true);
+    final tilesData = List<Widget>.empty(growable: true);
+    for (var element in ticketsByMonthEntity) {
+      lineChartData.add(FlSpot(element.month ?? 0, element.count ?? 0));
+      tilesData.add(Expanded(
+        child: Text(textAlign: TextAlign.right, '${element.month}'),
+      ));
+    }
     return Container(
       height: 350,
       color: resources.color.colorWhite,
@@ -73,10 +82,14 @@ class UserHomeScreen extends BaseScreenWidget {
             child: LineChart(
               LineChartData(
                 backgroundColor: resources.color.colorWhite,
-                titlesData: const FlTitlesData(
-                  topTitles: AxisTitles(),
-                  rightTitles: AxisTitles(),
-                ),
+                titlesData: FlTitlesData(
+                    topTitles: const AxisTitles(),
+                    rightTitles: const AxisTitles(),
+                    bottomTitles: AxisTitles(
+                      axisNameWidget: Row(
+                        children: tilesData,
+                      ),
+                    )),
                 borderData: FlBorderData(
                     show: true,
                     border: Border(
@@ -87,21 +100,7 @@ class UserHomeScreen extends BaseScreenWidget {
                 lineBarsData: [
                   LineChartBarData(
                       show: true,
-                      spots: const [
-                        FlSpot(0, 0),
-                        FlSpot(1, 10),
-                        FlSpot(2, 25),
-                        FlSpot(3, 50),
-                        FlSpot(4, 100),
-                        FlSpot(5, 50),
-                        FlSpot(6, 10),
-                        FlSpot(7, 70),
-                        FlSpot(8, 80),
-                        FlSpot(9, 10),
-                        FlSpot(10, 50),
-                        FlSpot(11, 30),
-                        FlSpot(12, 10),
-                      ],
+                      spots: lineChartData,
                       preventCurveOvershootingThreshold: 12,
                       isCurved: true,
                       preventCurveOverShooting: true,
@@ -115,14 +114,45 @@ class UserHomeScreen extends BaseScreenWidget {
     );
   }
 
-  Widget getPieChart(BuildContext context) {
+  Widget getPieChart(BuildContext context,
+      List<TicketsByCategoryEntity> ticketsByCategoryEntity) {
     final resources = context.resources;
-    final categoryData = [
-      {'name': 'Support', 'count': 30, 'color': Colors.orange},
-      {'name': 'IT Requests', 'count': 40, 'color': Colors.green},
-      {'name': 'Eservice', 'count': 20, 'color': Colors.blue},
-      {'name': 'System', 'count': 10, 'color': Colors.red},
-    ];
+    final categoryData = List.empty(growable: true);
+    var totalCount = 0;
+    for (var i = 0; i < ticketsByCategoryEntity.length; i++) {
+      switch (ticketsByCategoryEntity[i].category) {
+        case 1:
+          {
+            var item = {
+              'name': 'Support',
+              'count': ticketsByCategoryEntity[i].count ?? 0,
+              'color': Colors.orange
+            };
+            categoryData.add(item);
+            totalCount = (ticketsByCategoryEntity[i].count ?? 0) + totalCount;
+          }
+        case 2:
+          {
+            var item = {
+              'name': 'IT Requests',
+              'count': ticketsByCategoryEntity[i].count ?? 0,
+              'color': Colors.green
+            };
+            categoryData.add(item);
+            totalCount = (ticketsByCategoryEntity[i].count ?? 0) + totalCount;
+          }
+        case 3:
+          {
+            var item = {
+              'name': 'Eservice',
+              'count': ticketsByCategoryEntity[i].count ?? 0,
+              'color': Colors.blue
+            };
+            categoryData.add(item);
+            totalCount = (ticketsByCategoryEntity[i].count ?? 0) + totalCount;
+          }
+      }
+    }
     return Container(
       height: 350,
       width: double.infinity,
@@ -180,17 +210,18 @@ class UserHomeScreen extends BaseScreenWidget {
                                   textAlign: TextAlign.start,
                                   maxLines: 2,
                                   TextSpan(
-                                      text: '${categoryData[index]['count']}%\n'
-                                          .toString(),
+                                      text:
+                                          '${((categoryData[index]['count'] / totalCount) * 100).toStringAsFixed(0)}%\n'
+                                              .toString(),
                                       style: context.textFontWeight700
-                                          .onFontSize(resources.fontSize.dp10),
+                                          .onFontSize(resources.fontSize.dp12),
                                       children: [
                                         TextSpan(
                                             text: categoryData[index]['name']
                                                 .toString(),
                                             style: context.textFontWeight400
                                                 .onFontSize(
-                                                    resources.fontSize.dp8))
+                                                    resources.fontSize.dp10))
                                       ])),
                             ),
                           ],
@@ -395,7 +426,7 @@ class UserHomeScreen extends BaseScreenWidget {
                                               textAlign: TextAlign.center,
                                               style: context.textFontWeight700
                                                   .onFontSize(
-                                                      resources.fontSize.dp16),
+                                                      resources.fontSize.dp20),
                                             ),
                                             Text(
                                               _requestTypes[newIndex]['name']
@@ -422,25 +453,41 @@ class UserHomeScreen extends BaseScreenWidget {
                   SizedBox(
                     height: resources.dimen.dp20,
                   ),
-                  isDesktop(context)
-                      ? Row(
-                          children: [
-                            Flexible(flex: 4, child: getLineChart(context)),
-                            SizedBox(
-                              width: resources.dimen.dp20,
-                            ),
-                            Flexible(flex: 2, child: getPieChart(context))
-                          ],
-                        )
-                      : Column(
-                          children: [
-                            getLineChart(context),
-                            SizedBox(
-                              height: resources.dimen.dp20,
-                            ),
-                            getPieChart(context)
-                          ],
-                        ),
+                  ValueListenableBuilder(
+                      valueListenable: _onDataChange,
+                      builder: (context, onDataChange, child) {
+                        return isDesktop(context)
+                            ? Row(
+                                children: [
+                                  Flexible(
+                                      flex: 4,
+                                      child: getLineChart(
+                                          context,
+                                          _dashboardEntity?.ticketsByMonth ??
+                                              [])),
+                                  SizedBox(
+                                    width: resources.dimen.dp20,
+                                  ),
+                                  Flexible(
+                                      flex: 2,
+                                      child: getPieChart(
+                                          context,
+                                          _dashboardEntity?.ticketsByCategory ??
+                                              []))
+                                ],
+                              )
+                            : Column(
+                                children: [
+                                  getLineChart(context,
+                                      _dashboardEntity?.ticketsByMonth ?? []),
+                                  SizedBox(
+                                    height: resources.dimen.dp20,
+                                  ),
+                                  getPieChart(context,
+                                      _dashboardEntity?.ticketsByCategory ?? [])
+                                ],
+                              );
+                      }),
                   SizedBox(
                     height: resources.dimen.dp20,
                   ),
