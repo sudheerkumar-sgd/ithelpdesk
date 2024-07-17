@@ -34,10 +34,11 @@ class UserHomeScreen extends BaseScreenWidget {
     final resources = context.resources;
     final lineChartData = List<FlSpot>.empty(growable: true);
     final tilesData = List<Widget>.empty(growable: true);
-    for (var element in ticketsByMonthEntity) {
-      lineChartData.add(FlSpot(element.month ?? 0, element.count ?? 0));
+    for (var i = 0; i < ticketsByMonthEntity.length; i++) {
+      lineChartData.add(FlSpot(i + 1, ticketsByMonthEntity[i].count ?? 0));
       tilesData.add(Expanded(
-        child: Text(textAlign: TextAlign.right, '${element.month}'),
+        child: Text(
+            textAlign: TextAlign.right, '${ticketsByMonthEntity[i].month}'),
       ));
     }
     return Container(
