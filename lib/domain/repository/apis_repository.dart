@@ -7,7 +7,9 @@ abstract class ApisRepository {
   Future<Either<Failure, ApiResponse>> get<T extends BaseModel>({
     required String apiUrl,
     required Map<String, dynamic> requestParams,
-    Function(Map<String, dynamic>)? responseModel,
+    Function(
+      Map<String, dynamic>,
+    )? responseModel,
     String? cachePath,
   });
   Future<Either<Failure, ApiResponse>> post<T extends BaseModel>({

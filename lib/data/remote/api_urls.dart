@@ -91,3 +91,6 @@ const String submitHappinessMeterApiUrl =
     ':$port56711/HappinessMeter/api/happinessMeterAnswer';
 
 const String dashboardApiUrl = 'Dashboard/GetDashboard';
+const String subcategoriesApiUrl = 'MasterData/GetSubCategories';
+const String reasonsApiUrl = 'MasterData/GetReasons';
+const String eservicesApiUrl = 'MasterData/GetEservices';

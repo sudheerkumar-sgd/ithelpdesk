@@ -7,12 +7,14 @@ import 'package:ithelpdesk/data/remote/remote_data_source.dart';
 import 'package:ithelpdesk/data/repository/apis_repository_impl.dart';
 import 'package:ithelpdesk/domain/repository/apis_repository.dart';
 import 'package:ithelpdesk/domain/usecase/docverification_usecase.dart';
+import 'package:ithelpdesk/domain/usecase/master_data_usecase.dart';
 import 'package:ithelpdesk/domain/usecase/mywallet_usecase.dart';
 import 'package:ithelpdesk/domain/usecase/requests_usecase.dart';
 import 'package:ithelpdesk/domain/usecase/services_usecase.dart';
 import 'package:ithelpdesk/domain/usecase/login_usecase.dart';
 import 'package:ithelpdesk/presentation/bloc/docverification/docverification_bloc.dart';
 import 'package:ithelpdesk/presentation/bloc/login/login_bloc.dart';
+import 'package:ithelpdesk/presentation/bloc/master_data/master_data_bloc.dart';
 import 'package:ithelpdesk/presentation/bloc/mywallet/mywallet_bloc.dart';
 import 'package:ithelpdesk/presentation/bloc/services/requests_bloc.dart';
 import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
@@ -49,12 +51,18 @@ Future<void> init() async {
       requestsUseCase: sl(),
     ),
   );
+  sl.registerFactory(
+    () => MasterDataBloc(
+      masterDataUseCase: sl(),
+    ),
+  );
   // Use Case
   sl.registerLazySingleton(() => ServicesUseCase(apisRepository: sl()));
   sl.registerLazySingleton(() => LoginUseCase(apisRepository: sl()));
   sl.registerLazySingleton(() => MyWalletUseCase(apisRepository: sl()));
   sl.registerLazySingleton(() => DocVerificationUseCase(apisRepository: sl()));
   sl.registerLazySingleton(() => RequestsUseCase(apisRepository: sl()));
+  sl.registerLazySingleton(() => MasterDataUseCase(apisRepository: sl()));
 
   // Repository
   sl.registerLazySingleton<ApisRepository>(
