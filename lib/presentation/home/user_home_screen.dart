@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/common/log.dart';
+import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
@@ -286,9 +287,8 @@ class UserHomeScreen extends BaseScreenWidget {
             3: const FlexColumnWidth(2),
             4: const FlexColumnWidth(1),
             5: const FlexColumnWidth(2),
-            6: const FlexColumnWidth(3),
-            7: const FlexColumnWidth(2),
-            8: const FlexColumnWidth(2),
+            6: const FlexColumnWidth(1),
+            7: const FlexColumnWidth(3),
           }
         : {
             0: const FlexColumnWidth(1),
@@ -427,7 +427,9 @@ class UserHomeScreen extends BaseScreenWidget {
                                               textAlign: TextAlign.center,
                                               style: context.textFontWeight700
                                                   .onFontSize(
-                                                      resources.fontSize.dp20),
+                                                      resources.fontSize.dp20)
+                                                  .onFontFamily(
+                                                      fontFamily: fontFamilyEN),
                                             ),
                                             Text(
                                               _requestTypes[newIndex]['name']

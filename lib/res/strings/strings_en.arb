@@ -46,8 +46,8 @@
     "step1Des":"Select your Ticket Category",
     "step2Des":"Detail Required",
     "step3Des":"Supported Document",
-    "supportITRequest":"Support / IT Request",
-    "itISOCRS":"IT System/ ISO CRS",
+    "supportITRequest":"IT Support",
+    "itISOCRS":"ISO CR",
     "eservices":"Eservices",
     "system":"System",
     "application":"Application",
@@ -90,6 +90,7 @@
     "managerName":"Manager Name",
     "yearOfService":"Year of Service",
     "telephoneExt":"Telephone Ext",
-    "home":"Home"
+    "home":"Home",
+    "reason":"Reason"
     
 }

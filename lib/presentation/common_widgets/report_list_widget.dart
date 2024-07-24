@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
+import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
@@ -33,8 +34,9 @@ class ReportListWidget extends StatelessWidget {
             onTicketSelected?.call(ticketEntity);
           },
           child: Padding(
-            padding:
-                EdgeInsets.symmetric(vertical: context.resources.dimen.dp20),
+            padding: EdgeInsets.symmetric(
+                vertical: context.resources.dimen.dp20,
+                horizontal: context.resources.dimen.dp5),
             child: (key == 'showActionButtons' && value)
                 ? Row(children: [
                     SizedBox(
@@ -70,8 +72,13 @@ class ReportListWidget extends StatelessWidget {
                     textAlign: TextAlign.center,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: context.textFontWeight600
-                        .onFontSize(context.resources.fontSize.dp10),
+                    style: (key.toString().toLowerCase().contains('date') ||
+                            key.toString().toLowerCase().contains('id'))
+                        ? context.textFontWeight600
+                            .onFontSize(context.resources.fontSize.dp10)
+                            .onFontFamily(fontFamily: fontFamilyEN)
+                        : context.textFontWeight600
+                            .onFontSize(context.resources.fontSize.dp10),
                   ),
           ),
         ));

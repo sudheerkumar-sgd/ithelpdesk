@@ -37,6 +37,19 @@ class SearchUserAppBarWidget extends StatelessWidget
               SizedBox(
                 width: screenSize.width * .10,
               ),
+              InkWell(
+                onTap: () {
+                  resources.setLocal(language: isSelectedLocalEn ? 'ar' : 'en');
+                },
+                child: ImageWidget(
+                        path: isSelectedLocalEn
+                            ? DrawableAssets.icLangAr
+                            : DrawableAssets.icLangEn,
+                        width: 20,
+                        height: 20,
+                        padding: EdgeInsets.all(resources.dimen.dp10))
+                    .loadImageWithMoreTapArea,
+              ),
               ImageWidget(
                       path: DrawableAssets.icNotification,
                       width: 20,

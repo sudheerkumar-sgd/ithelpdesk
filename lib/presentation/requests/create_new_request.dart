@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
+import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
 import 'package:ithelpdesk/injection_container.dart';
 import 'package:ithelpdesk/presentation/bloc/master_data/master_data_bloc.dart';
 import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart';
@@ -25,7 +26,8 @@ class CreateNewRequest extends BaseScreenWidget {
 
   CreateNewRequest({super.key});
   final ValueNotifier _ticketCategory = ValueNotifier(-1);
-  final ValueNotifier _subjectChanged = ValueNotifier(null);
+  final ValueNotifier _subCategoryValue = ValueNotifier(-1);
+  final ValueNotifier _reasonChanged = ValueNotifier(null);
   final MasterDataBloc _masterDataBloc = sl<MasterDataBloc>();
 
   @override
@@ -210,33 +212,36 @@ class CreateNewRequest extends BaseScreenWidget {
                                               borderRadius: 0,
                                               fillColor:
                                                   resources.color.colorWhite,
+                                              callback: (p0) {
+                                                _subCategoryValue.value =
+                                                    (p0 as SubCategoryEntity)
+                                                        .id;
+                                              },
                                             );
                                           })),
                                   SizedBox(
-                                    width: value == 2
-                                        ? resources.dimen.dp20
-                                        : resources.dimen.dp40,
+                                    width: resources.dimen.dp40,
                                   ),
-                                  if (value == 2) ...[
-                                    Expanded(
-                                        child: FutureBuilder(
-                                            future: _masterDataBloc
-                                                .getEservices(requestParams: {
-                                              'departmentID': 1
-                                            }),
-                                            builder: (context, snapShot) {
-                                              return DropDownWidget(
-                                                list:
-                                                    snapShot.data?.items ?? [],
-                                                labelText:
-                                                    resources.string.issueType,
-                                                borderRadius: 0,
-                                                fillColor:
-                                                    resources.color.colorWhite,
-                                              );
-                                            })),
-                                    SizedBox(width: resources.dimen.dp20),
-                                  ],
+                                  // if (value == 2) ...[
+                                  //   Expanded(
+                                  //       child: FutureBuilder(
+                                  //           future: _masterDataBloc
+                                  //               .getEservices(requestParams: {
+                                  //             'departmentID': 1
+                                  //           }),
+                                  //           builder: (context, snapShot) {
+                                  //             return DropDownWidget(
+                                  //               list:
+                                  //                   snapShot.data?.items ?? [],
+                                  //               labelText:
+                                  //                   resources.string.issueType,
+                                  //               borderRadius: 0,
+                                  //               fillColor:
+                                  //                   resources.color.colorWhite,
+                                  //             );
+                                  //           })),
+                                  //   SizedBox(width: resources.dimen.dp20),
+                                  // ],
                                   Expanded(
                                       child: DropDownWidget(
                                     list: const ['High', 'Medium', 'Low'],
@@ -290,22 +295,28 @@ class CreateNewRequest extends BaseScreenWidget {
                                   height: resources.dimen.dp10,
                                 ),
                               ],
-                              FutureBuilder(
-                                  future: _masterDataBloc.getReasons(
-                                      requestParams: {
-                                        'categoryID': 3,
-                                        'subCategoryID': 1
-                                      }),
-                                  builder: (context, snapShot) {
-                                    return DropDownWidget(
-                                      list: snapShot.data?.items ?? [],
-                                      labelText: resources.string.subject,
-                                      borderRadius: 0,
-                                      fillColor: resources.color.colorWhite,
-                                    );
+                              ValueListenableBuilder(
+                                  valueListenable: _subCategoryValue,
+                                  builder: (context, value, child) {
+                                    return FutureBuilder(
+                                        future: _masterDataBloc.getReasons(
+                                            requestParams: {
+                                              'categoryID':
+                                                  _ticketCategory.value + 1,
+                                              'subCategoryID': value
+                                            }),
+                                        builder: (context, snapShot) {
+                                          return DropDownWidget(
+                                            list: snapShot.data?.items ?? [],
+                                            labelText: resources.string.reason,
+                                            borderRadius: 0,
+                                            fillColor:
+                                                resources.color.colorWhite,
+                                          );
+                                        });
                                   }),
                               ValueListenableBuilder(
-                                  valueListenable: _subjectChanged,
+                                  valueListenable: _reasonChanged,
                                   builder: (context, value, child) {
                                     return value == 'other'
                                         ? Padding(
