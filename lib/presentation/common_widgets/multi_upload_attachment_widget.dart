@@ -1,10 +1,17 @@
 // ignore_for_file: must_be_immutable
 
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
+import 'package:ithelpdesk/core/constants/data_constants.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/domain/entities/request_form_entities.dart';
+import 'package:ithelpdesk/presentation/common_widgets/alert_dialog_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dialog_upload_attachment.dart';
 import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/item_attachment.dart';
@@ -58,23 +65,68 @@ class MultiUploadAttachmentWidget extends StatelessWidget {
   final ValueNotifier<bool> _isUploadChanged = ValueNotifier(false);
   final _uploadFiles = [];
   Future<void> _showSelectFileOptions(BuildContext context, int from) async {
-    Dialogs.showBottomSheetDialogTransperrent(
-        context,
-        DialogUploadAttachmentWidget(
-          fileType: fileType ?? UploadOptions.any,
-          allowedExtensions: allowedExtensions,
-          maxSize: maxSize,
-        ), callback: (value) {
-      if (value != null) {
-        selectedFileData ??= UploadResponseEntity();
-        selectedFileData?.documentData =
-            'data:image/png;base64,${value['fileNamebase64data']}';
-        selectedFileData?.documentName = value['fileName'];
-        onSelected?.call(selectedFileData);
-        _uploadFiles.add(value);
-        _isUploadChanged.value = !_isUploadChanged.value;
+    final value = await _getFile(context, UploadOptions.file);
+    if (value != null) {
+      selectedFileData ??= UploadResponseEntity();
+      selectedFileData?.documentData =
+          'data:image/png;base64,${value['fileNamebase64data']}';
+      selectedFileData?.documentName = value['fileName'];
+      onSelected?.call(selectedFileData);
+      _uploadFiles.add(value);
+      _isUploadChanged.value = !_isUploadChanged.value;
+    }
+  }
+
+  Future<Map<String, String>?> _getFile(
+      BuildContext context, UploadOptions selectedOption) async {
+    String fileName = '';
+    String filePath = '';
+    Uint8List? fileBytes;
+    // if (selectedOption == UploadOptions.file) {
+    FilePickerResult? result;
+    if (allowedExtensions.isNotEmpty) {
+      result = await FilePicker.platform.pickFiles(
+          type: FileType.custom, allowedExtensions: allowedExtensions);
+    } else {
+      result = await FilePicker.platform.pickFiles();
+    }
+    if (result != null) {
+      fileName = result.files.first.name;
+      if (!kIsWeb) {
+        filePath = result.files.first.path ?? '';
+      } else {
+        fileBytes = result.files.first.bytes;
       }
-    });
+    }
+    if (filePath.isNotEmpty) {
+      File file = File(filePath);
+      if (file.lengthSync() <= maxSize * maxUploadFilesize) {
+        final bytes = file.readAsBytesSync();
+        return {
+          'fileName': fileName,
+          'fileType': fileName.substring(
+              fileName.lastIndexOf('.') == -1 ? 0 : fileName.lastIndexOf('.')),
+          'fileNamebase64data': base64.encode(bytes),
+        };
+      } else if (context.mounted) {
+        Dialogs.showInfoDialog(context, PopupType.fail,
+            "Upload file should not be more then $maxSize mb");
+      }
+    } else if (fileBytes?.isNotEmpty == true) {
+      if ((fileBytes?.lengthInBytes ?? 0) <= maxSize * maxUploadFilesize) {
+        return {
+          'fileName': fileName,
+          'fileType': fileName.substring(
+              fileName.lastIndexOf('.') == -1 ? 0 : fileName.lastIndexOf('.')),
+          'fileNamebase64data': base64.encode(fileBytes!),
+        };
+      } else if (context.mounted) {
+        Dialogs.showInfoDialog(context, PopupType.fail,
+            "Upload file should not be more then $maxSize mb");
+      }
+    }
+
+    return null;
   }
 
   @override

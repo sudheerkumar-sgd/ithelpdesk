@@ -26,12 +26,13 @@ class TicketsByCategoryEntity extends BaseEntity {
 class TicketEntity extends BaseEntity {
   int? id;
   String? subject;
+  int? subjectID;
   int? categoryID;
   int? subCategoryID;
   String? date;
   int? departmentID;
   String? departmentName;
-  String? priority;
+  int? priority;
   String? mobileNumber;
   int? userID;
   String? creator;
@@ -72,4 +73,18 @@ class TicketEntity extends BaseEntity {
         "createDate": createdOn ?? '',
         "showActionButtons": showActionButtons,
       };
+  Map<String, dynamic> toCreateJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['userID'] = this.userID;
+    data['subject'] = this.subject;
+    data['subjectID'] = this.subjectID;
+    data['categoryID'] = this.categoryID;
+    data['subCategoryID'] = this.subCategoryID;
+    data['description'] = this.description;
+    data['departmentID'] = this.departmentID;
+    data['priority'] = this.priority;
+    data['mobileNumber'] = this.mobileNumber;
+    data['requestType'] = 2;
+    return data;
+  }
 }

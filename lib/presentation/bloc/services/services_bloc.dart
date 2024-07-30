@@ -24,6 +24,16 @@ class ServicesBloc extends Cubit<ServicesState> {
     }));
   }
 
+  Future<void> createRequest(
+      {required Map<String, dynamic> requestParams}) async {
+    emit(OnLoading());
+    final result =
+        await servicesUseCase.createRequest(requestParams: requestParams);
+    emit(result.fold((l) => OnApiError(message: _getErrorMessage(l)), (r) {
+      return OnCreateTicketSuccess(ticketsEntity: r);
+    }));
+  }
+
   String _getErrorMessage(Failure failure) {
     return failure.errorMessage;
   }

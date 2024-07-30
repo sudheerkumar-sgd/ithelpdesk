@@ -91,6 +91,8 @@
     "yearOfService":"Year of Service",
     "telephoneExt":"Telephone Ext",
     "home":"Home",
-    "reason":"Reason"
+    "reason":"Reason",
+    "pleaseSelect":"Please Select",
+    "pleaseEnter":"Please Enter"
     
 }

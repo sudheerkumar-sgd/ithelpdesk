@@ -94,3 +94,4 @@ const String dashboardApiUrl = 'Dashboard/GetDashboard';
 const String subcategoriesApiUrl = 'MasterData/GetSubCategories';
 const String reasonsApiUrl = 'MasterData/GetReasons';
 const String eservicesApiUrl = 'MasterData/GetEservices';
+const String createTicketApiUrl = 'CreateTicket';

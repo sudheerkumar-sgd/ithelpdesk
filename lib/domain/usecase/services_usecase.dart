@@ -31,4 +31,19 @@ class ServicesUseCase extends BaseUseCase {
       return Right(apiResponseEntity);
     });
   }
+
+  Future<Either<Failure, ApiEntity<TicketEntity>>> createRequest(
+      {required Map<String, dynamic> requestParams}) async {
+    var apiResponse = await apisRepository.post<TicketsModel>(
+      apiUrl: createTicketApiUrl,
+      requestParams: requestParams,
+      responseModel: TicketsModel.fromJson,
+    );
+    return apiResponse.fold((l) {
+      return Left(l);
+    }, (r) {
+      var apiResponseEntity = r.toEntity<TicketEntity>();
+      return Right(apiResponseEntity);
+    });
+  }
 }

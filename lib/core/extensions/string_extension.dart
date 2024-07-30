@@ -1,3 +1,5 @@
+import 'package:ithelpdesk/core/constants/constants.dart';
+
 extension StringExtension on String {
   String capitalize() {
     return toLowerCase().split(' ').map((word) {
@@ -18,5 +20,9 @@ extension StringExtension on String {
 
   bool isValidMobile() {
     return RegExp(r'^05[0-9]{8}$').hasMatch(this);
+  }
+
+  String withPrefix(String prefix) {
+    return isSelectedLocalEn ? '$prefix $this' : '$this $prefix';
   }
 }

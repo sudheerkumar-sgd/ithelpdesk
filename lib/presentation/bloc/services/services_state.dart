@@ -20,6 +20,14 @@ class OnDashboardSuccess extends ServicesState {
   List<Object?> get props => [dashboardEntity];
 }
 
+class OnCreateTicketSuccess extends ServicesState {
+  final ApiEntity<TicketEntity> ticketsEntity;
+
+  OnCreateTicketSuccess({required this.ticketsEntity});
+  @override
+  List<Object?> get props => [ticketsEntity];
+}
+
 class OnMostUsedServicesSuccess extends ServicesState {
   final ApiEntity<MostUsedServicesEntity> mostUsedServicesEntity;
 
