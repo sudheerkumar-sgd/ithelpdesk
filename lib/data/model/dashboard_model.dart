@@ -108,6 +108,7 @@ class TicketsModel extends BaseModel {
   String? subject;
   int? categoryID;
   int? subCategoryID;
+  int? subjectID;
   String? date;
   String? description;
   int? departmentID;
@@ -139,6 +140,7 @@ class TicketsModel extends BaseModel {
   TicketsModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     subject = json['subject'];
+    subjectID = json['subjectID'];
     categoryID = json['categoryID'];
     subCategoryID = json['subCategoryID'];
     date = json['date'];
@@ -175,6 +177,7 @@ class TicketsModel extends BaseModel {
     var ticketsEntity = TicketEntity();
     ticketsEntity.id = id;
     ticketsEntity.subject = subject;
+    ticketsEntity.subjectID = subjectID;
     ticketsEntity.categoryID = categoryID;
     ticketsEntity.subCategoryID = subCategoryID;
     ticketsEntity.date = date;
@@ -203,5 +206,26 @@ class TicketsModel extends BaseModel {
     ticketsEntity.requestType = requestType;
     ticketsEntity.computerName = computerName;
     return ticketsEntity;
+  }
+}
+
+class TicketHistoryModel extends BaseModel {
+  String? userName;
+  String? subject;
+  String? date;
+
+  TicketHistoryModel.fromJson(Map<String, dynamic> json) {
+    userName = json['userName'];
+    subject = json['subject'];
+    date = json['date'];
+  }
+
+  @override
+  TicketHistoryEntity toEntity() {
+    var ticketHistoryEntity = TicketHistoryEntity();
+    ticketHistoryEntity.userName = userName;
+    ticketHistoryEntity.subject = subject;
+    ticketHistoryEntity.date = date;
+    return ticketHistoryEntity;
   }
 }

@@ -45,7 +45,7 @@ class ReportListWidget extends StatelessWidget {
                     Expanded(
                       child: InkWell(
                         onTap: () {
-                          ViewRequest.start(context);
+                          ViewRequest.start(context, ticketEntity);
                         },
                         child:
                             ImageWidget(path: DrawableAssets.icView, width: 24)

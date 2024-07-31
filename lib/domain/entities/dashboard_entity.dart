@@ -88,3 +88,9 @@ class TicketEntity extends BaseEntity {
     return data;
   }
 }
+
+class TicketHistoryEntity extends BaseEntity {
+  String? userName;
+  String? subject;
+  String? date;
+}

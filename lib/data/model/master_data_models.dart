@@ -29,6 +29,14 @@ class ListModel extends BaseModel {
     }
   }
 
+  ListModel.fromTicketHistoryJson(Map<String, dynamic> json) {
+    if (json is List) {
+      for (var json in (json as List)) {
+        items.add(EserviceModel.fromJson(json).toEntity());
+      }
+    }
+  }
+
   @override
   ListEntity toEntity() {
     final listEntity = ListEntity();

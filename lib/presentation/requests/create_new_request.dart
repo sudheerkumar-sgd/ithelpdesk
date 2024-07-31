@@ -52,7 +52,9 @@ class CreateNewRequest extends BaseScreenWidget {
       resources.string.eservices,
       resources.string.application
     ];
-    final priorities = ['Low', 'Medium', 'High'];
+    final priorities = isSelectedLocalEn
+        ? ['Critical', 'High', 'Medium', 'Low']
+        : ['حرج', 'عالي', 'متوسط', 'منخفض'];
     final noOfCategoryRows = isDesktop(context) ? 1 : 2;
     final noOfCategoryRowItems = isDesktop(context) ? 4 : 2;
     return Scaffold(
@@ -91,7 +93,7 @@ class CreateNewRequest extends BaseScreenWidget {
                     ),
                     Text.rich(
                       TextSpan(
-                          text: '${resources.string.step}1',
+                          text: '${resources.string.step} 1',
                           style: context.textFontWeight600,
                           children: [
                             WidgetSpan(
@@ -189,7 +191,7 @@ class CreateNewRequest extends BaseScreenWidget {
                     ),
                     Text.rich(
                       TextSpan(
-                          text: '${resources.string.step}2',
+                          text: '${resources.string.step} 2',
                           style: context.textFontWeight600,
                           children: [
                             WidgetSpan(
@@ -482,7 +484,7 @@ class CreateNewRequest extends BaseScreenWidget {
                     ),
                     Text.rich(
                       TextSpan(
-                          text: '${resources.string.step}3',
+                          text: '${resources.string.step} 3',
                           style: context.textFontWeight600,
                           children: [
                             WidgetSpan(
@@ -523,7 +525,7 @@ class CreateNewRequest extends BaseScreenWidget {
                         InkWell(
                           onTap: () {},
                           child: ActionButtonWidget(
-                            text: resources.string.clear,
+                            text: resources.string.cancel,
                             color: resources.color.colorWhite,
                             textColor: resources.color.textColor,
                             padding: EdgeInsets.symmetric(

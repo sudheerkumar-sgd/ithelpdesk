@@ -23,6 +23,6 @@ extension StringExtension on String {
   }
 
   String withPrefix(String prefix) {
-    return isSelectedLocalEn ? '$prefix $this' : '$this $prefix';
+    return '$prefix $this';
   }
 }

@@ -539,8 +539,8 @@ class UserHomeScreen extends BaseScreenWidget {
                           ticketsHeaderData: ticketsHeaderData,
                           ticketsData: ticketsData,
                           ticketsTableColunwidths: ticketsTableColunwidths,
-                          onTicketSelected: (p0) {
-                            ViewRequest.start(context);
+                          onTicketSelected: (ticket) {
+                            ViewRequest.start(context, ticket);
                           },
                         );
                       })
