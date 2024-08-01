@@ -277,8 +277,7 @@ class ViewRequest extends BaseScreenWidget {
     );
   }
 
-  Widget _getStatusWidget(
-      BuildContext context, List<Map<String, String>> steps) {
+  Widget _getStatusWidget(BuildContext context, List<dynamic> steps) {
     final resources = context.resources;
     return Container(
       color: resources.color.colorWhite,
@@ -301,8 +300,8 @@ class ViewRequest extends BaseScreenWidget {
               stepColor: i < steps.length - 1
                   ? resources.color.colorGreen26B757
                   : resources.color.pending,
-              stepText: steps[i]['name'] ?? '',
-              stepSubText: '${steps[i]['title']}\n23 March 2024, 11:00 AM',
+              stepText: steps[i].userName ?? "",
+              stepSubText: '${steps[i].subject}\n${steps[i].date}',
               isLastStep: i == steps.length - 1,
             )
           ]
@@ -443,14 +442,21 @@ class ViewRequest extends BaseScreenWidget {
                                     future: _servicesBloc.getTicketHistory(
                                         requestParams: {"ticketID": ticket.id}),
                                     builder: (context, snapShot) {
-                                      return _getStatusWidget(context, steps);
+                                      return _getStatusWidget(
+                                          context, snapShot.data?.items ?? []);
                                     }),
                               )
                             ],
                           )
                         : Column(
                             children: [
-                              _getStatusWidget(context, steps),
+                              FutureBuilder(
+                                  future: _servicesBloc.getTicketHistory(
+                                      requestParams: {"ticketID": ticket.id}),
+                                  builder: (context, snapShot) {
+                                    return _getStatusWidget(
+                                        context, snapShot.data?.items ?? []);
+                                  }),
                               SizedBox(
                                 height: resources.dimen.dp20,
                               ),

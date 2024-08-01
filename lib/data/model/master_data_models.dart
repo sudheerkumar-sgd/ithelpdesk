@@ -1,6 +1,7 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:ithelpdesk/data/model/base_model.dart';
+import 'package:ithelpdesk/data/model/dashboard_model.dart';
 import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
 
 class ListModel extends BaseModel {
@@ -30,9 +31,9 @@ class ListModel extends BaseModel {
   }
 
   ListModel.fromTicketHistoryJson(Map<String, dynamic> json) {
-    if (json is List) {
-      for (var json in (json as List)) {
-        items.add(EserviceModel.fromJson(json).toEntity());
+    if (json['data'] is List) {
+      for (var json in (json['data'] as List)) {
+        items.add(TicketHistoryModel.fromJson(json).toEntity());
       }
     }
   }

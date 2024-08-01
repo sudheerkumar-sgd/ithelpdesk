@@ -19,8 +19,8 @@ class ServicesBloc extends Cubit<ServicesState> {
 
   Future<void> getDashboardData() async {
     emit(OnLoading());
-    final result = await servicesUseCase
-        .getDashboardData(requestParams: {"userId": "317"});
+    final result =
+        await servicesUseCase.getDashboardData(requestParams: {"userId": "35"});
     emit(result.fold((l) => OnApiError(message: _getErrorMessage(l)), (r) {
       return OnDashboardSuccess(dashboardEntity: r);
     }));
@@ -36,13 +36,13 @@ class ServicesBloc extends Cubit<ServicesState> {
     }));
   }
 
-  Future<ListEntity?> getTicketHistory(
+  Future<ListEntity> getTicketHistory(
       {required Map<String, dynamic> requestParams}) async {
     emit(OnLoading());
     final result =
         await servicesUseCase.getTicketHistory(requestParams: requestParams);
-    return result.fold((l) => null, (r) {
-      return r.entity;
+    return result.fold((l) => ListEntity(), (r) {
+      return r.entity ?? ListEntity();
     });
   }
 
