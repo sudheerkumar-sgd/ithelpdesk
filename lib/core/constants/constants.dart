@@ -11,3 +11,4 @@ List<EstablishmentEntity> userEstablishments = [];
 bool isServicesLoaded = false;
 String appVersion = '';
 Size screenSize = const Size(550, 730);
+const String userID = '317';

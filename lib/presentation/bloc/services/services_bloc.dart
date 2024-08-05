@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/domain/entities/base_entity.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
 import 'package:ithelpdesk/domain/entities/login_entity.dart';
@@ -17,10 +18,11 @@ class ServicesBloc extends Cubit<ServicesState> {
   final ServicesUseCase servicesUseCase;
   ServicesBloc({required this.servicesUseCase}) : super(Init());
 
-  Future<void> getDashboardData() async {
+  Future<void> getDashboardData(
+      {required Map<String, dynamic> requestParams}) async {
     emit(OnLoading());
     final result =
-        await servicesUseCase.getDashboardData(requestParams: {"userId": "35"});
+        await servicesUseCase.getDashboardData(requestParams: requestParams);
     emit(result.fold((l) => OnApiError(message: _getErrorMessage(l)), (r) {
       return OnDashboardSuccess(dashboardEntity: r);
     }));

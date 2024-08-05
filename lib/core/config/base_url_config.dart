@@ -13,7 +13,7 @@ const String baseUrlMDSOAProd =
 
 const String basePortalUrlDevelopment = 'https://localhost:7040/api/';
 
-const String basePortalUrlProduction = 'https://portal.uaq.ae';
+const String basePortalUrlProduction = 'https://localhost:5003/api/';
 
 const String baseMDUrlDevelopment = 'https://stgmdservices.uaq.ae';
 

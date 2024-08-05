@@ -28,6 +28,7 @@ class TicketEntity extends BaseEntity {
   String? subject;
   int? subjectID;
   int? categoryID;
+  String? categoryName;
   int? subCategoryID;
   String? date;
   int? departmentID;
@@ -57,6 +58,7 @@ class TicketEntity extends BaseEntity {
   Map<String, dynamic> toJson({bool showActionButtons = false}) => {
         "id": id ?? '',
         "employeeName": creator ?? '',
+        "Category": categoryName ?? '',
         "subject": subject ?? '',
         "status": status ?? '',
         "priority": priority ?? '',
@@ -67,6 +69,7 @@ class TicketEntity extends BaseEntity {
       };
   Map<String, dynamic> toMobileJson({bool showActionButtons = false}) => {
         "id": id ?? '',
+        "Category": categoryName ?? '',
         "subject": subject ?? '',
         "status": status ?? '',
         "priority": priority ?? '',

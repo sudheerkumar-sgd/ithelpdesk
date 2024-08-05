@@ -107,6 +107,7 @@ class TicketsModel extends BaseModel {
   int? id;
   String? subject;
   int? categoryID;
+  String? categoryName;
   int? subCategoryID;
   int? subjectID;
   String? date;
@@ -142,6 +143,7 @@ class TicketsModel extends BaseModel {
     subject = json['subject'];
     subjectID = json['subjectID'];
     categoryID = json['categoryID'];
+    categoryName = json['category'];
     subCategoryID = json['subCategoryID'];
     date = json['date'];
     description = json['description'];
@@ -179,6 +181,7 @@ class TicketsModel extends BaseModel {
     ticketsEntity.subject = subject;
     ticketsEntity.subjectID = subjectID;
     ticketsEntity.categoryID = categoryID;
+    ticketsEntity.categoryName = categoryName;
     ticketsEntity.subCategoryID = subCategoryID;
     ticketsEntity.date = date;
     ticketsEntity.description = description;

@@ -14,6 +14,7 @@ import 'package:ithelpdesk/presentation/bloc/master_data/master_data_bloc.dart';
 import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
 import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
+import 'package:ithelpdesk/presentation/common_widgets/dropdown_menu_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dropdown_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/item_service_steps.dart';
 import 'package:ithelpdesk/presentation/common_widgets/right_icon_text_widget.dart';
@@ -314,56 +315,54 @@ class ViewRequest extends BaseScreenWidget {
   Widget build(BuildContext context) {
     final resources = context.resources;
     const ticketType = 2;
-    final steps = [
-      {
-        'name': 'Sudheer Kumar Akula',
-        'title': 'service created',
-        'date': '23 March 2024, 11:00 AM'
-      },
-      {
-        'name': 'Mohammed Kamran',
-        'title': 'Assigned manually ',
-        'date': '23 March 2024, 11:00 AM'
-      },
-      {
-        'name': 'Noushad',
-        'title': 'Forwarded to SGD Eservice',
-        'date': '23 March 2024, 11:00 AM'
-      },
-      {
-        'name': 'Mooza Binyeem',
-        'title': 'Changed Sub Category to Eservice',
-        'date': '23 March 2024, 11:00 AM'
-      },
-    ];
-    final actionButtons = [
-      {
-        'name': resources.string.returnText,
-        'color': resources.color.colorWhite,
-      },
-      {
-        'name': resources.string.transfer,
-        'color': resources.color.pending,
-      },
-      {
-        'name': resources.string.close,
-        'color': resources.color.colorGreen26B757,
-      },
-      {
-        'name': resources.string.hold,
-        'color': resources.color.viewBgColor,
-      },
-      {
-        'name': resources.string.reject,
-        'color': resources.color.rejected,
-      },
-      {
-        'name': '',
-        'color': resources.color.colorWhite,
-      },
-    ];
-    final actionButtonRows = isDesktop(context) ? 1 : 2;
-    final actionButtonColumns = isDesktop(context) ? 5 : 3;
+    final actionButtons = isDesktop(context)
+        ? [
+            ActionButtonEntity(
+                nameEn: resources.string.returnText,
+                color: resources.color.colorWhite),
+            ActionButtonEntity(
+                nameEn: resources.string.transfer,
+                color: resources.color.pending),
+            ActionButtonEntity(
+                nameEn: resources.string.forwardTo,
+                color: resources.color.viewBgColorLight),
+          ]
+        : [
+            ActionButtonEntity(
+                nameEn: resources.string.returnText,
+                color: resources.color.colorWhite),
+          ];
+    final popupActionButtons = isDesktop(context)
+        ? [
+            ActionButtonEntity(
+                nameEn: resources.string.close,
+                color: resources.color.colorGreen26B757),
+            ActionButtonEntity(
+                nameEn: resources.string.hold,
+                color: resources.color.viewBgColor),
+            ActionButtonEntity(
+                nameEn: resources.string.reject,
+                color: resources.color.rejected),
+          ]
+        : [
+            ActionButtonEntity(
+                nameEn: resources.string.transfer,
+                color: resources.color.pending),
+            ActionButtonEntity(
+                nameEn: resources.string.forwardTo,
+                color: resources.color.pending),
+            ActionButtonEntity(
+                nameEn: resources.string.close,
+                color: resources.color.colorGreen26B757),
+            ActionButtonEntity(
+                nameEn: resources.string.hold,
+                color: resources.color.viewBgColor),
+            ActionButtonEntity(
+                nameEn: resources.string.reject,
+                color: resources.color.rejected),
+          ];
+    //final actionButtonRows = isDesktop(context) ? 1 : 2;
+    //final actionButtonColumns = isDesktop(context) ? 5 : 3;
 
     return Scaffold(
         backgroundColor: resources.color.appScaffoldBg,
@@ -516,55 +515,39 @@ class ViewRequest extends BaseScreenWidget {
                   SizedBox(
                     height: resources.dimen.dp20,
                   ),
-                  Column(
+                  Row(
                     children: [
-                      for (int c = 0; c < actionButtonRows; c++) ...[
-                        Row(
-                          children: [
-                            for (int r = 0; r < actionButtonColumns; r++) ...[
-                              Expanded(
-                                child: InkWell(
-                                  onTap: () {
-                                    Dialogs.showDialogWithClose(
-                                        context, TicketTransferWidget(),
-                                        maxWidth: 350);
-                                  },
-                                  child: ActionButtonWidget(
-                                    text: (actionButtons[r +
-                                                    (c * actionButtonColumns)]
-                                                ['name'] ??
-                                            '')
-                                        .toString(),
-                                    color: actionButtons[
-                                            r + (c * actionButtonColumns)]
-                                        ['color'] as Color,
-                                    radious: 0,
-                                    textColor: r == 0
-                                        ? resources.color.textColor
-                                        : null,
-                                    textSize: resources.fontSize.dp12,
-                                    padding: EdgeInsets.symmetric(
-                                        vertical: resources.dimen.dp7,
-                                        horizontal: resources.dimen.dp10),
-                                  ),
-                                ),
-                              ),
-                              if (r < actionButtonColumns - 1) ...[
-                                SizedBox(
-                                  width: resources.dimen.dp10,
-                                ),
-                              ]
-                            ]
-                          ],
+                      for (int r = 0; r < actionButtons.length; r++) ...[
+                        Expanded(
+                          child: InkWell(
+                            onTap: () {
+                              Dialogs.showDialogWithClose(
+                                  context, TicketTransferWidget(),
+                                  maxWidth: 350);
+                            },
+                            child: ActionButtonWidget(
+                              text: (actionButtons[r]).toString(),
+                              color: actionButtons[r].color,
+                              radious: 0,
+                              textColor:
+                                  r == 0 ? resources.color.textColor : null,
+                              textSize: resources.fontSize.dp12,
+                              padding: EdgeInsets.symmetric(
+                                  vertical: resources.dimen.dp7,
+                                  horizontal: resources.dimen.dp10),
+                            ),
+                          ),
                         ),
-                        if (c < actionButtonRows - 1) ...[
+                        if (r < actionButtons.length) ...[
                           SizedBox(
-                            height: resources.dimen.dp20,
+                            width: resources.dimen.dp10,
                           ),
                         ]
-                      ]
+                      ],
+                      Expanded(
+                          child: DropdownMenuWidget(items: popupActionButtons))
                     ],
-                  )
+                  ),
                 ],
               ),
             ),

@@ -1,5 +1,7 @@
 // ignore_for_file: must_be_immutable
 
+import 'dart:ui';
+
 import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/domain/entities/base_entity.dart';
 
@@ -87,4 +89,21 @@ class EserviceEntity extends BaseEntity {
 
   @override
   List<Object?> get props => [id, servicENAMEEN, servicENAMEAR];
+}
+
+class ActionButtonEntity extends BaseEntity {
+  int? id;
+  String? iconPth;
+  Color? color;
+  String? nameEn;
+  String? nameAr;
+  ActionButtonEntity(
+      {this.id, this.nameEn, this.nameAr, this.iconPth, this.color});
+  @override
+  String toString() {
+    return isSelectedLocalEn ? nameEn ?? '' : nameAr ?? '';
+  }
+
+  @override
+  List<Object?> get props => [nameEn];
 }

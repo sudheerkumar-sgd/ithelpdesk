@@ -18,12 +18,13 @@ class DioLoggingInterceptor extends InterceptorsWrapper {
     //   });
     // } else if (userToken.isNotEmpty) {
     options.headers.addAll({
-      HttpHeaders.contentTypeHeader: 'application/json',
+      HttpHeaders.contentTypeHeader:
+          'application/json, application/x-www-form-urlencoded, multipart/form-data, text/plain',
       HttpHeaders.acceptHeader: "*/*",
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Credentials": true,
       "Access-Control-Allow-Headers":
-          "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale",
+          "X-Requested-With, Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale",
       "Access-Control-Allow-Methods": "GET, POST, OPTIONS"
     });
     // }

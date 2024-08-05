@@ -1,5 +1,4 @@
 // ignore_for_file: must_be_immutable
-
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -35,12 +34,25 @@ class UserHomeScreen extends BaseScreenWidget {
     final resources = context.resources;
     final lineChartData = List<FlSpot>.empty(growable: true);
     final tilesData = List<Widget>.empty(growable: true);
-    for (var i = 0; i < ticketsByMonthEntity.length; i++) {
-      lineChartData.add(FlSpot(i + 1, ticketsByMonthEntity[i].count ?? 0));
-      tilesData.add(Expanded(
-        child: Text(
-            textAlign: TextAlign.right, '${ticketsByMonthEntity[i].month}'),
-      ));
+    for (var i = 0; i < 12; i++) {
+      final currentMonth = DateTime.now().month;
+      final startMonth = ((currentMonth + i) % 12) + 1;
+      printLog(startMonth);
+      final monthData = ticketsByMonthEntity
+          .where((month) => month.month == startMonth)
+          .firstOrNull;
+      if (monthData != null) {
+        lineChartData
+            .add(FlSpot(double.parse('${i + 1}'), monthData.count ?? 0));
+        tilesData.add(Expanded(
+          child: Text(textAlign: TextAlign.right, '${monthData.month}'),
+        ));
+      } else {
+        lineChartData.add(FlSpot(double.parse('${i + 1}'), 0));
+        tilesData.add(Expanded(
+          child: Text(textAlign: TextAlign.right, '$startMonth'),
+        ));
+      }
     }
     return Container(
       height: 350,
@@ -240,7 +252,7 @@ class UserHomeScreen extends BaseScreenWidget {
   Widget build(BuildContext context) {
     final resources = context.resources;
     Future.delayed(Duration.zero, () {
-      _servicesBloc.getDashboardData();
+      _servicesBloc.getDashboardData(requestParams: {"userId": userID});
     });
     final requestTypesRows = isDesktop(context) ? 1 : 2;
     final requestTypesColumns = isDesktop(context) ? 4 : 2;
@@ -271,6 +283,7 @@ class UserHomeScreen extends BaseScreenWidget {
         ? [
             'ID',
             'EmployeeName',
+            'Category',
             'Subject',
             'Status',
             'Priority',
@@ -278,17 +291,18 @@ class UserHomeScreen extends BaseScreenWidget {
             'Department',
             'CreateDate'
           ]
-        : ['ID', 'Subject', 'Status', 'Priority', 'CreateDate'];
+        : ['ID', 'Category', 'Subject', 'Status', 'Priority', 'CreateDate'];
     final ticketsTableColunwidths = isDesktop(context)
         ? {
             0: const FlexColumnWidth(1),
             1: const FlexColumnWidth(3),
-            2: const FlexColumnWidth(4),
-            3: const FlexColumnWidth(2),
-            4: const FlexColumnWidth(1),
-            5: const FlexColumnWidth(2),
-            6: const FlexColumnWidth(1),
-            7: const FlexColumnWidth(3),
+            2: const FlexColumnWidth(2),
+            3: const FlexColumnWidth(4),
+            4: const FlexColumnWidth(2),
+            5: const FlexColumnWidth(1),
+            6: const FlexColumnWidth(2),
+            7: const FlexColumnWidth(1),
+            8: const FlexColumnWidth(3),
           }
         : {
             0: const FlexColumnWidth(1),
