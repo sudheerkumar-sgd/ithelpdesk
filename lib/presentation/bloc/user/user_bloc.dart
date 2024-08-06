@@ -1,19 +1,20 @@
 import 'package:equatable/equatable.dart';
-import 'package:ithelpdesk/domain/entities/login_entity.dart';
-import 'package:ithelpdesk/domain/usecase/login_usecase.dart';
+import 'package:ithelpdesk/domain/usecase/user_usecase.dart';
 import '../../../core/error/failures.dart';
 import '../../../domain/entities/api_entity.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-part 'login_state.dart';
+import '../../../domain/entities/user_entity.dart';
 
-class LoginBloc extends Cubit<LoginState> {
-  final LoginUseCase loginUseCase;
-  LoginBloc({required this.loginUseCase}) : super(Init());
+part 'user_state.dart';
+
+class UserBloc extends Cubit<UserState> {
+  final UserUseCase userUseCase;
+  UserBloc({required this.userUseCase}) : super(Init());
 
   Future<void> doLogin(Map<String, dynamic> requestParams) async {
     emit(OnLoginLoading());
-    final result = await loginUseCase.doLogin(requestParams: requestParams);
+    final result = await userUseCase.doLogin(requestParams: requestParams);
     emit(result.fold((l) => OnLoginApiError(message: _getErrorMessage(l)),
         (r) => OnLoginSuccess(loginEntity: r)));
   }
@@ -22,22 +23,20 @@ class LoginBloc extends Cubit<LoginState> {
       Map<String, dynamic> requestParams) async {
     emit(OnLoginLoading());
     final result =
-        await loginUseCase.doLoginWithCredentials(requestParams: requestParams);
+        await userUseCase.doLoginWithCredentials(requestParams: requestParams);
     emit(result.fold((l) => OnLoginApiError(message: _getErrorMessage(l)),
         (r) => OnLoginSuccess(loginEntity: r)));
   }
 
-  Future<void> getUserData(Map<String, dynamic> requestParams) async {
-    emit(OnLoginLoading());
-    final result = await loginUseCase.getUserData(requestParams: requestParams);
-    emit(result.fold((l) => OnLoginApiError(message: _getErrorMessage(l)),
-        (r) => OnUserDataSuccess(userEntity: r)));
+  Future<UserEntity> getUserData(Map<String, dynamic> requestParams) async {
+    final result = await userUseCase.getUserData(requestParams: requestParams);
+    return result.fold((l) => UserEntity(), (r) => r.entity ?? UserEntity());
   }
 
   Future<void> updateFirbaseToken(Map<String, dynamic> requestParams) async {
     //emit(OnLoginLoading());
     final result =
-        await loginUseCase.updateFirbaseToken(requestParams: requestParams);
+        await userUseCase.updateFirbaseToken(requestParams: requestParams);
     emit(result.fold((l) => OnLoginApiError(message: _getErrorMessage(l)),
         (r) => OnUpdateFirbaseTokenResponse(updateFirbaseTokenEntity: r)));
   }

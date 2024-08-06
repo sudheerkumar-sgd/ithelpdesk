@@ -121,7 +121,7 @@ class ViewRequest extends BaseScreenWidget {
                                 .withPrefix(resources.string.pleaseSelect),
                             borderRadius: 0,
                             fillColor: resources.color.colorWhite,
-                            selectedValue: priorities[ticket.priority ?? 0],
+                            selectedValue: ticket.priority,
                             callback: (value) {
                               priority = priorities.indexOf(value ?? '');
                             },
@@ -298,9 +298,11 @@ class ViewRequest extends BaseScreenWidget {
           ),
           for (int i = 0; i < steps.length; i++) ...[
             ItemServiceSteps(
-              stepColor: i < steps.length - 1
+              stepColor: (i < steps.length - 1 || (ticket.status == 'Closed'))
                   ? resources.color.colorGreen26B757
-                  : resources.color.pending,
+                  : ticket.status == 'Reject'
+                      ? resources.color.rejected
+                      : resources.color.pending,
               stepText: steps[i].userName ?? "",
               stepSubText: '${steps[i].subject}\n${steps[i].date}',
               isLastStep: i == steps.length - 1,
@@ -466,88 +468,92 @@ class ViewRequest extends BaseScreenWidget {
                   SizedBox(
                     height: resources.dimen.dp20,
                   ),
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                        vertical: resources.dimen.dp15,
-                        horizontal: resources.dimen.dp20),
-                    color: resources.color.colorWhite,
-                    child: Column(
-                      children: [
-                        ValueListenableBuilder(
-                            valueListenable: _isChargeable,
-                            builder: (context, value, child) {
-                              return CheckboxListTile(
-                                  contentPadding: const EdgeInsets.all(0),
-                                  title: Text(
-                                    '${resources.string.chargeable}(50 AED)',
-                                    style: context.textFontWeight400
-                                        .onColor(resources.color.viewBgColor),
-                                  ),
-                                  side: BorderSide(
-                                    color: resources.color.viewBgColor,
-                                    width: 1.5,
-                                  ),
-                                  visualDensity: const VisualDensity(
-                                      horizontal: -4, vertical: -4),
-                                  controlAffinity:
-                                      ListTileControlAffinity.leading,
-                                  value: value,
-                                  onChanged: (isChecked) {
-                                    _isChargeable.value = isChecked;
-                                  });
-                            }),
-                        SizedBox(
-                          height: resources.dimen.dp10,
-                        ),
-                        RightIconTextWidget(
-                          labelText: resources.string.comments,
-                          fillColor: resources.color.colorWhite,
-                          maxLines: 4,
-                          borderSide: BorderSide(
-                              color:
-                                  context.resources.color.sideBarItemUnselected,
-                              width: 1),
-                          borderRadius: 0,
-                        ),
-                      ],
+                  if (ticket.status?.toLowerCase() != 'closed' &&
+                      ticket.status?.toLowerCase() != 'reject') ...[
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                          vertical: resources.dimen.dp15,
+                          horizontal: resources.dimen.dp20),
+                      color: resources.color.colorWhite,
+                      child: Column(
+                        children: [
+                          ValueListenableBuilder(
+                              valueListenable: _isChargeable,
+                              builder: (context, value, child) {
+                                return CheckboxListTile(
+                                    contentPadding: const EdgeInsets.all(0),
+                                    title: Text(
+                                      '${resources.string.chargeable}(50 AED)',
+                                      style: context.textFontWeight400
+                                          .onColor(resources.color.viewBgColor),
+                                    ),
+                                    side: BorderSide(
+                                      color: resources.color.viewBgColor,
+                                      width: 1.5,
+                                    ),
+                                    visualDensity: const VisualDensity(
+                                        horizontal: -4, vertical: -4),
+                                    controlAffinity:
+                                        ListTileControlAffinity.leading,
+                                    value: value,
+                                    onChanged: (isChecked) {
+                                      _isChargeable.value = isChecked;
+                                    });
+                              }),
+                          SizedBox(
+                            height: resources.dimen.dp10,
+                          ),
+                          RightIconTextWidget(
+                            labelText: resources.string.comments,
+                            fillColor: resources.color.colorWhite,
+                            maxLines: 4,
+                            borderSide: BorderSide(
+                                color: context
+                                    .resources.color.sideBarItemUnselected,
+                                width: 1),
+                            borderRadius: 0,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: resources.dimen.dp20,
-                  ),
-                  Row(
-                    children: [
-                      for (int r = 0; r < actionButtons.length; r++) ...[
-                        Expanded(
-                          child: InkWell(
-                            onTap: () {
-                              Dialogs.showDialogWithClose(
-                                  context, TicketTransferWidget(),
-                                  maxWidth: 350);
-                            },
-                            child: ActionButtonWidget(
-                              text: (actionButtons[r]).toString(),
-                              color: actionButtons[r].color,
-                              radious: 0,
-                              textColor:
-                                  r == 0 ? resources.color.textColor : null,
-                              textSize: resources.fontSize.dp12,
-                              padding: EdgeInsets.symmetric(
-                                  vertical: resources.dimen.dp7,
-                                  horizontal: resources.dimen.dp10),
+                    SizedBox(
+                      height: resources.dimen.dp20,
+                    ),
+                    Row(
+                      children: [
+                        for (int r = 0; r < actionButtons.length; r++) ...[
+                          Expanded(
+                            child: InkWell(
+                              onTap: () {
+                                Dialogs.showDialogWithClose(
+                                    context, TicketTransferWidget(),
+                                    maxWidth: 350);
+                              },
+                              child: ActionButtonWidget(
+                                text: (actionButtons[r]).toString(),
+                                color: actionButtons[r].color,
+                                radious: 0,
+                                textColor:
+                                    r == 0 ? resources.color.textColor : null,
+                                textSize: resources.fontSize.dp12,
+                                padding: EdgeInsets.symmetric(
+                                    vertical: resources.dimen.dp7,
+                                    horizontal: resources.dimen.dp10),
+                              ),
                             ),
                           ),
-                        ),
-                        if (r < actionButtons.length) ...[
-                          SizedBox(
-                            width: resources.dimen.dp10,
-                          ),
-                        ]
+                          if (r < actionButtons.length) ...[
+                            SizedBox(
+                              width: resources.dimen.dp10,
+                            ),
+                          ]
+                        ],
+                        Expanded(
+                            child:
+                                DropdownMenuWidget(items: popupActionButtons))
                       ],
-                      Expanded(
-                          child: DropdownMenuWidget(items: popupActionButtons))
-                    ],
-                  ),
+                    ),
+                  ],
                 ],
               ),
             ),

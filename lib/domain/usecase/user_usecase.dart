@@ -4,13 +4,13 @@ import 'package:ithelpdesk/data/model/api_response_model.dart';
 import 'package:ithelpdesk/data/model/login_model.dart';
 import 'package:ithelpdesk/data/remote/api_urls.dart';
 import 'package:ithelpdesk/domain/entities/api_entity.dart';
-import 'package:ithelpdesk/domain/entities/login_entity.dart';
+import 'package:ithelpdesk/domain/entities/user_entity.dart';
 import 'package:ithelpdesk/domain/repository/apis_repository.dart';
 import 'package:ithelpdesk/domain/usecase/base_usecase.dart';
 
-class LoginUseCase extends BaseUseCase {
+class UserUseCase extends BaseUseCase {
   final ApisRepository apisRepository;
-  LoginUseCase({required this.apisRepository});
+  UserUseCase({required this.apisRepository});
 
   @override
   ApisRepository getApisRepository() {
@@ -65,7 +65,7 @@ class LoginUseCase extends BaseUseCase {
   Future<Either<Failure, ApiEntity<UserEntity>>> getUserData(
       {required Map<String, dynamic> requestParams}) async {
     var apiResponse = await apisRepository.get<UserModel>(
-      apiUrl: getUserDataApiUrl,
+      apiUrl: userDetailsApiUrl,
       requestParams: requestParams,
       responseModel: UserModel.fromJson,
     );

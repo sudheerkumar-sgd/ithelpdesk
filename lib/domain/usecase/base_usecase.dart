@@ -7,9 +7,10 @@ import 'package:ithelpdesk/data/model/login_model.dart';
 import 'package:ithelpdesk/data/model/request_data_models.dart';
 import 'package:ithelpdesk/data/remote/api_urls.dart';
 import 'package:ithelpdesk/domain/entities/api_entity.dart';
-import 'package:ithelpdesk/domain/entities/login_entity.dart';
 import 'package:ithelpdesk/domain/entities/request_form_entities.dart';
 import 'package:ithelpdesk/domain/repository/apis_repository.dart';
+
+import '../entities/user_entity.dart';
 
 abstract class BaseUseCase {
   Future<Either<Failure, ApiEntity<UserEntity>>> getUserData(

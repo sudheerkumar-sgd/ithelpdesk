@@ -125,15 +125,6 @@ class OnEmailSubmitSuccess extends ServicesState {
   List<Object?> get props => [emailSubmitSuccess];
 }
 
-class OnEstablishmentsSuccess extends ServicesState {
-  final List<EstablishmentEntity> establishments;
-
-  OnEstablishmentsSuccess({required this.establishments});
-
-  @override
-  List<Object?> get props => [establishments];
-}
-
 class OnApiError extends ServicesState {
   final String message;
 

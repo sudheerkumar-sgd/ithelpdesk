@@ -33,7 +33,7 @@ class TicketEntity extends BaseEntity {
   String? date;
   int? departmentID;
   String? departmentName;
-  int? priority;
+  String? priority;
   String? mobileNumber;
   int? userID;
   String? creator;

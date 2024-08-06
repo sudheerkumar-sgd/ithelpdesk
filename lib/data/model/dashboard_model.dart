@@ -187,7 +187,7 @@ class TicketsModel extends BaseModel {
     ticketsEntity.description = description;
     ticketsEntity.departmentID = departmentID;
     ticketsEntity.departmentName = departmentName;
-    //ticketsEntity.priority = priority;
+    ticketsEntity.priority = priority;
     ticketsEntity.mobileNumber = mobileNumber;
     ticketsEntity.userID = userID;
     ticketsEntity.creator = creator;

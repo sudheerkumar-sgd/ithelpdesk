@@ -11,9 +11,9 @@ import 'package:ithelpdesk/domain/usecase/master_data_usecase.dart';
 import 'package:ithelpdesk/domain/usecase/mywallet_usecase.dart';
 import 'package:ithelpdesk/domain/usecase/requests_usecase.dart';
 import 'package:ithelpdesk/domain/usecase/services_usecase.dart';
-import 'package:ithelpdesk/domain/usecase/login_usecase.dart';
+import 'package:ithelpdesk/domain/usecase/user_usecase.dart';
 import 'package:ithelpdesk/presentation/bloc/docverification/docverification_bloc.dart';
-import 'package:ithelpdesk/presentation/bloc/login/login_bloc.dart';
+import 'package:ithelpdesk/presentation/bloc/user/user_bloc.dart';
 import 'package:ithelpdesk/presentation/bloc/master_data/master_data_bloc.dart';
 import 'package:ithelpdesk/presentation/bloc/mywallet/mywallet_bloc.dart';
 import 'package:ithelpdesk/presentation/bloc/services/requests_bloc.dart';
@@ -27,8 +27,8 @@ Future<void> init() async {
    */
   // Bloc
   sl.registerFactory(
-    () => LoginBloc(
-      loginUseCase: sl(),
+    () => UserBloc(
+      userUseCase: sl(),
     ),
   );
   sl.registerFactory(
@@ -58,7 +58,7 @@ Future<void> init() async {
   );
   // Use Case
   sl.registerLazySingleton(() => ServicesUseCase(apisRepository: sl()));
-  sl.registerLazySingleton(() => LoginUseCase(apisRepository: sl()));
+  sl.registerLazySingleton(() => UserUseCase(apisRepository: sl()));
   sl.registerLazySingleton(() => MyWalletUseCase(apisRepository: sl()));
   sl.registerLazySingleton(() => DocVerificationUseCase(apisRepository: sl()));
   sl.registerLazySingleton(() => RequestsUseCase(apisRepository: sl()));

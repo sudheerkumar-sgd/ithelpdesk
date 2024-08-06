@@ -1,8 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/domain/entities/base_entity.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
-import 'package:ithelpdesk/domain/entities/login_entity.dart';
 import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
 import 'package:ithelpdesk/domain/entities/requests_entity.dart';
 import 'package:ithelpdesk/domain/entities/services_entity.dart';

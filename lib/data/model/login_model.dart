@@ -1,7 +1,8 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:ithelpdesk/data/model/base_model.dart';
-import 'package:ithelpdesk/domain/entities/login_entity.dart';
+
+import '../../domain/entities/user_entity.dart';
 
 class LoginModel extends BaseModel {
   String? fullnameAr;
@@ -40,81 +41,51 @@ class LoginModel extends BaseModel {
 }
 
 class UserModel extends BaseModel {
-  String? applicantId;
-  String? fullNameEn;
-  String? fullNameAr;
-  String? phoneNumber;
+  int? id;
+  String? name;
   String? email;
-  String? address;
-  String? passportNo;
-  String? firstPage;
-  String? residencyPage;
-  String? emiratesIdNo;
-  String? emiratesIdFront;
-  String? userName;
-  String? citizenshipNameEn;
-  String? citizenshipNameAr;
-  String? residencyNamEn;
-  String? residencyNameAr;
-  String? mobileNumber2;
-  String? landLinePhone;
-  List<EstablishmentEntity> establishments = [];
+  String? username;
+  String? employeeID;
+  int? roleID;
+  int? departmentID;
+  String? createdOn;
+  bool? isStaff;
+  bool? status;
+  String? statusChangedOn;
 
   UserModel();
 
-  factory UserModel.fromJson(Map<String, dynamic> json) {
-    var userModel = UserModel();
-    userModel.fullNameEn = json['response']['fullNameEn'];
-    userModel.fullNameAr = json['response']['fullNameAr'];
-    userModel.email = json['response']['email'];
-    userModel.phoneNumber = json['response']['phoneNumber'];
-    userModel.passportNo = json['response']['passportNo'];
-    userModel.firstPage = json['response']['FirstPage'];
-    userModel.residencyPage = json['response']['ResidencyPage'];
-    userModel.emiratesIdNo = json['response']['emiratesIDNo'];
-    userModel.residencyNamEn = json['response']['residencyNamEn'];
-    userModel.residencyNameAr = json['response']['residencyNameAr'];
-    userModel.citizenshipNameEn = json['response']['citizenshipNameEn'];
-    userModel.citizenshipNameAr = json['response']['citizenshipNameAr'];
-    if (json['response']['establishmentUser'] != null) {
-      userModel.establishments = (json['response']['establishmentUser'] as List)
-          .map((json) =>
-              EstablishmentModel.fromJson(json['reg_EstablishmentInfo'])
-                  .toEntity())
-          .toList();
-    }
-    return userModel;
-  }
-
-  factory UserModel.fromEstablishmentsJson(Map<String, dynamic> json) {
-    var userModel = UserModel();
-    if (json['response'] != null) {
-      userModel.establishments = (json['response'] as List)
-          .map((json) => EstablishmentModel.fromJson(json).toEntity())
-          .toList();
-    }
-    return userModel;
+  UserModel.fromJson(Map<String, dynamic> json) {
+    id = json['data']?['id'];
+    name = json['data']?['name'];
+    email = json['data']?['email'];
+    username = json['data']?['username'];
+    employeeID = json['data']?['employeeID'];
+    roleID = json['data']?['roleID'];
+    departmentID = json['data']?['departmentID'];
+    createdOn = json['data']?['createdOn'];
+    isStaff = json['data']?['isStaff'];
+    status = json['data']?['status'];
+    statusChangedOn = json['data']?['statusChangedOn'];
   }
 
   @override
   List<Object?> get props => [
-        fullNameAr,
-        fullNameEn,
+        id,
       ];
 
   @override
   UserEntity toEntity() {
     UserEntity userEntity = UserEntity();
-    userEntity.fullNameEn = fullNameEn;
-    userEntity.fullNameAr = fullNameAr;
+    userEntity.id = id;
+    userEntity.name = name;
     userEntity.email = email;
-    userEntity.emiratesIdNo = emiratesIdNo;
-    userEntity.citizenshipNameEn = citizenshipNameEn;
-    userEntity.citizenshipNameAr = citizenshipNameAr;
-    userEntity.phoneNumber = phoneNumber;
-    userEntity.residencyNamEn = residencyNamEn;
-    userEntity.residencyNameAr = residencyNameAr;
-    userEntity.establishments = establishments;
+    userEntity.username = username;
+    userEntity.employeeID = employeeID;
+    userEntity.roleID = roleID;
+    userEntity.departmentID = departmentID;
+    userEntity.createdOn = createdOn;
+    userEntity.status = status;
     return userEntity;
   }
 }

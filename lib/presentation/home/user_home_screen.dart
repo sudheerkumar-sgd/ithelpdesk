@@ -37,7 +37,6 @@ class UserHomeScreen extends BaseScreenWidget {
     for (var i = 0; i < 12; i++) {
       final currentMonth = DateTime.now().month;
       final startMonth = ((currentMonth + i) % 12) + 1;
-      printLog(startMonth);
       final monthData = ticketsByMonthEntity
           .where((month) => month.month == startMonth)
           .firstOrNull;
@@ -161,6 +160,16 @@ class UserHomeScreen extends BaseScreenWidget {
               'name': 'Eservice',
               'count': ticketsByCategoryEntity[i].count ?? 0,
               'color': Colors.blue
+            };
+            categoryData.add(item);
+            totalCount = (ticketsByCategoryEntity[i].count ?? 0) + totalCount;
+          }
+        case 4:
+          {
+            var item = {
+              'name': 'Application',
+              'count': ticketsByCategoryEntity[i].count ?? 0,
+              'color': Colors.cyan
             };
             categoryData.add(item);
             totalCount = (ticketsByCategoryEntity[i].count ?? 0) + totalCount;

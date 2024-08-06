@@ -18,33 +18,20 @@ class LoginEntity extends BaseEntity {
 }
 
 class UserEntity extends BaseEntity {
-  String? applicantId;
-  String? fullNameEn;
-  String? fullNameAr;
-  String? phoneNumber;
+  int? id;
+  String? name;
   String? email;
-  String? address;
-  String? passportNo;
-  String? firstPage;
-  String? residencyPage;
-  String? emiratesIdNo;
-  String? emiratesIdFront;
-  String? userName;
-  String? citizenshipNameEn;
-  String? citizenshipNameAr;
-  String? residencyNamEn;
-  String? residencyNameAr;
-  String? mobileNumber2;
-  String? landLinePhone;
-  List<EstablishmentEntity> establishments = [];
+  String? username;
+  String? employeeID;
+  int? roleID;
+  int? departmentID;
+  String? createdOn;
+  bool? isStaff;
+  bool? status;
+  String? statusChangedOn;
 
   @override
-  List<Object?> get props => [fullNameEn];
-
-  String get getCitizenship =>
-      (isSelectedLocalEn ? citizenshipNameEn : citizenshipNameAr) ?? '';
-  String get getResidency =>
-      (isSelectedLocalEn ? residencyNamEn : residencyNameAr) ?? '';
+  List<Object?> get props => [id];
 }
 
 class EstablishmentEntity extends BaseEntity {

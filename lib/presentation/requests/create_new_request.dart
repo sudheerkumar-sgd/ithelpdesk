@@ -548,7 +548,7 @@ class CreateNewRequest extends BaseScreenWidget {
                               ticket.subject = _reasonController.text;
                               ticket.mobileNumber = _contactNoController.text;
                               ticket.description = _descriptionController.text;
-                              ticket.priority = priority + 1;
+                              ticket.priority = '${priority + 1}';
                               Dialogs.showInfoLoader(
                                   context, 'Submitting Request');
                               await _servicesBloc.createRequest(
