@@ -5,7 +5,6 @@ import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/error/failures.dart';
 import 'package:ithelpdesk/domain/entities/api_entity.dart';
 import 'package:ithelpdesk/domain/entities/mywallet_entity.dart';
-import 'package:ithelpdesk/domain/entities/request_form_entities.dart';
 import 'package:ithelpdesk/domain/entities/requests_entity.dart';
 import 'package:ithelpdesk/domain/usecase/mywallet_usecase.dart';
 part 'mywallet_state.dart';
@@ -198,24 +197,6 @@ class MyWalletBloc extends Cubit<MyWalletState> {
         await myWalletUseCase.getMyPermits(requestParams: requestParams);
     emit(result.fold((l) => OnMyWalletApiError(message: _getErrorMessage(l)),
         (r) => OnMyDocumentsResponse(documents: r)));
-  }
-
-  Future<PaymentResponseEntity> getPaymentView({
-    required Map<String, dynamic> requestParams,
-  }) async {
-    final result =
-        await myWalletUseCase.requestPaymnetView(requestParams: requestParams);
-    return result.fold((l) => PaymentResponseEntity(),
-        (r) => r.entity ?? PaymentResponseEntity());
-  }
-
-  Future<PaymentResponseEntity> updateRequestStatus({
-    required Map<String, dynamic> requestParams,
-  }) async {
-    final result =
-        await myWalletUseCase.updateRequestStatus(requestParams: requestParams);
-    return result.fold((l) => PaymentResponseEntity(),
-        (r) => r.entity ?? PaymentResponseEntity());
   }
 
   Stream<List<RequestsEntity>> get getRequestsList => Rx.combineLatest4(

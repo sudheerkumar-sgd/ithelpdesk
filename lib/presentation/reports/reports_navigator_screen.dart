@@ -11,7 +11,7 @@ class ReportsNavigatorScreen extends BaseScreenWidget {
   @override
   Widget build(BuildContext context) {
     reportKey = GlobalKey<NavigatorState>();
-    reportsScreen = const ReportsScreen();
+    reportsScreen = ReportsScreen();
     return Navigator(
       key: reportKey,
       initialRoute: '/',

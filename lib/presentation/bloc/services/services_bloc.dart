@@ -7,7 +7,6 @@ import 'package:ithelpdesk/domain/entities/services_entity.dart';
 import '../../../core/error/failures.dart';
 import '../../../domain/entities/api_entity.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../../domain/usecase/services_usecase.dart';
 
 part 'services_state.dart';
@@ -26,13 +25,23 @@ class ServicesBloc extends Cubit<ServicesState> {
     }));
   }
 
+  Future<ApiEntity<ListEntity>> getTticketsByUser(
+      {required Map<String, dynamic> requestParams}) async {
+    emit(OnLoading());
+    final result =
+        await servicesUseCase.getTticketsByUser(requestParams: requestParams);
+    return result.fold((l) => ApiEntity(), (r) {
+      return r;
+    });
+  }
+
   Future<void> createRequest(
       {required Map<String, dynamic> requestParams}) async {
     emit(OnLoading());
     final result =
         await servicesUseCase.createRequest(requestParams: requestParams);
     emit(result.fold((l) => OnApiError(message: _getErrorMessage(l)), (r) {
-      return OnCreateTicketSuccess(ticketsEntity: r);
+      return OnCreateTicketSuccess(createTicketResponse: r.entity?.value);
     }));
   }
 

@@ -62,6 +62,7 @@ class UserUseCase extends BaseUseCase {
     });
   }
 
+  @override
   Future<Either<Failure, ApiEntity<UserEntity>>> getUserData(
       {required Map<String, dynamic> requestParams}) async {
     var apiResponse = await apisRepository.get<UserModel>(

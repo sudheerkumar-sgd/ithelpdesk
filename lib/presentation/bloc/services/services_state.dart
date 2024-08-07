@@ -21,11 +21,11 @@ class OnDashboardSuccess extends ServicesState {
 }
 
 class OnCreateTicketSuccess extends ServicesState {
-  final ApiEntity<TicketEntity> ticketsEntity;
+  final String createTicketResponse;
 
-  OnCreateTicketSuccess({required this.ticketsEntity});
+  OnCreateTicketSuccess({required this.createTicketResponse});
   @override
-  List<Object?> get props => [ticketsEntity];
+  List<Object?> get props => [createTicketResponse];
 }
 
 class OnMostUsedServicesSuccess extends ServicesState {

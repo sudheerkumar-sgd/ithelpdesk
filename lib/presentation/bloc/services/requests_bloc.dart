@@ -53,24 +53,6 @@ class RequestsBloc extends Cubit<RequestsState> {
         (r) => OnSubmitDataResponse(submitResponse: r)));
   }
 
-  Future<PaymentResponseEntity> getPaymentView({
-    required Map<String, dynamic> requestParams,
-  }) async {
-    final result =
-        await requestsUseCase.requestPaymnetView(requestParams: requestParams);
-    return result.fold((l) => PaymentResponseEntity(),
-        (r) => r.entity ?? PaymentResponseEntity());
-  }
-
-  Future<PaymentResponseEntity> updateRequestStatus({
-    required Map<String, dynamic> requestParams,
-  }) async {
-    final result =
-        await requestsUseCase.updateRequestStatus(requestParams: requestParams);
-    return result.fold((l) => PaymentResponseEntity(),
-        (r) => r.entity ?? PaymentResponseEntity());
-  }
-
   Future<HappinessMeterEntity> getHappinessMeterData({
     required String url,
     Map<String, dynamic>? requestParams,

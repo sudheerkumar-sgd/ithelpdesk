@@ -17,6 +17,7 @@ import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/report_list_widget.dart';
 import 'package:ithelpdesk/presentation/requests/create_new_request.dart';
 import 'package:ithelpdesk/presentation/requests/view_request.dart';
+import 'package:ithelpdesk/res/drawables/background_box_decoration.dart';
 import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
 
 class UserHomeScreen extends BaseScreenWidget {
@@ -28,6 +29,7 @@ class UserHomeScreen extends BaseScreenWidget {
   final ValueNotifier<bool> _onDataChange = ValueNotifier(false);
   List<Map<String, Object>> _requestTypes = [];
   List<TicketEntity> ticketsData = [];
+  int selectTicketCategory = 1;
 
   Widget getLineChart(
       BuildContext context, List<TicketsByMonthEntity> ticketsByMonthEntity) {
@@ -336,7 +338,10 @@ class UserHomeScreen extends BaseScreenWidget {
               _requestTypes[1]['count'] = _dashboardEntity?.openRequests ?? 0;
               _requestTypes[2]['count'] = _dashboardEntity?.closedRequests ?? 0;
               _requestTypes[3]['count'] = _dashboardEntity?.totalRequests ?? 0;
-              ticketsData = _dashboardEntity?.latestTickets ?? [];
+              ticketsData = _dashboardEntity?.assignedTickets ?? [];
+              if (ticketsData.isEmpty) {
+                ticketsData = _dashboardEntity?.myTickets ?? [];
+              }
               _onDataChange.value = !(_onDataChange.value);
             }
           },
@@ -555,6 +560,61 @@ class UserHomeScreen extends BaseScreenWidget {
                   SizedBox(
                     height: resources.dimen.dp20,
                   ),
+                  if ((_dashboardEntity?.assignedTickets ?? []).isNotEmpty &&
+                      (_dashboardEntity?.myTickets ?? []).isNotEmpty)
+                    ValueListenableBuilder(
+                        valueListenable: _onDataChange,
+                        builder: (context, value, child) {
+                          return Row(children: [
+                            Expanded(
+                                child: InkWell(
+                              onTap: () {
+                                if (selectTicketCategory == 2) {
+                                  ticketsData =
+                                      _dashboardEntity?.assignedTickets ?? [];
+                                  selectTicketCategory = 1;
+                                  _onDataChange.value = !_onDataChange.value;
+                                }
+                              },
+                              child: ActionButtonWidget(
+                                text: "Assigned Tickets",
+                                decoration: BackgroundBoxDecoration(
+                                        boxColor: selectTicketCategory == 1
+                                            ? resources.color.viewBgColor
+                                            : null,
+                                        radious: 0)
+                                    .roundedCornerBox,
+                                textColor: selectTicketCategory == 1
+                                    ? resources.color.colorWhite
+                                    : resources.color.textColor,
+                              ),
+                            )),
+                            Expanded(
+                              child: InkWell(
+                                onTap: () {
+                                  if (selectTicketCategory == 1) {
+                                    ticketsData =
+                                        _dashboardEntity?.myTickets ?? [];
+                                    selectTicketCategory = 2;
+                                    _onDataChange.value = !_onDataChange.value;
+                                  }
+                                },
+                                child: ActionButtonWidget(
+                                  text: "My Tickets",
+                                  decoration: BackgroundBoxDecoration(
+                                    boxColor: selectTicketCategory == 2
+                                        ? resources.color.viewBgColor
+                                        : null,
+                                    radious: 0,
+                                  ).roundedCornerBox,
+                                  textColor: selectTicketCategory == 2
+                                      ? resources.color.colorWhite
+                                      : resources.color.textColor,
+                                ),
+                              ),
+                            )
+                          ]);
+                        }),
                   ValueListenableBuilder(
                       valueListenable: _onDataChange,
                       builder: (context, onDataChange, child) {

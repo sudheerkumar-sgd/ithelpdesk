@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
+import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
+import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
 import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dropdown_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/report_list_widget.dart';
 
+import '../../injection_container.dart';
+
 class ReportsScreen extends BaseScreenWidget {
-  const ReportsScreen({super.key});
+  ReportsScreen({super.key});
+  final ServicesBloc _servicesBloc = sl<ServicesBloc>();
 
   Widget _getFilters(BuildContext context) {
     final resources = context.resources;
@@ -140,6 +146,7 @@ class ReportsScreen extends BaseScreenWidget {
         ? [
             'ID',
             'EmployeeName',
+            'Category',
             'Subject',
             'Status',
             'Priority',
@@ -153,13 +160,14 @@ class ReportsScreen extends BaseScreenWidget {
         ? {
             0: const FlexColumnWidth(1),
             1: const FlexColumnWidth(3),
-            2: const FlexColumnWidth(4),
-            3: const FlexColumnWidth(2),
-            4: const FlexColumnWidth(1),
+            2: const FlexColumnWidth(2),
+            3: const FlexColumnWidth(4),
+            4: const FlexColumnWidth(2),
             5: const FlexColumnWidth(2),
             6: const FlexColumnWidth(3),
-            7: const FlexColumnWidth(2),
+            7: const FlexColumnWidth(1),
             8: const FlexColumnWidth(3),
+            9: const FlexColumnWidth(3),
           }
         : {
             0: const FlexColumnWidth(1),
@@ -173,70 +181,80 @@ class ReportsScreen extends BaseScreenWidget {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: context.resources.color.appScaffoldBg,
-      body: Padding(
-        padding: EdgeInsets.all(resources.dimen.dp20),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Column(
-                children: [
-                  for (int c = 0; c < ticketTypesRows; c++) ...[
-                    Row(
-                      children: [
-                        for (int r = 0; r < ticketTypesColumns; r++) ...[
-                          Expanded(
-                            child: InkWell(
-                              onTap: () {},
-                              child: ActionButtonWidget(
-                                text:
-                                    (ticketTypes[r + (c * ticketTypesColumns)])
-                                        .toString(),
-                                color: resources.color.colorWhite,
-                                radious: 0,
-                                textColor: resources.color.textColor,
-                                textSize: resources.fontSize.dp12,
-                                maxLines: 2,
-                                padding: EdgeInsets.symmetric(
-                                    vertical: resources.dimen.dp10,
-                                    horizontal: resources.dimen.dp10),
+      body: BlocProvider(
+        create: (context) => _servicesBloc,
+        child: Padding(
+          padding: EdgeInsets.all(resources.dimen.dp20),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Column(
+                  children: [
+                    for (int c = 0; c < ticketTypesRows; c++) ...[
+                      Row(
+                        children: [
+                          for (int r = 0; r < ticketTypesColumns; r++) ...[
+                            Expanded(
+                              child: InkWell(
+                                onTap: () {},
+                                child: ActionButtonWidget(
+                                  text: (ticketTypes[
+                                          r + (c * ticketTypesColumns)])
+                                      .toString(),
+                                  color: resources.color.colorWhite,
+                                  radious: 0,
+                                  textColor: resources.color.textColor,
+                                  textSize: resources.fontSize.dp12,
+                                  maxLines: 2,
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: resources.dimen.dp10,
+                                      horizontal: resources.dimen.dp10),
+                                ),
                               ),
                             ),
-                          ),
-                          if (r < ticketTypesColumns - 1) ...[
-                            SizedBox(
-                              width: resources.dimen.dp10,
-                            ),
+                            if (r < ticketTypesColumns - 1) ...[
+                              SizedBox(
+                                width: resources.dimen.dp10,
+                              ),
+                            ]
                           ]
-                        ]
-                      ],
-                    ),
-                    if (c < ticketTypesColumns - 1) ...[
-                      SizedBox(
-                        height: resources.dimen.dp20,
+                        ],
                       ),
+                      if (c < ticketTypesColumns - 1) ...[
+                        SizedBox(
+                          height: resources.dimen.dp20,
+                        ),
+                      ]
                     ]
-                  ]
-                ],
-              ),
-              isDesktop(context)
-                  ? Row(
-                      children: _getFilterBar(context),
-                    )
-                  : Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: _getFilterBar(context),
-                    ),
-              SizedBox(
-                height: resources.dimen.dp20,
-              ),
-              ReportListWidget(
-                ticketsHeaderData: ticketsHeaderData,
-                ticketsData: [],
-                ticketsTableColunwidths: ticketsTableColunwidths,
-                showActionButtons: true,
-              )
-            ],
+                  ],
+                ),
+                isDesktop(context)
+                    ? Row(
+                        children: _getFilterBar(context),
+                      )
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: _getFilterBar(context),
+                      ),
+                SizedBox(
+                  height: resources.dimen.dp20,
+                ),
+                FutureBuilder(
+                    future: _servicesBloc
+                        .getTticketsByUser(requestParams: {'userId': userID}),
+                    builder: (context, snapsShot) {
+                      return snapsShot.data?.entity?.items.isNotEmpty == true
+                          ? ReportListWidget(
+                              ticketsHeaderData: ticketsHeaderData,
+                              ticketsData: snapsShot.data?.entity?.items ?? [],
+                              ticketsTableColunwidths: ticketsTableColunwidths,
+                              showActionButtons: true,
+                            )
+                          : const Center(child: CircularProgressIndicator());
+                    })
+              ],
+            ),
           ),
         ),
       ),

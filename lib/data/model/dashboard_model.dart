@@ -11,7 +11,8 @@ class DashboardModel extends BaseModel {
   int? totalRequests;
   List<TicketsByMonthEntity>? ticketsByMonth;
   List<TicketsByCategoryEntity>? ticketsByCategory;
-  List<TicketEntity>? latestTickets;
+  List<TicketEntity> assignedTickets = [];
+  List<TicketEntity> myTickets = [];
 
   DashboardModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -31,10 +32,16 @@ class DashboardModel extends BaseModel {
         ticketsByCategory!.add(TicketsByCategoryModel.fromJson(v).toEntity());
       });
     }
-    if (json['latestTickets'] != null) {
-      latestTickets = <TicketEntity>[];
-      json['latestTickets'].forEach((v) {
-        latestTickets!.add(TicketsModel.fromJson(v).toEntity());
+    if (json['assignedTickets'] != null) {
+      assignedTickets = <TicketEntity>[];
+      json['assignedTickets'].forEach((v) {
+        assignedTickets.add(TicketsModel.fromJson(v).toEntity());
+      });
+    }
+    if (json['myTickets'] != null) {
+      myTickets = <TicketEntity>[];
+      json['myTickets'].forEach((v) {
+        myTickets.add(TicketsModel.fromJson(v).toEntity());
       });
     }
   }
@@ -48,7 +55,8 @@ class DashboardModel extends BaseModel {
     dashboardEntity.totalRequests = totalRequests;
     dashboardEntity.ticketsByMonth = ticketsByMonth;
     dashboardEntity.ticketsByCategory = ticketsByCategory;
-    dashboardEntity.latestTickets = latestTickets;
+    dashboardEntity.assignedTickets = assignedTickets;
+    dashboardEntity.myTickets = myTickets;
     return dashboardEntity;
   }
 }

@@ -1,5 +1,3 @@
-import 'package:ithelpdesk/core/constants/constants.dart';
-
 extension StringExtension on String {
   String capitalize() {
     return toLowerCase().split(' ').map((word) {

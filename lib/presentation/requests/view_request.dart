@@ -393,7 +393,7 @@ class ViewRequest extends BaseScreenWidget {
                               children: [
                                 TextSpan(
                                     text:
-                                        'Created by Mooza BinYeem on 27-Mar-2024 at 11:13 AM',
+                                        'Created by ${ticket.creator} on ${ticket.createdOn}',
                                     style: context.textFontWeight400
                                         .onFontSize(resources.fontSize.dp10)
                                         .onColor(resources.color.textColorLight)

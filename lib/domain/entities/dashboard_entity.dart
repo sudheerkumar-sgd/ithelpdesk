@@ -10,7 +10,8 @@ class DashboardEntity extends BaseEntity {
   int? totalRequests;
   List<TicketsByMonthEntity>? ticketsByMonth;
   List<TicketsByCategoryEntity>? ticketsByCategory;
-  List<TicketEntity>? latestTickets;
+  List<TicketEntity> assignedTickets = [];
+  List<TicketEntity> myTickets = [];
 }
 
 class TicketsByMonthEntity extends BaseEntity {
@@ -85,7 +86,7 @@ class TicketEntity extends BaseEntity {
     data['subCategoryID'] = this.subCategoryID;
     data['description'] = this.description;
     data['departmentID'] = this.departmentID;
-    data['priority'] = this.priority;
+    data['priority'] = int.parse(this.priority ?? '4');
     data['mobileNumber'] = this.mobileNumber;
     data['requestType'] = 2;
     return data;

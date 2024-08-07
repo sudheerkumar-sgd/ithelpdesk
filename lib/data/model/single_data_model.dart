@@ -8,16 +8,10 @@ class SingleDataModel extends BaseModel {
 
   SingleDataModel();
 
-  factory SingleDataModel.fromSessionIDJson(Map<String, dynamic> json) {
-    var documentVerifyModel = SingleDataModel();
-    documentVerifyModel.value = json['response']?['guid'];
-    return documentVerifyModel;
-  }
-
-  factory SingleDataModel.fromSendOTP(Map<String, dynamic> json) {
-    var documentVerifyModel = SingleDataModel();
-    documentVerifyModel.value = json['response'];
-    return documentVerifyModel;
+  factory SingleDataModel.fromCreateRequest(Map<String, dynamic> json) {
+    var createRequestModel = SingleDataModel();
+    createRequestModel.value = json['data']?['ticketId'];
+    return createRequestModel;
   }
 
   @override

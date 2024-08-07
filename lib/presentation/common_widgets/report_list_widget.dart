@@ -22,7 +22,7 @@ class ReportListWidget extends StatelessWidget {
       this.showActionButtons = false,
       this.onTicketSelected,
       super.key});
-  List<Widget> _getTicketData(BuildContext context, dynamic ticketEntity) {
+  List<Widget> _getTicketData(BuildContext context, TicketEntity ticketEntity) {
     final list = List<Widget>.empty(growable: true);
     (isDesktop(context)
             ? ticketEntity.toJson(showActionButtons: showActionButtons)
@@ -52,20 +52,23 @@ class ReportListWidget extends StatelessWidget {
                                 .loadImage,
                       ),
                     ),
-                    Expanded(
-                        child: InkWell(
-                      onTap: () {},
-                      child:
-                          ImageWidget(path: DrawableAssets.icMessage, width: 24)
-                              .loadImage,
-                    )),
-                    Expanded(
-                        child: InkWell(
-                      onTap: () {},
-                      child:
-                          ImageWidget(path: DrawableAssets.icDelete, width: 24)
-                              .loadImage,
-                    ))
+                    if (ticketEntity.status != 'Closed' &&
+                        ticketEntity.status != 'Reject') ...[
+                      Expanded(
+                          child: InkWell(
+                        onTap: () {},
+                        child: ImageWidget(
+                                path: DrawableAssets.icMessage, width: 24)
+                            .loadImage,
+                      )),
+                      Expanded(
+                          child: InkWell(
+                        onTap: () {},
+                        child: ImageWidget(
+                                path: DrawableAssets.icDelete, width: 24)
+                            .loadImage,
+                      ))
+                    ]
                   ])
                 : Text(
                     '$value',

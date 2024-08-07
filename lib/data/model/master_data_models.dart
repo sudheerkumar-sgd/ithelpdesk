@@ -38,6 +38,14 @@ class ListModel extends BaseModel {
     }
   }
 
+  ListModel.fromTicketsJson(Map<String, dynamic> json) {
+    if (json['data'] is List) {
+      for (var json in (json['data'] as List)) {
+        items.add(TicketsModel.fromJson(json).toEntity());
+      }
+    }
+  }
+
   @override
   ListEntity toEntity() {
     final listEntity = ListEntity();
