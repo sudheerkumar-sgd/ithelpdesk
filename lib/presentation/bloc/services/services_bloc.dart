@@ -55,6 +55,16 @@ class ServicesBloc extends Cubit<ServicesState> {
     });
   }
 
+  Future<TicketEntity> updateTicketByStatus(
+      {required Map<String, dynamic> requestParams}) async {
+    emit(OnLoading());
+    final result = await servicesUseCase.updateTicketByStatus(
+        requestParams: requestParams);
+    return result.fold((l) => TicketEntity(), (r) {
+      return r.entity ?? TicketEntity();
+    });
+  }
+
   String _getErrorMessage(Failure failure) {
     return failure.errorMessage;
   }

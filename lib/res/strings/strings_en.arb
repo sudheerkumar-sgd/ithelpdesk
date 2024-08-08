@@ -93,6 +93,7 @@
     "home":"Home",
     "reason":"Reason",
     "pleaseSelect":"Please Select",
-    "pleaseEnter":"Please Enter"
+    "pleaseEnter":"Please Enter",
+    "approve":"Approve"
     
 }

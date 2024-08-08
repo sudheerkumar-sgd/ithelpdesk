@@ -59,32 +59,34 @@ enum UserType {
   const UserType(this.value);
 }
 
-enum ServiceType {
-  visitor('Visitor'),
-  uaeResident('UAE Resident'),
-  uaeCitizen('UAE Citizen'),
-  gccResident('GCCResident'),
-  gccCitizen('GCC Citizen'),
-  establishment('Establishment');
+enum PriorityType {
+  low(1),
+  medium(2),
+  high(3),
+  critical(4);
 
-  final String value;
-  const ServiceType(this.value);
+  final int value;
+  const PriorityType(this.value);
+}
 
-  static ServiceType getElgibleServiceName(int userType) {
-    switch (userType) {
-      case 1:
-        return visitor;
-      case 2:
-        return uaeResident;
-      case 3:
-        return uaeCitizen;
-      case 4:
-        return gccResident;
-      case 5:
-        return uaeResident;
-      case 7:
-        return establishment;
-    }
-    return visitor;
+enum StatusType {
+  open(1),
+  closed(2),
+  hold(3),
+  reject(4),
+  duplicate(5),
+  returned(6),
+  approve(7),
+  forword(8);
+
+  final int value;
+  const StatusType(this.value);
+
+  factory StatusType.fromId(int value) {
+    return values.firstWhere((e) => e.value == value);
+  }
+
+  factory StatusType.fromName(String value) {
+    return values.firstWhere((e) => e.name.contains(value.toLowerCase()));
   }
 }

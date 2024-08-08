@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable
 
+import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/domain/entities/base_entity.dart';
 
 class DashboardEntity extends BaseEntity {
@@ -48,7 +49,7 @@ class TicketEntity extends BaseEntity {
   bool? isDeleted;
   String? dueDate;
   String? finalComments;
-  String? status;
+  StatusType? status;
   String? createdOn;
   String? reopenedOn;
   String? closedOn;
@@ -79,6 +80,7 @@ class TicketEntity extends BaseEntity {
       };
   Map<String, dynamic> toCreateJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
+    data["id"] = id;
     data['userID'] = this.userID;
     data['subject'] = this.subject;
     data['subjectID'] = this.subjectID;
@@ -89,6 +91,8 @@ class TicketEntity extends BaseEntity {
     data['priority'] = int.parse(this.priority ?? '4');
     data['mobileNumber'] = this.mobileNumber;
     data['requestType'] = 2;
+    data['status'] = status?.value ?? 1;
+    data['finalComments'] = finalComments ?? '';
     return data;
   }
 }

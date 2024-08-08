@@ -13,20 +13,3 @@ const int maxUploadFilesize = 1024 * 1024;
 const mobileRegx = r'^05[0-9]{8}$';
 const emailTemplatePath = 'assets/json/email_template.txt';
 const requestService = 'assets/json/request_service.json';
-
-final pendingActionTypes = [
-  'pending service fees payment',
-  'pending lab fee payment',
-  //'pending arrival confirmation',
-  'pending fine fee payment',
-  'pending_fine_fee_payment',
-  'pending_service_fee_payment',
-  'pending app fee payment',
-  'pending adv fees payment',
-  'partner approval',
-  'pending app service fee payment',
-  'pending service fee payment',
-  //'pending resubmit',
-  'save draft',
-  'new'
-];

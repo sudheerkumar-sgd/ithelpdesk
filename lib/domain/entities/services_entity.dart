@@ -38,27 +38,6 @@ class ServiceEntity extends BaseEntity {
 
   String get getDescription =>
       isSelectedLocalEn ? descriptionEn ?? '' : descriptionAr ?? '';
-
-  bool isServiceEligible(int userType) {
-    final eligibleService = ServiceType.getElgibleServiceName(userType);
-
-    return eligibleUsers.contains(eligibleService.value);
-  }
-
-  bool get isEstablishmentService =>
-      eligibleUsers.contains(ServiceType.establishment.value);
-
-  bool isIndividualService() {
-    for (var element in ServiceType.values) {
-      if (element != ServiceType.establishment) {
-        final eligible = eligibleUsers.contains(element.value);
-        if (eligible) {
-          return eligible;
-        }
-      }
-    }
-    return false;
-  }
 }
 
 class ServiceDetailsEntity extends BaseEntity {

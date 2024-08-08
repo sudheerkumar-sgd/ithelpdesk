@@ -75,17 +75,6 @@ class MyWalletBloc extends Cubit<MyWalletState> {
         .add(result.fold((l) => [], (r) => r.entity?.requests ?? []));
   }
 
-  Future<void> getMyActionMDRequests(
-      {required Map<String, dynamic> requestParams}) async {
-    final result =
-        await myWalletUseCase.getMyRequests(requestParams: requestParams);
-    _pendingMDRequests.sink.add(result.fold(
-        (l) => [],
-        (r) => (r.entity?.requests ?? [])
-            .where((e) => e.isPendingForAction)
-            .toList()));
-  }
-
   Future<void> getAllMyDEDRequests(
       {required Map<String, dynamic> requestParams}) async {
     final result =

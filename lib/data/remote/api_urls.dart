@@ -98,3 +98,5 @@ const String eservicesApiUrl = 'MasterData/GetEservices';
 const String createTicketApiUrl = 'CreateTicket';
 const String ticketHistoryApiUrl = 'Ticket/GetTicketHistory';
 const String ticketsByUserApiUrl = 'Ticket/GetTicketsByUser';
+const String updateTicketByStatusApiUrl = 'Ticket/UpdateTicket';
+const String forwordTicketApiUrl = 'Ticket/ForwordTicket';

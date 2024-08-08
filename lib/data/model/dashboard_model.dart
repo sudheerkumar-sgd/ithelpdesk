@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable
 
+import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/data/model/base_model.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
 
@@ -146,7 +147,8 @@ class TicketsModel extends BaseModel {
   String? duplicateRequestID;
   bool? isCustomAssign;
 
-  TicketsModel.fromJson(Map<String, dynamic> json) {
+  TicketsModel.fromJson(Map<String, dynamic> ticketsJson) {
+    final json = ticketsJson['data'] ?? ticketsJson;
     id = json['id'];
     subject = json['subject'];
     subjectID = json['subjectID'];
@@ -209,7 +211,7 @@ class TicketsModel extends BaseModel {
     ticketsEntity.isDeleted = isDeleted;
     ticketsEntity.dueDate = dueDate;
     ticketsEntity.finalComments = finalComments;
-    ticketsEntity.status = status;
+    ticketsEntity.status = StatusType.fromName(status ?? StatusType.open.name);
     ticketsEntity.createdOn = createdOn;
     ticketsEntity.reopenedOn = reopenedOn;
     ticketsEntity.closedOn = closedOn;

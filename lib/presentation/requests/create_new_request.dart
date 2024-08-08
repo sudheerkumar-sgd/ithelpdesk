@@ -21,6 +21,7 @@ import 'package:ithelpdesk/presentation/common_widgets/right_icon_text_widget.da
 import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 import 'package:ithelpdesk/res/drawables/background_box_decoration.dart';
 import 'package:page_transition/page_transition.dart';
+import 'dart:html' as html;
 
 class CreateNewRequest extends BaseScreenWidget {
   static start(BuildContext context) {
@@ -53,8 +54,13 @@ class CreateNewRequest extends BaseScreenWidget {
       resources.string.application
     ];
     final priorities = isSelectedLocalEn
-        ? ['Critical', 'High', 'Medium', 'Low']
-        : ['حرج', 'عالي', 'متوسط', 'منخفض'];
+        ? [
+            'Low',
+            'Medium',
+            'High',
+            'Critical',
+          ]
+        : ['منخفض', 'متوسط', 'عالي', 'حرج'];
     final noOfCategoryRows = isDesktop(context) ? 1 : 2;
     final noOfCategoryRowItems = isDesktop(context) ? 4 : 2;
     return Scaffold(
@@ -572,7 +578,7 @@ class CreateNewRequest extends BaseScreenWidget {
                             onTap: () async {
                               if (_formKey.currentState?.validate() == true) {
                                 final ticket = TicketEntity();
-                                ticket.userID = 317;
+                                ticket.userID = 118;
                                 ticket.departmentID = 1;
                                 ticket.categoryID = _ticketCategory.value + 1;
                                 ticket.subCategoryID = _subCategoryValue.value;

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
+import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/string_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
@@ -46,7 +47,9 @@ class ViewRequest extends BaseScreenWidget {
   final TextEditingController _contactNoController = TextEditingController();
   final TextEditingController _reasonController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _commentsController = TextEditingController();
   int priority = -1;
+  final _formKey = GlobalKey<FormState>();
 
   Widget _getDataForm(BuildContext context, int ticketType) {
     final resources = context.resources;
@@ -320,46 +323,50 @@ class ViewRequest extends BaseScreenWidget {
     final actionButtons = isDesktop(context)
         ? [
             ActionButtonEntity(
+                id: StatusType.return_.value,
                 nameEn: resources.string.returnText,
                 color: resources.color.colorWhite),
             ActionButtonEntity(
-                nameEn: resources.string.transfer,
-                color: resources.color.pending),
+                id: StatusType.approve.value,
+                nameEn: resources.string.approve,
+                color: resources.color.colorGreen26B757),
             ActionButtonEntity(
-                nameEn: resources.string.forwardTo,
+                id: StatusType.closed.value,
+                nameEn: resources.string.close,
                 color: resources.color.viewBgColorLight),
           ]
         : [
             ActionButtonEntity(
+                id: StatusType.return_.value,
                 nameEn: resources.string.returnText,
                 color: resources.color.colorWhite),
           ];
     final popupActionButtons = isDesktop(context)
         ? [
             ActionButtonEntity(
-                nameEn: resources.string.close,
-                color: resources.color.colorGreen26B757),
-            ActionButtonEntity(
+                id: StatusType.hold.value,
                 nameEn: resources.string.hold,
                 color: resources.color.viewBgColor),
             ActionButtonEntity(
+                id: StatusType.reject.value,
                 nameEn: resources.string.reject,
                 color: resources.color.rejected),
           ]
         : [
             ActionButtonEntity(
-                nameEn: resources.string.transfer,
-                color: resources.color.pending),
+                id: StatusType.approve.value,
+                nameEn: resources.string.approve,
+                color: resources.color.colorGreen26B757),
             ActionButtonEntity(
-                nameEn: resources.string.forwardTo,
-                color: resources.color.pending),
-            ActionButtonEntity(
+                id: StatusType.closed.value,
                 nameEn: resources.string.close,
                 color: resources.color.colorGreen26B757),
             ActionButtonEntity(
+                id: StatusType.hold.value,
                 nameEn: resources.string.hold,
                 color: resources.color.viewBgColor),
             ActionButtonEntity(
+                id: StatusType.reject.value,
                 nameEn: resources.string.reject,
                 color: resources.color.rejected),
           ];
@@ -417,7 +424,7 @@ class ViewRequest extends BaseScreenWidget {
                                 width: resources.dimen.dp5,
                               ),
                               Text(
-                                ticket.status ?? '',
+                                ticket.status?.name ?? '',
                                 style: context.textFontWeight700
                                     .onColor(resources.color.pending),
                               ),
@@ -468,8 +475,8 @@ class ViewRequest extends BaseScreenWidget {
                   SizedBox(
                     height: resources.dimen.dp20,
                   ),
-                  if (ticket.status?.toLowerCase() != 'closed' &&
-                      ticket.status?.toLowerCase() != 'reject') ...[
+                  if (ticket.status != StatusType.closed &&
+                      ticket.status != StatusType.reject) ...[
                     Container(
                       padding: EdgeInsets.symmetric(
                           vertical: resources.dimen.dp15,
@@ -503,15 +510,24 @@ class ViewRequest extends BaseScreenWidget {
                           SizedBox(
                             height: resources.dimen.dp10,
                           ),
-                          RightIconTextWidget(
-                            labelText: resources.string.comments,
-                            fillColor: resources.color.colorWhite,
-                            maxLines: 4,
-                            borderSide: BorderSide(
-                                color: context
-                                    .resources.color.sideBarItemUnselected,
-                                width: 1),
-                            borderRadius: 0,
+                          Form(
+                            key: _formKey,
+                            child: RightIconTextWidget(
+                              labelText: resources.string.comments,
+                              fillColor: resources.color.colorWhite,
+                              textController: _commentsController,
+                              maxLines: 4,
+                              borderSide: BorderSide(
+                                  color: context
+                                      .resources.color.sideBarItemUnselected,
+                                  width: 1),
+                              borderRadius: 0,
+                              isValid: (value) {
+                                if (value.isEmpty) {
+                                  return 'Please Enter Comments';
+                                }
+                              },
+                            ),
                           ),
                         ],
                       ),
@@ -524,10 +540,35 @@ class ViewRequest extends BaseScreenWidget {
                         for (int r = 0; r < actionButtons.length; r++) ...[
                           Expanded(
                             child: InkWell(
-                              onTap: () {
-                                Dialogs.showDialogWithClose(
-                                    context, TicketTransferWidget(),
-                                    maxWidth: 350);
+                              onTap: () async {
+                                final status =
+                                    StatusType.fromId(actionButtons[r].id ?? 1);
+                                switch (status) {
+                                  case StatusType.return_:
+                                    {
+                                      if (_formKey.currentState?.validate() ==
+                                          true) {
+                                        final updateTicket = TicketEntity();
+                                        updateTicket.id = ticket.id;
+                                        updateTicket.status = status;
+                                        updateTicket.finalComments =
+                                            _commentsController.text;
+                                        Dialogs.loader(context);
+                                        await _servicesBloc
+                                            .updateTicketByStatus(
+                                                requestParams: updateTicket
+                                                    .toCreateJson());
+                                        Dialogs.dismiss(context);
+                                      }
+                                    }
+                                  case StatusType.approve:
+                                    {
+                                      Dialogs.showDialogWithClose(
+                                          context, TicketTransferWidget(),
+                                          maxWidth: 350);
+                                    }
+                                  default:
+                                }
                               },
                               child: ActionButtonWidget(
                                 text: (actionButtons[r]).toString(),

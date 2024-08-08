@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
-import 'package:ithelpdesk/core/constants/data_constants.dart';
 import 'package:ithelpdesk/domain/entities/base_entity.dart';
 import 'package:ithelpdesk/res/resources.dart';
 
@@ -52,11 +51,6 @@ class RequestsEntity extends BaseEntity {
   bool get isPending =>
       (!(statusName ?? '').toLowerCase().contains('complete') &&
           !(statusName ?? '').toLowerCase().contains('rejected'));
-
-  bool get isPendingForAction =>
-      pendingActionTypes.contains((statusName ?? '').toLowerCase()) ||
-      pendingActionTypes.contains((statusNameEn ?? '').toLowerCase()) ||
-      (statusName ?? '').toLowerCase().contains('payment');
 
   bool get isCompleted => (statusName ?? '').toLowerCase().contains('complete');
 
