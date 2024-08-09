@@ -21,7 +21,8 @@ import 'package:ithelpdesk/presentation/common_widgets/right_icon_text_widget.da
 import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 import 'package:ithelpdesk/res/drawables/background_box_decoration.dart';
 import 'package:page_transition/page_transition.dart';
-import 'dart:html' as html;
+
+import '../../domain/entities/user_credentials_entity.dart';
 
 class CreateNewRequest extends BaseScreenWidget {
   static start(BuildContext context) {
@@ -578,8 +579,11 @@ class CreateNewRequest extends BaseScreenWidget {
                             onTap: () async {
                               if (_formKey.currentState?.validate() == true) {
                                 final ticket = TicketEntity();
-                                ticket.userID = 118;
-                                ticket.departmentID = 1;
+                                ticket.userID =
+                                    UserCredentialsEntity.details().id;
+                                ticket.departmentID =
+                                    UserCredentialsEntity.details()
+                                        .departmentID;
                                 ticket.categoryID = _ticketCategory.value + 1;
                                 ticket.subCategoryID = _subCategoryValue.value;
                                 ticket.subjectID = _reasonValue.value?.id;

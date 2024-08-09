@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
+import 'package:ithelpdesk/core/common/log.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
@@ -323,7 +324,7 @@ class ViewRequest extends BaseScreenWidget {
     final actionButtons = isDesktop(context)
         ? [
             ActionButtonEntity(
-                id: StatusType.return_.value,
+                id: StatusType.returned.value,
                 nameEn: resources.string.returnText,
                 color: resources.color.colorWhite),
             ActionButtonEntity(
@@ -337,7 +338,7 @@ class ViewRequest extends BaseScreenWidget {
           ]
         : [
             ActionButtonEntity(
-                id: StatusType.return_.value,
+                id: StatusType.returned.value,
                 nameEn: resources.string.returnText,
                 color: resources.color.colorWhite),
           ];
@@ -544,7 +545,7 @@ class ViewRequest extends BaseScreenWidget {
                                 final status =
                                     StatusType.fromId(actionButtons[r].id ?? 1);
                                 switch (status) {
-                                  case StatusType.return_:
+                                  case StatusType.returned:
                                     {
                                       if (_formKey.currentState?.validate() ==
                                           true) {
@@ -564,8 +565,14 @@ class ViewRequest extends BaseScreenWidget {
                                   case StatusType.approve:
                                     {
                                       Dialogs.showDialogWithClose(
-                                          context, TicketTransferWidget(),
-                                          maxWidth: 350);
+                                              context,
+                                              TicketTransferWidget(
+                                                ticketEntity: ticket,
+                                              ),
+                                              maxWidth: 350)
+                                          .then((value) {
+                                        printLog(value);
+                                      });
                                     }
                                   default:
                                 }

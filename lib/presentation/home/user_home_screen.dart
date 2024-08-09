@@ -8,6 +8,7 @@ import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
+import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
 import 'package:ithelpdesk/injection_container.dart';
 import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
 import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart';
@@ -270,7 +271,8 @@ class UserHomeScreen extends BaseScreenWidget {
   Widget build(BuildContext context) {
     final resources = context.resources;
     Future.delayed(Duration.zero, () {
-      _servicesBloc.getDashboardData(requestParams: {"userId": userID});
+      _servicesBloc.getDashboardData(
+          requestParams: {"userId": UserCredentialsEntity.details().id});
     });
     _selectedYear.value = DateTime.now().year;
     final requestTypesRows = isDesktop(context) ? 1 : 2;
@@ -307,7 +309,7 @@ class UserHomeScreen extends BaseScreenWidget {
             'Status',
             'Priority',
             'Assignee',
-            'Department',
+            'Dept',
             'CreateDate'
           ]
         : ['ID', 'Category', 'Subject', 'Status', 'Priority', 'CreateDate'];
@@ -318,7 +320,7 @@ class UserHomeScreen extends BaseScreenWidget {
             2: const FlexColumnWidth(2),
             3: const FlexColumnWidth(4),
             4: const FlexColumnWidth(2),
-            5: const FlexColumnWidth(1),
+            5: const FlexColumnWidth(2),
             6: const FlexColumnWidth(2),
             7: const FlexColumnWidth(1),
             8: const FlexColumnWidth(3),

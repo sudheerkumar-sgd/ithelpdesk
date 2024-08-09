@@ -8,7 +8,10 @@ class UserDataDB {
   static const String loginDisplayName = 'login_display_name_';
   static const String servicesSortOption = 'services_sort';
   static const String userServiceDisplayType = 'service_display_type';
+  static const String userId = 'user_id';
+  static const String userName = 'user_name';
   static const String userEmail = 'user_email';
+  static const String userDptId = 'user_dpt_id';
   static const String userType = 'user_type';
   static const String userToken = 'user_token';
   static const String userFavorites = 'user_favorites';

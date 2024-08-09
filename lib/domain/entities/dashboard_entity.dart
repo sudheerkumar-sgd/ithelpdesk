@@ -62,7 +62,7 @@ class TicketEntity extends BaseEntity {
         "employeeName": creator ?? '',
         "Category": categoryName ?? '',
         "subject": subject ?? '',
-        "status": status ?? '',
+        "status": status?.name ?? '',
         "priority": priority ?? '',
         "assignee": assignedTo ?? '',
         "department": departmentName ?? '',
@@ -73,23 +73,25 @@ class TicketEntity extends BaseEntity {
         "id": id ?? '',
         "Category": categoryName ?? '',
         "subject": subject ?? '',
-        "status": status ?? '',
+        "status": status?.name ?? '',
         "priority": priority ?? '',
         "createDate": createdOn ?? '',
         "showActionButtons": showActionButtons,
       };
   Map<String, dynamic> toCreateJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data["id"] = id;
-    data['userID'] = this.userID;
-    data['subject'] = this.subject;
-    data['subjectID'] = this.subjectID;
-    data['categoryID'] = this.categoryID;
-    data['subCategoryID'] = this.subCategoryID;
-    data['description'] = this.description;
-    data['departmentID'] = this.departmentID;
-    data['priority'] = int.parse(this.priority ?? '4');
-    data['mobileNumber'] = this.mobileNumber;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (id != null) {
+      data["id"] = id;
+    }
+    data['userID'] = userID;
+    data['subject'] = subject;
+    data['subjectID'] = subjectID;
+    data['categoryID'] = categoryID;
+    data['subCategoryID'] = subCategoryID;
+    data['description'] = description;
+    data['departmentID'] = departmentID;
+    data['priority'] = int.parse(priority ?? '4');
+    data['mobileNumber'] = mobileNumber;
     data['requestType'] = 2;
     data['status'] = status?.value ?? 1;
     data['finalComments'] = finalComments ?? '';

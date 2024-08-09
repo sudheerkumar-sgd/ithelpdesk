@@ -107,3 +107,17 @@ class ActionButtonEntity extends BaseEntity {
   @override
   List<Object?> get props => [nameEn];
 }
+
+class DepartmentEntity extends BaseEntity {
+  int? id;
+  String? name;
+  String? shortName;
+
+  @override
+  String toString() {
+    return name ?? '';
+  }
+
+  @override
+  List<Object?> get props => [id];
+}

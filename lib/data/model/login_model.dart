@@ -56,17 +56,18 @@ class UserModel extends BaseModel {
   UserModel();
 
   UserModel.fromJson(Map<String, dynamic> json) {
-    id = json['data']?['id'];
-    name = json['data']?['name'];
-    email = json['data']?['email'];
-    username = json['data']?['username'];
-    employeeID = json['data']?['employeeID'];
-    roleID = json['data']?['roleID'];
-    departmentID = json['data']?['departmentID'];
-    createdOn = json['data']?['createdOn'];
-    isStaff = json['data']?['isStaff'];
-    status = json['data']?['status'];
-    statusChangedOn = json['data']?['statusChangedOn'];
+    final userJson = json['data'] ?? json;
+    id = userJson['id'];
+    name = userJson['name'];
+    email = userJson['email'];
+    username = userJson['username'];
+    employeeID = userJson['employeeID'];
+    roleID = userJson['roleID'];
+    departmentID = userJson['departmentID'];
+    createdOn = userJson['createdOn'];
+    isStaff = userJson['isStaff'];
+    status = userJson['status'];
+    statusChangedOn = userJson['statusChangedOn'];
   }
 
   @override

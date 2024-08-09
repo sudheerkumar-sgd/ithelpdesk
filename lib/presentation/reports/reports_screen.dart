@@ -10,6 +10,7 @@ import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dropdown_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/report_list_widget.dart';
 
+import '../../domain/entities/user_credentials_entity.dart';
 import '../../injection_container.dart';
 
 class ReportsScreen extends BaseScreenWidget {
@@ -241,8 +242,9 @@ class ReportsScreen extends BaseScreenWidget {
                   height: resources.dimen.dp20,
                 ),
                 FutureBuilder(
-                    future: _servicesBloc
-                        .getTticketsByUser(requestParams: {'userId': userID}),
+                    future: _servicesBloc.getTticketsByUser(requestParams: {
+                      'userId': UserCredentialsEntity.details().id
+                    }),
                     builder: (context, snapsShot) {
                       return snapsShot.data?.entity?.items.isNotEmpty == true
                           ? ReportListWidget(

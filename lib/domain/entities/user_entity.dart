@@ -32,6 +32,11 @@ class UserEntity extends BaseEntity {
 
   @override
   List<Object?> get props => [id];
+
+  @override
+  String toString() {
+    return name ?? '';
+  }
 }
 
 class EstablishmentEntity extends BaseEntity {

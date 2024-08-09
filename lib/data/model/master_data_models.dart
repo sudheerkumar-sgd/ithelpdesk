@@ -2,6 +2,7 @@
 
 import 'package:ithelpdesk/data/model/base_model.dart';
 import 'package:ithelpdesk/data/model/dashboard_model.dart';
+import 'package:ithelpdesk/data/model/login_model.dart';
 import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
 
 class ListModel extends BaseModel {
@@ -42,6 +43,22 @@ class ListModel extends BaseModel {
     if (json['data'] is List) {
       for (var json in (json['data'] as List)) {
         items.add(TicketsModel.fromJson(json).toEntity());
+      }
+    }
+  }
+
+  ListModel.fromDepartmentsJson(Map<String, dynamic> json) {
+    if (json['data'] is List) {
+      for (var json in (json['data'] as List)) {
+        items.add(DepartmentModel.fromJson(json).toEntity());
+      }
+    }
+  }
+
+  ListModel.fromEmployeesJson(Map<String, dynamic> json) {
+    if (json['data'] is List) {
+      for (var json in (json['data'] as List)) {
+        items.add(UserModel.fromJson(json).toEntity());
       }
     }
   }
@@ -135,5 +152,27 @@ class EserviceModel extends BaseModel {
     eserviceEntity.servicENAMEAR = servicENAMEAR;
     eserviceEntity.servicEDEPARTMENTID = servicEDEPARTMENTID;
     return eserviceEntity;
+  }
+}
+
+class DepartmentModel extends BaseModel {
+  int? id;
+  String? name;
+  String? shortName;
+  String? servicENAMEAR;
+
+  DepartmentModel.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    shortName = json['shortName'];
+  }
+
+  @override
+  DepartmentEntity toEntity() {
+    final departmentEntity = DepartmentEntity();
+    departmentEntity.id = id;
+    departmentEntity.name = name;
+    departmentEntity.shortName = shortName;
+    return departmentEntity;
   }
 }

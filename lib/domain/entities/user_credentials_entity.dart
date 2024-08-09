@@ -1,43 +1,33 @@
-import 'dart:convert';
-
 import 'package:ithelpdesk/core/constants/constants.dart';
+import 'package:ithelpdesk/data/local/user_data_db.dart';
+
+import 'user_entity.dart';
 
 class UserCredentialsEntity {
-  static UserCredentialsEntity? userCredentialsEntity;
-  String? userId;
-  String? userNameEN;
-  String? userNameAR;
-  String? integrationId;
-  String? mobileNumber;
-  bool? hasEstablishment;
+  static UserCredentialsEntity? userData;
+  int? id;
+  String? name;
+  String? username;
+  int? departmentID;
   UserCredentialsEntity();
   factory UserCredentialsEntity.details() {
-    if (userCredentialsEntity == null && userToken.isNotEmpty) {
-      userCredentialsEntity = UserCredentialsEntity();
-      String normalizedSource = base64Url.normalize(userToken.split(".")[1]);
-      final data = jsonDecode(utf8.decode(base64Url.decode(normalizedSource)));
-      userCredentialsEntity?.userId = '${data['UserId']}';
-      userCredentialsEntity?.userNameAR = '${data['UserNameAR']}';
-      userCredentialsEntity?.userNameEN = '${data['UserNameEN']}';
-      userCredentialsEntity?.integrationId = '${data['IntegrationId']}';
-      userCredentialsEntity?.mobileNumber = '${data['Mobile']}';
-      userCredentialsEntity?.hasEstablishment =
-          data['HaveEstablishment'] == 'True';
+    if (userData == null) {
+      userData = UserCredentialsEntity();
+      final userDetails = UserDataDB();
+      userData?.id = userDetails.get(UserDataDB.userId);
+      userData?.name = userDetails.get(UserDataDB.name);
+      userData?.username = userDetails.get(UserDataDB.userName);
+      userData?.departmentID = userDetails.get(UserDataDB.userDptId);
     }
-    return userCredentialsEntity ?? UserCredentialsEntity();
+    return userData ?? UserCredentialsEntity();
   }
 
-  String getUserQueryString() {
-    final queryParameters = {
-      'applicantId': userId,
-      'lang': isSelectedLocalEn ? 'en' : 'ar',
-      'sessionId': integrationId,
-      'channelId': '3',
-    };
-    final queryString = Uri(queryParameters: queryParameters).query;
-    return queryString;
+  factory UserCredentialsEntity.create(UserEntity userEntity) {
+    final userDetails = UserDataDB();
+    userDetails.put(UserDataDB.userId, userEntity.id);
+    userDetails.put(UserDataDB.name, userEntity.name);
+    userDetails.put(UserDataDB.userName, userEntity.username);
+    userDetails.put(UserDataDB.userDptId, userEntity.departmentID);
+    return UserCredentialsEntity.details();
   }
-
-  String get userDisplayName =>
-      isSelectedLocalEn ? userNameEN ?? '' : userNameAR ?? '';
 }
