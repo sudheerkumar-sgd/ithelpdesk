@@ -56,6 +56,14 @@ class MasterDataBloc extends Cubit<MasterDataState> {
     return result.fold((l) => ListEntity(),
         (r) => OnDataSuccess(listEntity: r).listEntity.entity ?? ListEntity());
   }
+  Future<ListEntity> getAssignedEmployees(
+      {required Map<String, dynamic> requestParams}) async {
+    //emit(OnMasterDataLoading());
+    final result =
+        await masterDataUseCase.getAssignedEmployees(requestParams: requestParams);
+    return result.fold((l) => ListEntity(),
+        (r) => OnDataSuccess(listEntity: r).listEntity.entity ?? ListEntity());
+  }
 
   String _getErrorMessage(Failure failure) {
     return failure.errorMessage;

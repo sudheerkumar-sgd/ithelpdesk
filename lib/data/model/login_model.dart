@@ -14,11 +14,11 @@ class LoginModel extends BaseModel {
 
   factory LoginModel.fromJson(Map<String, dynamic> json) {
     var loginModel = LoginModel();
-    loginModel.fullnameAr = json['response']['fullnameAr'];
-    loginModel.fullnameEn = json['response']['fullnameEn'];
-    loginModel.email = json['response']['email'];
-    loginModel.userType = json['response']['userType'];
-    loginModel.token = json['response']['token'];
+    loginModel.fullnameAr = json['data']?['fullnameAr'];
+    loginModel.fullnameEn = json['data']?['fullnameEn'];
+    loginModel.email = json['data']?['email'];
+    loginModel.userType = json['data']?['userType'];
+    loginModel.token = json['data']?['token'];
     return loginModel;
   }
 

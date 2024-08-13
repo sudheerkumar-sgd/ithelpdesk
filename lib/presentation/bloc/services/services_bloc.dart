@@ -47,7 +47,6 @@ class ServicesBloc extends Cubit<ServicesState> {
 
   Future<ListEntity> getTicketHistory(
       {required Map<String, dynamic> requestParams}) async {
-    emit(OnLoading());
     final result =
         await servicesUseCase.getTicketHistory(requestParams: requestParams);
     return result.fold((l) => ListEntity(), (r) {
@@ -55,14 +54,15 @@ class ServicesBloc extends Cubit<ServicesState> {
     });
   }
 
-  Future<TicketEntity> updateTicketByStatus(
-      {required Map<String, dynamic> requestParams}) async {
+  Future<void> updateTicketByStatus(
+      {required String apiUrl,
+      required Map<String, dynamic> requestParams}) async {
     emit(OnLoading());
     final result = await servicesUseCase.updateTicketByStatus(
-        requestParams: requestParams);
-    return result.fold((l) => TicketEntity(), (r) {
-      return r.entity ?? TicketEntity();
-    });
+        apiUrl: apiUrl, requestParams: requestParams);
+    emit(result.fold((l) => OnApiError(message: _getErrorMessage(l)), (r) {
+      return OnUpdateTicket(onUpdateTicketResult: r);
+    }));
   }
 
   String _getErrorMessage(Failure failure) {

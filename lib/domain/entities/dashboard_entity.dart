@@ -1,7 +1,13 @@
 // ignore_for_file: must_be_immutable
 
+import 'package:flutter/material.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
+import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/domain/entities/base_entity.dart';
+
+import '../../core/common/common_utils.dart';
+import 'master_data_entities.dart';
+import 'user_credentials_entity.dart';
 
 class DashboardEntity extends BaseEntity {
   int? id;
@@ -40,6 +46,7 @@ class TicketEntity extends BaseEntity {
   int? userID;
   String? creator;
   String? level;
+  int? assignedUserID;
   String? assignedTo;
   int? previousAssignee;
   String? transferBy;
@@ -56,6 +63,75 @@ class TicketEntity extends BaseEntity {
   String? updatedOn;
   int? requestType;
   String? computerName;
+
+  bool isMyTicket() {
+    return (userID == UserCredentialsEntity.details().id);
+  }
+
+  List<ActionButtonEntity> getActionButtonsForMytickets(BuildContext context) {
+    final actionButtons = List<ActionButtonEntity>.empty(growable: true);
+    actionButtons.add(ActionButtonEntity(
+        id: StatusType.closed.value,
+        nameEn: context.resources.string.close,
+        color: context.resources.color.viewBgColorLight));
+    if (status == StatusType.returned &&
+        assignedUserID == UserCredentialsEntity.details().id) {
+      actionButtons.add(ActionButtonEntity(
+          id: 0,
+          nameEn: 'Resubmit',
+          color: context.resources.color.colorGreen26B757));
+    }
+    return actionButtons;
+  }
+
+  List<ActionButtonEntity> getActionButtonsForAssigned(BuildContext context) {
+    final actionButtons = List<ActionButtonEntity>.empty(growable: true);
+    if (status != StatusType.returned) {
+      actionButtons.add(ActionButtonEntity(
+          id: StatusType.returned.value,
+          nameEn: context.resources.string.returnText,
+          color: context.resources.color.colorWhite));
+    }
+    if (status == StatusType.open) {
+      actionButtons.add(ActionButtonEntity(
+          id: StatusType.approve.value,
+          nameEn: context.resources.string.approve,
+          color: context.resources.color.colorGreen26B757));
+    }
+    actionButtons.add(ActionButtonEntity(
+        id: StatusType.closed.value,
+        nameEn: context.resources.string.close,
+        color: context.resources.color.viewBgColorLight));
+    if (status == StatusType.hold) {
+      actionButtons.add(ActionButtonEntity(
+          id: StatusType.open.value,
+          nameEn: context.resources.string.open,
+          color: context.resources.color.viewBgColor));
+    }
+    if (status == StatusType.returned) {
+      ActionButtonEntity(
+          id: StatusType.resubmit.value,
+          nameEn: context.resources.string.resubmit,
+          color: context.resources.color.colorGreen26B757);
+    }
+    if (status != StatusType.hold) {
+      actionButtons.add(ActionButtonEntity(
+          id: StatusType.hold.value,
+          nameEn: context.resources.string.hold,
+          color: context.resources.color.viewBgColor));
+    }
+    actionButtons.add(ActionButtonEntity(
+        id: StatusType.reject.value,
+        nameEn: context.resources.string.reject,
+        color: context.resources.color.rejected));
+    return actionButtons;
+  }
+
+  List<ActionButtonEntity> getActionButtons(BuildContext context) {
+    return isMyTicket()
+        ? getActionButtonsForMytickets(context)
+        : getActionButtonsForAssigned(context);
+  }
 
   Map<String, dynamic> toJson({bool showActionButtons = false}) => {
         "id": id ?? '',

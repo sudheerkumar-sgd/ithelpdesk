@@ -67,6 +67,21 @@ class ServicesUseCase extends BaseUseCase {
     });
   }
 
+  Future<Either<Failure, ApiEntity<ListEntity>>> getTicketComments(
+      {required Map<String, dynamic> requestParams}) async {
+    var apiResponse = await apisRepository.get<ListModel>(
+      apiUrl: ticketCommentsApiUrl,
+      requestParams: requestParams,
+      responseModel: ListModel.fromTicketHistoryJson,
+    );
+    return apiResponse.fold((l) {
+      return Left(l);
+    }, (r) {
+      var apiResponseEntity = r.toEntity<ListEntity>();
+      return Right(apiResponseEntity);
+    });
+  }
+
   Future<Either<Failure, ApiEntity<ListEntity>>> getTticketsByUser(
       {required Map<String, dynamic> requestParams}) async {
     var apiResponse = await apisRepository.get<ListModel>(
@@ -83,9 +98,10 @@ class ServicesUseCase extends BaseUseCase {
   }
 
   Future<Either<Failure, ApiEntity<TicketEntity>>> updateTicketByStatus(
-      {required Map<String, dynamic> requestParams}) async {
+      {required String apiUrl,
+      required Map<String, dynamic> requestParams}) async {
     var apiResponse = await apisRepository.post<TicketsModel>(
-      apiUrl: updateTicketByStatusApiUrl,
+      apiUrl: apiUrl,
       requestParams: requestParams,
       responseModel: TicketsModel.fromJson,
     );

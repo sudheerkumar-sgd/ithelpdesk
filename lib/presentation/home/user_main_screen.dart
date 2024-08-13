@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
+import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
 import 'package:ithelpdesk/injection_container.dart';
 import 'package:ithelpdesk/presentation/bloc/user/user_bloc.dart';
 import 'package:ithelpdesk/presentation/common_widgets/alert_dialog_widget.dart';
@@ -115,7 +116,7 @@ class _MainScreenState extends State<UserMainScreen> {
         },
       );
     });
-    
+
     // final isWebMobile = kIsWeb &&
     //     (defaultTargetPlatform == TargetPlatform.iOS ||
     //         defaultTargetPlatform == TargetPlatform.android);
@@ -155,17 +156,15 @@ class _MainScreenState extends State<UserMainScreen> {
                 Expanded(
                   child: Column(
                     children: [
-                      FutureBuilder(
-                          future: _userBloc.getUserData({'userID': userID}),
-                          builder: (context, snapShot) {
-                            return isDesktop(context)
-                                ? SearchUserAppBarWidget(
-                                    userName: snapShot.data?.name ?? '',
-                                  )
-                                : MSearchUserAppBarWidget(
-                                    userName: snapShot.data?.name ?? '',
-                                  );
-                          }),
+                      isDesktop(context)
+                          ? SearchUserAppBarWidget(
+                              userName:
+                                  UserCredentialsEntity.details().name ?? "",
+                            )
+                          : MSearchUserAppBarWidget(
+                              userName:
+                                  UserCredentialsEntity.details().name ?? "",
+                            ),
                       ValueListenableBuilder(
                           valueListenable: _selectedIndex,
                           builder: (context, index, child) {

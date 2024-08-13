@@ -14,8 +14,8 @@ class AppRoutes {
   /// The map used to define our routes, needs to be supplied to [MaterialApp]
   static Map<String, WidgetBuilder> getRoutes() {
     return {
-      AppRoutes.initialRoute: (context) => const SplashScreen(),
-      AppRoutes.startRoute: (context) => const SplashScreen(),
+      AppRoutes.initialRoute: (context) => SplashScreen(),
+      AppRoutes.startRoute: (context) => SplashScreen(),
       AppRoutes.userMainRoute: (context) => const UserMainScreen(),
     };
   }

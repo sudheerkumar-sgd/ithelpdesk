@@ -28,6 +28,14 @@ class OnCreateTicketSuccess extends ServicesState {
   List<Object?> get props => [createTicketResponse];
 }
 
+class OnUpdateTicket extends ServicesState {
+  final ApiEntity<TicketEntity> onUpdateTicketResult;
+
+  OnUpdateTicket({required this.onUpdateTicketResult});
+  @override
+  List<Object?> get props => [onUpdateTicketResult];
+}
+
 class OnMostUsedServicesSuccess extends ServicesState {
   final ApiEntity<MostUsedServicesEntity> mostUsedServicesEntity;
 

@@ -1,7 +1,7 @@
+import 'dart:convert';
+
 import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/data/local/user_data_db.dart';
-
-import 'user_entity.dart';
 
 class UserCredentialsEntity {
   static UserCredentialsEntity? userData;
@@ -11,23 +11,21 @@ class UserCredentialsEntity {
   int? departmentID;
   UserCredentialsEntity();
   factory UserCredentialsEntity.details() {
-    if (userData == null) {
+    if (userData == null && userToken.isNotEmpty) {
       userData = UserCredentialsEntity();
-      final userDetails = UserDataDB();
-      userData?.id = userDetails.get(UserDataDB.userId);
-      userData?.name = userDetails.get(UserDataDB.name);
-      userData?.username = userDetails.get(UserDataDB.userName);
-      userData?.departmentID = userDetails.get(UserDataDB.userDptId);
+      String normalizedSource = base64Url.normalize(userToken.split(".")[1]);
+      final data = jsonDecode(utf8.decode(base64Url.decode(normalizedSource)));
+      userData?.id = int.tryParse(data['ID']);
+      userData?.departmentID = int.tryParse(data['DepartmentID']);
+      userData?.username = data['UserName'];
+      userData?.name = data['Name'];
     }
     return userData ?? UserCredentialsEntity();
   }
 
-  factory UserCredentialsEntity.create(UserEntity userEntity) {
+  factory UserCredentialsEntity.create(String userToken) {
     final userDetails = UserDataDB();
-    userDetails.put(UserDataDB.userId, userEntity.id);
-    userDetails.put(UserDataDB.name, userEntity.name);
-    userDetails.put(UserDataDB.userName, userEntity.username);
-    userDetails.put(UserDataDB.userDptId, userEntity.departmentID);
+    userDetails.put(UserDataDB.userToken, userToken);
     return UserCredentialsEntity.details();
   }
 }

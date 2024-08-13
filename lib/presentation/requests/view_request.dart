@@ -1,5 +1,7 @@
 // ignore_for_file: must_be_immutable
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
@@ -9,6 +11,7 @@ import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/string_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
+import 'package:ithelpdesk/data/remote/api_urls.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
 import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
 import 'package:ithelpdesk/injection_container.dart';
@@ -23,6 +26,8 @@ import 'package:ithelpdesk/presentation/common_widgets/right_icon_text_widget.da
 import 'package:ithelpdesk/presentation/requests/widgets/ticket_transfer_widget.dart';
 import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 import 'package:page_transition/page_transition.dart';
+
+import '../common_widgets/alert_dialog_widget.dart';
 
 class ViewRequest extends BaseScreenWidget {
   static start(BuildContext context, TicketEntity ticket) {
@@ -52,7 +57,52 @@ class ViewRequest extends BaseScreenWidget {
   int priority = -1;
   final _formKey = GlobalKey<FormState>();
 
-  Widget _getDataForm(BuildContext context, int ticketType) {
+  _onActionClicked(BuildContext context, StatusType status) async {
+    {
+      switch (status) {
+        case StatusType.approve:
+          {
+            Dialogs.showDialogWithClose(
+                    context,
+                    TicketTransferWidget(
+                      ticketEntity: ticket,
+                    ),
+                    maxWidth: 350)
+                .then((value) async {
+              printLog(value);
+              final updateTicket = TicketEntity();
+              updateTicket.id = ticket.id;
+              updateTicket.status = StatusType.open;
+              updateTicket.userID = ticket.userID;
+              if (value['employee'] > 0) {
+                updateTicket.status = value['employee'];
+              }
+              if (value['department'] > 0) {
+                updateTicket.departmentID = value['department'];
+              }
+              updateTicket.finalComments = _commentsController.text;
+              _servicesBloc.updateTicketByStatus(
+                  apiUrl: forwordTicketApiUrl,
+                  requestParams: updateTicket.toCreateJson());
+            });
+          }
+        default:
+          if (_formKey.currentState?.validate() == true) {
+            final updateTicket = TicketEntity();
+            updateTicket.id = ticket.id;
+            updateTicket.status =
+                status == StatusType.resubmit ? StatusType.open : status;
+            updateTicket.userID = ticket.userID;
+            updateTicket.finalComments = _commentsController.text;
+            _servicesBloc.updateTicketByStatus(
+                apiUrl: updateTicketByStatusApiUrl,
+                requestParams: updateTicket.toCreateJson());
+          }
+      }
+    }
+  }
+
+  Widget _getDataForm(BuildContext context) {
     final resources = context.resources;
     final priorities = isSelectedLocalEn
         ? ['Critical', 'High', 'Medium', 'Low']
@@ -320,59 +370,16 @@ class ViewRequest extends BaseScreenWidget {
   @override
   Widget build(BuildContext context) {
     final resources = context.resources;
-    const ticketType = 2;
+    final ticketActionButtons = ticket.getActionButtons(context);
+    final actionButtonsLength = isDesktop(context) ? 3 : 1;
     final actionButtons = isDesktop(context)
-        ? [
-            ActionButtonEntity(
-                id: StatusType.returned.value,
-                nameEn: resources.string.returnText,
-                color: resources.color.colorWhite),
-            ActionButtonEntity(
-                id: StatusType.approve.value,
-                nameEn: resources.string.approve,
-                color: resources.color.colorGreen26B757),
-            ActionButtonEntity(
-                id: StatusType.closed.value,
-                nameEn: resources.string.close,
-                color: resources.color.viewBgColorLight),
-          ]
-        : [
-            ActionButtonEntity(
-                id: StatusType.returned.value,
-                nameEn: resources.string.returnText,
-                color: resources.color.colorWhite),
-          ];
-    final popupActionButtons = isDesktop(context)
-        ? [
-            ActionButtonEntity(
-                id: StatusType.hold.value,
-                nameEn: resources.string.hold,
-                color: resources.color.viewBgColor),
-            ActionButtonEntity(
-                id: StatusType.reject.value,
-                nameEn: resources.string.reject,
-                color: resources.color.rejected),
-          ]
-        : [
-            ActionButtonEntity(
-                id: StatusType.approve.value,
-                nameEn: resources.string.approve,
-                color: resources.color.colorGreen26B757),
-            ActionButtonEntity(
-                id: StatusType.closed.value,
-                nameEn: resources.string.close,
-                color: resources.color.colorGreen26B757),
-            ActionButtonEntity(
-                id: StatusType.hold.value,
-                nameEn: resources.string.hold,
-                color: resources.color.viewBgColor),
-            ActionButtonEntity(
-                id: StatusType.reject.value,
-                nameEn: resources.string.reject,
-                color: resources.color.rejected),
-          ];
-    //final actionButtonRows = isDesktop(context) ? 1 : 2;
-    //final actionButtonColumns = isDesktop(context) ? 5 : 3;
+        ? ticketActionButtons.sublist(
+            0, min(actionButtonsLength, ticketActionButtons.length))
+        : ticketActionButtons.sublist(0, 1);
+    var popupActionButtons = List<ActionButtonEntity>.empty(growable: true);
+    if (actionButtonsLength < ticketActionButtons.length) {
+      popupActionButtons = ticketActionButtons.sublist(actionButtonsLength);
+    }
 
     return Scaffold(
         backgroundColor: resources.color.appScaffoldBg,
@@ -381,228 +388,232 @@ class ViewRequest extends BaseScreenWidget {
             BlocProvider(create: (context) => _servicesBloc),
             BlocProvider(create: (context) => _masterDataBloc),
           ],
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-                horizontal: resources.dimen.dp15,
-                vertical: resources.dimen.dp20),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        flex: 3,
-                        child: Text.rich(
-                          TextSpan(
-                              text:
-                                  '${ticket.subject} - UAQGOV-ITHD- ${ticket.id}\n',
-                              style: context.textFontWeight600,
-                              children: [
-                                TextSpan(
-                                    text:
-                                        'Created by ${ticket.creator} on ${ticket.createdOn}',
-                                    style: context.textFontWeight400
-                                        .onFontSize(resources.fontSize.dp10)
-                                        .onColor(resources.color.textColorLight)
-                                        .onHeight(1)
-                                        .onFontFamily(fontFamily: fontFamilyEN))
-                              ]),
-                        ),
-                      ),
-                      Expanded(
-                        flex: isDesktop(context) ? 1 : 0,
-                        child: Padding(
-                          padding: EdgeInsets.only(left: resources.dimen.dp20),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'status:',
+          child: BlocListener<ServicesBloc, ServicesState>(
+            listener: (context, state) {
+              if (state is OnLoading) {
+                Dialogs.showInfoLoader(context, 'Updating Ticket');
+              } else if (state is OnUpdateTicket) {
+                Dialogs.dismiss(context);
+                Dialogs.showInfoDialog(
+                        context, PopupType.success, 'Successfully Updated}')
+                    .then((value) {
+                  Navigator.pop(context);
+                });
+              } else if (state is OnApiError) {
+                Dialogs.dismiss(context);
+                Dialogs.showInfoDialog(context, PopupType.fail, state.message)
+                    .then((value) {
+                  Navigator.pop(context);
+                });
+              }
+            },
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                  horizontal: resources.dimen.dp15,
+                  vertical: resources.dimen.dp20),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: Text.rich(
+                            TextSpan(
+                                text: 'UAQGOV-ITHD- ${ticket.id}\n',
                                 style: context.textFontWeight600,
-                              ),
-                              SizedBox(
-                                width: resources.dimen.dp5,
-                              ),
-                              Text(
-                                ticket.status?.name ?? '',
-                                style: context.textFontWeight700
-                                    .onColor(resources.color.pending),
-                              ),
-                            ],
+                                children: [
+                                  TextSpan(
+                                      text:
+                                          'Created by ${ticket.creator} on ${ticket.createdOn}',
+                                      style: context.textFontWeight400
+                                          .onFontSize(resources.fontSize.dp10)
+                                          .onColor(
+                                              resources.color.textColorLight)
+                                          .onHeight(1)
+                                          .onFontFamily(
+                                              fontFamily: fontFamilyEN))
+                                ]),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: resources.dimen.dp10,
-                  ),
-                  IntrinsicHeight(
-                    child: isDesktop(context)
-                        ? Row(
-                            children: [
-                              Expanded(
-                                child: _getDataForm(context, ticketType),
-                              ),
-                              SizedBox(
-                                width: 280,
-                                child: FutureBuilder(
+                        Expanded(
+                          flex: isDesktop(context) ? 1 : 0,
+                          child: Padding(
+                            padding:
+                                EdgeInsets.only(left: resources.dimen.dp20),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'status:',
+                                  style: context.textFontWeight600,
+                                ),
+                                SizedBox(
+                                  width: resources.dimen.dp5,
+                                ),
+                                Text(
+                                  ticket.status?.name ?? '',
+                                  style: context.textFontWeight700
+                                      .onColor(resources.color.pending),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: resources.dimen.dp10,
+                    ),
+                    IntrinsicHeight(
+                      child: isDesktop(context)
+                          ? Row(
+                              children: [
+                                Expanded(
+                                  child: _getDataForm(context),
+                                ),
+                                SizedBox(
+                                  width: 280,
+                                  child: FutureBuilder(
+                                      future: _servicesBloc.getTicketHistory(
+                                          requestParams: {
+                                            "ticketID": ticket.id
+                                          }),
+                                      builder: (context, snapShot) {
+                                        return _getStatusWidget(context,
+                                            snapShot.data?.items ?? []);
+                                      }),
+                                )
+                              ],
+                            )
+                          : Column(
+                              children: [
+                                FutureBuilder(
                                     future: _servicesBloc.getTicketHistory(
                                         requestParams: {"ticketID": ticket.id}),
                                     builder: (context, snapShot) {
                                       return _getStatusWidget(
                                           context, snapShot.data?.items ?? []);
                                     }),
-                              )
-                            ],
-                          )
-                        : Column(
-                            children: [
-                              FutureBuilder(
-                                  future: _servicesBloc.getTicketHistory(
-                                      requestParams: {"ticketID": ticket.id}),
-                                  builder: (context, snapShot) {
-                                    return _getStatusWidget(
-                                        context, snapShot.data?.items ?? []);
-                                  }),
-                              SizedBox(
-                                height: resources.dimen.dp20,
-                              ),
-                              _getDataForm(context, ticketType),
-                            ],
-                          ),
-                  ),
-                  SizedBox(
-                    height: resources.dimen.dp20,
-                  ),
-                  if (ticket.status != StatusType.closed &&
-                      ticket.status != StatusType.reject) ...[
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                          vertical: resources.dimen.dp15,
-                          horizontal: resources.dimen.dp20),
-                      color: resources.color.colorWhite,
-                      child: Column(
-                        children: [
-                          ValueListenableBuilder(
-                              valueListenable: _isChargeable,
-                              builder: (context, value, child) {
-                                return CheckboxListTile(
-                                    contentPadding: const EdgeInsets.all(0),
-                                    title: Text(
-                                      '${resources.string.chargeable}(50 AED)',
-                                      style: context.textFontWeight400
-                                          .onColor(resources.color.viewBgColor),
-                                    ),
-                                    side: BorderSide(
-                                      color: resources.color.viewBgColor,
-                                      width: 1.5,
-                                    ),
-                                    visualDensity: const VisualDensity(
-                                        horizontal: -4, vertical: -4),
-                                    controlAffinity:
-                                        ListTileControlAffinity.leading,
-                                    value: value,
-                                    onChanged: (isChecked) {
-                                      _isChargeable.value = isChecked;
-                                    });
-                              }),
-                          SizedBox(
-                            height: resources.dimen.dp10,
-                          ),
-                          Form(
-                            key: _formKey,
-                            child: RightIconTextWidget(
-                              labelText: resources.string.comments,
-                              fillColor: resources.color.colorWhite,
-                              textController: _commentsController,
-                              maxLines: 4,
-                              borderSide: BorderSide(
-                                  color: context
-                                      .resources.color.sideBarItemUnselected,
-                                  width: 1),
-                              borderRadius: 0,
-                              isValid: (value) {
-                                if (value.isEmpty) {
-                                  return 'Please Enter Comments';
-                                }
-                              },
+                                SizedBox(
+                                  height: resources.dimen.dp20,
+                                ),
+                                _getDataForm(context),
+                              ],
                             ),
-                          ),
-                        ],
-                      ),
                     ),
                     SizedBox(
                       height: resources.dimen.dp20,
                     ),
-                    Row(
-                      children: [
-                        for (int r = 0; r < actionButtons.length; r++) ...[
-                          Expanded(
-                            child: InkWell(
-                              onTap: () async {
-                                final status =
-                                    StatusType.fromId(actionButtons[r].id ?? 1);
-                                switch (status) {
-                                  case StatusType.returned:
-                                    {
-                                      if (_formKey.currentState?.validate() ==
-                                          true) {
-                                        final updateTicket = TicketEntity();
-                                        updateTicket.id = ticket.id;
-                                        updateTicket.status = status;
-                                        updateTicket.finalComments =
-                                            _commentsController.text;
-                                        Dialogs.loader(context);
-                                        await _servicesBloc
-                                            .updateTicketByStatus(
-                                                requestParams: updateTicket
-                                                    .toCreateJson());
-                                        Dialogs.dismiss(context);
-                                      }
-                                    }
-                                  case StatusType.approve:
-                                    {
-                                      Dialogs.showDialogWithClose(
-                                              context,
-                                              TicketTransferWidget(
-                                                ticketEntity: ticket,
-                                              ),
-                                              maxWidth: 350)
-                                          .then((value) {
-                                        printLog(value);
-                                      });
-                                    }
-                                  default:
-                                }
-                              },
-                              child: ActionButtonWidget(
-                                text: (actionButtons[r]).toString(),
-                                color: actionButtons[r].color,
-                                radious: 0,
-                                textColor:
-                                    r == 0 ? resources.color.textColor : null,
-                                textSize: resources.fontSize.dp12,
-                                padding: EdgeInsets.symmetric(
-                                    vertical: resources.dimen.dp7,
-                                    horizontal: resources.dimen.dp10),
+                    if (ticket.status != StatusType.closed &&
+                        ticket.status != StatusType.reject) ...[
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                            vertical: resources.dimen.dp15,
+                            horizontal: resources.dimen.dp20),
+                        color: resources.color.colorWhite,
+                        child: Column(
+                          children: [
+                            if (ticket.categoryID == 1) ...[
+                              ValueListenableBuilder(
+                                  valueListenable: _isChargeable,
+                                  builder: (context, value, child) {
+                                    return CheckboxListTile(
+                                        contentPadding: const EdgeInsets.all(0),
+                                        title: Text(
+                                          '${resources.string.chargeable}(50 AED)',
+                                          style: context.textFontWeight400
+                                              .onColor(
+                                                  resources.color.viewBgColor),
+                                        ),
+                                        side: BorderSide(
+                                          color: resources.color.viewBgColor,
+                                          width: 1.5,
+                                        ),
+                                        visualDensity: const VisualDensity(
+                                            horizontal: -4, vertical: -4),
+                                        controlAffinity:
+                                            ListTileControlAffinity.leading,
+                                        value: value,
+                                        onChanged: (isChecked) {
+                                          _isChargeable.value = isChecked;
+                                        });
+                                  }),
+                              SizedBox(
+                                height: resources.dimen.dp10,
+                              ),
+                            ],
+                            Form(
+                              key: _formKey,
+                              child: RightIconTextWidget(
+                                labelText: resources.string.comments,
+                                fillColor: resources.color.colorWhite,
+                                textController: _commentsController,
+                                maxLines: 4,
+                                borderSide: BorderSide(
+                                    color: context
+                                        .resources.color.sideBarItemUnselected,
+                                    width: 1),
+                                borderRadius: 0,
+                                isValid: (value) {
+                                  if (value.isEmpty) {
+                                    return 'Please Enter Comments';
+                                  }
+                                },
                               ),
                             ),
-                          ),
-                          if (r < actionButtons.length) ...[
-                            SizedBox(
-                              width: resources.dimen.dp10,
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: resources.dimen.dp20,
+                      ),
+                      Row(
+                        children: [
+                          for (int r = 0; r < actionButtons.length; r++) ...[
+                            Expanded(
+                              child: InkWell(
+                                onTap: () async {
+                                  _onActionClicked(
+                                      context,
+                                      StatusType.fromId(
+                                          actionButtons[r].id ?? 1));
+                                },
+                                child: ActionButtonWidget(
+                                  text: (actionButtons[r]).toString(),
+                                  color: actionButtons[r].color,
+                                  radious: 0,
+                                  textColor:
+                                      r == 0 ? resources.color.textColor : null,
+                                  textSize: resources.fontSize.dp12,
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: resources.dimen.dp7,
+                                      horizontal: resources.dimen.dp10),
+                                ),
+                              ),
                             ),
-                          ]
+                            if (r < actionButtons.length) ...[
+                              SizedBox(
+                                width: resources.dimen.dp10,
+                              ),
+                            ]
+                          ],
+                          if (popupActionButtons.isNotEmpty)
+                            Expanded(
+                                child: DropdownMenuWidget(
+                              items: popupActionButtons,
+                              titleText: 'Other Actions',
+                              onItemSelected: (p0) {
+                                _onActionClicked(
+                                    context, StatusType.fromId(p0.id ?? 1));
+                              },
+                            ))
                         ],
-                        Expanded(
-                            child:
-                                DropdownMenuWidget(items: popupActionButtons))
-                      ],
-                    ),
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
           ),

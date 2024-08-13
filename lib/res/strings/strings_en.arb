@@ -94,6 +94,8 @@
     "reason":"Reason",
     "pleaseSelect":"Please Select",
     "pleaseEnter":"Please Enter",
-    "approve":"Approve"
+    "approve":"Approve",
+    "open":"Open",
+    "resubmit":"Resubmit"
     
 }

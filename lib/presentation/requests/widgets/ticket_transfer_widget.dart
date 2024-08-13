@@ -1,8 +1,11 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
+import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
 import 'package:ithelpdesk/presentation/bloc/master_data/master_data_bloc.dart';
 import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dropdown_widget.dart';
@@ -13,6 +16,7 @@ class TicketTransferWidget extends StatelessWidget {
   final TicketEntity ticketEntity;
   TicketTransferWidget({required this.ticketEntity, super.key});
   final ValueNotifier _isForword = ValueNotifier(true);
+  final ValueNotifier _isForwordToEmployee = ValueNotifier(false);
   final ValueNotifier _selectedDepartment = ValueNotifier(0);
   var _selectedEmployee = 0;
   final _masterDataBloc = sl<MasterDataBloc>();
@@ -102,29 +106,90 @@ class TicketTransferWidget extends StatelessWidget {
                           );
                         });
               }),
-          SizedBox(
-            height: resources.dimen.dp10,
-          ),
           ValueListenableBuilder(
-              valueListenable: _selectedDepartment,
+              valueListenable: _isForword,
               builder: (context, value, child) {
-                return FutureBuilder(
-                    future: _masterDataBloc.getEmployees(requestParams: {
-                      'departmentID': value == 0 ? 1 : value
-                    }),
-                    builder: (context, snapShot) {
-                      return DropDownWidget(
-                        isEnabled: true,
-                        list: snapShot.data?.items ?? [],
-                        labelText: resources.string.employee,
-                        hintText: resources.string.selectEmployeeName,
-                        fillColor: resources.color.colorWhite,
-                        borderRadius: 0,
-                        callback: (value) {
-                          _selectedEmployee = value.id;
-                        },
-                      );
-                    });
+                return value
+                    ? ValueListenableBuilder(
+                        valueListenable: _isForwordToEmployee,
+                        builder: (context, value, child) {
+                          return Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Flexible(
+                                    child: RadioListTile(
+                                        contentPadding: const EdgeInsets.all(0),
+                                        title: Text(
+                                          'Next Level',
+                                          style: context.textFontWeight400
+                                              .onFontSize(
+                                                  resources.fontSize.dp12),
+                                        ),
+                                        groupValue: true,
+                                        visualDensity: const VisualDensity(
+                                            horizontal: -4, vertical: -4),
+                                        controlAffinity:
+                                            ListTileControlAffinity.leading,
+                                        value: !_isForwordToEmployee.value,
+                                        onChanged: (isChecked) {
+                                          _isForwordToEmployee.value = false;
+                                        }),
+                                  ),
+                                  Flexible(
+                                    child: RadioListTile(
+                                        contentPadding: const EdgeInsets.all(0),
+                                        title: Text(
+                                          'Employee',
+                                          style: context.textFontWeight400
+                                              .onFontSize(
+                                                  resources.fontSize.dp12),
+                                        ),
+                                        groupValue: true,
+                                        visualDensity: const VisualDensity(
+                                            horizontal: -4, vertical: -4),
+                                        controlAffinity:
+                                            ListTileControlAffinity.leading,
+                                        value: _isForwordToEmployee.value,
+                                        onChanged: (isChecked) {
+                                          _isForwordToEmployee.value = true;
+                                        }),
+                                  ),
+                                ],
+                              ),
+                              if (value)
+                                FutureBuilder(
+                                    future: _masterDataBloc
+                                        .getAssignedEmployees(requestParams: {
+                                      'departmentID':
+                                          UserCredentialsEntity.details()
+                                              .departmentID,
+                                      'subcategoryID':
+                                          ticketEntity.subCategoryID,
+                                      'categoryID': ticketEntity.categoryID,
+                                    }),
+                                    builder: (context, snapShot) {
+                                      return Padding(
+                                        padding: EdgeInsets.only(
+                                            top: resources.dimen.dp10),
+                                        child: DropDownWidget(
+                                          isEnabled: true,
+                                          list: snapShot.data?.items ?? [],
+                                          labelText: resources.string.employee,
+                                          hintText: resources
+                                              .string.selectEmployeeName,
+                                          fillColor: resources.color.colorWhite,
+                                          borderRadius: 0,
+                                          callback: (value) {
+                                            _selectedEmployee = value.id;
+                                          },
+                                        ),
+                                      );
+                                    }),
+                            ],
+                          );
+                        })
+                    : const SizedBox();
               }),
           SizedBox(
             height: resources.dimen.dp20,
@@ -153,6 +218,7 @@ class TicketTransferWidget extends StatelessWidget {
                 onTap: () {
                   Navigator.pop(context, {
                     'isForword': _isForword.value,
+                    'isForwordToEmployee': _isForwordToEmployee.value,
                     'employee': _selectedEmployee,
                     'department': _selectedDepartment.value
                   });

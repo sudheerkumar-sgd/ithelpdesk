@@ -8,7 +8,13 @@ import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
 
 class DropdownMenuWidget<T> extends StatelessWidget {
   final List<T> items;
-  DropdownMenuWidget({required this.items, super.key});
+  final String titleText;
+  final Function(T)? onItemSelected;
+  DropdownMenuWidget(
+      {required this.items,
+      required this.titleText,
+      this.onItemSelected,
+      super.key});
   final ValueNotifier<T?> _onValueSelected = ValueNotifier(null);
   @override
   Widget build(BuildContext context) {
@@ -33,7 +39,7 @@ class DropdownMenuWidget<T> extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        'Select',
+                        titleText,
                         style: context.textFontWeight500,
                       ),
                     ),
@@ -43,14 +49,8 @@ class DropdownMenuWidget<T> extends StatelessWidget {
               );
             }),
         onSelected: (value) {
-          if (value == "profile") {
-            // add desired output
-          } else if (value == "settings") {
-            // add desired output
-          } else if (value == "logout") {
-            // add desired output
-          }
           _onValueSelected.value = value;
+          onItemSelected?.call(value);
         },
         itemBuilder: (BuildContext context) => items
             .map((item) => PopupMenuItem(

@@ -18,10 +18,10 @@ class UserUseCase extends BaseUseCase {
     return apisRepository;
   }
 
-  Future<Either<Failure, ApiEntity<LoginEntity>>> doLogin(
+  Future<Either<Failure, ApiEntity<LoginEntity>>> validateUser(
       {required Map<String, dynamic> requestParams}) async {
     var apiResponse = await apisRepository.post<LoginModel>(
-      apiUrl: uaePassLoginApiUrl,
+      apiUrl: validateUserApiUrl,
       requestParams: requestParams,
       responseModel: LoginModel.fromJson,
     );
@@ -29,36 +29,6 @@ class UserUseCase extends BaseUseCase {
       return Left(l);
     }, (r) {
       var apiResponseEntity = r.toEntity<LoginEntity>();
-      return Right(apiResponseEntity);
-    });
-  }
-
-  Future<Either<Failure, ApiEntity<LoginEntity>>> doLoginWithCredentials(
-      {required Map<String, dynamic> requestParams}) async {
-    var apiResponse = await apisRepository.post<LoginModel>(
-      apiUrl: credentialsLoginApiUrl,
-      requestParams: requestParams,
-      responseModel: LoginModel.fromJson,
-    );
-    return apiResponse.fold((l) {
-      return Left(l);
-    }, (r) {
-      var apiResponseEntity = r.toEntity<LoginEntity>();
-      return Right(apiResponseEntity);
-    });
-  }
-
-  Future<Either<Failure, ApiEntity<UpdateFirbaseTokenEntity>>>
-      updateFirbaseToken({required Map<String, dynamic> requestParams}) async {
-    var apiResponse = await apisRepository.post<UpdateFirbaseTokenModel>(
-      apiUrl: updateFireBaseTokenApiUrl,
-      requestParams: requestParams,
-      responseModel: UpdateFirbaseTokenModel.fromJson,
-    );
-    return apiResponse.fold((l) {
-      return Left(l);
-    }, (r) {
-      var apiResponseEntity = r.toEntity<UpdateFirbaseTokenEntity>();
       return Right(apiResponseEntity);
     });
   }
@@ -75,9 +45,6 @@ class UserUseCase extends BaseUseCase {
       return Left(l);
     }, (r) {
       var apiResponseEntity = r.toEntity<UserEntity>();
-      if (apiResponseEntity.entity != null) {
-        UserCredentialsEntity.create(apiResponseEntity.entity!);
-      }
       return Right(apiResponseEntity);
     });
   }

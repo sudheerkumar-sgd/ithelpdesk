@@ -128,6 +128,7 @@ class TicketsModel extends BaseModel {
   int? userID;
   String? creator;
   String? level;
+  int? assignedUserID;
   String? assignedTo;
   int? previousAssignee;
   String? transferBy;
@@ -165,6 +166,7 @@ class TicketsModel extends BaseModel {
     creator = json['creator'];
     level = json['level'];
     assignedTo = json['assignedTo'];
+    assignedUserID = json['assignedUserID'];
     previousAssignee = json['previousAssignee'];
     transferBy = json['transferBy'];
     assignedDate = json['assignedDate'];
@@ -203,6 +205,7 @@ class TicketsModel extends BaseModel {
     ticketsEntity.creator = creator;
     ticketsEntity.level = level;
     ticketsEntity.assignedTo = assignedTo;
+    ticketsEntity.assignedUserID = assignedUserID;
     ticketsEntity.previousAssignee = previousAssignee;
     ticketsEntity.transferBy = transferBy;
     ticketsEntity.assignedDate = assignedDate;

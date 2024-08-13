@@ -90,6 +90,7 @@ const String happinessMeterApiUrl =
 const String submitHappinessMeterApiUrl =
     ':$port56711/HappinessMeter/api/happinessMeterAnswer';
 
+const String validateUserApiUrl = 'User/ValidateUser';
 const String userDetailsApiUrl = 'User/GetUserDetails';
 const String dashboardApiUrl = 'Dashboard/GetDashboard';
 const String subcategoriesApiUrl = 'MasterData/GetSubCategories';
@@ -97,8 +98,10 @@ const String reasonsApiUrl = 'MasterData/GetReasons';
 const String eservicesApiUrl = 'MasterData/GetEservices';
 const String departmentsApiUrl = 'MasterData/GetDepartments';
 const String employeesApiUrl = 'MasterData/GetEmployees';
+const String assignedEmployeesApiUrl = 'MasterData/GetAssignedEmployees';
 const String createTicketApiUrl = 'CreateTicket';
 const String ticketHistoryApiUrl = 'Ticket/GetTicketHistory';
+const String ticketCommentsApiUrl = 'Ticket/GetTicketComments';
 const String ticketsByUserApiUrl = 'Ticket/GetTicketsByUser';
-const String updateTicketByStatusApiUrl = 'Ticket/UpdateTicket';
-const String forwordTicketApiUrl = 'Ticket/ForwordTicket';
+const String updateTicketByStatusApiUrl = 'CreateTicket/UpdateTicket';
+const String forwordTicketApiUrl = 'CreateTicket/ForwordTicket';

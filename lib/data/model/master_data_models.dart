@@ -39,6 +39,14 @@ class ListModel extends BaseModel {
     }
   }
 
+  ListModel.fromTicketCommnetsJson(Map<String, dynamic> json) {
+    if (json['data'] is List) {
+      for (var json in (json['data'] as List)) {
+        items.add(TicketHistoryModel.fromJson(json).toEntity());
+      }
+    }
+  }
+
   ListModel.fromTicketsJson(Map<String, dynamic> json) {
     if (json['data'] is List) {
       for (var json in (json['data'] as List)) {
