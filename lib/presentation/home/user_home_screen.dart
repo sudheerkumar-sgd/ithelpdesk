@@ -348,9 +348,6 @@ class UserHomeScreen extends BaseScreenWidget {
               _requestTypes[2]['count'] = _dashboardEntity?.closedRequests ?? 0;
               _requestTypes[3]['count'] = _dashboardEntity?.totalRequests ?? 0;
               ticketsData = _dashboardEntity?.assignedTickets ?? [];
-              if (ticketsData.isEmpty) {
-                ticketsData = _dashboardEntity?.myTickets ?? [];
-              }
               _onDataChange.value = !(_onDataChange.value);
             }
           },
@@ -588,8 +585,12 @@ class UserHomeScreen extends BaseScreenWidget {
                               decoration: BackgroundBoxDecoration(
                                       boxColor: selectTicketCategory == 1
                                           ? resources.color.viewBgColor
-                                          : null,
-                                      radious: 0)
+                                          : resources.color.colorWhite,
+                                      radious: 0,
+                                      boarderWidth: resources.dimen.dp1,
+                                      boarderColor: selectTicketCategory != 1
+                                          ? resources.color.colorGray9E9E9E
+                                          : resources.color.viewBgColor)
                                   .roundedCornerBox,
                               textColor: selectTicketCategory == 1
                                   ? resources.color.colorWhite
@@ -611,8 +612,12 @@ class UserHomeScreen extends BaseScreenWidget {
                                 decoration: BackgroundBoxDecoration(
                                   boxColor: selectTicketCategory == 2
                                       ? resources.color.viewBgColor
-                                      : null,
+                                      : resources.color.colorWhite,
                                   radious: 0,
+                                  boarderWidth: resources.dimen.dp1,
+                                  boarderColor: selectTicketCategory == 1
+                                      ? resources.color.colorGray9E9E9E
+                                      : resources.color.viewBgColor,
                                 ).roundedCornerBox,
                                 textColor: selectTicketCategory == 2
                                     ? resources.color.colorWhite
@@ -625,14 +630,23 @@ class UserHomeScreen extends BaseScreenWidget {
                   ValueListenableBuilder(
                       valueListenable: _onDataChange,
                       builder: (context, onDataChange, child) {
-                        return ReportListWidget(
-                          ticketsHeaderData: ticketsHeaderData,
-                          ticketsData: ticketsData,
-                          ticketsTableColunwidths: ticketsTableColunwidths,
-                          onTicketSelected: (ticket) {
-                            ViewRequest.start(context, ticket);
-                          },
-                        );
+                        return ticketsData.isNotEmpty
+                            ? ReportListWidget(
+                                ticketsHeaderData: ticketsHeaderData,
+                                ticketsData: ticketsData,
+                                ticketsTableColunwidths:
+                                    ticketsTableColunwidths,
+                                onTicketSelected: (ticket) {
+                                  ViewRequest.start(context, ticket);
+                                },
+                              )
+                            : Padding(
+                                padding: const EdgeInsets.only(top: 20.0),
+                                child: Text(
+                                  'No Tickets',
+                                  style: context.textFontWeight600,
+                                ),
+                              );
                       })
                 ],
               ),

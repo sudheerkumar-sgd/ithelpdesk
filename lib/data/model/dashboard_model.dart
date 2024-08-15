@@ -119,6 +119,7 @@ class TicketsModel extends BaseModel {
   String? categoryName;
   int? subCategoryID;
   int? subjectID;
+  int? userType;
   String? date;
   String? description;
   int? departmentID;
@@ -147,6 +148,8 @@ class TicketsModel extends BaseModel {
   String? computerName;
   String? duplicateRequestID;
   bool? isCustomAssign;
+  int? serviceId;
+  String? serviceReqNo;
 
   TicketsModel.fromJson(Map<String, dynamic> ticketsJson) {
     final json = ticketsJson['data'] ?? ticketsJson;
@@ -167,6 +170,7 @@ class TicketsModel extends BaseModel {
     level = json['level'];
     assignedTo = json['assignedTo'];
     assignedUserID = json['assignedUserID'];
+    userType = json['userType'];
     previousAssignee = json['previousAssignee'];
     transferBy = json['transferBy'];
     assignedDate = json['assignedDate'];
@@ -184,6 +188,8 @@ class TicketsModel extends BaseModel {
     computerName = json['computerName'];
     duplicateRequestID = json['duplicateRequestID'];
     isCustomAssign = json['isCustomAssign'];
+    serviceId = json['serviceId'];
+    serviceReqNo = json['serviceReqNo'];
   }
 
   @override
@@ -206,6 +212,7 @@ class TicketsModel extends BaseModel {
     ticketsEntity.level = level;
     ticketsEntity.assignedTo = assignedTo;
     ticketsEntity.assignedUserID = assignedUserID;
+    ticketsEntity.userType = AssigneType.fromId(userType ?? 1);
     ticketsEntity.previousAssignee = previousAssignee;
     ticketsEntity.transferBy = transferBy;
     ticketsEntity.assignedDate = assignedDate;
@@ -221,6 +228,8 @@ class TicketsModel extends BaseModel {
     ticketsEntity.updatedOn = updatedOn;
     ticketsEntity.requestType = requestType;
     ticketsEntity.computerName = computerName;
+    ticketsEntity.serviceId = serviceId;
+    ticketsEntity.serviceReqNo = serviceReqNo;
     return ticketsEntity;
   }
 }
@@ -228,11 +237,13 @@ class TicketsModel extends BaseModel {
 class TicketHistoryModel extends BaseModel {
   String? userName;
   String? subject;
+  String? comment;
   String? date;
 
   TicketHistoryModel.fromJson(Map<String, dynamic> json) {
     userName = json['userName'];
     subject = json['subject'];
+    comment = json['comment'];
     date = json['date'];
   }
 
@@ -241,6 +252,7 @@ class TicketHistoryModel extends BaseModel {
     var ticketHistoryEntity = TicketHistoryEntity();
     ticketHistoryEntity.userName = userName;
     ticketHistoryEntity.subject = subject;
+    ticketHistoryEntity.comment = comment;
     ticketHistoryEntity.date = date;
     return ticketHistoryEntity;
   }

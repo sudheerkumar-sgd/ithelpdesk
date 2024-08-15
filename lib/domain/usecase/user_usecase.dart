@@ -4,7 +4,6 @@ import 'package:ithelpdesk/data/model/api_response_model.dart';
 import 'package:ithelpdesk/data/model/login_model.dart';
 import 'package:ithelpdesk/data/remote/api_urls.dart';
 import 'package:ithelpdesk/domain/entities/api_entity.dart';
-import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
 import 'package:ithelpdesk/domain/entities/user_entity.dart';
 import 'package:ithelpdesk/domain/repository/apis_repository.dart';
 import 'package:ithelpdesk/domain/usecase/base_usecase.dart';

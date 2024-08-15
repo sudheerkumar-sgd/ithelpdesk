@@ -29,7 +29,7 @@ class OnCreateTicketSuccess extends ServicesState {
 }
 
 class OnUpdateTicket extends ServicesState {
-  final ApiEntity<TicketEntity> onUpdateTicketResult;
+  final String onUpdateTicketResult;
 
   OnUpdateTicket({required this.onUpdateTicketResult});
   @override

@@ -91,3 +91,15 @@ enum StatusType {
     return values.firstWhere((e) => e.name.contains(value.toLowerCase()));
   }
 }
+
+enum AssigneType {
+  approver(1),
+  implementer(2);
+
+  final int value;
+  const AssigneType(this.value);
+
+  factory AssigneType.fromId(int value) {
+    return values.firstWhere((e) => e.value == value);
+  }
+}

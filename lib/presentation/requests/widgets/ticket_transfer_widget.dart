@@ -204,7 +204,9 @@ class TicketTransferWidget extends StatelessWidget {
                 child: ActionButtonWidget(
                   text: resources.string.clear,
                   color: resources.color.sideBarItemUnselected,
+                  textStyle: context.textFontWeight400,
                   textColor: resources.color.textColor,
+                  radious: resources.dimen.dp15,
                   padding: EdgeInsets.symmetric(
                       horizontal: context.resources.dimen.dp20,
                       vertical: context.resources.dimen.dp7),
@@ -225,6 +227,8 @@ class TicketTransferWidget extends StatelessWidget {
                 },
                 child: ActionButtonWidget(
                   text: resources.string.submit,
+                  radious: resources.dimen.dp15,
+                  textStyle: context.textFontWeight400,
                   padding: EdgeInsets.symmetric(
                       horizontal: context.resources.dimen.dp20,
                       vertical: context.resources.dimen.dp7),

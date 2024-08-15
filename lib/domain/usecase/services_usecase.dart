@@ -97,18 +97,18 @@ class ServicesUseCase extends BaseUseCase {
     });
   }
 
-  Future<Either<Failure, ApiEntity<TicketEntity>>> updateTicketByStatus(
+  Future<Either<Failure, ApiEntity<SingleDataEntity>>> updateTicketByStatus(
       {required String apiUrl,
       required Map<String, dynamic> requestParams}) async {
-    var apiResponse = await apisRepository.post<TicketsModel>(
+    var apiResponse = await apisRepository.post<SingleDataModel>(
       apiUrl: apiUrl,
       requestParams: requestParams,
-      responseModel: TicketsModel.fromJson,
+      responseModel: SingleDataModel.fromCreateRequest,
     );
     return apiResponse.fold((l) {
       return Left(l);
     }, (r) {
-      var apiResponseEntity = r.toEntity<TicketEntity>();
+      var apiResponseEntity = r.toEntity<SingleDataEntity>();
       return Right(apiResponseEntity);
     });
   }

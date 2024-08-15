@@ -9,6 +9,7 @@ class ActionButtonWidget extends StatelessWidget {
   final Color? color;
   final Color? textColor;
   final double? textSize;
+  final TextStyle? textStyle;
   final int? maxLines;
   final Decoration? decoration;
   final double? radious;
@@ -22,6 +23,7 @@ class ActionButtonWidget extends StatelessWidget {
       this.decoration,
       this.textColor,
       this.textSize,
+      this.textStyle,
       this.maxLines,
       super.key});
 
@@ -41,7 +43,7 @@ class ActionButtonWidget extends StatelessWidget {
       child: Text(
         text,
         maxLines: maxLines,
-        style: context.textFontWeight600
+        style: (textStyle ?? context.textFontWeight600)
             .onFontSize(textSize ?? context.resources.fontSize.dp14)
             .onColor(textColor ?? context.resources.color.colorWhite),
         textAlign: TextAlign.center,

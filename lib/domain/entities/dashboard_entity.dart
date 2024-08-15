@@ -5,7 +5,6 @@ import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/domain/entities/base_entity.dart';
 
-import '../../core/common/common_utils.dart';
 import 'master_data_entities.dart';
 import 'user_credentials_entity.dart';
 
@@ -48,6 +47,7 @@ class TicketEntity extends BaseEntity {
   String? level;
   int? assignedUserID;
   String? assignedTo;
+  AssigneType? userType;
   int? previousAssignee;
   String? transferBy;
   String? assignedDate;
@@ -62,7 +62,9 @@ class TicketEntity extends BaseEntity {
   String? closedOn;
   String? updatedOn;
   int? requestType;
+  int? serviceId;
   String? computerName;
+  String? serviceReqNo;
 
   bool isMyTicket() {
     return (userID == UserCredentialsEntity.details().id);
@@ -86,7 +88,15 @@ class TicketEntity extends BaseEntity {
 
   List<ActionButtonEntity> getActionButtonsForAssigned(BuildContext context) {
     final actionButtons = List<ActionButtonEntity>.empty(growable: true);
-    if (status != StatusType.returned) {
+    if ((assignedUserID != null &&
+            assignedUserID != UserCredentialsEntity.details().id) ||
+        status == StatusType.closed ||
+        status == StatusType.reject) {
+      return actionButtons;
+    }
+    if (status != StatusType.returned &&
+        (assignedUserID == UserCredentialsEntity.details().id ||
+            assignedUserID == null)) {
       actionButtons.add(ActionButtonEntity(
           id: StatusType.returned.value,
           nameEn: context.resources.string.returnText,
@@ -102,19 +112,24 @@ class TicketEntity extends BaseEntity {
         id: StatusType.closed.value,
         nameEn: context.resources.string.close,
         color: context.resources.color.viewBgColorLight));
-    if (status == StatusType.hold) {
+    if (status == StatusType.hold &&
+        assignedUserID == UserCredentialsEntity.details().id) {
       actionButtons.add(ActionButtonEntity(
           id: StatusType.open.value,
-          nameEn: context.resources.string.open,
+          nameEn: status == StatusType.hold
+              ? 'Re-Open'
+              : context.resources.string.open,
           color: context.resources.color.viewBgColor));
     }
-    if (status == StatusType.returned) {
+    if (status == StatusType.returned &&
+        assignedUserID == UserCredentialsEntity.details().id) {
       ActionButtonEntity(
           id: StatusType.resubmit.value,
           nameEn: context.resources.string.resubmit,
           color: context.resources.color.colorGreen26B757);
     }
-    if (status != StatusType.hold) {
+    if (status != StatusType.hold &&
+        assignedUserID == UserCredentialsEntity.details().id) {
       actionButtons.add(ActionButtonEntity(
           id: StatusType.hold.value,
           nameEn: context.resources.string.hold,
@@ -170,7 +185,10 @@ class TicketEntity extends BaseEntity {
     data['mobileNumber'] = mobileNumber;
     data['requestType'] = 2;
     data['status'] = status?.value ?? 1;
-    data['finalComments'] = finalComments ?? '';
+    data['lastComments'] =
+        (finalComments ?? '').isNotEmpty ? finalComments : null;
+    data['serviceId'] = serviceId;
+    data['serviceReqNo'] = serviceReqNo;
     return data;
   }
 }
@@ -178,5 +196,6 @@ class TicketEntity extends BaseEntity {
 class TicketHistoryEntity extends BaseEntity {
   String? userName;
   String? subject;
+  String? comment;
   String? date;
 }

@@ -43,7 +43,9 @@ class CreateNewRequest extends BaseScreenWidget {
   final TextEditingController _contactNoController = TextEditingController();
   final TextEditingController _reasonController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _reqNoController = TextEditingController();
   int priority = -1;
+  int? serviceID;
 
   @override
   Widget build(BuildContext context) {
@@ -389,6 +391,7 @@ class CreateNewRequest extends BaseScreenWidget {
                                                   callback: (value) {
                                                     _formKey.currentState
                                                         ?.validate();
+                                                    serviceID = value.id;
                                                   },
                                                 );
                                               });
@@ -397,6 +400,7 @@ class CreateNewRequest extends BaseScreenWidget {
                                       height: resources.dimen.dp10,
                                     ),
                                     RightIconTextWidget(
+                                      textController: _reqNoController,
                                       labelText: resources.string.requestNo,
                                       hintText: resources.string.requestNo
                                           .withPrefix(
@@ -592,6 +596,8 @@ class CreateNewRequest extends BaseScreenWidget {
                                 ticket.description =
                                     _descriptionController.text;
                                 ticket.priority = '${priority + 1}';
+                                ticket.serviceId = serviceID;
+                                ticket.serviceReqNo = _reqNoController.text;
                                 _servicesBloc.createRequest(
                                     requestParams: ticket.toCreateJson());
                               }
