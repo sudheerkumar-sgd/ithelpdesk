@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
@@ -66,6 +67,13 @@ class CreateNewRequest extends BaseScreenWidget {
         : ['منخفض', 'متوسط', 'عالي', 'حرج'];
     final noOfCategoryRows = isDesktop(context) ? 1 : 2;
     final noOfCategoryRowItems = isDesktop(context) ? 4 : 2;
+    final multiUploadAttachmentWidget = MultiUploadAttachmentWidget(
+      hintText: resources.string.uploadFile,
+      fillColor: resources.color.colorWhite,
+      borderSide: BorderSide(
+          color: context.resources.color.sideBarItemUnselected, width: 1),
+      borderRadius: 0,
+    );
     return Scaffold(
         backgroundColor: resources.color.appScaffoldBg,
         body: MultiBlocProvider(
@@ -82,14 +90,12 @@ class CreateNewRequest extends BaseScreenWidget {
                 Dialogs.showInfoDialog(context, PopupType.success,
                         'Successfully Submitted\n\n Ticket Id: ${state.createTicketResponse}')
                     .then((value) {
-                  Navigator.pop(context);
+                  //Navigator.pop(context);
                 });
               } else if (state is OnApiError) {
                 Dialogs.dismiss(context);
                 Dialogs.showInfoDialog(context, PopupType.fail, state.message)
-                    .then((value) {
-                  Navigator.pop(context);
-                });
+                    .then((value) {});
               }
             },
             child: Padding(
@@ -550,15 +556,7 @@ class CreateNewRequest extends BaseScreenWidget {
                               vertical: resources.dimen.dp15,
                               horizontal: resources.dimen.dp20),
                           color: resources.color.colorWhite,
-                          child: MultiUploadAttachmentWidget(
-                            hintText: resources.string.uploadFile,
-                            fillColor: resources.color.colorWhite,
-                            borderSide: BorderSide(
-                                color: context
-                                    .resources.color.sideBarItemUnselected,
-                                width: 1),
-                            borderRadius: 0,
-                          )),
+                          child: multiUploadAttachmentWidget),
                       SizedBox(
                         height: resources.dimen.dp20,
                       ),
@@ -598,8 +596,16 @@ class CreateNewRequest extends BaseScreenWidget {
                                 ticket.priority = '${priority + 1}';
                                 ticket.serviceId = serviceID;
                                 ticket.serviceReqNo = _reqNoController.text;
+                                final data = ticket.toCreateJson();
+                                data['files'] = multiUploadAttachmentWidget
+                                    .getSelectedFilesData()
+                                    .map((file) {
+                                  return MultipartFile.fromBytes(
+                                      file['fileBytes'],
+                                      filename: file['fileName']);
+                                }).toList();
                                 _servicesBloc.createRequest(
-                                    requestParams: ticket.toCreateJson());
+                                    requestParams: data);
                               }
                             },
                             child: ActionButtonWidget(

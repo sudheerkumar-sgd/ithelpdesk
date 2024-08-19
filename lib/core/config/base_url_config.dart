@@ -11,7 +11,7 @@ const String baseUrlSOAStg =
 const String baseUrlMDSOAProd =
     'https://mdmobile.uaq.ae/soa-infra/resources/Integration/';
 
-const String basePortalUrlDevelopment = 'https://localhost:44325/api/';
+const String basePortalUrlDevelopment = 'https://localhost:44325/';
 
 const String basePortalUrlProduction = 'https://localhost:5003/api/';
 

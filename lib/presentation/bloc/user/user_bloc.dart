@@ -13,7 +13,6 @@ class UserBloc extends Cubit<UserState> {
   UserBloc({required this.userUseCase}) : super(Init());
 
   Future<LoginEntity> validateUser(Map<String, dynamic> requestParams) async {
-    emit(OnLoginLoading());
     final result = await userUseCase.validateUser(requestParams: requestParams);
     return (result.fold(
         (l) => LoginEntity(), (r) => r.entity ?? LoginEntity()));

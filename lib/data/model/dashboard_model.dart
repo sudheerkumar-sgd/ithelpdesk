@@ -131,7 +131,7 @@ class TicketsModel extends BaseModel {
   String? level;
   int? assignedUserID;
   String? assignedTo;
-  int? previousAssignee;
+  int? previousAssignedID;
   String? transferBy;
   String? assignedDate;
   String? forwardedDate;
@@ -150,6 +150,7 @@ class TicketsModel extends BaseModel {
   bool? isCustomAssign;
   int? serviceId;
   String? serviceReqNo;
+  List<String>? attachments;
 
   TicketsModel.fromJson(Map<String, dynamic> ticketsJson) {
     final json = ticketsJson['data'] ?? ticketsJson;
@@ -171,7 +172,7 @@ class TicketsModel extends BaseModel {
     assignedTo = json['assignedTo'];
     assignedUserID = json['assignedUserID'];
     userType = json['userType'];
-    previousAssignee = json['previousAssignee'];
+    previousAssignedID = json['previousAssignedID'];
     transferBy = json['transferBy'];
     assignedDate = json['assignedDate'];
     forwardedDate = json['forwardedDate'];
@@ -190,6 +191,11 @@ class TicketsModel extends BaseModel {
     isCustomAssign = json['isCustomAssign'];
     serviceId = json['serviceId'];
     serviceReqNo = json['serviceReqNo'];
+    if (json['attachments'] is List) {
+      attachments = List.empty(growable: true);
+      json['attachments']
+          ?.forEach((attachment) => attachments?.add(attachment));
+    }
   }
 
   @override
@@ -213,7 +219,7 @@ class TicketsModel extends BaseModel {
     ticketsEntity.assignedTo = assignedTo;
     ticketsEntity.assignedUserID = assignedUserID;
     ticketsEntity.userType = AssigneType.fromId(userType ?? 1);
-    ticketsEntity.previousAssignee = previousAssignee;
+    ticketsEntity.previousAssignedID = previousAssignedID;
     ticketsEntity.transferBy = transferBy;
     ticketsEntity.assignedDate = assignedDate;
     ticketsEntity.forwardedDate = forwardedDate;
@@ -230,6 +236,7 @@ class TicketsModel extends BaseModel {
     ticketsEntity.computerName = computerName;
     ticketsEntity.serviceId = serviceId;
     ticketsEntity.serviceReqNo = serviceReqNo;
+    ticketsEntity.attachments = attachments;
     return ticketsEntity;
   }
 }

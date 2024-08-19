@@ -133,6 +133,36 @@ class ApisRepositoryImpl extends ApisRepository {
   }
 
   @override
+  Future<Either<Failure, ApiResponse>>
+      postWithMultipartData<T extends BaseModel>({
+    String? baseUrl,
+    required String apiUrl,
+    required Map<String, dynamic> requestParams,
+    Function(Map<String, dynamic>)? responseModel,
+    bool postAsArray = false,
+  }) async {
+    var isConnected = await networkInfo.isConnected();
+    if (isConnected) {
+      try {
+        final apiResponse = await dataSource.postWithMultipartData(
+            baseUrl: baseUrl,
+            apiUrl: apiUrl,
+            requestParams: requestParams,
+            postAsArray: postAsArray);
+        var apiResponseModel =
+            ApiResponse<T>.fromJson(apiResponse, responseModel);
+        return Right(apiResponseModel);
+      } on DioException catch (error) {
+        return Left(ServerFailure(error.message ?? ''));
+      } catch (error) {
+        return Left(Exception(error.toString()));
+      }
+    } else {
+      return Left(ConnectionFailure());
+    }
+  }
+
+  @override
   Future<Either<Failure, dynamic>> postWithStringContent(
       {required String baseUrl,
       required String apiUrl,

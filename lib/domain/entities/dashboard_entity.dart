@@ -48,7 +48,7 @@ class TicketEntity extends BaseEntity {
   int? assignedUserID;
   String? assignedTo;
   AssigneType? userType;
-  int? previousAssignee;
+  int? previousAssignedID;
   String? transferBy;
   String? assignedDate;
   String? forwardedDate;
@@ -65,6 +65,7 @@ class TicketEntity extends BaseEntity {
   int? serviceId;
   String? computerName;
   String? serviceReqNo;
+  List<String>? attachments;
 
   bool isMyTicket() {
     return (userID == UserCredentialsEntity.details().id);
@@ -79,7 +80,7 @@ class TicketEntity extends BaseEntity {
     if (status == StatusType.returned &&
         assignedUserID == UserCredentialsEntity.details().id) {
       actionButtons.add(ActionButtonEntity(
-          id: 0,
+          id: StatusType.resubmit.value,
           nameEn: 'Resubmit',
           color: context.resources.color.colorGreen26B757));
     }
@@ -104,8 +105,12 @@ class TicketEntity extends BaseEntity {
     }
     if (status == StatusType.open) {
       actionButtons.add(ActionButtonEntity(
-          id: StatusType.approve.value,
-          nameEn: context.resources.string.approve,
+          id: userType == AssigneType.implementer
+              ? StatusType.transfer.value
+              : StatusType.approve.value,
+          nameEn: userType == AssigneType.implementer
+              ? context.resources.string.transfer
+              : context.resources.string.approve,
           color: context.resources.color.colorGreen26B757));
     }
     actionButtons.add(ActionButtonEntity(
@@ -181,6 +186,7 @@ class TicketEntity extends BaseEntity {
     data['subCategoryID'] = subCategoryID;
     data['description'] = description;
     data['departmentID'] = departmentID;
+    data['assignedTo'] = assignedUserID;
     data['priority'] = int.parse(priority ?? '4');
     data['mobileNumber'] = mobileNumber;
     data['requestType'] = 2;

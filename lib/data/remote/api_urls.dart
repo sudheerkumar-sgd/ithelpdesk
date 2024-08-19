@@ -90,18 +90,23 @@ const String happinessMeterApiUrl =
 const String submitHappinessMeterApiUrl =
     ':$port56711/HappinessMeter/api/happinessMeterAnswer';
 
-const String validateUserApiUrl = 'User/ValidateUser';
-const String userDetailsApiUrl = 'User/GetUserDetails';
-const String dashboardApiUrl = 'Dashboard/GetDashboard';
-const String subcategoriesApiUrl = 'MasterData/GetSubCategories';
-const String reasonsApiUrl = 'MasterData/GetReasons';
-const String eservicesApiUrl = 'MasterData/GetEservices';
-const String departmentsApiUrl = 'MasterData/GetDepartments';
-const String employeesApiUrl = 'MasterData/GetEmployees';
-const String assignedEmployeesApiUrl = 'MasterData/GetAssignedEmployees';
-const String createTicketApiUrl = 'CreateTicket';
-const String ticketHistoryApiUrl = 'Ticket/GetTicketHistory';
-const String ticketCommentsApiUrl = 'Ticket/GetTicketComments';
-const String ticketsByUserApiUrl = 'Ticket/GetTicketsByUser';
-const String updateTicketByStatusApiUrl = 'CreateTicket/UpdateTicket';
-const String forwordTicketApiUrl = 'CreateTicket/ForwordTicket';
+const String apiFolderUrl = 'api/';
+const String validateUserApiUrl = '${apiFolderUrl}User/ValidateUser';
+const String userDetailsApiUrl = '${apiFolderUrl}User/GetUserDetails';
+const String dashboardApiUrl = '${apiFolderUrl}Dashboard/GetDashboard';
+const String subcategoriesApiUrl = '${apiFolderUrl}MasterData/GetSubCategories';
+const String reasonsApiUrl = '${apiFolderUrl}MasterData/GetReasons';
+const String eservicesApiUrl = '${apiFolderUrl}MasterData/GetEservices';
+const String departmentsApiUrl = '${apiFolderUrl}MasterData/GetDepartments';
+const String employeesApiUrl = '${apiFolderUrl}MasterData/GetEmployees';
+const String assignedEmployeesApiUrl =
+    '${apiFolderUrl}MasterData/GetAssignedEmployees';
+const String createTicketApiUrl = '${apiFolderUrl}CreateTicket';
+const String createTicketUploadMultiPartApiUrl =
+    '${apiFolderUrl}CreateTicket/UploadMultiPart';
+const String ticketHistoryApiUrl = '${apiFolderUrl}Ticket/GetTicketHistory';
+const String ticketCommentsApiUrl = '${apiFolderUrl}Ticket/GetTicketComments';
+const String ticketsByUserApiUrl = '${apiFolderUrl}Ticket/GetTicketsByUser';
+const String updateTicketByStatusApiUrl =
+    '${apiFolderUrl}CreateTicket/UpdateTicket';
+const String forwordTicketApiUrl = '${apiFolderUrl}CreateTicket/ForwordTicket';

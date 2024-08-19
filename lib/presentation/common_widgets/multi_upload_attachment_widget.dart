@@ -1,6 +1,5 @@
 // ignore_for_file: must_be_immutable
 
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -63,7 +62,7 @@ class MultiUploadAttachmentWidget extends StatelessWidget {
       this.maxSize = 1,
       super.key});
   final ValueNotifier<bool> _isUploadChanged = ValueNotifier(false);
-  final _uploadFiles = [];
+  final _uploadFiles = List<Map>.empty(growable: true);
   Future<void> _showSelectFileOptions(BuildContext context, int from) async {
     final value = await _getFile(context, UploadOptions.file);
     if (value != null) {
@@ -77,7 +76,7 @@ class MultiUploadAttachmentWidget extends StatelessWidget {
     }
   }
 
-  Future<Map<String, String>?> _getFile(
+  Future<Map<String, dynamic>?> _getFile(
       BuildContext context, UploadOptions selectedOption) async {
     String fileName = '';
     String filePath = '';
@@ -101,12 +100,12 @@ class MultiUploadAttachmentWidget extends StatelessWidget {
     if (filePath.isNotEmpty) {
       File file = File(filePath);
       if (file.lengthSync() <= maxSize * maxUploadFilesize) {
-        final bytes = file.readAsBytesSync();
+        //final bytes = file.readAsBytesSync();
         return {
+          'filePath': filePath,
           'fileName': fileName,
           'fileType': fileName.substring(
               fileName.lastIndexOf('.') == -1 ? 0 : fileName.lastIndexOf('.')),
-          'fileNamebase64data': base64.encode(bytes),
         };
       } else if (context.mounted) {
         Dialogs.showInfoDialog(context, PopupType.fail,
@@ -115,10 +114,11 @@ class MultiUploadAttachmentWidget extends StatelessWidget {
     } else if (fileBytes?.isNotEmpty == true) {
       if ((fileBytes?.lengthInBytes ?? 0) <= maxSize * maxUploadFilesize) {
         return {
+          'fileBytes': fileBytes,
+          'filePath': filePath,
           'fileName': fileName,
           'fileType': fileName.substring(
               fileName.lastIndexOf('.') == -1 ? 0 : fileName.lastIndexOf('.')),
-          'fileNamebase64data': base64.encode(fileBytes!),
         };
       } else if (context.mounted) {
         Dialogs.showInfoDialog(context, PopupType.fail,
@@ -127,6 +127,10 @@ class MultiUploadAttachmentWidget extends StatelessWidget {
     }
 
     return null;
+  }
+
+  List<Map> getSelectedFilesData() {
+    return _uploadFiles;
   }
 
   @override

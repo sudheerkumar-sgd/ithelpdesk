@@ -21,6 +21,12 @@ abstract class RemoteDataSource {
     required Map<String, dynamic> requestParams,
     bool postAsArray = false,
   });
+  Future<dynamic> postWithMultipartData({
+    required String? baseUrl,
+    required String apiUrl,
+    required Map<String, dynamic> requestParams,
+    bool postAsArray = false,
+  });
   Future<dynamic> postWithStringContent(
       {required String baseUrl,
       required String apiUrl,
@@ -81,7 +87,7 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       {required String baseUrl,
       required String apiUrl,
       required Map<String, dynamic> requestParams}) async {
-    final dio2 = Dio();
+    final dio2 = dio;
     dio2.options.baseUrl = baseUrl;
     dio2.interceptors.add(DioLoggingInterceptor());
     try {
@@ -103,7 +109,7 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     required Map<String, dynamic> requestParams,
     bool postAsArray = false,
   }) async {
-    final dio2 = Dio();
+    final dio2 = dio;
     dio2.options.baseUrl = baseUrl;
     dio2.interceptors.add(DioLoggingInterceptor());
     try {
@@ -111,6 +117,28 @@ class RemoteDataSourceImpl implements RemoteDataSource {
           data: postAsArray
               ? jsonEncode(<Map<String, dynamic>>[requestParams])
               : jsonEncode(requestParams));
+      return response.data;
+    } on DioException catch (e) {
+      printLog(e.toString());
+      rethrow;
+    }
+  }
+
+  @override
+  Future postWithMultipartData({
+    required String? baseUrl,
+    required String apiUrl,
+    required Map<String, dynamic> requestParams,
+    bool postAsArray = false,
+  }) async {
+    final dio2 = dio;
+    if (baseUrl?.isNotEmpty == true) {
+      dio2.options.baseUrl = baseUrl ?? '';
+      dio2.interceptors.add(DioLoggingInterceptor());
+    }
+    try {
+      FormData formData = FormData.fromMap(requestParams);
+      var response = await dio2.post(apiUrl, data: formData);
       return response.data;
     } on DioException catch (e) {
       printLog(e.toString());

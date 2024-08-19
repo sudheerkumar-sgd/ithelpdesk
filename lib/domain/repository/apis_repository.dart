@@ -34,6 +34,14 @@ abstract class ApisRepository {
     Function(Map<String, dynamic>)? responseModel,
     bool postAsArray = false,
   });
+  Future<Either<Failure, ApiResponse>>
+      postWithMultipartData<T extends BaseModel>({
+    String? baseUrl,
+    required String apiUrl,
+    required Map<String, dynamic> requestParams,
+    Function(Map<String, dynamic>)? responseModel,
+    bool postAsArray = false,
+  });
   Future<Either<Failure, dynamic>> postWithStringContent(
       {required String baseUrl,
       required String apiUrl,

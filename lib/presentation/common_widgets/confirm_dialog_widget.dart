@@ -3,9 +3,6 @@ import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 
 import '../../../res/drawables/background_box_decoration.dart';
-import '../../core/constants/constants.dart';
-import '../../res/drawables/drawable_assets.dart';
-import 'image_widget.dart';
 
 class ConformDialogWidget extends StatelessWidget {
   final String message;

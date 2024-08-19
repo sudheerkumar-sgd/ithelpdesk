@@ -78,7 +78,8 @@ enum StatusType {
   returned(6),
   approve(7),
   forword(8),
-  resubmit(9);
+  resubmit(9),
+  transfer(10);
 
   final int value;
   const StatusType(this.value);
