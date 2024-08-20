@@ -44,21 +44,6 @@ enum RequestStatusEnum {
   const RequestStatusEnum(this.value);
 }
 
-enum UserType {
-  visitor(1),
-  uaeResident(2),
-  uaeCitizen(3),
-  gccResident(4),
-  gccCitizen(5),
-  walkIn(6),
-  establishment(7),
-  otp(8),
-  anonymous(100);
-
-  final int value;
-  const UserType(this.value);
-}
-
 enum PriorityType {
   low(1),
   medium(2),
@@ -102,5 +87,31 @@ enum AssigneType {
 
   factory AssigneType.fromId(int value) {
     return values.firstWhere((e) => e.value == value);
+  }
+}
+
+enum UserType {
+  superAdmin(1),
+  sgdAdmin(2),
+  sgdIT(3),
+  sgdDC(4),
+  sgdEservice(5),
+  localIT(6),
+  user(7),
+  tarasol(8),
+  erp(9),
+  applications(10),
+  mdAdmin(11),
+  dedAdmin(12);
+
+  final int value;
+  const UserType(this.value);
+
+  factory UserType.fromId(int value) {
+    return values.firstWhere((e) => e.value == value);
+  }
+
+  factory UserType.fromName(String value) {
+    return values.firstWhere((e) => e.name.contains(value.toLowerCase()));
   }
 }

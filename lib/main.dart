@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:ithelpdesk/app.dart';
@@ -21,5 +22,5 @@ void main() async {
   );
   await di.init();
   usePathUrlStrategy();
-  runApp(const App());
+  runApp(Phoenix(child: const App()));
 }

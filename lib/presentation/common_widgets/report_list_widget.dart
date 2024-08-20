@@ -25,8 +25,8 @@ class ReportListWidget extends StatelessWidget {
   List<Widget> _getTicketData(BuildContext context, TicketEntity ticketEntity) {
     final list = List<Widget>.empty(growable: true);
     (isDesktop(context)
-            ? ticketEntity.toJson(showActionButtons: showActionButtons)
-            : ticketEntity.toMobileJson(showActionButtons: showActionButtons))
+            ? ticketEntity.toJson(showActionButtons: false)
+            : ticketEntity.toMobileJson(showActionButtons: false))
         .forEach((key, value) {
       if (key != 'showActionButtons' || (key == 'showActionButtons' && value)) {
         list.add(InkWell(
@@ -37,52 +37,19 @@ class ReportListWidget extends StatelessWidget {
             padding: EdgeInsets.symmetric(
                 vertical: context.resources.dimen.dp20,
                 horizontal: context.resources.dimen.dp5),
-            child: (key == 'showActionButtons' && value)
-                ? Row(children: [
-                    SizedBox(
-                      width: context.resources.dimen.dp5,
-                    ),
-                    Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          ViewRequest.start(context, ticketEntity);
-                        },
-                        child:
-                            ImageWidget(path: DrawableAssets.icView, width: 24)
-                                .loadImage,
-                      ),
-                    ),
-                    if (ticketEntity.status != 'Closed' &&
-                        ticketEntity.status != 'Reject') ...[
-                      Expanded(
-                          child: InkWell(
-                        onTap: () {},
-                        child: ImageWidget(
-                                path: DrawableAssets.icMessage, width: 24)
-                            .loadImage,
-                      )),
-                      Expanded(
-                          child: InkWell(
-                        onTap: () {},
-                        child: ImageWidget(
-                                path: DrawableAssets.icDelete, width: 24)
-                            .loadImage,
-                      ))
-                    ]
-                  ])
-                : Text(
-                    '$value',
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: (key.toString().toLowerCase().contains('date') ||
-                            key.toString().toLowerCase().contains('id'))
-                        ? context.textFontWeight600
-                            .onFontSize(context.resources.fontSize.dp10)
-                            .onFontFamily(fontFamily: fontFamilyEN)
-                        : context.textFontWeight600
-                            .onFontSize(context.resources.fontSize.dp10),
-                  ),
+            child: Text(
+              '$value',
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: (key.toString().toLowerCase().contains('date') ||
+                      key.toString().toLowerCase().contains('id'))
+                  ? context.textFontWeight600
+                      .onFontSize(context.resources.fontSize.dp10)
+                      .onFontFamily(fontFamily: fontFamilyEN)
+                  : context.textFontWeight600
+                      .onFontSize(context.resources.fontSize.dp10),
+            ),
           ),
         ));
       }

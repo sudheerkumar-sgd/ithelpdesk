@@ -20,12 +20,12 @@ import 'package:ithelpdesk/presentation/bloc/master_data/master_data_bloc.dart';
 import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
 import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
-import 'package:ithelpdesk/presentation/common_widgets/confirm_dialog_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dropdown_menu_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dropdown_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/item_service_steps.dart';
 import 'package:ithelpdesk/presentation/common_widgets/right_icon_text_widget.dart';
+import 'package:ithelpdesk/presentation/common_widgets/ticket_action_widget.dart';
 import 'package:ithelpdesk/presentation/requests/widgets/ticket_transfer_widget.dart';
 import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
@@ -58,54 +58,133 @@ class ViewRequest extends BaseScreenWidget {
   final TextEditingController _contactNoController = TextEditingController();
   final TextEditingController _reasonController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _commentsController = TextEditingController();
   int priority = -1;
-  final _formKey = GlobalKey<FormState>();
   final ValueNotifier<bool> _isExanded = ValueNotifier(false);
 
-  _onActionClicked(BuildContext context, StatusType status) async {
+  Widget _getComments(BuildContext context) {
+    return FutureBuilder(
+        future: _servicesBloc
+            .getTicketComments(requestParams: {'ticketID': ticket.id}),
+        builder: (context, snapShot) {
+          final items = snapShot.data?.items ?? [];
+          return items.isEmpty
+              ? const SizedBox()
+              : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  InkWell(
+                    onTap: () {
+                      _isExanded.value = !_isExanded.value;
+                    },
+                    child: Row(
+                      children: [
+                        Text(
+                          "Team Commnets",
+                          style: context.textFontWeight600,
+                        ),
+                        const Spacer(),
+                        ImageWidget(path: DrawableAssets.icChevronDown)
+                            .loadImage,
+                      ],
+                    ),
+                  ),
+                  ValueListenableBuilder(
+                      valueListenable: _isExanded,
+                      builder: (context, value, child) {
+                        return Visibility(
+                          visible: value,
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: context.resources.dimen.dp10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: List.generate(items.length, (index) {
+                                return Text.rich(
+                                  TextSpan(
+                                      text: '${items[index].comment ?? ""}',
+                                      style: context.textFontWeight500,
+                                      children: [
+                                        TextSpan(
+                                            text:
+                                                '- ${items[index].userName ?? ""}',
+                                            style: context.textFontWeight400
+                                                .onFontSize(context
+                                                    .resources.fontSize.dp12))
+                                      ]),
+                                );
+                              }),
+                            ),
+                          ),
+                        );
+                      }),
+                ]);
+        });
+  }
+
+  _updateTicket(
+      BuildContext context, TicketEntity updateTicket, String message) {
+    Dialogs.showDialogWithClose(
+      context,
+      TicketActionWidget(message: message),
+      maxWidth: isDesktop(context) ? 400 : null,
+    ).then((dialogResult) {
+      if (dialogResult != null) {
+        updateTicket.finalComments = dialogResult['comments'];
+        final data = updateTicket.toCreateJson();
+        data['files'] = dialogResult['files'];
+        _servicesBloc.updateTicketByStatus(
+            apiUrl: updateTicketByStatusApiUrl, requestParams: data);
+      }
+    });
+  }
+
+  _onActionClicked(
+    BuildContext context,
+    StatusType status,
+  ) async {
     {
+      final updateTicket = TicketEntity();
+      updateTicket.id = ticket.id;
       switch (status) {
         case StatusType.returned:
           {
-            if (_formKey.currentState?.validate() == true) {
-              Dialogs.showDialogWithClose(
-                      context,
-                      TicketReturnWidget(
-                        ticketEntity: ticket,
-                      ),
-                      maxWidth: 350)
-                  .then((value) async {
-                printLog(value);
-                final updateTicket = TicketEntity();
-                updateTicket.id = ticket.id;
-                updateTicket.status = StatusType.returned;
-                if (value['employee'] > 0) {
-                  updateTicket.assignedTo = value['employee'];
-                } else {
-                  updateTicket.assignedUserID =
-                      ticket.previousAssignedID ?? ticket.userID;
-                }
-                updateTicket.finalComments = _commentsController.text;
-                _servicesBloc.updateTicketByStatus(
-                    apiUrl: updateTicketByStatusApiUrl,
-                    requestParams: updateTicket.toCreateJson());
-              });
-            }
+            Dialogs.showDialogWithClose(
+                    context,
+                    TicketReturnWidget(
+                      ticketEntity: ticket,
+                    ),
+                    maxWidth: 350)
+                .then((value) async {
+              printLog(value);
+              updateTicket.status = StatusType.returned;
+              if (value['employee'] > 0) {
+                updateTicket.assignedTo = value['employee'];
+              } else {
+                updateTicket.assignedUserID =
+                    ticket.previousAssignedID ?? ticket.userID;
+              }
+              _updateTicket(context, updateTicket, "Do you want to return?");
+            });
           }
         case StatusType.resubmit:
           {
-            if (_formKey.currentState?.validate() == true) {
-              final updateTicket = TicketEntity();
-              updateTicket.id = ticket.id;
-              updateTicket.status = StatusType.open;
-              updateTicket.assignedUserID =
-                  ticket.previousAssignedID ?? ticket.userID;
-              updateTicket.finalComments = _commentsController.text;
-              _servicesBloc.updateTicketByStatus(
-                  apiUrl: updateTicketByStatusApiUrl,
-                  requestParams: updateTicket.toCreateJson());
-            }
+            updateTicket.status = StatusType.open;
+            updateTicket.assignedUserID =
+                ticket.previousAssignedID ?? ticket.userID;
+            Dialogs.showDialogWithClose(
+              context,
+              TicketActionWidget(
+                message: "Do you want to return?",
+                isCommentRequired: false,
+              ),
+              maxWidth: isDesktop(context) ? 400 : null,
+            ).then((dialogResult) {
+              if (dialogResult != null) {
+                updateTicket.finalComments = dialogResult['comments'];
+                final data = updateTicket.toCreateJson();
+                data['files'] = dialogResult['files'];
+                _servicesBloc.updateTicketByStatus(
+                    apiUrl: updateTicketByStatusApiUrl, requestParams: data);
+              }
+            });
           }
         case StatusType.approve || StatusType.transfer:
           {
@@ -116,8 +195,6 @@ class ViewRequest extends BaseScreenWidget {
                     ),
                     maxWidth: 350)
                 .then((value) async {
-              final updateTicket = TicketEntity();
-              updateTicket.id = ticket.id;
               updateTicket.status = StatusType.open;
               if (value['employee'] > 0) {
                 updateTicket.assignedUserID = value['employee'];
@@ -125,32 +202,15 @@ class ViewRequest extends BaseScreenWidget {
               if (value['department'] > 0) {
                 updateTicket.departmentID = value['department'];
               }
-              updateTicket.finalComments = _commentsController.text;
-              _servicesBloc.updateTicketByStatus(
-                  apiUrl: forwordTicketApiUrl,
-                  requestParams: updateTicket.toCreateJson());
+              _updateTicket(context, updateTicket,
+                  "Do you want to ${updateTicket.departmentID != null ? 'Transfer' : 'Forword'}?");
             });
           }
         default:
-          if ((status != StatusType.hold && status != StatusType.reject) ||
-              _formKey.currentState?.validate() == true) {
-            showDialog(
-                    context: context,
-                    builder: (context) => ConformDialogWidget(
-                        message: 'Do you want to ${status.name.toString()}'))
-                .then((value) {
-              if (value != null) {
-                final updateTicket = TicketEntity();
-                updateTicket.id = ticket.id;
-                updateTicket.status =
-                    status == StatusType.resubmit ? StatusType.open : status;
-                updateTicket.finalComments = _commentsController.text;
-                _servicesBloc.updateTicketByStatus(
-                    apiUrl: updateTicketByStatusApiUrl,
-                    requestParams: updateTicket.toCreateJson());
-              }
-            });
-          }
+          updateTicket.status =
+              status == StatusType.resubmit ? StatusType.open : status;
+          _updateTicket(context, updateTicket,
+              'Do you want to ${updateTicket.status?.name.toString()}');
       }
     }
   }
@@ -158,8 +218,19 @@ class ViewRequest extends BaseScreenWidget {
   Widget _getDataForm(BuildContext context) {
     final resources = context.resources;
     final priorities = isSelectedLocalEn
-        ? ['Critical', 'High', 'Medium', 'Low']
-        : ['حرج', 'عالي', 'متوسط', 'منخفض'];
+        ? [
+            'Low',
+            'Medium',
+            'High',
+            'Critical',
+          ]
+        : ['منخفض', 'متوسط', 'عالي', 'حرج'];
+    priority = [
+      'Low',
+      'Medium',
+      'High',
+      'Critical',
+    ].indexOf(ticket.priority ?? 'Low');
     _contactNoController.text = ticket.mobileNumber ?? '';
     _reasonController.text = ticket.subject ?? '';
     _descriptionController.text = ticket.description ?? '';
@@ -222,7 +293,7 @@ class ViewRequest extends BaseScreenWidget {
                           .withPrefix(resources.string.pleaseSelect),
                       borderRadius: 0,
                       fillColor: resources.color.colorWhite,
-                      selectedValue: ticket.priority,
+                      selectedValue: priorities[priority],
                       callback: (value) {
                         priority = priorities.indexOf(value ?? '');
                       },
@@ -385,10 +456,21 @@ class ViewRequest extends BaseScreenWidget {
                                     '${FlavorConfig.instance.values.portalBaseUrl}${ticket.attachments?[index] ?? ""}')
                             .loadImage);
                   },
-                  child: Text(
-                    (ticket.attachments?[index] ?? "").split('\\')[1],
-                    style: context.textFontWeight500
-                        .copyWith(decoration: TextDecoration.underline),
+                  child: Row(
+                    children: [
+                      ImageWidget(
+                              path: DrawableAssets.icAttachment,
+                              backgroundTint: resources.color.viewBgColor)
+                          .loadImage,
+                      SizedBox(
+                        width: resources.dimen.dp10,
+                      ),
+                      Text(
+                        (ticket.attachments?[index] ?? "").split('\\')[1],
+                        style: context.textFontWeight500
+                            .copyWith(decoration: TextDecoration.underline),
+                      ),
+                    ],
                   ),
                 );
               }),
@@ -397,6 +479,8 @@ class ViewRequest extends BaseScreenWidget {
               height: resources.dimen.dp20,
             ),
           ],
+          if ((ticket.status == StatusType.closed ||
+              ticket.status == StatusType.reject)) ...[_getComments(context)],
         ],
       ),
     );
@@ -628,102 +712,7 @@ class ViewRequest extends BaseScreenWidget {
                               height: resources.dimen.dp10,
                             ),
                           ],
-                          FutureBuilder(
-                              future: _servicesBloc.getTicketComments(
-                                  requestParams: {'ticketID': ticket.id}),
-                              builder: (context, snapShot) {
-                                final items = snapShot.data?.items ?? [];
-                                return items.isEmpty
-                                    ? const SizedBox()
-                                    : Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                            InkWell(
-                                              onTap: () {
-                                                _isExanded.value =
-                                                    !_isExanded.value;
-                                              },
-                                              child: Padding(
-                                                padding: EdgeInsets.only(
-                                                    bottom:
-                                                        resources.dimen.dp10),
-                                                child: Row(
-                                                  children: [
-                                                    Text(
-                                                      "Team Commnets",
-                                                      style: context
-                                                          .textFontWeight600,
-                                                    ),
-                                                    const Spacer(),
-                                                    ImageWidget(
-                                                            path: DrawableAssets
-                                                                .icChevronDown)
-                                                        .loadImage,
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                            ValueListenableBuilder(
-                                                valueListenable: _isExanded,
-                                                builder:
-                                                    (context, value, child) {
-                                                  return Visibility(
-                                                    visible: value,
-                                                    child: Padding(
-                                                      padding: EdgeInsets.only(
-                                                          bottom: resources
-                                                              .dimen.dp10),
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: List.generate(
-                                                            items.length,
-                                                            (index) {
-                                                          return Text.rich(
-                                                            TextSpan(
-                                                                text:
-                                                                    '${items[index].comment ?? ""}',
-                                                                style: context
-                                                                    .textFontWeight500,
-                                                                children: [
-                                                                  TextSpan(
-                                                                      text:
-                                                                          '- ${items[index].userName ?? ""}',
-                                                                      style: context
-                                                                          .textFontWeight400
-                                                                          .onFontSize(resources
-                                                                              .fontSize
-                                                                              .dp12))
-                                                                ]),
-                                                          );
-                                                        }),
-                                                      ),
-                                                    ),
-                                                  );
-                                                }),
-                                          ]);
-                              }),
-                          Form(
-                            key: _formKey,
-                            child: RightIconTextWidget(
-                              labelText: resources.string.comments,
-                              fillColor: resources.color.colorWhite,
-                              textController: _commentsController,
-                              maxLines: 4,
-                              borderSide: BorderSide(
-                                  color: context
-                                      .resources.color.sideBarItemUnselected,
-                                  width: 1),
-                              borderRadius: 0,
-                              isValid: (value) {
-                                if (value.isEmpty) {
-                                  return 'Please Enter Comments';
-                                }
-                              },
-                            ),
-                          ),
+                          _getComments(context),
                         ],
                       ),
                     ),

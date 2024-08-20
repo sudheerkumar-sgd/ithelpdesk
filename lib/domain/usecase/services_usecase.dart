@@ -101,7 +101,8 @@ class ServicesUseCase extends BaseUseCase {
   Future<Either<Failure, ApiEntity<SingleDataEntity>>> updateTicketByStatus(
       {required String apiUrl,
       required Map<String, dynamic> requestParams}) async {
-    var apiResponse = await apisRepository.post<SingleDataModel>(
+    var apiResponse =
+        await apisRepository.postWithMultipartData<SingleDataModel>(
       apiUrl: apiUrl,
       requestParams: requestParams,
       responseModel: SingleDataModel.fromCreateRequest,

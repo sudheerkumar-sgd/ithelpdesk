@@ -90,7 +90,7 @@ class CreateNewRequest extends BaseScreenWidget {
                 Dialogs.showInfoDialog(context, PopupType.success,
                         'Successfully Submitted\n\n Ticket Id: ${state.createTicketResponse}')
                     .then((value) {
-                  //Navigator.pop(context);
+                  Navigator.pop(context);
                 });
               } else if (state is OnApiError) {
                 Dialogs.dismiss(context);

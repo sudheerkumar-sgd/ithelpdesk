@@ -43,6 +43,7 @@ class DrawableAssets {
   static const icMessage = '${drawablePath}ic_message.svg';
   static const icView = '${drawablePath}ic_view.svg';
   static const icDelete = '${drawablePath}ic_delete.svg';
+  static const icAttachment = '${drawablePath}ic_attachment.svg';
 
   static String getCloseDrawable(BuildContext context) {
     return DrawableAssets.icClose;

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
+import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
 import 'package:ithelpdesk/injection_container.dart';
@@ -17,6 +18,7 @@ import 'package:ithelpdesk/presentation/directory/directory_navigator_screen.dar
 import 'package:ithelpdesk/presentation/home/user_home_navigator_screen.dart';
 import 'package:ithelpdesk/presentation/profile/profile_navigator_screen.dart';
 import 'package:ithelpdesk/presentation/reports/reports_navigator_screen.dart';
+import 'package:ithelpdesk/presentation/requests/create_new_request.dart';
 import 'package:ithelpdesk/presentation/utils/NavbarNotifier.dart';
 import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 import 'package:ithelpdesk/res/resources.dart';
@@ -64,7 +66,10 @@ class _MainScreenState extends State<UserMainScreen> {
     }
     switch (index) {
       case 0:
-        currentScreen = UserHomeNavigatorScreen();
+        currentScreen =
+            UserCredentialsEntity.details().userType == UserType.user
+                ? CreateNewRequest()
+                : UserHomeNavigatorScreen();
       case 1:
         currentScreen = ReportsNavigatorScreen();
       case 2:
@@ -72,9 +77,13 @@ class _MainScreenState extends State<UserMainScreen> {
       case 3:
         currentScreen = ProfileNavigatorScreen();
       default:
-        currentScreen = UserHomeNavigatorScreen();
+        currentScreen = UserCredentialsEntity.details().userType == UserType.user
+                ? CreateNewRequest()
+                : UserHomeNavigatorScreen();
     }
-    return currentScreen ?? UserHomeNavigatorScreen();
+    return currentScreen ?? (UserCredentialsEntity.details().userType == UserType.user
+                ? CreateNewRequest()
+                : UserHomeNavigatorScreen());
   }
 
   @override

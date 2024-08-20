@@ -120,7 +120,7 @@ class TicketEntity extends BaseEntity {
     if (status == StatusType.hold &&
         assignedUserID == UserCredentialsEntity.details().id) {
       actionButtons.add(ActionButtonEntity(
-          id: StatusType.open.value,
+          id: StatusType.resubmit.value,
           nameEn: status == StatusType.hold
               ? 'Re-Open'
               : context.resources.string.open,

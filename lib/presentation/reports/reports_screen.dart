@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
+import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
@@ -18,11 +19,46 @@ class ReportsScreen extends BaseScreenWidget {
 
   Widget _getFilters(BuildContext context) {
     final resources = context.resources;
+    final ticketTypes = [
+      resources.string.notAssignedRequests,
+      resources.string.openRequests,
+      resources.string.closedRequests,
+      resources.string.activeRequests.replaceAll('Requests', 'Requests'),
+      resources.string.dueRequests.replaceAll('Requests', 'Requests'),
+      resources.string.allRequests.replaceAll('Requests', 'Requests'),
+    ];
     return Wrap(
       alignment: WrapAlignment.end,
       runSpacing: resources.dimen.dp10,
       runAlignment: WrapAlignment.start,
       children: [
+        SizedBox(
+          width: 170,
+          child: Row(
+            children: [
+              Text(
+                resources.string.category,
+                style: context.textFontWeight600
+                    .onFontSize(resources.fontSize.dp10),
+              ),
+              SizedBox(
+                width: resources.dimen.dp5,
+              ),
+              Expanded(
+                child: DropDownWidget(
+                  height: 28,
+                  list: ticketTypes,
+                  iconSize: 20,
+                  fontStyle: context.textFontWeight400
+                      .onFontSize(resources.fontSize.dp10),
+                ),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          width: resources.dimen.dp10,
+        ),
         SizedBox(
           width: 170,
           child: Row(
@@ -114,34 +150,26 @@ class ReportsScreen extends BaseScreenWidget {
     final resources = context.resources;
     return [
       Text(
-        '${resources.string.notAssignedRequests.replaceAll('\n', ' ')} ${resources.string.report}',
+        resources.string.report,
         style: context.textFontWeight600,
       ),
-      SizedBox(
-        width: resources.dimen.dp20,
-        height: resources.dimen.dp10,
-      ),
-      isDesktop(context)
-          ? Expanded(
-              child: _getFilters(context),
-            )
-          : _getFilters(context)
+      if (UserCredentialsEntity.details().userType != UserType.user) ...[
+        SizedBox(
+          width: resources.dimen.dp20,
+          height: resources.dimen.dp10,
+        ),
+        isDesktop(context)
+            ? Expanded(
+                child: _getFilters(context),
+              )
+            : _getFilters(context)
+      ],
     ];
   }
 
   @override
   Widget build(BuildContext context) {
     final resources = context.resources;
-    final ticketTypesRows = isDesktop(context) ? 1 : 2;
-    final ticketTypesColumns = isDesktop(context) ? 6 : 3;
-    final ticketTypes = [
-      resources.string.notAssignedRequests,
-      resources.string.openRequests,
-      resources.string.closedRequests,
-      resources.string.activeRequests.replaceAll('Requests', 'Requests'),
-      resources.string.dueRequests.replaceAll('Requests', 'Requests'),
-      resources.string.allRequests.replaceAll('Requests', 'Requests'),
-    ];
     final ticketsHeaderData = isDesktop(context)
         ? [
             'ID',
@@ -153,7 +181,6 @@ class ReportsScreen extends BaseScreenWidget {
             'Assignee',
             'Department',
             'CreateDate',
-            'Action'
           ]
         : ['ID', 'Subject', 'Status', 'Priority', 'CreateDate', 'Action'];
     final ticketsTableColunwidths = isDesktop(context)
@@ -167,7 +194,6 @@ class ReportsScreen extends BaseScreenWidget {
             6: const FlexColumnWidth(3),
             7: const FlexColumnWidth(1),
             8: const FlexColumnWidth(3),
-            9: const FlexColumnWidth(3),
           }
         : {
             0: const FlexColumnWidth(1),
@@ -189,46 +215,6 @@ class ReportsScreen extends BaseScreenWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Column(
-                  children: [
-                    for (int c = 0; c < ticketTypesRows; c++) ...[
-                      Row(
-                        children: [
-                          for (int r = 0; r < ticketTypesColumns; r++) ...[
-                            Expanded(
-                              child: InkWell(
-                                onTap: () {},
-                                child: ActionButtonWidget(
-                                  text: (ticketTypes[
-                                          r + (c * ticketTypesColumns)])
-                                      .toString(),
-                                  color: resources.color.colorWhite,
-                                  radious: 0,
-                                  textColor: resources.color.textColor,
-                                  textSize: resources.fontSize.dp12,
-                                  maxLines: 2,
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: resources.dimen.dp10,
-                                      horizontal: resources.dimen.dp10),
-                                ),
-                              ),
-                            ),
-                            if (r < ticketTypesColumns - 1) ...[
-                              SizedBox(
-                                width: resources.dimen.dp10,
-                              ),
-                            ]
-                          ]
-                        ],
-                      ),
-                      if (c < ticketTypesColumns - 1) ...[
-                        SizedBox(
-                          height: resources.dimen.dp20,
-                        ),
-                      ]
-                    ]
-                  ],
-                ),
                 isDesktop(context)
                     ? Row(
                         children: _getFilterBar(context),
