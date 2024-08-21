@@ -245,6 +245,7 @@ class TicketHistoryModel extends BaseModel {
   String? userName;
   String? subject;
   String? comment;
+  List<String>? attachments;
   String? date;
 
   TicketHistoryModel.fromJson(Map<String, dynamic> json) {
@@ -252,6 +253,11 @@ class TicketHistoryModel extends BaseModel {
     subject = json['subject'];
     comment = json['comment'];
     date = json['date'];
+    if (json['attachments'] is List) {
+      attachments = List.empty(growable: true);
+      json['attachments']
+          ?.forEach((attachment) => attachments?.add(attachment));
+    }
   }
 
   @override
@@ -261,6 +267,7 @@ class TicketHistoryModel extends BaseModel {
     ticketHistoryEntity.subject = subject;
     ticketHistoryEntity.comment = comment;
     ticketHistoryEntity.date = date;
+    ticketHistoryEntity.attachments = attachments;
     return ticketHistoryEntity;
   }
 }

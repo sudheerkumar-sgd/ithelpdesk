@@ -12,6 +12,7 @@ import 'package:ithelpdesk/presentation/common_widgets/report_list_widget.dart';
 
 import '../../domain/entities/user_credentials_entity.dart';
 import '../../injection_container.dart';
+import '../requests/view_request.dart';
 
 class ReportsScreen extends BaseScreenWidget {
   ReportsScreen({super.key});
@@ -237,6 +238,9 @@ class ReportsScreen extends BaseScreenWidget {
                               ticketsData: snapsShot.data?.entity?.items ?? [],
                               ticketsTableColunwidths: ticketsTableColunwidths,
                               showActionButtons: true,
+                              onTicketSelected: (ticket) {
+                                ViewRequest.start(context, ticket);
+                              },
                             )
                           : const Center(child: CircularProgressIndicator());
                     })

@@ -11,6 +11,8 @@ class UserCredentialsEntity {
   String? username;
   int? departmentID;
   UserType? userType;
+  bool? isoUser;
+  String? isoUserCategories;
   UserCredentialsEntity();
   factory UserCredentialsEntity.details() {
     if (userData == null && userToken.isNotEmpty) {
@@ -22,6 +24,8 @@ class UserCredentialsEntity {
       userData?.username = data['UserName'];
       userData?.name = data['Name'];
       userData?.userType = UserType.fromId(int.tryParse(data['Role']) ?? 7);
+      userData?.isoUser = bool.tryParse((data['isoUser'] ?? "false")) ?? false;
+      userData?.isoUserCategories = data['isoUserCategories'];
     }
     return userData ?? UserCredentialsEntity();
   }

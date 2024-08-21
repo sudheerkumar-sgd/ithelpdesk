@@ -21,6 +21,8 @@ class DropdownMenuWidget<T> extends StatelessWidget {
     return LayoutBuilder(builder: (context, constraints) {
       printLog(constraints);
       return PopupMenuButton(
+        color: Colors.white,
+        surfaceTintColor: Colors.white,
         constraints: BoxConstraints.tightFor(width: constraints.maxWidth),
         child: ValueListenableBuilder(
             valueListenable: _onValueSelected,
@@ -55,11 +57,9 @@ class DropdownMenuWidget<T> extends StatelessWidget {
         itemBuilder: (BuildContext context) => items
             .map((item) => PopupMenuItem(
                   value: item,
-                  child: Expanded(
-                    child: Text(
-                      item.toString(),
-                      style: context.textFontWeight500,
-                    ),
+                  child: Text(
+                    item.toString(),
+                    style: context.textFontWeight500,
                   ),
                 ))
             .toList(),

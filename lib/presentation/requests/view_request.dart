@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/common/log.dart';
-import 'package:ithelpdesk/core/config/flavor_config.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
@@ -33,6 +32,7 @@ import 'package:page_transition/page_transition.dart';
 
 import '../../domain/entities/user_credentials_entity.dart';
 import '../common_widgets/alert_dialog_widget.dart';
+import '../common_widgets/attachment_preview_widget.dart';
 import 'widgets/ticket_return_widget.dart';
 
 class ViewRequest extends BaseScreenWidget {
@@ -97,11 +97,48 @@ class ViewRequest extends BaseScreenWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: List.generate(items.length, (index) {
+                                final item =
+                                    items[index] as TicketHistoryEntity;
                                 return Text.rich(
                                   TextSpan(
-                                      text: '${items[index].comment ?? ""}',
+                                      text: item.comment ?? "",
                                       style: context.textFontWeight500,
                                       children: [
+                                        if (item.attachments?.isNotEmpty ==
+                                            true) ...[
+                                          WidgetSpan(
+                                            child: PopupMenuButton(
+                                              child: ImageWidget(
+                                                      path: DrawableAssets
+                                                          .icAttachment,
+                                                      padding: EdgeInsets.all(
+                                                          context.resources
+                                                              .dimen.dp5))
+                                                  .loadImageWithMoreTapArea,
+                                              onSelected: (value) {
+                                                Dialogs.showDialogWithClose(
+                                                    context,
+                                                    maxWidth: 400,
+                                                    AttachmentPreviewWidget(
+                                                      fileName: value,
+                                                    ));
+                                              },
+                                              itemBuilder:
+                                                  (BuildContext context) =>
+                                                      (item.attachments ?? [])
+                                                          .map((item) =>
+                                                              PopupMenuItem(
+                                                                value: item,
+                                                                child: Text(
+                                                                  item.toString(),
+                                                                  style: context
+                                                                      .textFontWeight500,
+                                                                ),
+                                                              ))
+                                                          .toList(),
+                                            ),
+                                          )
+                                        ],
                                         TextSpan(
                                             text:
                                                 '- ${items[index].userName ?? ""}',
@@ -119,8 +156,8 @@ class ViewRequest extends BaseScreenWidget {
         });
   }
 
-  _updateTicket(
-      BuildContext context, TicketEntity updateTicket, String message) {
+  _updateTicket(BuildContext context, TicketEntity updateTicket, String message,
+      {String apiUrl = updateTicketByStatusApiUrl}) {
     Dialogs.showDialogWithClose(
       context,
       TicketActionWidget(message: message),
@@ -130,8 +167,7 @@ class ViewRequest extends BaseScreenWidget {
         updateTicket.finalComments = dialogResult['comments'];
         final data = updateTicket.toCreateJson();
         data['files'] = dialogResult['files'];
-        _servicesBloc.updateTicketByStatus(
-            apiUrl: updateTicketByStatusApiUrl, requestParams: data);
+        _servicesBloc.updateTicketByStatus(apiUrl: apiUrl, requestParams: data);
       }
     });
   }
@@ -188,23 +224,31 @@ class ViewRequest extends BaseScreenWidget {
           }
         case StatusType.approve || StatusType.transfer:
           {
-            Dialogs.showDialogWithClose(
-                    context,
-                    TicketTransferWidget(
-                      ticketEntity: ticket,
-                    ),
-                    maxWidth: 350)
-                .then((value) async {
+            if (ticket.categoryID != 2) {
+              Dialogs.showDialogWithClose(
+                      context,
+                      TicketTransferWidget(
+                        ticketEntity: ticket,
+                      ),
+                      maxWidth: 350)
+                  .then((value) async {
+                updateTicket.status = StatusType.open;
+                if (value['employee'] > 0) {
+                  updateTicket.assignedUserID = value['employee'];
+                }
+                if (value['department'] > 0) {
+                  updateTicket.departmentID = value['department'];
+                }
+                _updateTicket(context, updateTicket,
+                    "Do you want to ${updateTicket.departmentID != null ? 'Transfer' : 'Forword'}?",
+                    apiUrl: forwordTicketApiUrl);
+              });
+            } else {
               updateTicket.status = StatusType.open;
-              if (value['employee'] > 0) {
-                updateTicket.assignedUserID = value['employee'];
-              }
-              if (value['department'] > 0) {
-                updateTicket.departmentID = value['department'];
-              }
-              _updateTicket(context, updateTicket,
-                  "Do you want to ${updateTicket.departmentID != null ? 'Transfer' : 'Forword'}?");
-            });
+              updateTicket.assignedUserID = ticket.userID;
+              _updateTicket(context, updateTicket, "Do you want to Approve'?",
+                  apiUrl: updateTicketByStatusApiUrl);
+            }
           }
         default:
           updateTicket.status =
@@ -451,10 +495,9 @@ class ViewRequest extends BaseScreenWidget {
                     Dialogs.showDialogWithClose(
                         context,
                         maxWidth: 400,
-                        ImageWidget(
-                                path:
-                                    '${FlavorConfig.instance.values.portalBaseUrl}${ticket.attachments?[index] ?? ""}')
-                            .loadImage);
+                        AttachmentPreviewWidget(
+                          fileName: ticket.attachments?[index] ?? "",
+                        ));
                   },
                   child: Row(
                     children: [
@@ -466,7 +509,7 @@ class ViewRequest extends BaseScreenWidget {
                         width: resources.dimen.dp10,
                       ),
                       Text(
-                        (ticket.attachments?[index] ?? "").split('\\')[1],
+                        (ticket.attachments?[index] ?? ""),
                         style: context.textFontWeight500
                             .copyWith(decoration: TextDecoration.underline),
                       ),
@@ -672,10 +715,7 @@ class ViewRequest extends BaseScreenWidget {
                     height: resources.dimen.dp20,
                   ),
                   if ((ticket.status != StatusType.closed &&
-                          ticket.status != StatusType.reject) &&
-                      (ticket.assignedUserID == null ||
-                          ticket.assignedUserID ==
-                              UserCredentialsEntity.details().id)) ...[
+                      ticket.status != StatusType.reject)) ...[
                     Container(
                       padding: EdgeInsets.symmetric(
                           vertical: resources.dimen.dp15,
@@ -683,7 +723,10 @@ class ViewRequest extends BaseScreenWidget {
                       color: resources.color.colorWhite,
                       child: Column(
                         children: [
-                          if (ticket.categoryID == 1) ...[
+                          if (ticket.categoryID == 1 &&
+                              (ticket.assignedUserID == null ||
+                                  ticket.assignedUserID ==
+                                      UserCredentialsEntity.details().id)) ...[
                             ValueListenableBuilder(
                                 valueListenable: _isChargeable,
                                 builder: (context, value, child) {

@@ -372,3 +372,6 @@ String get getRequestRedirectUrl =>
 
 String get getRequestViewUrl =>
     '${FlavorConfig.instance.values.mdPortalBaseUrl}/e-services/request-view/';
+
+String get getImageBaseUrl =>
+    '${FlavorConfig.instance.values.portalBaseUrl}Attachments/';

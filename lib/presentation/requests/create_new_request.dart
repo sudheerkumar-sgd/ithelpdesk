@@ -51,12 +51,18 @@ class CreateNewRequest extends BaseScreenWidget {
   @override
   Widget build(BuildContext context) {
     final resources = context.resources;
-    final categories = [
-      resources.string.supportITRequest,
-      resources.string.itISOCRS,
-      resources.string.eservices,
-      resources.string.application
-    ];
+    final categories = UserCredentialsEntity.details().isoUser == true
+        ? [
+            resources.string.supportITRequest,
+            resources.string.itISOCRS,
+            resources.string.eservices,
+            resources.string.application
+          ]
+        : [
+            resources.string.supportITRequest,
+            resources.string.eservices,
+            resources.string.application
+          ];
     final priorities = isSelectedLocalEn
         ? [
             'Low',
@@ -65,8 +71,12 @@ class CreateNewRequest extends BaseScreenWidget {
             'Critical',
           ]
         : ['منخفض', 'متوسط', 'عالي', 'حرج'];
-    final noOfCategoryRows = isDesktop(context) ? 1 : 2;
-    final noOfCategoryRowItems = isDesktop(context) ? 4 : 2;
+    var noOfCategoryRows = 1;
+    var noOfCategoryRowItems = categories.length;
+    if (categories.length == 4) {
+      noOfCategoryRows = isDesktop(context) ? 1 : 2;
+      noOfCategoryRowItems = isDesktop(context) ? 4 : 2;
+    }
     final multiUploadAttachmentWidget = MultiUploadAttachmentWidget(
       hintText: resources.string.uploadFile,
       fillColor: resources.color.colorWhite,
@@ -153,6 +163,9 @@ class CreateNewRequest extends BaseScreenWidget {
                         child: ValueListenableBuilder(
                             valueListenable: _ticketCategory,
                             builder: (context, value, child) {
+                              if (categories.length == 3 && value > 0) {
+                                value = value - 1;
+                              }
                               return Column(
                                 children: [
                                   for (int c = 0;
@@ -168,6 +181,11 @@ class CreateNewRequest extends BaseScreenWidget {
                                               onTap: () {
                                                 _ticketCategory.value = r +
                                                     (c * noOfCategoryRowItems);
+                                                if (categories.length == 3 &&
+                                                    _ticketCategory.value > 0) {
+                                                  _ticketCategory.value =
+                                                      _ticketCategory.value + 1;
+                                                }
                                               },
                                               child: ActionButtonWidget(
                                                 text: categories[r +
@@ -268,6 +286,18 @@ class CreateNewRequest extends BaseScreenWidget {
                                                     'categoryID': value + 1
                                                   }),
                                               builder: (context, snapShot) {
+                                                final items =
+                                                    snapShot.data?.items ?? [];
+                                                if (value + 1 == 2) {
+                                                  items.removeWhere((item) =>
+                                                      !(UserCredentialsEntity
+                                                                      .details()
+                                                                  .isoUserCategories ??
+                                                              "")
+                                                          .contains(
+                                                              (item.id ?? '')
+                                                                  .toString()));
+                                                }
                                                 return DropDownWidget(
                                                   list: snapShot.data?.items ??
                                                       [],

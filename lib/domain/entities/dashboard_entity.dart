@@ -68,7 +68,8 @@ class TicketEntity extends BaseEntity {
   List<String>? attachments;
 
   bool isMyTicket() {
-    return (userID == UserCredentialsEntity.details().id);
+    return (userID == UserCredentialsEntity.details().id &&
+        assignedUserID != UserCredentialsEntity.details().id);
   }
 
   List<ActionButtonEntity> getActionButtonsForMytickets(BuildContext context) {
@@ -103,13 +104,15 @@ class TicketEntity extends BaseEntity {
           nameEn: context.resources.string.returnText,
           color: context.resources.color.colorWhite));
     }
-    if (status == StatusType.open) {
+    if (status == StatusType.open &&
+        (categoryID != 2 &&
+            assignedUserID != UserCredentialsEntity.details().id)) {
       actionButtons.add(ActionButtonEntity(
           id: userType == AssigneType.implementer
-              ? StatusType.transfer.value
+              ? StatusType.forword.value
               : StatusType.approve.value,
           nameEn: userType == AssigneType.implementer
-              ? context.resources.string.transfer
+              ? context.resources.string.forwardTo
               : context.resources.string.approve,
           color: context.resources.color.colorGreen26B757));
     }
@@ -204,4 +207,5 @@ class TicketHistoryEntity extends BaseEntity {
   String? subject;
   String? comment;
   String? date;
+  List<String>? attachments;
 }
