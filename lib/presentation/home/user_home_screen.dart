@@ -402,103 +402,97 @@ class UserHomeScreen extends BaseScreenWidget {
                       )
                     ],
                   ),
-                  if (UserCredentialsEntity.details().userType ==
-                      UserType.superAdmin) ...[
-                    SizedBox(
-                      height: resources.dimen.dp20,
-                    ),
-                    ValueListenableBuilder(
-                        valueListenable: _onDataChange,
-                        builder: (context, onDataChange, child) {
-                          return Column(
-                            children: [
-                              for (var i = 0; i < requestTypesRows; i++) ...[
-                                Row(
-                                  children: List.generate(requestTypesColumns,
-                                      (index) {
-                                    final newIndex =
-                                        index + (i * requestTypesColumns);
-                                    return Expanded(
-                                      child: InkWell(
-                                        child: Container(
-                                          color: resources.color.colorWhite,
-                                          margin: EdgeInsets.only(
-                                            left: index ==
-                                                    requestTypesColumns - 1
-                                                ? resources.dimen.dp15
-                                                : index == 0
-                                                    ? 0
-                                                    : index ==
-                                                            requestTypesColumns -
-                                                                2
-                                                        ? resources.dimen.dp15
-                                                        : resources.dimen.dp5,
-                                            right: index <
-                                                    requestTypesColumns - 2
-                                                ? index == 0
-                                                    ? resources.dimen.dp15
-                                                    : resources.dimen.dp5
-                                                : index <
-                                                        requestTypesColumns - 1
-                                                    ? resources.dimen.dp5
-                                                    : 0,
-                                            top: i > 0
-                                                ? resources.dimen.dp20
-                                                : 0,
-                                          ),
-                                          padding: EdgeInsets.all(
-                                              resources.dimen.dp10),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              Align(
-                                                alignment: Alignment.topRight,
-                                                child: ImageWidget(
-                                                        path: _requestTypes[
-                                                                    newIndex]
-                                                                ['icon_path']
-                                                            .toString(),
-                                                        width: 20,
-                                                        height: 20)
-                                                    .loadImage,
-                                              ),
-                                              Text(
-                                                _requestTypes[newIndex]['count']
-                                                    .toString(),
-                                                textAlign: TextAlign.center,
-                                                style: context.textFontWeight700
-                                                    .onFontSize(
-                                                        resources.fontSize.dp20)
-                                                    .onFontFamily(
-                                                        fontFamily:
-                                                            fontFamilyEN),
-                                              ),
-                                              Text(
-                                                _requestTypes[newIndex]['name']
-                                                    .toString(),
-                                                textAlign: TextAlign.center,
-                                                maxLines: 2,
-                                                overflow: TextOverflow.visible,
-                                                style: context.textFontWeight600
-                                                    .onFontSize(
-                                                        resources.fontSize.dp10)
-                                                    .onHeight(1.1),
-                                              ),
-                                            ],
-                                          ),
+                  SizedBox(
+                    height: resources.dimen.dp20,
+                  ),
+                  ValueListenableBuilder(
+                      valueListenable: _onDataChange,
+                      builder: (context, onDataChange, child) {
+                        return Column(
+                          children: [
+                            for (var i = 0; i < requestTypesRows; i++) ...[
+                              Row(
+                                children:
+                                    List.generate(requestTypesColumns, (index) {
+                                  final newIndex =
+                                      index + (i * requestTypesColumns);
+                                  return Expanded(
+                                    child: InkWell(
+                                      child: Container(
+                                        color: resources.color.colorWhite,
+                                        margin: EdgeInsets.only(
+                                          left: index == requestTypesColumns - 1
+                                              ? resources.dimen.dp15
+                                              : index == 0
+                                                  ? 0
+                                                  : index ==
+                                                          requestTypesColumns -
+                                                              2
+                                                      ? resources.dimen.dp15
+                                                      : resources.dimen.dp5,
+                                          right: index < requestTypesColumns - 2
+                                              ? index == 0
+                                                  ? resources.dimen.dp15
+                                                  : resources.dimen.dp5
+                                              : index < requestTypesColumns - 1
+                                                  ? resources.dimen.dp5
+                                                  : 0,
+                                          top: i > 0 ? resources.dimen.dp20 : 0,
+                                        ),
+                                        padding: EdgeInsets.all(
+                                            resources.dimen.dp10),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.topRight,
+                                              child: ImageWidget(
+                                                      path: _requestTypes[
+                                                                  newIndex]
+                                                              ['icon_path']
+                                                          .toString(),
+                                                      width: 20,
+                                                      height: 20)
+                                                  .loadImage,
+                                            ),
+                                            Text(
+                                              _requestTypes[newIndex]['count']
+                                                  .toString(),
+                                              textAlign: TextAlign.center,
+                                              style: context.textFontWeight700
+                                                  .onFontSize(
+                                                      resources.fontSize.dp20)
+                                                  .onFontFamily(
+                                                      fontFamily: fontFamilyEN),
+                                            ),
+                                            Text(
+                                              _requestTypes[newIndex]['name']
+                                                  .toString(),
+                                              textAlign: TextAlign.center,
+                                              maxLines: 2,
+                                              overflow: TextOverflow.visible,
+                                              style: context.textFontWeight600
+                                                  .onFontSize(
+                                                      resources.fontSize.dp10)
+                                                  .onHeight(1.1),
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                    );
-                                  }),
-                                ),
-                              ],
+                                    ),
+                                  );
+                                }),
+                              ),
                             ],
-                          );
-                        }),
-                    SizedBox(
-                      height: resources.dimen.dp20,
-                    ),
+                          ],
+                        );
+                      }),
+                  SizedBox(
+                    height: resources.dimen.dp20,
+                  ),
+                  if (UserCredentialsEntity.details().userType ==
+                      UserType.superAdmin) ...[
                     ValueListenableBuilder(
                         valueListenable: _onDataChange,
                         builder: (context, onDataChange, child) {

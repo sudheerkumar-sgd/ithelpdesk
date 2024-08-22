@@ -44,10 +44,10 @@ class TicketEntity extends BaseEntity {
   String? mobileNumber;
   int? userID;
   String? creator;
-  String? level;
+  int? level;
   int? assignedUserID;
   String? assignedTo;
-  AssigneType? userType;
+  AssigneType? assigneType;
   int? previousAssignedID;
   String? transferBy;
   String? assignedDate;
@@ -66,6 +66,9 @@ class TicketEntity extends BaseEntity {
   String? computerName;
   String? serviceReqNo;
   List<String>? attachments;
+  int? teamCount;
+  AssigneType? userType;
+  bool? isMaxLevel;
 
   bool isMyTicket() {
     return (userID == UserCredentialsEntity.details().id &&
@@ -90,10 +93,18 @@ class TicketEntity extends BaseEntity {
 
   List<ActionButtonEntity> getActionButtonsForAssigned(BuildContext context) {
     final actionButtons = List<ActionButtonEntity>.empty(growable: true);
-    if ((assignedUserID != null &&
-            assignedUserID != UserCredentialsEntity.details().id) ||
-        status == StatusType.closed ||
-        status == StatusType.reject) {
+    if (status == StatusType.closed ||
+        status == StatusType.reject ||
+        userType == null) {
+      return actionButtons;
+    }
+    if (assignedUserID != null &&
+        assignedUserID != UserCredentialsEntity.details().id &&
+        userType == AssigneType.approver) {
+      actionButtons.add(ActionButtonEntity(
+          id: StatusType.reAssign.value,
+          nameEn: 'Re-Assign',
+          color: context.resources.color.viewBgColorLight));
       return actionButtons;
     }
     if (status != StatusType.returned &&
@@ -105,13 +116,13 @@ class TicketEntity extends BaseEntity {
           color: context.resources.color.colorWhite));
     }
     if (status == StatusType.open &&
-        (categoryID != 2 &&
-            assignedUserID != UserCredentialsEntity.details().id)) {
+        (userType == AssigneType.approver ||
+            (userType == AssigneType.implementer && (teamCount ?? 0) > 1))) {
       actionButtons.add(ActionButtonEntity(
-          id: userType == AssigneType.implementer
+          id: assigneType == AssigneType.implementer
               ? StatusType.forword.value
               : StatusType.approve.value,
-          nameEn: userType == AssigneType.implementer
+          nameEn: assigneType == AssigneType.implementer
               ? context.resources.string.forwardTo
               : context.resources.string.approve,
           color: context.resources.color.colorGreen26B757));

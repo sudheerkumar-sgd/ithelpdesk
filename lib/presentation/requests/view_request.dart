@@ -3,6 +3,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/common/log.dart';
@@ -61,6 +62,30 @@ class ViewRequest extends BaseScreenWidget {
   int priority = -1;
   final ValueNotifier<bool> _isExanded = ValueNotifier(false);
 
+  Widget _getChangeWidget(BuildContext context) {
+    return ValueListenableBuilder(
+        valueListenable: _isChargeable,
+        builder: (context, value, child) {
+          return CheckboxListTile(
+              contentPadding: const EdgeInsets.all(0),
+              title: Text(
+                '${context.resources.string.chargeable}(50 AED)',
+                style: context.textFontWeight400
+                    .onColor(context.resources.color.viewBgColor),
+              ),
+              side: BorderSide(
+                color: context.resources.color.viewBgColor,
+                width: 1.5,
+              ),
+              visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
+              controlAffinity: ListTileControlAffinity.leading,
+              value: value,
+              onChanged: (isChecked) {
+                _isChargeable.value = isChecked;
+              });
+        });
+  }
+
   Widget _getComments(BuildContext context) {
     return FutureBuilder(
         future: _servicesBloc
@@ -68,91 +93,128 @@ class ViewRequest extends BaseScreenWidget {
         builder: (context, snapShot) {
           final items = snapShot.data?.items ?? [];
           return items.isEmpty
-              ? const SizedBox()
-              : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  InkWell(
-                    onTap: () {
-                      _isExanded.value = !_isExanded.value;
-                    },
-                    child: Row(
+              ? (ticket.categoryID == 1 &&
+                      (ticket.assignedUserID != null &&
+                          ticket.level == 1 &&
+                          UserCredentialsEntity.details().departmentID == 1))
+                  ? Container(
+                      padding: EdgeInsets.symmetric(
+                          vertical: context.resources.dimen.dp15,
+                          horizontal: context.resources.dimen.dp20),
+                      color: context.resources.color.colorWhite,
+                      child: _getChangeWidget(context),
+                    )
+                  : const SizedBox()
+              : Container(
+                  padding: EdgeInsets.symmetric(
+                      vertical: context.resources.dimen.dp15,
+                      horizontal: context.resources.dimen.dp20),
+                  color: context.resources.color.colorWhite,
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          "Team Commnets",
-                          style: context.textFontWeight600,
-                        ),
-                        const Spacer(),
-                        ImageWidget(path: DrawableAssets.icChevronDown)
-                            .loadImage,
-                      ],
-                    ),
-                  ),
-                  ValueListenableBuilder(
-                      valueListenable: _isExanded,
-                      builder: (context, value, child) {
-                        return Visibility(
-                          visible: value,
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical: context.resources.dimen.dp10),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: List.generate(items.length, (index) {
-                                final item =
-                                    items[index] as TicketHistoryEntity;
-                                return Text.rich(
-                                  TextSpan(
-                                      text: item.comment ?? "",
-                                      style: context.textFontWeight500,
-                                      children: [
-                                        if (item.attachments?.isNotEmpty ==
-                                            true) ...[
-                                          WidgetSpan(
-                                            child: PopupMenuButton(
-                                              child: ImageWidget(
-                                                      path: DrawableAssets
-                                                          .icAttachment,
-                                                      padding: EdgeInsets.all(
-                                                          context.resources
-                                                              .dimen.dp5))
-                                                  .loadImageWithMoreTapArea,
-                                              onSelected: (value) {
-                                                Dialogs.showDialogWithClose(
-                                                    context,
-                                                    maxWidth: 400,
-                                                    AttachmentPreviewWidget(
-                                                      fileName: value,
-                                                    ));
-                                              },
-                                              itemBuilder:
-                                                  (BuildContext context) =>
-                                                      (item.attachments ?? [])
-                                                          .map((item) =>
-                                                              PopupMenuItem(
-                                                                value: item,
-                                                                child: Text(
-                                                                  item.toString(),
-                                                                  style: context
-                                                                      .textFontWeight500,
-                                                                ),
-                                                              ))
-                                                          .toList(),
-                                            ),
-                                          )
-                                        ],
-                                        TextSpan(
-                                            text:
-                                                '- ${items[index].userName ?? ""}',
-                                            style: context.textFontWeight400
-                                                .onFontSize(context
-                                                    .resources.fontSize.dp12))
-                                      ]),
-                                );
-                              }),
-                            ),
+                        if (ticket.categoryID == 1 &&
+                            (ticket.assignedUserID != null &&
+                                ticket.level == 1 &&
+                                UserCredentialsEntity.details().departmentID ==
+                                    1)) ...[
+                          _getChangeWidget(context),
+                          SizedBox(
+                            height: context.resources.dimen.dp10,
+                          )
+                        ],
+                        InkWell(
+                          onTap: () {
+                            _isExanded.value = !_isExanded.value;
+                          },
+                          child: Row(
+                            children: [
+                              Text(
+                                "Team Commnets",
+                                style: context.textFontWeight600,
+                              ),
+                              const Spacer(),
+                              ImageWidget(path: DrawableAssets.icChevronDown)
+                                  .loadImage,
+                            ],
                           ),
-                        );
-                      }),
-                ]);
+                        ),
+                        ValueListenableBuilder(
+                            valueListenable: _isExanded,
+                            builder: (context, value, child) {
+                              return Visibility(
+                                visible: value,
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: context.resources.dimen.dp10),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children:
+                                        List.generate(items.length, (index) {
+                                      final item =
+                                          items[index] as TicketHistoryEntity;
+                                      return Text.rich(
+                                        TextSpan(
+                                            text: item.comment ?? "",
+                                            style: context.textFontWeight500,
+                                            children: [
+                                              if (item.attachments
+                                                      ?.isNotEmpty ==
+                                                  true) ...[
+                                                WidgetSpan(
+                                                  child: PopupMenuButton(
+                                                    child: ImageWidget(
+                                                            path: DrawableAssets
+                                                                .icAttachment,
+                                                            padding: EdgeInsets
+                                                                .all(context
+                                                                    .resources
+                                                                    .dimen
+                                                                    .dp5))
+                                                        .loadImageWithMoreTapArea,
+                                                    onSelected: (value) {
+                                                      Dialogs.showDialogWithClose(
+                                                          context,
+                                                          maxWidth: 400,
+                                                          AttachmentPreviewWidget(
+                                                            fileName: value,
+                                                          ));
+                                                    },
+                                                    itemBuilder: (BuildContext
+                                                            context) =>
+                                                        (item.attachments ?? [])
+                                                            .map((item) =>
+                                                                PopupMenuItem(
+                                                                  value: item,
+                                                                  child: Text(
+                                                                    item.toString(),
+                                                                    style: context
+                                                                        .textFontWeight500,
+                                                                  ),
+                                                                ))
+                                                            .toList(),
+                                                  ),
+                                                )
+                                              ],
+                                              TextSpan(
+                                                  text:
+                                                      '- ${items[index].userName ?? ""}',
+                                                  style: context
+                                                      .textFontWeight400
+                                                      .onFontSize(context
+                                                          .resources
+                                                          .fontSize
+                                                          .dp12))
+                                            ]),
+                                      );
+                                    }),
+                                  ),
+                                ),
+                              );
+                            }),
+                      ]),
+                );
         });
   }
 
@@ -160,7 +222,10 @@ class ViewRequest extends BaseScreenWidget {
       {String apiUrl = updateTicketByStatusApiUrl}) {
     Dialogs.showDialogWithClose(
       context,
-      TicketActionWidget(message: message),
+      TicketActionWidget(
+          message: message,
+          isCommentRequired: (updateTicket.status == StatusType.hold ||
+              updateTicket.status == StatusType.reject)),
       maxWidth: isDesktop(context) ? 400 : null,
     ).then((dialogResult) {
       if (dialogResult != null) {
@@ -222,9 +287,14 @@ class ViewRequest extends BaseScreenWidget {
               }
             });
           }
-        case StatusType.approve || StatusType.transfer:
+        case StatusType.approve || StatusType.forword:
           {
-            if (ticket.categoryID != 2) {
+            if (ticket.categoryID == 2 && ticket.subCategoryID == 19) {
+              updateTicket.status = StatusType.approve;
+              updateTicket.assignedUserID = ticket.userID;
+              _updateTicket(context, updateTicket, "Do you want to Approve'?",
+                  apiUrl: updateTicketByStatusApiUrl);
+            } else {
               Dialogs.showDialogWithClose(
                       context,
                       TicketTransferWidget(
@@ -236,19 +306,27 @@ class ViewRequest extends BaseScreenWidget {
                 if (value['employee'] > 0) {
                   updateTicket.assignedUserID = value['employee'];
                 }
-                if (value['department'] > 0) {
-                  updateTicket.departmentID = value['department'];
-                }
-                _updateTicket(context, updateTicket,
-                    "Do you want to ${updateTicket.departmentID != null ? 'Transfer' : 'Forword'}?",
+                _updateTicket(context, updateTicket, "Do you want to Forword ?",
                     apiUrl: forwordTicketApiUrl);
               });
-            } else {
-              updateTicket.status = StatusType.open;
-              updateTicket.assignedUserID = ticket.userID;
-              _updateTicket(context, updateTicket, "Do you want to Approve'?",
-                  apiUrl: updateTicketByStatusApiUrl);
             }
+          }
+        case StatusType.reAssign:
+          {
+            Dialogs.showDialogWithClose(
+                    context,
+                    TicketTransferWidget(
+                      ticketEntity: ticket,
+                    ),
+                    maxWidth: 350)
+                .then((value) async {
+              updateTicket.status = StatusType.open;
+              if (value['employee'] > 0) {
+                updateTicket.assignedUserID = value['employee'];
+              }
+              _updateTicket(context, updateTicket, "Do you want to Forword ?",
+                  apiUrl: forwordTicketApiUrl);
+            });
           }
         default:
           updateTicket.status =
@@ -716,49 +794,7 @@ class ViewRequest extends BaseScreenWidget {
                   ),
                   if ((ticket.status != StatusType.closed &&
                       ticket.status != StatusType.reject)) ...[
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                          vertical: resources.dimen.dp15,
-                          horizontal: resources.dimen.dp20),
-                      color: resources.color.colorWhite,
-                      child: Column(
-                        children: [
-                          if (ticket.categoryID == 1 &&
-                              (ticket.assignedUserID == null ||
-                                  ticket.assignedUserID ==
-                                      UserCredentialsEntity.details().id)) ...[
-                            ValueListenableBuilder(
-                                valueListenable: _isChargeable,
-                                builder: (context, value, child) {
-                                  return CheckboxListTile(
-                                      contentPadding: const EdgeInsets.all(0),
-                                      title: Text(
-                                        '${resources.string.chargeable}(50 AED)',
-                                        style: context.textFontWeight400
-                                            .onColor(
-                                                resources.color.viewBgColor),
-                                      ),
-                                      side: BorderSide(
-                                        color: resources.color.viewBgColor,
-                                        width: 1.5,
-                                      ),
-                                      visualDensity: const VisualDensity(
-                                          horizontal: -4, vertical: -4),
-                                      controlAffinity:
-                                          ListTileControlAffinity.leading,
-                                      value: value,
-                                      onChanged: (isChecked) {
-                                        _isChargeable.value = isChecked;
-                                      });
-                                }),
-                            SizedBox(
-                              height: resources.dimen.dp10,
-                            ),
-                          ],
-                          _getComments(context),
-                        ],
-                      ),
-                    ),
+                    _getComments(context),
                     SizedBox(
                       height: resources.dimen.dp20,
                     ),

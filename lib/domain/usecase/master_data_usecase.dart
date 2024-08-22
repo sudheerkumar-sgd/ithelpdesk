@@ -93,9 +93,10 @@ class MasterDataUseCase extends BaseUseCase {
   }
 
   Future<Either<Failure, ApiEntity<ListEntity>>> getAssignedEmployees(
-      {required Map<String, dynamic> requestParams}) async {
+      {required Map<String, dynamic> requestParams,
+      required String apiUrl}) async {
     var apiResponse = await apisRepository.get<ListModel>(
-      apiUrl: assignedEmployeesApiUrl,
+      apiUrl: apiUrl,
       requestParams: requestParams,
       responseModel: ListModel.fromEmployeesJson,
     );

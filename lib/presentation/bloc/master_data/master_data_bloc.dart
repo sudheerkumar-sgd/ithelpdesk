@@ -6,6 +6,8 @@ import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
 import '../../../core/error/failures.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/remote/api_urls.dart';
+
 part 'master_data_state.dart';
 
 class MasterDataBloc extends Cubit<MasterDataState> {
@@ -56,11 +58,13 @@ class MasterDataBloc extends Cubit<MasterDataState> {
     return result.fold((l) => ListEntity(),
         (r) => OnDataSuccess(listEntity: r).listEntity.entity ?? ListEntity());
   }
+
   Future<ListEntity> getAssignedEmployees(
-      {required Map<String, dynamic> requestParams}) async {
+      {required Map<String, dynamic> requestParams,
+      String apiUrl = assignedEmployeesApiUrl}) async {
     //emit(OnMasterDataLoading());
-    final result =
-        await masterDataUseCase.getAssignedEmployees(requestParams: requestParams);
+    final result = await masterDataUseCase.getAssignedEmployees(
+        requestParams: requestParams, apiUrl: apiUrl);
     return result.fold((l) => ListEntity(),
         (r) => OnDataSuccess(listEntity: r).listEntity.entity ?? ListEntity());
   }

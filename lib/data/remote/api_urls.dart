@@ -101,6 +101,8 @@ const String departmentsApiUrl = '${apiFolderUrl}MasterData/GetDepartments';
 const String employeesApiUrl = '${apiFolderUrl}MasterData/GetEmployees';
 const String assignedEmployeesApiUrl =
     '${apiFolderUrl}MasterData/GetAssignedEmployees';
+const String previousAssignedEmployeesApiUrl =
+    '${apiFolderUrl}MasterData/GetPreviousAssignies';
 const String createTicketApiUrl = '${apiFolderUrl}CreateTicket';
 const String createTicketUploadMultiPartApiUrl =
     '${apiFolderUrl}CreateTicket/UploadMultiPart';

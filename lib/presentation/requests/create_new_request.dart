@@ -616,7 +616,13 @@ class CreateNewRequest extends BaseScreenWidget {
                                 ticket.departmentID =
                                     UserCredentialsEntity.details()
                                         .departmentID;
-                                ticket.categoryID = _ticketCategory.value + 1;
+                                var ticketCategoryValue =
+                                    _ticketCategory.value + 1;
+                                if (categories.length == 3 &&
+                                    ticketCategoryValue > 1) {
+                                  ticketCategoryValue = ticketCategoryValue + 1;
+                                }
+                                ticket.categoryID = ticketCategoryValue;
                                 ticket.subCategoryID = _subCategoryValue.value;
                                 ticket.subjectID = _reasonValue.value?.id;
                                 ticket.subject = _reasonController.text;

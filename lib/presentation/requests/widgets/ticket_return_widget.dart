@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
+import 'package:ithelpdesk/data/remote/api_urls.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
+import 'package:ithelpdesk/domain/entities/user_entity.dart';
 import 'package:ithelpdesk/presentation/bloc/master_data/master_data_bloc.dart';
 import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dropdown_widget.dart';
@@ -77,30 +79,42 @@ class TicketReturnWidget extends StatelessWidget {
                         ),
                       ],
                     ),
-                    if (value)
-                      FutureBuilder(
-                          future: _masterDataBloc
-                              .getAssignedEmployees(requestParams: {
-                            'subcategoryID': ticketEntity.subCategoryID,
-                            'categoryID': ticketEntity.categoryID,
-                          }),
-                          builder: (context, snapShot) {
-                            return Padding(
-                              padding:
-                                  EdgeInsets.only(top: resources.dimen.dp10),
-                              child: DropDownWidget(
-                                isEnabled: true,
-                                list: snapShot.data?.items ?? [],
-                                labelText: resources.string.employee,
-                                hintText: resources.string.selectEmployeeName,
-                                fillColor: resources.color.colorWhite,
-                                borderRadius: 0,
-                                callback: (value) {
-                                  _selectedEmployee = value.id;
-                                },
-                              ),
-                            );
-                          }),
+                    FutureBuilder(
+                        future: _masterDataBloc.getAssignedEmployees(
+                            requestParams: value
+                                ? {
+                                    'subcategoryID': ticketEntity.subCategoryID,
+                                    'categoryID': ticketEntity.categoryID,
+                                  }
+                                : {
+                                    'ticketID': ticketEntity.id,
+                                  },
+                            apiUrl: value
+                                ? assignedEmployeesApiUrl
+                                : previousAssignedEmployeesApiUrl),
+                        builder: (context, snapShot) {
+                          final items = snapShot.data?.items ?? [];
+                          if (!value) {
+                            final userEntity = UserEntity();
+                            userEntity.id = ticketEntity.userID;
+                            userEntity.name = 'Creator';
+                            items.insert(0, userEntity);
+                          }
+                          return Padding(
+                            padding: EdgeInsets.only(top: resources.dimen.dp10),
+                            child: DropDownWidget(
+                              isEnabled: true,
+                              list: items,
+                              labelText: resources.string.employee,
+                              hintText: resources.string.selectEmployeeName,
+                              fillColor: resources.color.colorWhite,
+                              borderRadius: 0,
+                              callback: (value) {
+                                _selectedEmployee = value.id;
+                              },
+                            ),
+                          );
+                        }),
                   ],
                 );
               }),

@@ -119,6 +119,7 @@ class TicketsModel extends BaseModel {
   String? categoryName;
   int? subCategoryID;
   int? subjectID;
+  int? assigneType;
   int? userType;
   String? date;
   String? description;
@@ -128,7 +129,7 @@ class TicketsModel extends BaseModel {
   String? mobileNumber;
   int? userID;
   String? creator;
-  String? level;
+  int? level;
   int? assignedUserID;
   String? assignedTo;
   int? previousAssignedID;
@@ -151,6 +152,8 @@ class TicketsModel extends BaseModel {
   int? serviceId;
   String? serviceReqNo;
   List<String>? attachments;
+  int? teamCount;
+  bool? isMaxLevel;
 
   TicketsModel.fromJson(Map<String, dynamic> ticketsJson) {
     final json = ticketsJson['data'] ?? ticketsJson;
@@ -171,7 +174,7 @@ class TicketsModel extends BaseModel {
     level = json['level'];
     assignedTo = json['assignedTo'];
     assignedUserID = json['assignedUserID'];
-    userType = json['userType'];
+    assigneType = json['assigneType'];
     previousAssignedID = json['previousAssignedID'];
     transferBy = json['transferBy'];
     assignedDate = json['assignedDate'];
@@ -191,6 +194,9 @@ class TicketsModel extends BaseModel {
     isCustomAssign = json['isCustomAssign'];
     serviceId = json['serviceId'];
     serviceReqNo = json['serviceReqNo'];
+    teamCount = json['teamCount'];
+    userType = json['userType'];
+    isMaxLevel = json['isMaxLevel'];
     if (json['attachments'] is List) {
       attachments = List.empty(growable: true);
       json['attachments']
@@ -218,7 +224,9 @@ class TicketsModel extends BaseModel {
     ticketsEntity.level = level;
     ticketsEntity.assignedTo = assignedTo;
     ticketsEntity.assignedUserID = assignedUserID;
-    ticketsEntity.userType = AssigneType.fromId(userType ?? 1);
+    ticketsEntity.assigneType = AssigneType.fromId(assigneType ?? 1);
+    ticketsEntity.userType =
+        userType == null ? null : AssigneType.fromId(userType ?? 1);
     ticketsEntity.previousAssignedID = previousAssignedID;
     ticketsEntity.transferBy = transferBy;
     ticketsEntity.assignedDate = assignedDate;
@@ -237,6 +245,8 @@ class TicketsModel extends BaseModel {
     ticketsEntity.serviceId = serviceId;
     ticketsEntity.serviceReqNo = serviceReqNo;
     ticketsEntity.attachments = attachments;
+    ticketsEntity.teamCount = teamCount;
+    ticketsEntity.isMaxLevel = isMaxLevel;
     return ticketsEntity;
   }
 }
