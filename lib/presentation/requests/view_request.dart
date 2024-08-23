@@ -62,7 +62,7 @@ class ViewRequest extends BaseScreenWidget {
   int priority = -1;
   final ValueNotifier<bool> _isExanded = ValueNotifier(false);
 
-  Widget _getChangeWidget(BuildContext context) {
+  Widget _getChargeWidget(BuildContext context) {
     return ValueListenableBuilder(
         valueListenable: _isChargeable,
         builder: (context, value, child) {
@@ -93,16 +93,13 @@ class ViewRequest extends BaseScreenWidget {
         builder: (context, snapShot) {
           final items = snapShot.data?.items ?? [];
           return items.isEmpty
-              ? (ticket.categoryID == 1 &&
-                      (ticket.assignedUserID != null &&
-                          ticket.level == 1 &&
-                          UserCredentialsEntity.details().departmentID == 1))
+              ? ticket.isTicketChargeable()
                   ? Container(
                       padding: EdgeInsets.symmetric(
                           vertical: context.resources.dimen.dp15,
                           horizontal: context.resources.dimen.dp20),
                       color: context.resources.color.colorWhite,
-                      child: _getChangeWidget(context),
+                      child: _getChargeWidget(context),
                     )
                   : const SizedBox()
               : Container(
@@ -113,12 +110,8 @@ class ViewRequest extends BaseScreenWidget {
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (ticket.categoryID == 1 &&
-                            (ticket.assignedUserID != null &&
-                                ticket.level == 1 &&
-                                UserCredentialsEntity.details().departmentID ==
-                                    1)) ...[
-                          _getChangeWidget(context),
+                        if (ticket.isTicketChargeable()) ...[
+                          _getChargeWidget(context),
                           SizedBox(
                             height: context.resources.dimen.dp10,
                           )
@@ -254,26 +247,26 @@ class ViewRequest extends BaseScreenWidget {
                     ),
                     maxWidth: 350)
                 .then((value) async {
-              printLog(value);
-              updateTicket.status = StatusType.returned;
-              if (value['employee'] > 0) {
-                updateTicket.assignedTo = value['employee'];
-              } else {
-                updateTicket.assignedUserID =
-                    ticket.previousAssignedID ?? ticket.userID;
+              if (value != null) {
+                printLog(value);
+                updateTicket.status = StatusType.returned;
+                if ((value?['employeeId'] ?? 0) > 0) {
+                  updateTicket.assignedUserID = (value['employeeId'] ?? 0);
+                  _updateTicket(context, updateTicket,
+                      "Do you want return to ${(value['employeeName'] ?? '')}?");
+                }
               }
-              _updateTicket(context, updateTicket, "Do you want to return?");
             });
           }
         case StatusType.resubmit:
           {
-            updateTicket.status = StatusType.open;
+            updateTicket.status = StatusType.resubmit;
             updateTicket.assignedUserID =
                 ticket.previousAssignedID ?? ticket.userID;
             Dialogs.showDialogWithClose(
               context,
               TicketActionWidget(
-                message: "Do you want to return?",
+                message: "Do you want to Resubmit?",
                 isCommentRequired: false,
               ),
               maxWidth: isDesktop(context) ? 400 : null,
@@ -306,6 +299,9 @@ class ViewRequest extends BaseScreenWidget {
                 if (value['employee'] > 0) {
                   updateTicket.assignedUserID = value['employee'];
                 }
+                if (value['forwordCategory'] > 0) {
+                  updateTicket.subCategoryID = value['forwordCategory'];
+                }
                 _updateTicket(context, updateTicket, "Do you want to Forword ?",
                     apiUrl: forwordTicketApiUrl);
               });
@@ -329,6 +325,9 @@ class ViewRequest extends BaseScreenWidget {
             });
           }
         default:
+          if (status == StatusType.closed) {
+            updateTicket.isChargeable = _isChargeable.value;
+          }
           updateTicket.status =
               status == StatusType.resubmit ? StatusType.open : status;
           _updateTicket(context, updateTicket,

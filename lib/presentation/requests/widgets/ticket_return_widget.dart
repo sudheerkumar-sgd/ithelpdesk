@@ -16,7 +16,7 @@ import '../../../injection_container.dart';
 class TicketReturnWidget extends StatelessWidget {
   final TicketEntity ticketEntity;
   TicketReturnWidget({required this.ticketEntity, super.key});
-  var _selectedEmployee = 0;
+  UserEntity? _selectedEmployee;
   final ValueNotifier _isForwordToEmployee = ValueNotifier(false);
   final _masterDataBloc = sl<MasterDataBloc>();
 
@@ -41,44 +41,44 @@ class TicketReturnWidget extends StatelessWidget {
               builder: (context, value, child) {
                 return Column(
                   children: [
-                    Row(
-                      children: [
-                        Flexible(
-                          child: RadioListTile(
-                              contentPadding: const EdgeInsets.all(0),
-                              title: Text(
-                                'Previous Assignee',
-                                style: context.textFontWeight400
-                                    .onFontSize(resources.fontSize.dp12),
-                              ),
-                              groupValue: true,
-                              visualDensity: const VisualDensity(
-                                  horizontal: -4, vertical: -4),
-                              controlAffinity: ListTileControlAffinity.leading,
-                              value: !_isForwordToEmployee.value,
-                              onChanged: (isChecked) {
-                                _isForwordToEmployee.value = false;
-                              }),
-                        ),
-                        Flexible(
-                          child: RadioListTile(
-                              contentPadding: const EdgeInsets.all(0),
-                              title: Text(
-                                'Employee',
-                                style: context.textFontWeight400
-                                    .onFontSize(resources.fontSize.dp12),
-                              ),
-                              groupValue: true,
-                              visualDensity: const VisualDensity(
-                                  horizontal: -4, vertical: -4),
-                              controlAffinity: ListTileControlAffinity.leading,
-                              value: _isForwordToEmployee.value,
-                              onChanged: (isChecked) {
-                                _isForwordToEmployee.value = true;
-                              }),
-                        ),
-                      ],
-                    ),
+                    // Row(
+                    //   children: [
+                    //     Flexible(
+                    //       child: RadioListTile(
+                    //           contentPadding: const EdgeInsets.all(0),
+                    //           title: Text(
+                    //             'Previous Assignee',
+                    //             style: context.textFontWeight400
+                    //                 .onFontSize(resources.fontSize.dp12),
+                    //           ),
+                    //           groupValue: true,
+                    //           visualDensity: const VisualDensity(
+                    //               horizontal: -4, vertical: -4),
+                    //           controlAffinity: ListTileControlAffinity.leading,
+                    //           value: !_isForwordToEmployee.value,
+                    //           onChanged: (isChecked) {
+                    //             _isForwordToEmployee.value = false;
+                    //           }),
+                    //     ),
+                    //     Flexible(
+                    //       child: RadioListTile(
+                    //           contentPadding: const EdgeInsets.all(0),
+                    //           title: Text(
+                    //             'Employee',
+                    //             style: context.textFontWeight400
+                    //                 .onFontSize(resources.fontSize.dp12),
+                    //           ),
+                    //           groupValue: true,
+                    //           visualDensity: const VisualDensity(
+                    //               horizontal: -4, vertical: -4),
+                    //           controlAffinity: ListTileControlAffinity.leading,
+                    //           value: _isForwordToEmployee.value,
+                    //           onChanged: (isChecked) {
+                    //             _isForwordToEmployee.value = true;
+                    //           }),
+                    //     ),
+                    //   ],
+                    // ),
                     FutureBuilder(
                         future: _masterDataBloc.getAssignedEmployees(
                             requestParams: value
@@ -94,12 +94,18 @@ class TicketReturnWidget extends StatelessWidget {
                                 : previousAssignedEmployeesApiUrl),
                         builder: (context, snapShot) {
                           final items = snapShot.data?.items ?? [];
-                          if (!value) {
+                          items.removeWhere(
+                              (item) => item.id == ticketEntity.userID);
+                          if (snapShot.data != null) {
                             final userEntity = UserEntity();
                             userEntity.id = ticketEntity.userID;
                             userEntity.name = 'Creator';
                             items.insert(0, userEntity);
                           }
+                          if (items.length == 1) {
+                            _selectedEmployee = items[0];
+                          }
+
                           return Padding(
                             padding: EdgeInsets.only(top: resources.dimen.dp10),
                             child: DropDownWidget(
@@ -108,9 +114,10 @@ class TicketReturnWidget extends StatelessWidget {
                               labelText: resources.string.employee,
                               hintText: resources.string.selectEmployeeName,
                               fillColor: resources.color.colorWhite,
+                              selectedValue: _selectedEmployee,
                               borderRadius: 0,
                               callback: (value) {
-                                _selectedEmployee = value.id;
+                                _selectedEmployee = value;
                               },
                             ),
                           );
@@ -146,7 +153,8 @@ class TicketReturnWidget extends StatelessWidget {
               InkWell(
                 onTap: () {
                   Navigator.pop(context, {
-                    'employee': _selectedEmployee,
+                    'employeeId': _selectedEmployee?.id,
+                    'employeeName': _selectedEmployee?.name,
                   });
                 },
                 child: ActionButtonWidget(

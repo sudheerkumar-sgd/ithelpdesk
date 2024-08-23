@@ -71,8 +71,7 @@ class TicketEntity extends BaseEntity {
   bool? isMaxLevel;
 
   bool isMyTicket() {
-    return (userID == UserCredentialsEntity.details().id &&
-        assignedUserID != UserCredentialsEntity.details().id);
+    return (userID == UserCredentialsEntity.details().id);
   }
 
   List<ActionButtonEntity> getActionButtonsForMytickets(BuildContext context) {
@@ -165,6 +164,11 @@ class TicketEntity extends BaseEntity {
     return isMyTicket()
         ? getActionButtonsForMytickets(context)
         : getActionButtonsForAssigned(context);
+  }
+
+  bool isTicketChargeable() {
+    return categoryID == 1 &&
+        UserCredentialsEntity.details().userType == UserType.sgdIT;
   }
 
   Map<String, dynamic> toJson({bool showActionButtons = false}) => {
