@@ -11,7 +11,7 @@ class ProfileNavigatorScreen extends BaseScreenWidget {
   @override
   Widget build(BuildContext context) {
     profileKey = GlobalKey<NavigatorState>();
-    profileScreen = const ProfileScreen();
+    profileScreen = ProfileScreen();
     return Navigator(
       key: profileKey,
       initialRoute: '/',

@@ -171,7 +171,7 @@ class TicketEntity extends BaseEntity {
         UserCredentialsEntity.details().userType == UserType.sgdIT;
   }
 
-  Map<String, dynamic> toJson({bool showActionButtons = false}) => {
+  Map<String, dynamic> toJson() => {
         "id": id ?? '',
         "employeeName": creator ?? '',
         "Category": categoryName ?? '',
@@ -181,16 +181,14 @@ class TicketEntity extends BaseEntity {
         "assignee": assignedTo ?? '',
         "department": departmentName ?? '',
         "createDate": createdOn ?? '',
-        "showActionButtons": showActionButtons,
       };
-  Map<String, dynamic> toMobileJson({bool showActionButtons = false}) => {
+  Map<String, dynamic> toMobileJson() => {
         "id": id ?? '',
         "Category": categoryName ?? '',
         "subject": subject ?? '',
         "status": status?.name ?? '',
         "priority": priority ?? '',
         "createDate": createdOn ?? '',
-        "showActionButtons": showActionButtons,
       };
   Map<String, dynamic> toCreateJson() {
     final Map<String, dynamic> data = <String, dynamic>{};

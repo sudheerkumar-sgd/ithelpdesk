@@ -1,3 +1,4 @@
+import 'package:excel/excel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
@@ -17,6 +18,7 @@ import '../requests/view_request.dart';
 class ReportsScreen extends BaseScreenWidget {
   ReportsScreen({super.key});
   final ServicesBloc _servicesBloc = sl<ServicesBloc>();
+  List<dynamic>? tickets;
 
   Widget _getFilters(BuildContext context) {
     final resources = context.resources;
@@ -118,7 +120,29 @@ class ReportsScreen extends BaseScreenWidget {
           width: resources.dimen.dp10,
         ),
         InkWell(
-          onTap: () {},
+          onTap: () {
+            var excel = Excel.createExcel();
+            var sheetObject = excel[excel.getDefaultSheet() ?? 'SheetName'];
+
+            tickets?.forEach((item) {
+              List<CellValue> headerlist = List.empty(growable: true);
+              List<CellValue> list = List.empty(growable: true);
+
+              item.toJson().forEach((k, v) {
+                if (sheetObject.rows.isEmpty) {
+                  final cellValue = TextCellValue("$k");
+                  headerlist.add(cellValue);
+                }
+                final cellValue = TextCellValue("$v");
+                list.add(cellValue);
+              });
+              if (sheetObject.rows.isEmpty) {
+                sheetObject.appendRow(headerlist);
+              }
+              sheetObject.appendRow(list);
+            });
+            excel.save(fileName: 'Tickets.xlsx');
+          },
           child: ActionButtonWidget(
               text: resources.string.download,
               radious: resources.dimen.dp15,
@@ -232,6 +256,7 @@ class ReportsScreen extends BaseScreenWidget {
                       'userId': UserCredentialsEntity.details().id
                     }),
                     builder: (context, snapsShot) {
+                      tickets = snapsShot.data?.entity?.items;
                       return snapsShot.data?.entity?.items.isNotEmpty == true
                           ? ReportListWidget(
                               ticketsHeaderData: ticketsHeaderData,

@@ -52,6 +52,10 @@ class UserModel extends BaseModel {
   bool? isStaff;
   bool? status;
   String? statusChangedOn;
+  String? designation;
+  String? manager;
+  String? department;
+  String? mobile;
 
   UserModel();
 
@@ -68,6 +72,10 @@ class UserModel extends BaseModel {
     isStaff = userJson['isStaff'];
     status = userJson['status'];
     statusChangedOn = userJson['statusChangedOn'];
+    designation = userJson['designation'];
+    manager = userJson['manager'];
+    department = userJson['department'];
+    mobile = userJson['mobile'];
   }
 
   @override
@@ -87,6 +95,10 @@ class UserModel extends BaseModel {
     userEntity.departmentID = departmentID;
     userEntity.createdOn = createdOn;
     userEntity.status = status;
+    userEntity.designation = designation;
+    userEntity.manager = manager;
+    userEntity.department = department;
+    userEntity.mobile = mobile;
     return userEntity;
   }
 }

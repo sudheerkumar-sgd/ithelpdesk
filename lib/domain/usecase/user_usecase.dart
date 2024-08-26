@@ -8,6 +8,9 @@ import 'package:ithelpdesk/domain/entities/user_entity.dart';
 import 'package:ithelpdesk/domain/repository/apis_repository.dart';
 import 'package:ithelpdesk/domain/usecase/base_usecase.dart';
 
+import '../../data/model/master_data_models.dart';
+import '../entities/master_data_entities.dart';
+
 class UserUseCase extends BaseUseCase {
   final ApisRepository apisRepository;
   UserUseCase({required this.apisRepository});
@@ -44,6 +47,22 @@ class UserUseCase extends BaseUseCase {
       return Left(l);
     }, (r) {
       var apiResponseEntity = r.toEntity<UserEntity>();
+      return Right(apiResponseEntity);
+    });
+  }
+
+  Future<Either<Failure, ApiEntity<ListEntity>>> getDirectoryEmployees({
+    required Map<String, dynamic> requestParams,
+  }) async {
+    var apiResponse = await apisRepository.get<ListModel>(
+      apiUrl: directoryEmployeesApiUrl,
+      requestParams: requestParams,
+      responseModel: ListModel.fromDirectoryEmployeesJson,
+    );
+    return apiResponse.fold((l) {
+      return Left(l);
+    }, (r) {
+      var apiResponseEntity = r.toEntity<ListEntity>();
       return Right(apiResponseEntity);
     });
   }

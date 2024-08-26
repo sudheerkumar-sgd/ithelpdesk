@@ -99,6 +99,8 @@ const String reasonsApiUrl = '${apiFolderUrl}MasterData/GetReasons';
 const String eservicesApiUrl = '${apiFolderUrl}MasterData/GetEservices';
 const String departmentsApiUrl = '${apiFolderUrl}MasterData/GetDepartments';
 const String employeesApiUrl = '${apiFolderUrl}MasterData/GetEmployees';
+const String directoryEmployeesApiUrl =
+    '${apiFolderUrl}User/GetDirectoryEmployees';
 const String assignedEmployeesApiUrl =
     '${apiFolderUrl}MasterData/GetAssignedEmployees';
 const String previousAssignedEmployeesApiUrl =

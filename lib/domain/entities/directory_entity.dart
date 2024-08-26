@@ -8,13 +8,7 @@ class DirectoryEntity extends BaseEntity {
   String? designation;
   String? department;
   String? emailId;
-  DirectoryEntity(
-    this.id,
-    this.employeeName,
-    this.designation,
-    this.department,
-    this.emailId,
-  );
+  DirectoryEntity();
   @override
   List<Object?> get props => [id];
 

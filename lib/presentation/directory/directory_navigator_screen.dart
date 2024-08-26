@@ -11,7 +11,7 @@ class DirectoryNavigatorScreen extends BaseScreenWidget {
   @override
   Widget build(BuildContext context) {
     directoryKey = GlobalKey<NavigatorState>();
-    directoryScreen = const DirectoryScreen();
+    directoryScreen = DirectoryScreen();
     return Navigator(
       key: directoryKey,
       initialRoute: '/',

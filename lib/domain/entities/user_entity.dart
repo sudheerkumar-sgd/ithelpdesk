@@ -29,6 +29,10 @@ class UserEntity extends BaseEntity {
   bool? isStaff;
   bool? status;
   String? statusChangedOn;
+  String? designation;
+  String? manager;
+  String? department;
+  String? mobile;
 
   @override
   List<Object?> get props => [id];

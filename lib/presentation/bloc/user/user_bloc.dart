@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
 import 'package:ithelpdesk/domain/usecase/user_usecase.dart';
 import '../../../core/error/failures.dart';
 import '../../../domain/entities/api_entity.dart';
@@ -21,6 +22,15 @@ class UserBloc extends Cubit<UserState> {
   Future<UserEntity> getUserData(Map<String, dynamic> requestParams) async {
     final result = await userUseCase.getUserData(requestParams: requestParams);
     return result.fold((l) => UserEntity(), (r) => r.entity ?? UserEntity());
+  }
+
+  Future<ListEntity> getDirectoryEmployees({
+    required Map<String, dynamic> requestParams,
+  }) async {
+    //emit(OnMasterDataLoading());
+    final result =
+        await userUseCase.getDirectoryEmployees(requestParams: requestParams);
+    return result.fold((l) => ListEntity(), (r) => r.entity ?? ListEntity());
   }
 
   String _getErrorMessage(Failure failure) {

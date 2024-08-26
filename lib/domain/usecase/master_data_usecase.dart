@@ -107,4 +107,5 @@ class MasterDataUseCase extends BaseUseCase {
       return Right(apiResponseEntity);
     });
   }
+
 }

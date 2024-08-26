@@ -4,10 +4,7 @@ import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
-import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
-import 'package:ithelpdesk/presentation/requests/view_request.dart';
 import 'package:ithelpdesk/res/drawables/background_box_decoration.dart';
-import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
 
 class ReportListWidget extends StatelessWidget {
   final List<String> ticketsHeaderData;
@@ -24,35 +21,31 @@ class ReportListWidget extends StatelessWidget {
       super.key});
   List<Widget> _getTicketData(BuildContext context, TicketEntity ticketEntity) {
     final list = List<Widget>.empty(growable: true);
-    (isDesktop(context)
-            ? ticketEntity.toJson(showActionButtons: false)
-            : ticketEntity.toMobileJson(showActionButtons: false))
+    (isDesktop(context) ? ticketEntity.toJson() : ticketEntity.toMobileJson())
         .forEach((key, value) {
-      if (key != 'showActionButtons' || (key == 'showActionButtons' && value)) {
-        list.add(InkWell(
-          onTap: () {
-            onTicketSelected?.call(ticketEntity);
-          },
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-                vertical: context.resources.dimen.dp20,
-                horizontal: context.resources.dimen.dp5),
-            child: Text(
-              '$value',
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: (key.toString().toLowerCase().contains('date') ||
-                      key.toString().toLowerCase().contains('id'))
-                  ? context.textFontWeight600
-                      .onFontSize(context.resources.fontSize.dp10)
-                      .onFontFamily(fontFamily: fontFamilyEN)
-                  : context.textFontWeight600
-                      .onFontSize(context.resources.fontSize.dp10),
-            ),
+      list.add(InkWell(
+        onTap: () {
+          onTicketSelected?.call(ticketEntity);
+        },
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+              vertical: context.resources.dimen.dp20,
+              horizontal: context.resources.dimen.dp5),
+          child: Text(
+            '$value',
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: (key.toString().toLowerCase().contains('date') ||
+                    key.toString().toLowerCase().contains('id'))
+                ? context.textFontWeight600
+                    .onFontSize(context.resources.fontSize.dp10)
+                    .onFontFamily(fontFamily: fontFamilyEN)
+                : context.textFontWeight600
+                    .onFontSize(context.resources.fontSize.dp10),
           ),
-        ));
-      }
+        ),
+      ));
     });
     return list;
   }

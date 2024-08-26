@@ -3,6 +3,7 @@
 import 'package:ithelpdesk/data/model/base_model.dart';
 import 'package:ithelpdesk/data/model/dashboard_model.dart';
 import 'package:ithelpdesk/data/model/login_model.dart';
+import 'package:ithelpdesk/domain/entities/directory_entity.dart';
 import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
 
 class ListModel extends BaseModel {
@@ -67,6 +68,14 @@ class ListModel extends BaseModel {
     if (json['data'] is List) {
       for (var json in (json['data'] as List)) {
         items.add(UserModel.fromJson(json).toEntity());
+      }
+    }
+  }
+
+  ListModel.fromDirectoryEmployeesJson(Map<String, dynamic> json) {
+    if (json['data'] is List) {
+      for (var json in (json['data'] as List)) {
+        items.add(DirectoryModel.fromJson(json).toEntity());
       }
     }
   }
@@ -182,5 +191,32 @@ class DepartmentModel extends BaseModel {
     departmentEntity.name = name;
     departmentEntity.shortName = shortName;
     return departmentEntity;
+  }
+}
+
+class DirectoryModel extends BaseModel {
+  int? id;
+  String? employeeName;
+  String? designation;
+  String? department;
+  String? emailId;
+
+  DirectoryModel.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    employeeName = json['name'];
+    department = json['department'];
+    designation = json['designation'];
+    emailId = json['email'];
+  }
+
+  @override
+  DirectoryEntity toEntity() {
+    final directoryEntity = DirectoryEntity();
+    directoryEntity.id = id;
+    directoryEntity.employeeName = employeeName;
+    directoryEntity.designation = designation;
+    directoryEntity.department = department;
+    directoryEntity.emailId = emailId;
+    return directoryEntity;
   }
 }

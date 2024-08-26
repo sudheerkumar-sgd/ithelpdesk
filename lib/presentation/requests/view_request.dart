@@ -31,7 +31,6 @@ import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
 import 'package:page_transition/page_transition.dart';
 
-import '../../domain/entities/user_credentials_entity.dart';
 import '../common_widgets/alert_dialog_widget.dart';
 import '../common_widgets/attachment_preview_widget.dart';
 import 'widgets/ticket_return_widget.dart';
