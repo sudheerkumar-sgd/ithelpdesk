@@ -15,6 +15,7 @@ import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/data/remote/api_urls.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
 import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
+import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
 import 'package:ithelpdesk/injection_container.dart';
 import 'package:ithelpdesk/presentation/bloc/master_data/master_data_bloc.dart';
 import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
@@ -58,6 +59,8 @@ class ViewRequest extends BaseScreenWidget {
   final TextEditingController _contactNoController = TextEditingController();
   final TextEditingController _reasonController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _reqNoController = TextEditingController();
+
   int priority = -1;
   final ValueNotifier<bool> _isExanded = ValueNotifier(false);
 
@@ -354,6 +357,7 @@ class ViewRequest extends BaseScreenWidget {
     _contactNoController.text = ticket.mobileNumber ?? '';
     _reasonController.text = ticket.subject ?? '';
     _descriptionController.text = ticket.description ?? '';
+    _reqNoController.text = ticket.serviceReqNo ?? '';
     return Container(
       padding: EdgeInsets.symmetric(
           vertical: resources.dimen.dp15, horizontal: resources.dimen.dp20),
@@ -405,7 +409,7 @@ class ViewRequest extends BaseScreenWidget {
                     Expanded(
                         child: DropDownWidget(
                       list: priorities,
-                      isEnabled: false,
+                      isEnabled: ticket.canEnable(),
                       labelText: resources.string.priority,
                       hintText: resources.string.priority
                           .withPrefix(resources.string.pleaseSelect),
@@ -442,33 +446,35 @@ class ViewRequest extends BaseScreenWidget {
                   height: resources.dimen.dp10,
                 ),
                 if (ticket.categoryID == 3) ...[
-                  ValueListenableBuilder(
-                      valueListenable: _subCategoryValue,
-                      builder: (context, value, child) {
-                        return FutureBuilder(
-                            future: value?.id == null
-                                ? Future.value(ListEntity())
-                                : _masterDataBloc.getEservices(
-                                    requestParams: {'departmentID': value}),
-                            builder: (context, snapShot) {
-                              return DropDownWidget(
-                                list: snapShot.data?.items ?? [],
-                                labelText: resources.string.serviceName,
-                                hintText: resources.string.serviceName
-                                    .withPrefix(resources.string.pleaseSelect),
-                                errorMessage: resources.string.serviceName
-                                    .withPrefix(resources.string.pleaseSelect),
-                                borderRadius: 0,
-                                fillColor: resources.color.colorWhite,
-                                callback: (value) {},
-                              );
-                            });
+                  FutureBuilder(
+                      future: _masterDataBloc.getEservices(requestParams: {
+                        'departmentID': ticket.subCategoryID
+                      }),
+                      builder: (context, snapShot) {
+                        EserviceEntity? selectedValue =
+                            (snapShot.data?.items ?? [])
+                                .where((item) => item.id == ticket.serviceId)
+                                .firstOrNull;
+                        return DropDownWidget(
+                          isEnabled: ticket.canEnable(),
+                          list: snapShot.data?.items ?? [],
+                          labelText: resources.string.serviceName,
+                          selectedValue: selectedValue,
+                          hintText: resources.string.serviceName
+                              .withPrefix(resources.string.pleaseSelect),
+                          errorMessage: resources.string.serviceName
+                              .withPrefix(resources.string.pleaseSelect),
+                          borderRadius: 0,
+                          fillColor: resources.color.colorWhite,
+                          callback: (value) {},
+                        );
                       }),
                   SizedBox(
                     height: resources.dimen.dp10,
                   ),
                   RightIconTextWidget(
                     isEnabled: false,
+                    textController: _reqNoController,
                     labelText: resources.string.requestNo,
                     hintText: resources.string.requestNo
                         .withPrefix(resources.string.pleaseEnter),

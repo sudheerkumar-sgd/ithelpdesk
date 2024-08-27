@@ -114,6 +114,7 @@ flutter:
   # app images png:
      
   # app images svg:
+     - assets/html/print.html
      - assets/images/ic_logo.svg
      - assets/images/ic_home.svg
      - assets/images/ic_report.svg

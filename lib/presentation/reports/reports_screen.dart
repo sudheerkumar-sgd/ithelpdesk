@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:excel/excel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,10 +12,13 @@ import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart
 import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dropdown_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/report_list_widget.dart';
+import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
 
 import '../../domain/entities/user_credentials_entity.dart';
 import '../../injection_container.dart';
 import '../requests/view_request.dart';
+import 'dart:html' as html;
+import 'package:flutter/services.dart';
 
 class ReportsScreen extends BaseScreenWidget {
   ReportsScreen({super.key});
@@ -156,7 +161,9 @@ class ReportsScreen extends BaseScreenWidget {
           width: resources.dimen.dp10,
         ),
         InkWell(
-          onTap: () {},
+          onTap: () {
+            _generateAndPrintQrCode();
+          },
           child: ActionButtonWidget(
             text: resources.string.print,
             padding: EdgeInsets.symmetric(
@@ -169,6 +176,50 @@ class ReportsScreen extends BaseScreenWidget {
         ),
       ],
     );
+  }
+
+  Future<void> _generateAndPrintQrCode() async {
+// Generate QR code image
+
+// Convert widget to image
+    ByteData bytes = await rootBundle.load(DrawableAssets.icLogo);
+    var buffer = bytes.buffer;
+    var base64Image = base64.encode(Uint8List.view(buffer));
+
+// // Create a printable HTML document
+// Create a printable HTML document
+    final printableDocument = '''
+    <html>
+      <head>
+        <title>ZYSKY Partner Pin</title>
+      </head>
+      <body>
+        <img src="data:image/png;base64,$base64Image" alt="qr"/>
+        <script>
+          // Automatically trigger the print dialog once the image is loaded
+          window.onload = function() {
+            window.print();
+            window.onafterprint = function() {
+              window.close(); // Close the window after printing
+            };
+          };
+        </script>
+      </body>
+    </html>
+  ''';
+    final htmlString = await rootBundle.loadString('assets/html/print.html');
+
+// Create a Blob from the HTML content
+    final blob = html.Blob([htmlString], 'text/html');
+
+// Create an Object URL for the Blob
+    final url = html.Url.createObjectUrlFromBlob(blob);
+
+// Open a new window with the printable document
+    final newWindow = html.window.open(url, '_blank');
+
+// Revoke the Object URL to free resources
+    html.Url.revokeObjectUrl(url);
   }
 
   List<Widget> _getFilterBar(BuildContext context) {

@@ -100,7 +100,7 @@ class CreateNewRequest extends BaseScreenWidget {
                 Dialogs.showInfoDialog(context, PopupType.success,
                         'Successfully Submitted\n\n Ticket Id: ${state.createTicketResponse}')
                     .then((value) {
-                  Navigator.pop(context);
+                  Navigator.canPop(context);
                 });
               } else if (state is OnApiError) {
                 Dialogs.dismiss(context);
@@ -618,10 +618,6 @@ class CreateNewRequest extends BaseScreenWidget {
                                         .departmentID;
                                 var ticketCategoryValue =
                                     _ticketCategory.value + 1;
-                                if (categories.length == 3 &&
-                                    ticketCategoryValue > 1) {
-                                  ticketCategoryValue = ticketCategoryValue + 1;
-                                }
                                 ticket.categoryID = ticketCategoryValue;
                                 ticket.subCategoryID = _subCategoryValue.value;
                                 ticket.subjectID = _reasonValue.value?.id;

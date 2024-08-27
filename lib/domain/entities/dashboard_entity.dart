@@ -171,6 +171,12 @@ class TicketEntity extends BaseEntity {
         UserCredentialsEntity.details().userType == UserType.sgdIT;
   }
 
+  bool canEnable() {
+    return userType == AssigneType.approver &&
+        status != StatusType.closed &&
+        status != StatusType.reject;
+  }
+
   Map<String, dynamic> toJson() => {
         "id": id ?? '',
         "employeeName": creator ?? '',

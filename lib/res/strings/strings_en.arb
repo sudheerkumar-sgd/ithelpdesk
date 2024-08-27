@@ -17,7 +17,7 @@
     "report":"Report",
     "directory":"Directory",
     "profile":"Profile",
-    "searchHere":"Search here...",
+    "searchHere":"Search here with ticket ID...",
     "supportSummary":"Support Summary",
     "supportSummaryDes":"The dashboard about the IT Helpdesk Support Tickets",
     "createNewRequest":"Create New Request",

@@ -1,3 +1,4 @@
+import 'package:dio/browser.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ithelpdesk/core/config/flavor_config.dart';
@@ -76,6 +77,7 @@ Future<void> init() async {
     final dio = Dio();
     dio.options.baseUrl = FlavorConfig.instance.values.portalBaseUrl;
     dio.interceptors.add(DioLoggingInterceptor());
+    dio.options.extra['withCredentials'] = true;
     return dio;
   });
 }

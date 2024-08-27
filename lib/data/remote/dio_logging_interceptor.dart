@@ -26,6 +26,7 @@ class DioLoggingInterceptor extends InterceptorsWrapper {
       HttpHeaders.acceptHeader: "*/*",
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Credentials": true,
+      'X-Requested-With': 'XMLHttpRequest',
       "Access-Control-Allow-Headers":
           "X-Requested-With, Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale",
       "Access-Control-Allow-Methods": "GET, POST, OPTIONS"
