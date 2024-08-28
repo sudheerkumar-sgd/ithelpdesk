@@ -80,6 +80,8 @@ class DropDownWidget<T> extends StatelessWidget {
                       vertical: context.resources.dimen.dp2),
                   isExpanded: true,
                   isDense: true,
+                  focusColor: fillColor ?? const Color(0xFFF7F6F6),
+                  dropdownColor: fillColor ?? const Color(0xFFF7F6F6),
                   decoration: InputDecoration(
                     filled: true,
                     isDense: true,
@@ -87,6 +89,8 @@ class DropDownWidget<T> extends StatelessWidget {
                         vertical: context.resources.dimen.dp7,
                         horizontal: context.resources.dimen.dp10),
                     fillColor: fillColor ?? const Color(0xFFF7F6F6),
+                    focusColor: fillColor ?? const Color(0xFFF7F6F6),
+                    hoverColor: fillColor ?? const Color(0xFFF7F6F6),
                     border: OutlineInputBorder(
                       borderSide: BorderSide(
                           color: context.resources.color.sideBarItemUnselected,

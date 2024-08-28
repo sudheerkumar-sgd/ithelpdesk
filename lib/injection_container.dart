@@ -77,7 +77,9 @@ Future<void> init() async {
     final dio = Dio();
     dio.options.baseUrl = FlavorConfig.instance.values.portalBaseUrl;
     dio.interceptors.add(DioLoggingInterceptor());
-    dio.options.extra['withCredentials'] = true;
+    var adapter = BrowserHttpClientAdapter();
+    adapter.withCredentials = true;
+    dio.httpClientAdapter = adapter;
     return dio;
   });
 }

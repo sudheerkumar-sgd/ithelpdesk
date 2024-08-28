@@ -32,7 +32,7 @@ class MSearchUserAppBarWidget extends StatelessWidget
               Expanded(
                 child: Form(
                   key: _formKey,
-                  child: const SearchTextfieldWidget(
+                  child: SearchDropDownWidget(
                     prefixIconPath: DrawableAssets.icSearch,
                   ),
                 ),

@@ -8,17 +8,21 @@ import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
+import 'package:ithelpdesk/domain/entities/api_entity.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
+import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
 import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
 import 'package:ithelpdesk/injection_container.dart';
 import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
 import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart';
+import 'package:ithelpdesk/presentation/common_widgets/alert_dialog_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dropdown_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/report_list_widget.dart';
 import 'package:ithelpdesk/presentation/requests/create_new_request.dart';
 import 'package:ithelpdesk/presentation/requests/view_request.dart';
+import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 import 'package:ithelpdesk/res/drawables/background_box_decoration.dart';
 import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
 
@@ -33,6 +37,15 @@ class UserHomeScreen extends BaseScreenWidget {
   List<TicketEntity> ticketsData = [];
   int selectTicketCategory = 1;
   final ValueNotifier<int> _selectedYear = ValueNotifier(2024);
+  final ValueNotifier<List<String>> _filteredDates = ValueNotifier([]);
+
+  Future<ApiEntity<ListEntity>> _getDashboradTickets() {
+    final tickets = ApiEntity<ListEntity>();
+    final listEntity = ListEntity();
+    listEntity.items = ticketsData;
+    tickets.entity = listEntity;
+    return Future.value(tickets);
+  }
 
   Widget getLineChart(
       BuildContext context, List<TicketsByMonthEntity> ticketsByMonthEntity) {
@@ -541,30 +554,155 @@ class UserHomeScreen extends BaseScreenWidget {
                       Expanded(
                         child: Text.rich(
                           TextSpan(
-                              text: '${resources.string.latestTickets}\n',
-                              style: context.textFontWeight600
-                                  .onFontSize(resources.fontSize.dp12),
-                              children: [
-                                TextSpan(
-                                    text:
-                                        '${resources.string.latestTicketsDes}\n',
-                                    style: context.textFontWeight400
-                                        .onFontSize(resources.fontSize.dp10)
-                                        .onColor(resources.color.textColorLight)
-                                        .onHeight(1))
-                              ]),
+                            text: '${resources.string.latestTickets}\n',
+                            style: context.textFontWeight600
+                                .onFontSize(resources.fontSize.dp12),
+                            //children: [
+                            // TextSpan(
+                            //     text: '',
+                            //     style: context.textFontWeight400
+                            //         .onFontSize(resources.fontSize.dp10)
+                            //         .onColor(resources.color.textColorLight)
+                            //         .onHeight(1))
+                            //]
+                          ),
                         ),
                       ),
                       Text(
-                        '${resources.string.sortBy}: ',
+                        'Filter by Date: ',
                         style: context.textFontWeight600
                             .onFontSize(resources.fontSize.dp10),
                       ),
+                      SizedBox(
+                        width: resources.dimen.dp10,
+                      ),
+                      ValueListenableBuilder(
+                          valueListenable: _filteredDates,
+                          builder: (context, value, child) {
+                            return Container(
+                              decoration: BackgroundBoxDecoration(
+                                      radious: resources.dimen.dp15,
+                                      boarderColor:
+                                          resources.color.colorGray9E9E9E)
+                                  .roundedCornerBox,
+                              padding: EdgeInsets.symmetric(
+                                  vertical: resources.dimen.dp5,
+                                  horizontal: resources.dimen.dp10),
+                              child: Row(
+                                children: [
+                                  InkWell(
+                                    onTap: () {
+                                      showDatePicker(
+                                              context: context,
+                                              firstDate: DateTime.now().add(
+                                                  const Duration(days: -365)),
+                                              lastDate: DateTime.now())
+                                          .then((dateTime) {
+                                        if (dateTime != null) {
+                                          _filteredDates.value =
+                                              List<String>.empty(growable: true)
+                                                ..add(getDateByformat(
+                                                    'yyyy/MM/dd', dateTime));
+                                        }
+                                      });
+                                    },
+                                    child: Text.rich(
+                                      TextSpan(
+                                          text: value.isNotEmpty
+                                              ? value[0]
+                                              : 'Start Date',
+                                          children: const [
+                                            WidgetSpan(
+                                              child: Padding(
+                                                padding:
+                                                    EdgeInsets.only(left: 5.0),
+                                                child: Icon(
+                                                  Icons.calendar_month_sharp,
+                                                  size: 16,
+                                                ),
+                                              ),
+                                            )
+                                          ]),
+                                      style: context.textFontWeight400
+                                          .onFontSize(resources.fontSize.dp10),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: resources.dimen.dp20,
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      if (value.isNotEmpty) {
+                                        showDatePicker(
+                                                context: context,
+                                                firstDate: getDateTimeByString(
+                                                    'yyyy/MM/dd', value[0]),
+                                                lastDate: DateTime.now())
+                                            .then((dateTime) {
+                                          if (dateTime != null) {
+                                            _filteredDates.value =
+                                                List<String>.empty(
+                                                    growable: true)
+                                                  ..add(value[0])
+                                                  ..add(getDateByformat(
+                                                      'yyyy/MM/dd', dateTime));
+                                            _onDataChange.value =
+                                                !_onDataChange.value;
+                                          }
+                                        });
+                                      } else {
+                                        Dialogs.showInfoDialog(
+                                            context,
+                                            PopupType.fail,
+                                            'Please Select Start Date');
+                                      }
+                                    },
+                                    child: Text.rich(
+                                      TextSpan(
+                                          text: value.length > 1
+                                              ? value[1]
+                                              : 'End Date',
+                                          children: const [
+                                            WidgetSpan(
+                                              child: Padding(
+                                                padding:
+                                                    EdgeInsets.only(left: 5.0),
+                                                child: Icon(
+                                                  Icons.calendar_month_sharp,
+                                                  size: 16,
+                                                ),
+                                              ),
+                                            )
+                                          ]),
+                                      style: context.textFontWeight400
+                                          .onFontSize(resources.fontSize.dp10),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                      SizedBox(
+                        width: resources.dimen.dp20,
+                      ),
+                      Text(
+                        '${resources.string.sortBy}:',
+                        style: context.textFontWeight600
+                            .onFontSize(resources.fontSize.dp10),
+                      ),
+                      SizedBox(
+                        width: resources.dimen.dp20,
+                      ),
                       DropDownWidget<String>(
-                        width: 100,
-                        height: 28,
-                        list: const ['Created Date', 'priority', 'status'],
-                        iconSize: 20,
+                        width: 120,
+                        list: const [
+                          'All Status',
+                          'Created Date',
+                          'Priority',
+                          'Status'
+                        ],
+                        borderRadius: 15,
+                        iconSize: 16,
                         fontStyle: context.textFontWeight400
                             .onFontSize(resources.fontSize.dp10),
                       )
@@ -589,6 +727,9 @@ class UserHomeScreen extends BaseScreenWidget {
                             },
                             child: ActionButtonWidget(
                               text: "Assigned Tickets",
+                              padding: EdgeInsets.symmetric(
+                                  vertical: resources.dimen.dp7,
+                                  horizontal: resources.dimen.dp20),
                               decoration: BackgroundBoxDecoration(
                                       boxColor: selectTicketCategory == 1
                                           ? resources.color.viewBgColor
@@ -616,6 +757,9 @@ class UserHomeScreen extends BaseScreenWidget {
                               },
                               child: ActionButtonWidget(
                                 text: "My Tickets",
+                                padding: EdgeInsets.symmetric(
+                                    vertical: resources.dimen.dp7,
+                                    horizontal: resources.dimen.dp20),
                                 decoration: BackgroundBoxDecoration(
                                   boxColor: selectTicketCategory == 2
                                       ? resources.color.viewBgColor
@@ -637,28 +781,40 @@ class UserHomeScreen extends BaseScreenWidget {
                   ValueListenableBuilder(
                       valueListenable: _onDataChange,
                       builder: (context, onDataChange, child) {
-                        final filterTickets = ticketsData
-                            .where((ticket) =>
-                                ticket.status != StatusType.closed &&
-                                ticket.status != StatusType.reject)
-                            .toList();
-                        return ticketsData.isNotEmpty
-                            ? ReportListWidget(
-                                ticketsHeaderData: ticketsHeaderData,
-                                ticketsData: filterTickets,
-                                ticketsTableColunwidths:
-                                    ticketsTableColunwidths,
-                                onTicketSelected: (ticket) {
-                                  ViewRequest.start(context, ticket);
-                                },
-                              )
-                            : Padding(
-                                padding: const EdgeInsets.only(top: 20.0),
-                                child: Text(
-                                  'No Tickets',
-                                  style: context.textFontWeight600,
-                                ),
-                              );
+                        return FutureBuilder(
+                            future: _filteredDates.value.length < 2
+                                ? _getDashboradTickets()
+                                : _servicesBloc
+                                    .getTticketsByUser(requestParams: {
+                                    'isUserTickets': selectTicketCategory == 2,
+                                    'startDate': _filteredDates.value[0],
+                                    'endDate': _filteredDates.value[1]
+                                  }),
+                            builder: (context, snapShot) {
+                              final filterTickets =
+                                  (snapShot.data?.entity?.items ?? []);
+                              // .where((ticket) =>
+                              //     ticket.status != StatusType.closed &&
+                              //     ticket.status != StatusType.reject)
+                              // .toList();
+                              return filterTickets.isNotEmpty
+                                  ? ReportListWidget(
+                                      ticketsHeaderData: ticketsHeaderData,
+                                      ticketsData: filterTickets,
+                                      ticketsTableColunwidths:
+                                          ticketsTableColunwidths,
+                                      onTicketSelected: (ticket) {
+                                        ViewRequest.start(context, ticket);
+                                      },
+                                    )
+                                  : Padding(
+                                      padding: const EdgeInsets.only(top: 20.0),
+                                      child: Text(
+                                        'No Tickets',
+                                        style: context.textFontWeight600,
+                                      ),
+                                    );
+                            });
                       })
                 ],
               ),

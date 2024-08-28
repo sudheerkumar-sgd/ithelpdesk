@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
-import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
+
+import '../../injection_container.dart';
+import '../bloc/services/services_bloc.dart';
 
 const double defaultHeight = 20;
 
-class SearchTextfieldWidget extends StatefulWidget {
+class SearchDropDownWidget extends StatelessWidget {
   final double height;
   final String? hintText;
   final String errorMessage;
@@ -14,7 +16,8 @@ class SearchTextfieldWidget extends StatefulWidget {
   final TextEditingController? textController;
   final String? prefixIconPath;
   final bool isEnabled;
-  const SearchTextfieldWidget(
+  Function(dynamic)? onSearchItemSelected;
+  SearchDropDownWidget(
       {this.height = defaultHeight,
       this.hintText,
       this.errorMessage = '',
@@ -22,91 +25,78 @@ class SearchTextfieldWidget extends StatefulWidget {
       this.prefixIconPath,
       this.textInputType,
       this.isEnabled = true,
+      this.onSearchItemSelected,
       super.key});
 
-  @override
-  State<SearchTextfieldWidget> createState() => _SearchTextfieldWidgetState();
-}
+  final ServicesBloc _servicesBloc = sl<ServicesBloc>();
+  final ValueNotifier<String> _searchString = ValueNotifier('');
 
-class _SearchTextfieldWidgetState extends State<SearchTextfieldWidget> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Align(
-          alignment: Alignment.center,
-          child: TextFormField(
-              key: GlobalKey(),
-              enabled: widget.isEnabled,
-              maxLines: 1,
-              keyboardType: widget.textInputType,
-              controller: widget.textController,
-              textAlignVertical: TextAlignVertical.center,
-              validator: (value) {
-                if (widget.errorMessage.isNotEmpty &&
-                    (value == null || value.isEmpty)) {
-                  return widget.errorMessage.isNotEmpty
-                      ? widget.errorMessage
-                      : null;
-                }
-                return null;
-              },
-              decoration: InputDecoration(
-                filled: true,
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(
-                    vertical: context.resources.dimen.dp10,
-                    horizontal: context.resources.dimen.dp15),
-                hintText:
-                    widget.hintText ?? context.resources.string.searchHere,
-                hintStyle: context.textFontWeight400
-                    .onFontSize(context.resources.fontSize.dp12)
-                    .onFontFamily(
-                        fontFamily: context.resources.isLocalEn
-                            ? fontFamilyEN
-                            : fontFamilyAR)
-                    .onColor(context.resources.color.hintColor),
-                prefixIconConstraints: BoxConstraints(
-                    maxHeight: widget.height, minHeight: widget.height),
-                prefixIcon: (widget.prefixIconPath ?? '').isNotEmpty
-                    ? Padding(
-                        padding: context.resources.isLocalEn
-                            ? const EdgeInsets.only(left: 5.0, right: 5.0)
-                            : const EdgeInsets.only(right: 5.0, left: 5.0),
-                        child: ImageWidget(
-                          path: widget.prefixIconPath ?? '',
-                        ).loadImage,
-                      )
-                    : null,
-                fillColor: const Color(0xFFF7F8F9),
-                border: OutlineInputBorder(
-                  borderSide: BorderSide.none,
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(context.resources.dimen.dp10),
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide.none,
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(context.resources.dimen.dp10),
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide.none,
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(context.resources.dimen.dp10),
-                  ),
-                ),
-                errorStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.error,
-                ),
-              ),
-              style: context.textFontWeight400
-                  .onFontFamily(fontFamily: fontFamilyEN)
-                  .onFontSize(context.resources.fontSize.dp12)),
-        ),
-      ],
+    final resources = context.resources;
+    final TextEditingController textEditingController = TextEditingController();
+    textEditingController.addListener(
+      () {
+        _searchString.value = textEditingController.text;
+      },
     );
+    final focusNode = FocusNode();
+    focusNode.addListener(() {
+      if (focusNode.hasFocus) textEditingController.text = '';
+    });
+    return ValueListenableBuilder(
+        valueListenable: _searchString,
+        builder: (context, value, child) {
+          return FutureBuilder(
+              future: _servicesBloc
+                  .getTticketsBySearch(requestParams: {'searchString': value}),
+              builder: (context, snapShot) {
+                final items = (snapShot.data?.entity?.items ?? []);
+                return LayoutBuilder(builder: (context, constraints) {
+                  return DropdownMenu(
+                    width: constraints.maxWidth,
+                    controller: textEditingController,
+                    hintText: resources.string.searchHere,
+                    requestFocusOnTap: true,
+                    enableFilter: true,
+                    focusNode: focusNode,
+                    textStyle: context.textFontWeight500
+                        .onFontFamily(fontFamily: fontFamilyEN),
+                    inputDecorationTheme: InputDecorationTheme(
+                      constraints: const BoxConstraints(maxHeight: 32),
+                      isDense: true,
+                      filled: true,
+                      contentPadding: EdgeInsets.symmetric(
+                          vertical: context.resources.dimen.dp7,
+                          horizontal: context.resources.dimen.dp10),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(context.resources.dimen.dp20),
+                        ),
+                      ),
+                    ),
+                    leadingIcon: Icon(
+                      Icons.search,
+                      color: resources.color.viewBgColor,
+                    ),
+                    trailingIcon: const SizedBox(),
+                    onSelected: (dynamic item) {
+                      onSearchItemSelected?.call(item);
+                    },
+                    dropdownMenuEntries:
+                        items.map<DropdownMenuEntry<dynamic>>((dynamic item) {
+                      return DropdownMenuEntry<dynamic>(
+                          value: item,
+                          label: '${item.id} - ${item.subject}',
+                          style: ButtonStyle(
+                              textStyle: WidgetStateProperty.all(context
+                                  .textFontWeight500
+                                  .onFontFamily(fontFamily: fontFamilyEN))));
+                    }).toList(),
+                  );
+                });
+              });
+        });
   }
 }

@@ -35,6 +35,16 @@ class ServicesBloc extends Cubit<ServicesState> {
     });
   }
 
+  Future<ApiEntity<ListEntity>> getTticketsBySearch(
+      {required Map<String, dynamic> requestParams}) async {
+    emit(OnLoading());
+    final result =
+        await servicesUseCase.getTticketsBySearch(requestParams: requestParams);
+    return result.fold((l) => ApiEntity(), (r) {
+      return r;
+    });
+  }
+
   Future<void> createRequest(
       {required Map<String, dynamic> requestParams}) async {
     emit(OnLoading());

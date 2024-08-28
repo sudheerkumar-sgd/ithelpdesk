@@ -17,6 +17,7 @@ import 'package:ithelpdesk/presentation/directory/directory_navigator_screen.dar
 import 'package:ithelpdesk/presentation/home/user_home_navigator_screen.dart';
 import 'package:ithelpdesk/presentation/profile/profile_navigator_screen.dart';
 import 'package:ithelpdesk/presentation/reports/reports_navigator_screen.dart';
+import 'package:ithelpdesk/presentation/requests/view_request.dart';
 import 'package:ithelpdesk/presentation/utils/NavbarNotifier.dart';
 import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 import 'package:ithelpdesk/res/resources.dart';

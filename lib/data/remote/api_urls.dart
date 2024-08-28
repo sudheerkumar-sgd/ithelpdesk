@@ -110,7 +110,9 @@ const String createTicketUploadMultiPartApiUrl =
     '${apiFolderUrl}CreateTicket/UploadMultiPart';
 const String ticketHistoryApiUrl = '${apiFolderUrl}Ticket/GetTicketHistory';
 const String ticketCommentsApiUrl = '${apiFolderUrl}Ticket/GetTicketComments';
-const String ticketsByUserApiUrl = '${apiFolderUrl}Ticket/GetTicketsByUser';
+const String ticketsByUserApiUrl = '${apiFolderUrl}Ticket/GetTickets';
+const String getTicketsBySearchApiUrl =
+    '${apiFolderUrl}Dashboard/GetTicketsBySearch';
 const String updateTicketByStatusApiUrl =
     '${apiFolderUrl}CreateTicket/UpdateTicket';
 const String forwordTicketApiUrl = '${apiFolderUrl}CreateTicket/ForwordTicket';

@@ -6,14 +6,14 @@ import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/search_textfield_widget.dart';
 import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
 
+import '../requests/view_request.dart';
+
 class SearchUserAppBarWidget extends StatelessWidget
     implements PreferredSizeWidget {
   final String userName;
   final EdgeInsets? padding;
-  static final _formKey = GlobalKey<FormState>();
 
-  const SearchUserAppBarWidget(
-      {required this.userName, this.padding, super.key});
+  SearchUserAppBarWidget({required this.userName, this.padding, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -26,14 +26,11 @@ class SearchUserAppBarWidget extends StatelessWidget
         children: [
           Row(
             children: [
-              Expanded(
-                child: Form(
-                  key: _formKey,
-                  child: const SearchTextfieldWidget(
-                    prefixIconPath: DrawableAssets.icSearch,
-                  ),
-                ),
-              ),
+              Expanded(child: SearchDropDownWidget(
+                onSearchItemSelected: (item) {
+                  ViewRequest.start(context, item);
+                },
+              )),
               SizedBox(
                 width: screenSize.width * .10,
               ),

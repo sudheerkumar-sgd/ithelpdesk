@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:dio/browser.dart';
 import 'package:dio/dio.dart';
 import 'package:ithelpdesk/core/common/log.dart';
 import 'package:ithelpdesk/core/error/exceptions.dart';
@@ -58,6 +59,9 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       {required String apiUrl,
       required Map<String, dynamic> requestParams}) async {
     try {
+      var adapter = BrowserHttpClientAdapter();
+      adapter.withCredentials = true;
+      dio.httpClientAdapter = adapter;
       var response = await dio.get(
         apiUrl,
         queryParameters: requestParams,
@@ -73,6 +77,9 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   Future post(
       {required String apiUrl,
       required Map<String, dynamic> requestParams}) async {
+    var adapter = BrowserHttpClientAdapter();
+    adapter.withCredentials = true;
+    dio.httpClientAdapter = adapter;
     try {
       var response = await dio.post(apiUrl, data: jsonEncode(requestParams));
       return response.data;
