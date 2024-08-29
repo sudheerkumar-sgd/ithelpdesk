@@ -24,16 +24,19 @@ class ReportsScreen extends BaseScreenWidget {
   ReportsScreen({super.key});
   final ServicesBloc _servicesBloc = sl<ServicesBloc>();
   List<dynamic>? tickets;
+  String? selectedCategory;
+  String? selectedStatus;
 
   Widget _getFilters(BuildContext context) {
     final resources = context.resources;
-    final ticketTypes = [
-      resources.string.notAssignedRequests,
-      resources.string.openRequests,
-      resources.string.closedRequests,
-      resources.string.activeRequests.replaceAll('Requests', 'Requests'),
-      resources.string.dueRequests.replaceAll('Requests', 'Requests'),
-      resources.string.allRequests.replaceAll('Requests', 'Requests'),
+    final statusTypes = [
+      resources.string.allRequests.replaceAll('\nRequests', ' Requests'),
+      resources.string.notAssignedRequests
+          .replaceAll('\nRequests', ' Requests'),
+      resources.string.openRequests.replaceAll('\nRequests', ' Requests'),
+      resources.string.closedRequests.replaceAll('\nRequests', ' Requests'),
+      resources.string.activeRequests.replaceAll('\nRequests', ' Requests'),
+      resources.string.dueRequests.replaceAll('\nRequests', ' Requests'),
     ];
     return Wrap(
       alignment: WrapAlignment.end,
@@ -41,7 +44,7 @@ class ReportsScreen extends BaseScreenWidget {
       runAlignment: WrapAlignment.start,
       children: [
         SizedBox(
-          width: 170,
+          width: 200,
           child: Row(
             children: [
               Text(
@@ -54,73 +57,79 @@ class ReportsScreen extends BaseScreenWidget {
               ),
               Expanded(
                 child: DropDownWidget(
-                  height: 28,
-                  list: ticketTypes,
-                  iconSize: 20,
-                  fontStyle: context.textFontWeight400
-                      .onFontSize(resources.fontSize.dp10),
-                ),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(
-          width: resources.dimen.dp10,
-        ),
-        SizedBox(
-          width: 170,
-          child: Row(
-            children: [
-              Text(
-                resources.string.sortBy,
-                style: context.textFontWeight600
-                    .onFontSize(resources.fontSize.dp10),
-              ),
-              SizedBox(
-                width: resources.dimen.dp5,
-              ),
-              Expanded(
-                child: DropDownWidget(
-                  height: 28,
-                  list: const ['Created Date', 'priority', 'status'],
-                  iconSize: 20,
-                  fontStyle: context.textFontWeight400
-                      .onFontSize(resources.fontSize.dp10),
-                ),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(
-          width: resources.dimen.dp10,
-        ),
-        SizedBox(
-          width: 120,
-          child: Row(
-            children: [
-              Text(
-                resources.string.export,
-                style: context.textFontWeight600
-                    .onFontSize(resources.fontSize.dp10),
-              ),
-              SizedBox(
-                width: resources.dimen.dp5,
-              ),
-              Expanded(
-                child: DropDownWidget(
-                  height: 28,
+                  height: 32,
                   list: const [
-                    'exl',
-                    'pdf',
+                    'All',
+                    'Assigned Tickets',
+                    'My Tickets',
                   ],
+                  selectedValue: selectedCategory ?? 'All',
                   iconSize: 20,
                   fontStyle: context.textFontWeight400
-                      .onFontSize(resources.fontSize.dp10),
+                      .onFontSize(resources.fontSize.dp12),
                 ),
               ),
             ],
           ),
         ),
+        SizedBox(
+          width: resources.dimen.dp10,
+        ),
+        SizedBox(
+          width: 200,
+          child: Row(
+            children: [
+              Text(
+                resources.string.status,
+                style: context.textFontWeight600
+                    .onFontSize(resources.fontSize.dp10),
+              ),
+              SizedBox(
+                width: resources.dimen.dp10,
+              ),
+              Expanded(
+                child: DropDownWidget(
+                  height: 32,
+                  list: statusTypes,
+                  iconSize: 20,
+                  selectedValue: selectedStatus ?? statusTypes[0],
+                  fontStyle: context.textFontWeight400
+                      .onFontSize(resources.fontSize.dp12),
+                ),
+              ),
+            ],
+          ),
+        ),
+        // SizedBox(
+        //   width: resources.dimen.dp10,
+        // ),
+        // SizedBox(
+        //   width: 120,
+        //   child: Row(
+        //     children: [
+        //       Text(
+        //         resources.string.export,
+        //         style: context.textFontWeight600
+        //             .onFontSize(resources.fontSize.dp10),
+        //       ),
+        //       SizedBox(
+        //         width: resources.dimen.dp5,
+        //       ),
+        //       Expanded(
+        //         child: DropDownWidget(
+        //           height: 28,
+        //           list: const [
+        //             'exl',
+        //             'pdf',
+        //           ],
+        //           iconSize: 20,
+        //           fontStyle: context.textFontWeight400
+        //               .onFontSize(resources.fontSize.dp10),
+        //         ),
+        //       ),
+        //     ],
+        //   ),
+        // ),
         SizedBox(
           width: resources.dimen.dp10,
         ),

@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
+import 'package:ithelpdesk/core/extensions/string_extension.dart';
 import 'package:ithelpdesk/domain/entities/base_entity.dart';
 
 import 'master_data_entities.dart';
@@ -40,7 +41,7 @@ class TicketEntity extends BaseEntity {
   String? date;
   int? departmentID;
   String? departmentName;
-  String? priority;
+  PriorityType? priority;
   String? mobileNumber;
   int? userID;
   String? creator;
@@ -182,8 +183,8 @@ class TicketEntity extends BaseEntity {
         "employeeName": creator ?? '',
         "Category": categoryName ?? '',
         "subject": subject ?? '',
-        "status": status?.name ?? '',
-        "priority": priority ?? '',
+        "status": (status?.name ?? '').capitalize(),
+        "priority": (priority?.name ?? '').capitalize(),
         "assignee": assignedTo ?? '',
         "department": departmentName ?? '',
         "createDate": createdOn ?? '',
@@ -192,8 +193,8 @@ class TicketEntity extends BaseEntity {
         "id": id ?? '',
         "Category": categoryName ?? '',
         "subject": subject ?? '',
-        "status": status?.name ?? '',
-        "priority": priority ?? '',
+        "status": (status?.name ?? '').capitalize(),
+        "priority": (priority?.name ?? '').capitalize(),
         "createDate": createdOn ?? '',
       };
   Map<String, dynamic> toCreateJson() {
@@ -209,7 +210,7 @@ class TicketEntity extends BaseEntity {
     data['description'] = description;
     data['departmentID'] = departmentID;
     data['assignedTo'] = assignedUserID;
-    data['priority'] = int.parse(priority ?? '4');
+    data['priority'] = priority?.value;
     data['mobileNumber'] = mobileNumber;
     data['requestType'] = 2;
     data['status'] = status?.value ?? 1;

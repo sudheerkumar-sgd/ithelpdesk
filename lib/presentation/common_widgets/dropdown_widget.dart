@@ -18,6 +18,7 @@ class DropDownWidget<T> extends StatelessWidget {
   final String? suffixIconPath;
   final String fontFamily;
   final TextStyle? fontStyle;
+  final TextStyle? labelfontStyle;
   final List<T> list;
   T? selectedValue;
   Function(T?)? callback;
@@ -38,6 +39,7 @@ class DropDownWidget<T> extends StatelessWidget {
       this.suffixIconPath,
       this.fontFamily = '',
       this.fontStyle,
+      this.labelfontStyle,
       this.fillColor,
       this.isMandetory = false,
       this.selectedValue,
@@ -54,15 +56,17 @@ class DropDownWidget<T> extends StatelessWidget {
         if (labelText.isNotEmpty) ...[
           Text.rich(TextSpan(
               text: labelText,
-              style: context.textFontWeight400
-                  .onFontSize(context.resources.fontSize.dp14),
+              style: labelfontStyle ??
+                  context.textFontWeight400
+                      .onFontSize(context.resources.fontSize.dp14),
               children: [
                 if (isMandetory)
                   TextSpan(
                     text: ' *',
-                    style: context.textFontWeight400
-                        .onFontSize(context.resources.fontSize.dp14)
-                        .onColor(Theme.of(context).colorScheme.error),
+                    style: labelfontStyle ??
+                        context.textFontWeight400
+                            .onFontSize(context.resources.fontSize.dp14)
+                            .onColor(Theme.of(context).colorScheme.error),
                   )
               ])),
           SizedBox(

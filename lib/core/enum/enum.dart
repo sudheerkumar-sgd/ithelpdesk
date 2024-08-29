@@ -52,6 +52,14 @@ enum PriorityType {
 
   final int value;
   const PriorityType(this.value);
+
+  factory PriorityType.fromId(int value) {
+    return values.firstWhere((e) => e.value == value);
+  }
+
+  factory PriorityType.fromName(String value) {
+    return values.firstWhere((e) => e.name.contains(value.toLowerCase()));
+  }
 }
 
 enum StatusType {

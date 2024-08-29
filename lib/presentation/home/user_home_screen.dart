@@ -554,7 +554,7 @@ class UserHomeScreen extends BaseScreenWidget {
                       Expanded(
                         child: Text.rich(
                           TextSpan(
-                            text: '${resources.string.latestTickets}\n',
+                            text: resources.string.latestTickets,
                             style: context.textFontWeight600
                                 .onFontSize(resources.fontSize.dp12),
                             //children: [
@@ -583,13 +583,16 @@ class UserHomeScreen extends BaseScreenWidget {
                               decoration: BackgroundBoxDecoration(
                                       radious: resources.dimen.dp15,
                                       boarderColor:
-                                          resources.color.colorGray9E9E9E)
+                                          resources.color.sideBarItemUnselected)
                                   .roundedCornerBox,
                               padding: EdgeInsets.symmetric(
-                                  vertical: resources.dimen.dp5,
-                                  horizontal: resources.dimen.dp10),
+                                vertical: resources.dimen.dp5,
+                              ),
                               child: Row(
                                 children: [
+                                  SizedBox(
+                                    width: resources.dimen.dp10,
+                                  ),
                                   InkWell(
                                     onTap: () {
                                       showDatePicker(
@@ -628,7 +631,7 @@ class UserHomeScreen extends BaseScreenWidget {
                                     ),
                                   ),
                                   SizedBox(
-                                    width: resources.dimen.dp20,
+                                    width: resources.dimen.dp10,
                                   ),
                                   InkWell(
                                     onTap: () {
@@ -678,22 +681,69 @@ class UserHomeScreen extends BaseScreenWidget {
                                           .onFontSize(resources.fontSize.dp10),
                                     ),
                                   ),
+                                  SizedBox(
+                                    width: resources.dimen.dp5,
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      if (_filteredDates.value.isNotEmpty) {
+                                        _filteredDates.value = List.empty();
+                                        _onDataChange.value =
+                                            !(_onDataChange.value);
+                                      }
+                                    },
+                                    child: const Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 5),
+                                      child: Icon(
+                                        Icons.clear,
+                                        size: 16,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: resources.dimen.dp5,
+                                  ),
                                 ],
                               ),
                             );
                           }),
-                      SizedBox(
-                        width: resources.dimen.dp20,
-                      ),
-                      Text(
-                        '${resources.string.sortBy}:',
-                        style: context.textFontWeight600
-                            .onFontSize(resources.fontSize.dp10),
-                      ),
-                      SizedBox(
-                        width: resources.dimen.dp20,
-                      ),
-                      DropDownWidget<String>(
+                      if (isDesktop(context)) ...[
+                        SizedBox(
+                          width: resources.dimen.dp20,
+                        ),
+                        Text(
+                          '${resources.string.status}:',
+                          style: context.textFontWeight600
+                              .onFontSize(resources.fontSize.dp10),
+                        ),
+                        SizedBox(
+                          width: resources.dimen.dp20,
+                        ),
+                        DropDownWidget<String>(
+                          width: 120,
+                          list: const [
+                            'All Status',
+                            'Created Date',
+                            'Priority',
+                            'Status'
+                          ],
+                          borderRadius: 15,
+                          iconSize: 16,
+                          selectedValue: 'Created Date',
+                          fontStyle: context.textFontWeight400
+                              .onFontSize(resources.fontSize.dp10),
+                        )
+                      ],
+                    ],
+                  ),
+                  if (!isDesktop(context)) ...[
+                    SizedBox(
+                      height: resources.dimen.dp10,
+                    ),
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: DropDownWidget<String>(
                         width: 120,
                         list: const [
                           'All Status',
@@ -701,13 +751,17 @@ class UserHomeScreen extends BaseScreenWidget {
                           'Priority',
                           'Status'
                         ],
+                        labelText: resources.string.status,
                         borderRadius: 15,
                         iconSize: 16,
+                        selectedValue: 'Created Date',
+                        labelfontStyle: context.textFontWeight600
+                            .onFontSize(resources.fontSize.dp10),
                         fontStyle: context.textFontWeight400
                             .onFontSize(resources.fontSize.dp10),
-                      )
-                    ],
-                  ),
+                      ),
+                    )
+                  ],
                   SizedBox(
                     height: resources.dimen.dp20,
                   ),

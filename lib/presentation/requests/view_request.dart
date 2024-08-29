@@ -61,7 +61,6 @@ class ViewRequest extends BaseScreenWidget {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _reqNoController = TextEditingController();
 
-  int priority = -1;
   final ValueNotifier<bool> _isExanded = ValueNotifier(false);
 
   Widget _getChargeWidget(BuildContext context) {
@@ -348,12 +347,6 @@ class ViewRequest extends BaseScreenWidget {
             'Critical',
           ]
         : ['منخفض', 'متوسط', 'عالي', 'حرج'];
-    priority = [
-      'Low',
-      'Medium',
-      'High',
-      'Critical',
-    ].indexOf(ticket.priority ?? 'Low');
     _contactNoController.text = ticket.mobileNumber ?? '';
     _reasonController.text = ticket.subject ?? '';
     _descriptionController.text = ticket.description ?? '';
@@ -417,9 +410,10 @@ class ViewRequest extends BaseScreenWidget {
                           .withPrefix(resources.string.pleaseSelect),
                       borderRadius: 0,
                       fillColor: resources.color.colorWhite,
-                      selectedValue: priorities[priority],
+                      selectedValue:
+                          priorities[(ticket.priority?.value ?? 1) - 1],
                       callback: (value) {
-                        priority = priorities.indexOf(value ?? '');
+                        //priority = priorities.indexOf(value ?? '');
                       },
                     )),
                   ],

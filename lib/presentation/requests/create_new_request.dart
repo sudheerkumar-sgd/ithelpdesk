@@ -23,6 +23,7 @@ import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 import 'package:ithelpdesk/res/drawables/background_box_decoration.dart';
 import 'package:page_transition/page_transition.dart';
 
+import '../../core/enum/enum.dart';
 import '../../domain/entities/user_credentials_entity.dart';
 
 class CreateNewRequest extends BaseScreenWidget {
@@ -45,7 +46,7 @@ class CreateNewRequest extends BaseScreenWidget {
   final TextEditingController _reasonController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _reqNoController = TextEditingController();
-  int priority = -1;
+  PriorityType? priority;
   int? serviceID;
 
   @override
@@ -359,8 +360,9 @@ class CreateNewRequest extends BaseScreenWidget {
                                         borderRadius: 0,
                                         fillColor: resources.color.colorWhite,
                                         callback: (value) {
-                                          priority =
-                                              priorities.indexOf(value ?? '');
+                                          priority = PriorityType.fromId(
+                                              priorities.indexOf(value ?? '') +
+                                                  1);
                                           _formKey.currentState?.validate();
                                         },
                                       )),
@@ -625,7 +627,7 @@ class CreateNewRequest extends BaseScreenWidget {
                                 ticket.mobileNumber = _contactNoController.text;
                                 ticket.description =
                                     _descriptionController.text;
-                                ticket.priority = '${priority + 1}';
+                                ticket.priority = priority;
                                 ticket.serviceId = serviceID;
                                 ticket.serviceReqNo = _reqNoController.text;
                                 final data = ticket.toCreateJson();

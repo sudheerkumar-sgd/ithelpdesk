@@ -56,7 +56,7 @@ class ServicesUseCase extends BaseUseCase {
   Future<Either<Failure, ApiEntity<ListEntity>>> getTicketHistory(
       {required Map<String, dynamic> requestParams}) async {
     var apiResponse = await apisRepository.get<ListModel>(
-      apiUrl: 'MasterData/get-username',
+      apiUrl: ticketHistoryApiUrl,
       requestParams: requestParams,
       responseModel: ListModel.fromTicketHistoryJson,
     );
