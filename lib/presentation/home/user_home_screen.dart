@@ -38,6 +38,7 @@ class UserHomeScreen extends BaseScreenWidget {
   int selectTicketCategory = 1;
   final ValueNotifier<int> _selectedYear = ValueNotifier(2024);
   final ValueNotifier<List<String>> _filteredDates = ValueNotifier([]);
+  StatusType filteredStatus = StatusType.all;
 
   Future<ApiEntity<ListEntity>> _getDashboradTickets() {
     final tickets = ApiEntity<ListEntity>();
@@ -720,19 +721,18 @@ class UserHomeScreen extends BaseScreenWidget {
                         SizedBox(
                           width: resources.dimen.dp20,
                         ),
-                        DropDownWidget<String>(
+                        DropDownWidget<StatusType>(
                           width: 120,
-                          list: const [
-                            'All Status',
-                            'Created Date',
-                            'Priority',
-                            'Status'
-                          ],
+                          list: getStatusTypes(),
                           borderRadius: 15,
                           iconSize: 16,
-                          selectedValue: 'Created Date',
+                          selectedValue: filteredStatus,
                           fontStyle: context.textFontWeight400
                               .onFontSize(resources.fontSize.dp10),
+                          callback: (p0) {
+                            filteredStatus = p0 ?? StatusType.all;
+                            _onDataChange.value = !(_onDataChange.value);
+                          },
                         )
                       ],
                     ],
@@ -745,16 +745,11 @@ class UserHomeScreen extends BaseScreenWidget {
                       alignment: Alignment.topLeft,
                       child: DropDownWidget<String>(
                         width: 120,
-                        list: const [
-                          'All Status',
-                          'Created Date',
-                          'Priority',
-                          'Status'
-                        ],
+                        list: const ['All Status', '', 'Priority', 'Status'],
                         labelText: resources.string.status,
                         borderRadius: 15,
                         iconSize: 16,
-                        selectedValue: 'Created Date',
+                        selectedValue: 'All Status',
                         labelfontStyle: context.textFontWeight600
                             .onFontSize(resources.fontSize.dp10),
                         fontStyle: context.textFontWeight400
@@ -836,13 +831,19 @@ class UserHomeScreen extends BaseScreenWidget {
                       valueListenable: _onDataChange,
                       builder: (context, onDataChange, child) {
                         return FutureBuilder(
-                            future: _filteredDates.value.length < 2
+                            future: (_filteredDates.value.length < 2 &&
+                                    filteredStatus == StatusType.all)
                                 ? _getDashboradTickets()
                                 : _servicesBloc
                                     .getTticketsByUser(requestParams: {
                                     'isUserTickets': selectTicketCategory == 2,
-                                    'startDate': _filteredDates.value[0],
-                                    'endDate': _filteredDates.value[1]
+                                    'startDate': _filteredDates.value.length < 2
+                                        ? null
+                                        : _filteredDates.value[0],
+                                    'endDate': _filteredDates.value.length < 2
+                                        ? null
+                                        : _filteredDates.value[1],
+                                    'status': filteredStatus
                                   }),
                             builder: (context, snapShot) {
                               final filterTickets =

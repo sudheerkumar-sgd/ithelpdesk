@@ -11,6 +11,7 @@ import 'package:intl/intl.dart';
 import 'package:ithelpdesk/core/common/log.dart';
 import 'package:ithelpdesk/core/config/flavor_config.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
+import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/data/local/user_data_db.dart';
@@ -375,3 +376,14 @@ String get getRequestViewUrl =>
 
 String get getImageBaseUrl =>
     '${FlavorConfig.instance.values.portalBaseUrl}Attachments/';
+
+List<StatusType> getStatusTypes() {
+  return [
+    StatusType.all,
+    StatusType.notAssigned,
+    StatusType.open,
+    StatusType.hold,
+    StatusType.reject,
+    StatusType.closed,
+  ];
+}

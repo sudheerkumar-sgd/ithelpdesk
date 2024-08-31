@@ -28,8 +28,7 @@ class App extends StatelessWidget {
       supportedLocales: AppLocalizations.supportedLocales,
       onGenerateTitle: (BuildContext context) =>
           context.resources.string.appTitle,
-      initialRoute:
-          userToken.isNotEmpty ? AppRoutes.userMainRoute : AppRoutes.startRoute,
+      initialRoute: AppRoutes.userMainRoute,
       routes: AppRoutes.getRoutes(),
     );
   }

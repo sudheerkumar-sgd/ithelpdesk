@@ -68,6 +68,7 @@ class SplashScreen extends StatelessWidget {
                   'alyaa.alshehi',
                 ],
                 callback: (p0) async {
+                  userToken = '';
                   final user = await _userBloc.validateUser({"username": p0});
                   if (context.mounted) {
                     userToken = user.token ?? '';

@@ -3,6 +3,8 @@ import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 
+import '../../domain/entities/api_entity.dart';
+import '../../domain/entities/master_data_entities.dart';
 import '../../injection_container.dart';
 import '../bloc/services/services_bloc.dart';
 
@@ -30,6 +32,12 @@ class SearchDropDownWidget extends StatelessWidget {
 
   final ServicesBloc _servicesBloc = sl<ServicesBloc>();
   final ValueNotifier<String> _searchString = ValueNotifier('');
+  Future<ApiEntity<ListEntity>> _getSearchTickets() {
+    final tickets = ApiEntity<ListEntity>();
+    final listEntity = ListEntity();
+    tickets.entity = listEntity;
+    return Future.value(tickets);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,8 +56,10 @@ class SearchDropDownWidget extends StatelessWidget {
         valueListenable: _searchString,
         builder: (context, value, child) {
           return FutureBuilder(
-              future: _servicesBloc
-                  .getTticketsBySearch(requestParams: {'searchString': value}),
+              future: value.length < 2
+                  ? _getSearchTickets()
+                  : _servicesBloc.getTticketsBySearch(
+                      requestParams: {'searchString': value}),
               builder: (context, snapShot) {
                 final items = (snapShot.data?.entity?.items ?? []);
                 return LayoutBuilder(builder: (context, constraints) {

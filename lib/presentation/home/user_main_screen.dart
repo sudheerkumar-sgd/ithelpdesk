@@ -55,6 +55,16 @@ class _MainScreenState extends State<UserMainScreen> {
     ),
   ];
 
+  Widget getUserAppBar(BuildContext context) {
+    return isDesktop(context)
+        ? SearchUserAppBarWidget(
+            userName: UserCredentialsEntity.details().name ?? "",
+          )
+        : MSearchUserAppBarWidget(
+            userName: UserCredentialsEntity.details().name ?? "",
+          );
+  }
+
   void _onItemTapped(int index) {
     if (_selectedIndex.value == index) {
       _navbarNotifier.onBackButtonPressed(_selectedIndex.value);
@@ -169,15 +179,16 @@ class _MainScreenState extends State<UserMainScreen> {
                 Expanded(
                   child: Column(
                     children: [
-                      isDesktop(context)
-                          ? SearchUserAppBarWidget(
-                              userName:
-                                  UserCredentialsEntity.details().name ?? "",
-                            )
-                          : MSearchUserAppBarWidget(
-                              userName:
-                                  UserCredentialsEntity.details().name ?? "",
-                            ),
+                      (UserCredentialsEntity.details().name?.isNotEmpty == true)
+                          ? getUserAppBar(context)
+                          : FutureBuilder(
+                              future: _userBloc.validateUser({}),
+                              builder: (context, snapShot) {
+                                UserCredentialsEntity.create(
+                                    snapShot.data?.token ?? '');
+                                userToken = snapShot.data?.token ?? '';
+                                return getUserAppBar(context);
+                              }),
                       ValueListenableBuilder(
                           valueListenable: _selectedIndex,
                           builder: (context, index, child) {

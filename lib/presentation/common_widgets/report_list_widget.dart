@@ -27,31 +27,33 @@ class ReportListWidget extends StatelessWidget {
   int dateSort = -1;
   int prioritySort = -1;
 
-  List<DataCell> _getTicketData(
-      BuildContext context, TicketEntity ticketEntity) {
-    final list = List<DataCell>.empty(growable: true);
+  List<Widget> _getTicketData(BuildContext context, TicketEntity ticketEntity) {
+    final list = List<Widget>.empty(growable: true);
     (isDesktop(context) ? ticketEntity.toJson() : ticketEntity.toMobileJson())
         .forEach((key, value) {
-      list.add(DataCell(
+      list.add(
         InkWell(
           onTap: () {
             onTicketSelected?.call(ticketEntity);
           },
-          child: Text(
-            '$value',
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: (key.toString().toLowerCase().contains('date') ||
-                    key.toString().toLowerCase().contains('id'))
-                ? context.textFontWeight600
-                    .onFontSize(context.resources.fontSize.dp10)
-                    .onFontFamily(fontFamily: fontFamilyEN)
-                : context.textFontWeight600
-                    .onFontSize(context.resources.fontSize.dp10),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 10),
+            child: Text(
+              '$value',
+              textAlign: TextAlign.left,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: (key.toString().toLowerCase().contains('date') ||
+                      key.toString().toLowerCase().contains('id'))
+                  ? context.textFontWeight600
+                      .onFontSize(context.resources.fontSize.dp10)
+                      .onFontFamily(fontFamily: fontFamilyEN)
+                  : context.textFontWeight600
+                      .onFontSize(context.resources.fontSize.dp10),
+            ),
           ),
         ),
-      ));
+      );
     });
     return list;
   }
@@ -87,171 +89,174 @@ class ReportListWidget extends StatelessWidget {
               },
             );
           }
-          return LayoutBuilder(builder: (context, constraints) {
-            return SizedBox(
-              width: constraints.maxWidth,
-              child: PaginatedDataTable(
-                  columnSpacing: 0,
-                  rowsPerPage: min(ticketsData.length, 10),
-                  columns: List.generate(ticketsHeaderData.length, (index) {
-                    return DataColumn(
-                        onSort: (columnIndex, ascending) {},
-                        label: (ticketsHeaderData[index] == 'CreateDate' ||
-                                ticketsHeaderData[index] == 'Priority')
-                            ? InkWell(
-                                onTap: () {
-                                  if (ticketsHeaderData[index] ==
-                                      'CreateDate') {
-                                    if (dateSort == 1) {
-                                      dateSort = 0;
-                                    } else {
-                                      dateSort = 1;
-                                    }
-                                  } else if (ticketsHeaderData[index] ==
-                                      'Priority') {
-                                    if (prioritySort == 1) {
-                                      prioritySort = 0;
-                                    } else {
-                                      prioritySort = 1;
-                                    }
-                                  }
-                                  _onSortChange.value = !_onSortChange.value;
-                                },
-                                child: Text.rich(
-                                  TextSpan(
-                                      text: ticketsHeaderData[index],
-                                      children: [
-                                        WidgetSpan(
-                                            alignment:
-                                                PlaceholderAlignment.middle,
-                                            child: Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 5.0),
-                                              child: Icon(
-                                                ticketsHeaderData[index] ==
-                                                        'CreateDate'
-                                                    ? (dateSort == 1
-                                                        ? Icons
-                                                            .arrow_upward_sharp
-                                                        : Icons
-                                                            .arrow_downward_sharp)
-                                                    : (prioritySort == 1
-                                                        ? Icons
-                                                            .arrow_downward_sharp
-                                                        : Icons
-                                                            .arrow_upward_sharp),
-                                                size: 16,
-                                              ),
-                                            ))
-                                      ]),
-                                  textAlign: TextAlign.center,
-                                  style: context.textFontWeight600
-                                      .onColor(resources.color.textColorLight)
-                                      .onFontSize(resources.fontSize.dp10),
-                                ),
-                              )
-                            : Text(
-                                ticketsHeaderData[index],
-                                textAlign: TextAlign.center,
-                                style: context.textFontWeight600
-                                    .onColor(resources.color.textColorLight)
-                                    .onFontSize(resources.fontSize.dp10),
-                              ));
-                  }),
-                  source: _DataSource(context: context, data: ticketsData)),
-            );
-          });
+          // return LayoutBuilder(builder: (context, constraints) {
+          //   return SizedBox(
+          //     width: constraints.maxWidth,
+          //     child: PaginatedDataTable(
+          //         columnSpacing: 0,
+          //         rowsPerPage: min(ticketsData.length, 10),
+          //         columns: List.generate(ticketsHeaderData.length, (index) {
+          //           return DataColumn(
+          //               onSort: (columnIndex, ascending) {},
+          //               label: (ticketsHeaderData[index] == 'CreateDate' ||
+          //                       ticketsHeaderData[index] == 'Priority')
+          //                   ? InkWell(
+          //                       onTap: () {
+          //                         if (ticketsHeaderData[index] ==
+          //                             'CreateDate') {
+          //                           if (dateSort == 1) {
+          //                             dateSort = 0;
+          //                           } else {
+          //                             dateSort = 1;
+          //                           }
+          //                         } else if (ticketsHeaderData[index] ==
+          //                             'Priority') {
+          //                           if (prioritySort == 1) {
+          //                             prioritySort = 0;
+          //                           } else {
+          //                             prioritySort = 1;
+          //                           }
+          //                         }
+          //                         _onSortChange.value = !_onSortChange.value;
+          //                       },
+          //                       child: Text.rich(
+          //                         TextSpan(
+          //                             text: ticketsHeaderData[index],
+          //                             children: [
+          //                               WidgetSpan(
+          //                                   alignment:
+          //                                       PlaceholderAlignment.middle,
+          //                                   child: Padding(
+          //                                     padding: const EdgeInsets.only(
+          //                                         left: 5.0),
+          //                                     child: Icon(
+          //                                       ticketsHeaderData[index] ==
+          //                                               'CreateDate'
+          //                                           ? (dateSort == 1
+          //                                               ? Icons
+          //                                                   .arrow_upward_sharp
+          //                                               : Icons
+          //                                                   .arrow_downward_sharp)
+          //                                           : (prioritySort == 1
+          //                                               ? Icons
+          //                                                   .arrow_downward_sharp
+          //                                               : Icons
+          //                                                   .arrow_upward_sharp),
+          //                                       size: 16,
+          //                                     ),
+          //                                   ))
+          //                             ]),
+          //                         textAlign: TextAlign.center,
+          //                         style: context.textFontWeight600
+          //                             .onColor(resources.color.textColorLight)
+          //                             .onFontSize(resources.fontSize.dp10),
+          //                       ),
+          //                     )
+          //                   : Text(
+          //                       ticketsHeaderData[index],
+          //                       textAlign: TextAlign.center,
+          //                       style: context.textFontWeight600
+          //                           .onColor(resources.color.textColorLight)
+          //                           .onFontSize(resources.fontSize.dp10),
+          //                     ));
+          //         }),
+          //         source: _DataSource(
+          //             context: context,
+          //             data: ticketsData,
+          //             onTicketSelected: onTicketSelected)),
+          //   );
+          // });
           //});
-          // return Table(
-          //   columnWidths: ticketsTableColunwidths,
-          //   children: [
-          //     TableRow(
-          //         children: List.generate(
-          //             ticketsHeaderData.length,
-          //             (index) => Padding(
-          //                   padding: EdgeInsets.symmetric(
-          //                       vertical: resources.dimen.dp10),
-          //                   child: (ticketsHeaderData[index] == 'CreateDate' ||
-          //                           ticketsHeaderData[index] == 'Priority')
-          //                       ? InkWell(
-          //                           onTap: () {
-          //                             if (ticketsHeaderData[index] ==
-          //                                 'CreateDate') {
-          //                               if (dateSort == 1) {
-          //                                 dateSort = 0;
-          //                               } else {
-          //                                 dateSort = 1;
-          //                               }
-          //                             } else if (ticketsHeaderData[index] ==
-          //                                 'Priority') {
-          //                               if (prioritySort == 1) {
-          //                                 prioritySort = 0;
-          //                               } else {
-          //                                 prioritySort = 1;
-          //                               }
-          //                             }
-          //                             _onSortChange.value =
-          //                                 !_onSortChange.value;
-          //                           },
-          //                           child: Text.rich(
-          //                             TextSpan(
-          //                                 text: ticketsHeaderData[index],
-          //                                 children: [
-          //                                   WidgetSpan(
-          //                                       alignment:
-          //                                           PlaceholderAlignment.middle,
-          //                                       child: Padding(
-          //                                         padding:
-          //                                             const EdgeInsets.only(
-          //                                                 left: 5.0),
-          //                                         child: Icon(
-          //                                           ticketsHeaderData[index] ==
-          //                                                   'CreateDate'
-          //                                               ? (dateSort == 1
-          //                                                   ? Icons
-          //                                                       .arrow_upward_sharp
-          //                                                   : Icons
-          //                                                       .arrow_downward_sharp)
-          //                                               : (prioritySort == 1
-          //                                                   ? Icons
-          //                                                       .arrow_downward_sharp
-          //                                                   : Icons
-          //                                                       .arrow_upward_sharp),
-          //                                           size: 16,
-          //                                         ),
-          //                                       ))
-          //                                 ]),
-          //                             textAlign: TextAlign.center,
-          //                             style: context.textFontWeight600
-          //                                 .onColor(
-          //                                     resources.color.textColorLight)
-          //                                 .onFontSize(resources.fontSize.dp10),
-          //                           ),
-          //                         )
-          //                       : Text(
-          //                           ticketsHeaderData[index],
-          //                           textAlign: TextAlign.center,
-          //                           style: context.textFontWeight600
-          //                               .onColor(resources.color.textColorLight)
-          //                               .onFontSize(resources.fontSize.dp10),
-          //                         ),
-          //                 ))),
-          //     for (var i = 0; i < ticketsData.length; i++) ...[
-          //       TableRow(
-          //           decoration: BackgroundBoxDecoration(
-          //                   boxColor: resources.color.colorWhite,
-          //                   boxBorder: Border(
-          //                       top: BorderSide(
-          //                           color: resources.color.appScaffoldBg,
-          //                           width: 5),
-          //                       bottom: BorderSide(
-          //                           color: resources.color.appScaffoldBg,
-          //                           width: 5)))
-          //               .roundedCornerBox,
-          //           children: _getTicketData(context, ticketsData[i])),
-          //     ]
-          //   ],
-          // );
+          return Table(
+            columnWidths: ticketsTableColunwidths,
+            children: [
+              TableRow(
+                  children: List.generate(
+                      ticketsHeaderData.length,
+                      (index) => Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: resources.dimen.dp10),
+                            child: (ticketsHeaderData[index] == 'CreateDate' ||
+                                    ticketsHeaderData[index] == 'Priority')
+                                ? InkWell(
+                                    onTap: () {
+                                      if (ticketsHeaderData[index] ==
+                                          'CreateDate') {
+                                        if (dateSort == 1) {
+                                          dateSort = 0;
+                                        } else {
+                                          dateSort = 1;
+                                        }
+                                      } else if (ticketsHeaderData[index] ==
+                                          'Priority') {
+                                        if (prioritySort == 1) {
+                                          prioritySort = 0;
+                                        } else {
+                                          prioritySort = 1;
+                                        }
+                                      }
+                                      _onSortChange.value =
+                                          !_onSortChange.value;
+                                    },
+                                    child: Text.rich(
+                                      TextSpan(
+                                          text: ticketsHeaderData[index],
+                                          children: [
+                                            WidgetSpan(
+                                                alignment:
+                                                    PlaceholderAlignment.middle,
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 5.0),
+                                                  child: Icon(
+                                                    ticketsHeaderData[index] ==
+                                                            'CreateDate'
+                                                        ? (dateSort == 1
+                                                            ? Icons
+                                                                .arrow_upward_sharp
+                                                            : Icons
+                                                                .arrow_downward_sharp)
+                                                        : (prioritySort == 1
+                                                            ? Icons
+                                                                .arrow_downward_sharp
+                                                            : Icons
+                                                                .arrow_upward_sharp),
+                                                    size: 16,
+                                                  ),
+                                                ))
+                                          ]),
+                                      textAlign: TextAlign.left,
+                                      style: context.textFontWeight600
+                                          .onColor(
+                                              resources.color.textColorLight)
+                                          .onFontSize(resources.fontSize.dp10),
+                                    ),
+                                  )
+                                : Text(
+                                    ticketsHeaderData[index],
+                                    textAlign: TextAlign.center,
+                                    style: context.textFontWeight600
+                                        .onColor(resources.color.textColorLight)
+                                        .onFontSize(resources.fontSize.dp10),
+                                  ),
+                          ))),
+              for (var i = 0; i < ticketsData.length; i++) ...[
+                TableRow(
+                    decoration: BackgroundBoxDecoration(
+                            boxColor: resources.color.colorWhite,
+                            boxBorder: Border(
+                                top: BorderSide(
+                                    color: resources.color.appScaffoldBg,
+                                    width: 5),
+                                bottom: BorderSide(
+                                    color: resources.color.appScaffoldBg,
+                                    width: 5)))
+                        .roundedCornerBox,
+                    children: _getTicketData(context, ticketsData[i])),
+              ]
+            ],
+          );
         });
   }
 }
@@ -259,8 +264,10 @@ class ReportListWidget extends StatelessWidget {
 class _DataSource extends DataTableSource {
   final BuildContext context;
   final List<dynamic> data;
+  final Function(TicketEntity)? onTicketSelected;
 
-  _DataSource({required this.context, required this.data});
+  _DataSource(
+      {required this.context, required this.data, this.onTicketSelected});
 
   @override
   DataRow? getRow(int index) {
@@ -313,7 +320,9 @@ class _DataSource extends DataTableSource {
         Flexible(
           flex: width,
           child: InkWell(
-            onTap: () {},
+            onTap: () {
+              onTicketSelected?.call(ticketEntity);
+            },
             child: Padding(
               padding: const EdgeInsets.only(right: 10.0),
               child: Text(

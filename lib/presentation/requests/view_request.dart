@@ -3,7 +3,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/common/log.dart';
@@ -15,7 +14,6 @@ import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/data/remote/api_urls.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
 import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
-import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
 import 'package:ithelpdesk/injection_container.dart';
 import 'package:ithelpdesk/presentation/bloc/master_data/master_data_bloc.dart';
 import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
@@ -87,7 +85,7 @@ class ViewRequest extends BaseScreenWidget {
         });
   }
 
-  Widget _getComments(BuildContext context) {
+  Widget _getComments(BuildContext context, {EdgeInsets? padding}) {
     return FutureBuilder(
         future: _servicesBloc
             .getTicketComments(requestParams: {'ticketID': ticket.id}),
@@ -104,9 +102,10 @@ class ViewRequest extends BaseScreenWidget {
                     )
                   : const SizedBox()
               : Container(
-                  padding: EdgeInsets.symmetric(
-                      vertical: context.resources.dimen.dp15,
-                      horizontal: context.resources.dimen.dp20),
+                  padding: padding ??
+                      EdgeInsets.symmetric(
+                          vertical: context.resources.dimen.dp15,
+                          horizontal: context.resources.dimen.dp20),
                   color: context.resources.color.colorWhite,
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -599,7 +598,12 @@ class ViewRequest extends BaseScreenWidget {
             ),
           ],
           if ((ticket.status == StatusType.closed ||
-              ticket.status == StatusType.reject)) ...[_getComments(context)],
+              ticket.status == StatusType.reject)) ...[
+            _getComments(context,
+                padding: EdgeInsets.symmetric(
+                  vertical: context.resources.dimen.dp15,
+                ))
+          ],
         ],
       ),
     );

@@ -6,8 +6,6 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:ithelpdesk/core/config/flavor_config.dart';
 
-import '../../core/constants/constants.dart';
-
 class DioLoggingInterceptor extends InterceptorsWrapper {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
@@ -20,7 +18,6 @@ class DioLoggingInterceptor extends InterceptorsWrapper {
     //   });
     // } else if (userToken.isNotEmpty) {
     options.headers.addAll({
-      HttpHeaders.authorizationHeader: 'Bearer $userToken',
       HttpHeaders.contentTypeHeader:
           'application/json, application/x-www-form-urlencoded, multipart/form-data, text/plain',
       HttpHeaders.acceptHeader: "*/*",

@@ -1,3 +1,5 @@
+import 'package:ithelpdesk/core/extensions/string_extension.dart';
+
 enum ThemeEnum {
   red('red'),
   blue('blue'),
@@ -63,6 +65,8 @@ enum PriorityType {
 }
 
 enum StatusType {
+  all(-1),
+  notAssigned(0),
   open(1),
   closed(2),
   hold(3),
@@ -84,6 +88,11 @@ enum StatusType {
 
   factory StatusType.fromName(String value) {
     return values.firstWhere((e) => e.name.contains(value.toLowerCase()));
+  }
+
+  @override
+  String toString() {
+    return name.capitalize();
   }
 }
 
