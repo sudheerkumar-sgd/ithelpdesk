@@ -101,7 +101,10 @@ class CreateNewRequest extends BaseScreenWidget {
                 Dialogs.showInfoDialog(context, PopupType.success,
                         'Successfully Submitted\n\n Ticket Id: ${state.createTicketResponse}')
                     .then((value) {
-                  Navigator.canPop(context);
+                  if (UserCredentialsEntity.details().userType !=
+                      UserType.user) {
+                    Navigator.pop(context);
+                  }
                 });
               } else if (state is OnApiError) {
                 Dialogs.dismiss(context);

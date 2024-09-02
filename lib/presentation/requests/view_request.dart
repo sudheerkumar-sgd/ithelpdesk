@@ -724,14 +724,10 @@ class ViewRequest extends BaseScreenWidget {
                                 width: resources.dimen.dp5,
                               ),
                               Text(
-                                (ticket.status?.name ?? '').capitalize(),
+                                (ticket.status ?? StatusType.open).toString(),
                                 style: context.textFontWeight700.onColor(
-                                  (ticket.status == StatusType.closed)
-                                      ? resources.color.colorGreen26B757
-                                      : ticket.status == StatusType.reject
-                                          ? resources.color.rejected
-                                          : resources.color.pending,
-                                ),
+                                    (ticket.status ?? StatusType.open)
+                                        .getColor()),
                               ),
                             ],
                           ),

@@ -4,82 +4,85 @@ import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/domain/entities/directory_entity.dart';
+import 'package:ithelpdesk/presentation/bloc/master_data/master_data_bloc.dart';
 import 'package:ithelpdesk/presentation/bloc/user/user_bloc.dart';
-import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dropdown_widget.dart';
 
 import '../../core/constants/constants.dart';
+import '../../domain/entities/master_data_entities.dart';
 import '../../injection_container.dart';
 import '../../res/drawables/background_box_decoration.dart';
 
 class DirectoryScreen extends BaseScreenWidget {
   DirectoryScreen({super.key});
   final UserBloc _userDataBloc = sl<UserBloc>();
-
+  final MasterDataBloc _masterDataBloc = sl<MasterDataBloc>();
+  final ValueNotifier<DepartmentEntity?> _selectedDepartment =
+      ValueNotifier(null);
   Widget _getFilters(BuildContext context) {
     final resources = context.resources;
     return Wrap(
       alignment: WrapAlignment.end,
       runSpacing: resources.dimen.dp10,
       runAlignment: WrapAlignment.start,
-      children: [
-        SizedBox(
-          width: 120,
-          child: Row(
-            children: [
-              Text(
-                resources.string.export,
-                style: context.textFontWeight600
-                    .onFontSize(resources.fontSize.dp10),
-              ),
-              SizedBox(
-                width: resources.dimen.dp5,
-              ),
-              Expanded(
-                child: DropDownWidget(
-                  height: 28,
-                  list: const [
-                    'exl',
-                    'pdf',
-                  ],
-                  iconSize: 20,
-                  fontStyle: context.textFontWeight400
-                      .onFontSize(resources.fontSize.dp10),
-                ),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(
-          width: resources.dimen.dp10,
-        ),
-        InkWell(
-          onTap: () {},
-          child: ActionButtonWidget(
-              text: resources.string.download,
-              radious: resources.dimen.dp15,
-              textSize: resources.fontSize.dp10,
-              padding: EdgeInsets.symmetric(
-                  vertical: resources.dimen.dp5,
-                  horizontal: resources.dimen.dp15),
-              color: resources.color.sideBarItemUnselected),
-        ),
-        SizedBox(
-          width: resources.dimen.dp10,
-        ),
-        InkWell(
-          onTap: () {},
-          child: ActionButtonWidget(
-            text: resources.string.print,
-            padding: EdgeInsets.symmetric(
-                vertical: resources.dimen.dp5,
-                horizontal: resources.dimen.dp15),
-            radious: resources.dimen.dp15,
-            textSize: resources.fontSize.dp10,
-            color: resources.color.sideBarItemUnselected,
-          ),
-        ),
+      children: const [
+        // SizedBox(
+        //   width: 120,
+        //   child: Row(
+        //     children: [
+        //       Text(
+        //         resources.string.export,
+        //         style: context.textFontWeight600
+        //             .onFontSize(resources.fontSize.dp10),
+        //       ),
+        //       SizedBox(
+        //         width: resources.dimen.dp5,
+        //       ),
+        //       Expanded(
+        //         child: DropDownWidget(
+        //           height: 28,
+        //           list: const [
+        //             'exl',
+        //             'pdf',
+        //           ],
+        //           iconSize: 20,
+        //           fontStyle: context.textFontWeight400
+        //               .onFontSize(resources.fontSize.dp10),
+        //         ),
+        //       ),
+        //     ],
+        //   ),
+        // ),
+        // SizedBox(
+        //   width: resources.dimen.dp10,
+        // ),
+        // InkWell(
+        //   onTap: () {},
+        //   child: ActionButtonWidget(
+        //       text: resources.string.download,
+        //       radious: resources.dimen.dp15,
+        //       textSize: resources.fontSize.dp10,
+        //       padding: EdgeInsets.symmetric(
+        //           vertical: resources.dimen.dp5,
+        //           horizontal: resources.dimen.dp15),
+        //       color: resources.color.sideBarItemUnselected),
+        // ),
+        // SizedBox(
+        //   width: resources.dimen.dp10,
+        // ),
+        // InkWell(
+        //   onTap: () {},
+        //   child: ActionButtonWidget(
+        //     text: resources.string.print,
+        //     padding: EdgeInsets.symmetric(
+        //         vertical: resources.dimen.dp5,
+        //         horizontal: resources.dimen.dp15),
+        //     radious: resources.dimen.dp15,
+        //     textSize: resources.fontSize.dp10,
+        //     color: resources.color.sideBarItemUnselected,
+        //   ),
+        // ),
       ],
     );
   }
@@ -100,18 +103,30 @@ class DirectoryScreen extends BaseScreenWidget {
               width: resources.dimen.dp10,
             ),
             Expanded(
-              child: DropDownWidget(
-                height: 28,
-                list: const [
-                  'Smart Uaq',
-                  'MD',
-                  'DED',
-                ],
-                hintText: resources.string.selectDepartment,
-                iconSize: 20,
-                fontStyle: context.textFontWeight400
-                    .onFontSize(resources.fontSize.dp10),
-              ),
+              child: FutureBuilder(
+                  future: _masterDataBloc.getDepartments(requestParams: {}),
+                  builder: (context, snapShot) {
+                    final items = snapShot.data?.items ?? [];
+                    if (items.isNotEmpty) {
+                      final departmentEntity = DepartmentEntity();
+                      departmentEntity.id = 0;
+                      departmentEntity.name = "ALL";
+                      departmentEntity.shortName = "ALL";
+                      items.insert(0, departmentEntity);
+                    }
+                    return DropDownWidget(
+                      height: 28,
+                      list: snapShot.data?.items ?? [],
+                      hintText: resources.string.selectDepartment,
+                      iconSize: 20,
+                      selectedValue: _selectedDepartment.value,
+                      fontStyle: context.textFontWeight400
+                          .onFontSize(resources.fontSize.dp10),
+                      callback: (p0) {
+                        _selectedDepartment.value = p0.id == 0 ? null : p0;
+                      },
+                    );
+                  }),
             ),
           ],
         ),
@@ -222,45 +237,56 @@ class DirectoryScreen extends BaseScreenWidget {
                     future:
                         _userDataBloc.getDirectoryEmployees(requestParams: {}),
                     builder: (context, snapShot) {
-                      final items = (snapShot.data?.items ?? []);
-                      return Table(
-                        columnWidths: ticketsTableColunwidths,
-                        children: [
-                          TableRow(
-                              children: List.generate(
-                                  ticketsHeaderData.length,
-                                  (index) => Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            vertical: resources.dimen.dp10),
-                                        child: Text(
-                                          ticketsHeaderData[index],
-                                          textAlign: TextAlign.center,
-                                          style: context.textFontWeight600
-                                              .onColor(resources
-                                                  .color.textColorLight)
-                                              .onFontSize(
-                                                  resources.fontSize.dp10),
-                                        ),
-                                      ))),
-                          for (var i = 0; i < items.length; i++) ...[
-                            TableRow(
-                                decoration: BackgroundBoxDecoration(
-                                        boxColor: resources.color.colorWhite,
-                                        boxBorder: Border(
-                                            top: BorderSide(
-                                                color: resources
-                                                    .color.appScaffoldBg,
-                                                width: 5),
-                                            bottom: BorderSide(
-                                                color: resources
-                                                    .color.appScaffoldBg,
-                                                width: 5)))
-                                    .roundedCornerBox,
-                                children: _getDirectoryItem(
-                                    context, items[i], i + 1)),
-                          ]
-                        ],
-                      );
+                      return ValueListenableBuilder(
+                          valueListenable: _selectedDepartment,
+                          builder: (context, value, child) {
+                            final items = value != null
+                                ? (snapShot.data?.items ?? [])
+                                    .where((item) =>
+                                        item.department == value.shortName)
+                                    .toList()
+                                : (snapShot.data?.items ?? []);
+                            return Table(
+                              columnWidths: ticketsTableColunwidths,
+                              children: [
+                                TableRow(
+                                    children: List.generate(
+                                        ticketsHeaderData.length,
+                                        (index) => Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  vertical:
+                                                      resources.dimen.dp10),
+                                              child: Text(
+                                                ticketsHeaderData[index],
+                                                textAlign: TextAlign.center,
+                                                style: context.textFontWeight600
+                                                    .onColor(resources
+                                                        .color.textColorLight)
+                                                    .onFontSize(resources
+                                                        .fontSize.dp10),
+                                              ),
+                                            ))),
+                                for (var i = 0; i < items.length; i++) ...[
+                                  TableRow(
+                                      decoration: BackgroundBoxDecoration(
+                                              boxColor:
+                                                  resources.color.colorWhite,
+                                              boxBorder: Border(
+                                                  top: BorderSide(
+                                                      color: resources
+                                                          .color.appScaffoldBg,
+                                                      width: 5),
+                                                  bottom: BorderSide(
+                                                      color: resources
+                                                          .color.appScaffoldBg,
+                                                      width: 5)))
+                                          .roundedCornerBox,
+                                      children: _getDirectoryItem(
+                                          context, items[i], i + 1)),
+                                ]
+                              ],
+                            );
+                          });
                     })
               ],
             ),

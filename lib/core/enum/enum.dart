@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:ithelpdesk/core/extensions/string_extension.dart';
 
 enum ThemeEnum {
@@ -62,6 +64,11 @@ enum PriorityType {
   factory PriorityType.fromName(String value) {
     return values.firstWhere((e) => e.name.contains(value.toLowerCase()));
   }
+
+  @override
+  String toString() {
+    return name.capitalize();
+  }
 }
 
 enum StatusType {
@@ -93,6 +100,23 @@ enum StatusType {
   @override
   String toString() {
     return name.capitalize();
+  }
+
+  Color getColor() {
+    switch (this) {
+      case closed:
+        return const Color(0xFF3ECA6E);
+      case reject:
+        return const Color(0xFFFF0000);
+      case hold:
+        return const Color.fromARGB(255, 243, 219, 3);
+      case returned:
+        return const Color.fromARGB(255, 6, 101, 202);
+      case open:
+        return const Color.fromARGB(255, 237, 105, 11);
+      default:
+        return const Color(0xffC9CCC4);
+    }
   }
 }
 

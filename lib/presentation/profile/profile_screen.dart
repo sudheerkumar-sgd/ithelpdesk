@@ -5,7 +5,6 @@ import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
 import 'package:ithelpdesk/presentation/bloc/user/user_bloc.dart';
 import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
-import 'package:ithelpdesk/res/drawables/background_box_decoration.dart';
 
 import '../../injection_container.dart';
 
@@ -75,7 +74,7 @@ class ProfileScreen extends BaseScreenWidget {
                                               ]),
                                         ),
                                         SizedBox(
-                                          height: resources.dimen.dp20,
+                                          height: resources.dimen.dp15,
                                         ),
                                         Text.rich(
                                           TextSpan(
@@ -98,40 +97,35 @@ class ProfileScreen extends BaseScreenWidget {
                                       ],
                                     ),
                                   ),
-                                  Expanded(
-                                      flex: 1,
-                                      child: Container(
-                                        margin:
-                                            EdgeInsets.all(resources.dimen.dp5),
-                                        decoration: BackgroundBoxDecoration(
-                                          boxColor: resources
-                                              .color.sideBarItemUnselected,
-                                        ).circularBox,
-                                      ))
+                                  // Expanded(
+                                  //     flex: 1,
+                                  //     child: Container(
+                                  //       margin:
+                                  //           EdgeInsets.all(resources.dimen.dp5),
+                                  //       decoration: BackgroundBoxDecoration(
+                                  //         boxColor: resources
+                                  //             .color.sideBarItemUnselected,
+                                  //       ).circularBox,
+                                  //     ))
                                 ],
                               ),
                             ),
                             SizedBox(
-                              height: resources.dimen.dp20,
+                              height: resources.dimen.dp15,
                             ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  flex: 1,
-                                  child: Text(
-                                    resources.string.managerName,
-                                    style: context.textFontWeight400
-                                        .onFontSize(resources.fontSize.dp10),
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 3,
-                                  child: Text(userEntity?.manager ?? '',
-                                      style: context.textFontWeight600
-                                          .onFontSize(resources.fontSize.dp12)),
-                                )
-                              ],
-                            ),
+                            if ((userEntity?.manager ?? '').isNotEmpty) ...[
+                              Text(
+                                resources.string.managerName,
+                                style: context.textFontWeight400
+                                    .onFontSize(resources.fontSize.dp10),
+                              ),
+                              Text(userEntity?.manager ?? '',
+                                  style: context.textFontWeight600
+                                      .onFontSize(resources.fontSize.dp12)),
+                              SizedBox(
+                                height: resources.dimen.dp15,
+                              ),
+                            ],
                             // SizedBox(
                             //   height: resources.dimen.dp5,
                             // ),
@@ -153,69 +147,36 @@ class ProfileScreen extends BaseScreenWidget {
                             //     )
                             //   ],
                             // ),
+                            Text(
+                              resources.string.emailID,
+                              style: context.textFontWeight400
+                                  .onFontSize(resources.fontSize.dp10),
+                            ),
+                            Text(userEntity?.email ?? '',
+                                style: context.textFontWeight600
+                                    .onFontSize(resources.fontSize.dp12)),
                             SizedBox(
-                              height: resources.dimen.dp50,
+                              height: resources.dimen.dp15,
                             ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  flex: 1,
-                                  child: Text(
-                                    resources.string.emailID,
-                                    style: context.textFontWeight400
-                                        .onFontSize(resources.fontSize.dp10),
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 3,
-                                  child: Text(userEntity?.email ?? '',
-                                      style: context.textFontWeight600
-                                          .onFontSize(resources.fontSize.dp12)),
-                                )
-                              ],
+                            Text(
+                              resources.string.department,
+                              style: context.textFontWeight400
+                                  .onFontSize(resources.fontSize.dp10),
                             ),
+                            Text(userEntity?.department ?? '',
+                                style: context.textFontWeight600
+                                    .onFontSize(resources.fontSize.dp12)),
                             SizedBox(
-                              height: resources.dimen.dp5,
+                              height: resources.dimen.dp15,
                             ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  flex: 1,
-                                  child: Text(
-                                    resources.string.department,
-                                    style: context.textFontWeight400
-                                        .onFontSize(resources.fontSize.dp10),
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 3,
-                                  child: Text(userEntity?.department ?? '',
-                                      style: context.textFontWeight600
-                                          .onFontSize(resources.fontSize.dp12)),
-                                )
-                              ],
+                            Text(
+                              resources.string.telephoneExt,
+                              style: context.textFontWeight400
+                                  .onFontSize(resources.fontSize.dp10),
                             ),
-                            SizedBox(
-                              height: resources.dimen.dp5,
-                            ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  flex: 1,
-                                  child: Text(
-                                    resources.string.telephoneExt,
-                                    style: context.textFontWeight400
-                                        .onFontSize(resources.fontSize.dp10),
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 3,
-                                  child: Text(userEntity?.mobile ?? '',
-                                      style: context.textFontWeight600
-                                          .onFontSize(resources.fontSize.dp12)),
-                                )
-                              ],
-                            ),
+                            Text(userEntity?.mobile ?? '',
+                                style: context.textFontWeight600
+                                    .onFontSize(resources.fontSize.dp12)),
                           ],
                         ),
                       );

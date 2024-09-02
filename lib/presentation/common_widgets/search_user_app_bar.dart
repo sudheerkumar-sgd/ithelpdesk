@@ -12,6 +12,7 @@ class SearchUserAppBarWidget extends StatelessWidget
     implements PreferredSizeWidget {
   final String userName;
   final EdgeInsets? padding;
+  final ValueNotifier _isAvailable = ValueNotifier<bool>(true);
 
   SearchUserAppBarWidget({required this.userName, this.padding, super.key});
 
@@ -38,6 +39,21 @@ class SearchUserAppBarWidget extends StatelessWidget
                 onTap: () {
                   resources.setLocal(language: isSelectedLocalEn ? 'ar' : 'en');
                 },
+                child: ValueListenableBuilder(
+                    valueListenable: _isAvailable,
+                    builder: (context, value, child) {
+                      return Switch(
+                          activeColor: resources.color.viewBgColor,
+                          value: value,
+                          onChanged: (value) {
+                            _isAvailable.value = value;
+                          });
+                    }),
+              ),
+              InkWell(
+                onTap: () {
+                  resources.setLocal(language: isSelectedLocalEn ? 'ar' : 'en');
+                },
                 child: ImageWidget(
                         path: isSelectedLocalEn
                             ? DrawableAssets.icLangAr
@@ -47,12 +63,6 @@ class SearchUserAppBarWidget extends StatelessWidget
                         padding: EdgeInsets.all(resources.dimen.dp10))
                     .loadImageWithMoreTapArea,
               ),
-              ImageWidget(
-                      path: DrawableAssets.icNotification,
-                      width: 20,
-                      height: 20,
-                      padding: EdgeInsets.all(resources.dimen.dp10))
-                  .loadImageWithMoreTapArea,
               ImageWidget(
                       path: DrawableAssets.icUserCircle,
                       width: 20,

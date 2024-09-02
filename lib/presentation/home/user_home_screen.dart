@@ -330,10 +330,10 @@ class UserHomeScreen extends BaseScreenWidget {
         : ['ID', 'Category', 'Subject', 'Status', 'Priority', 'CreateDate'];
     final ticketsTableColunwidths = isDesktop(context)
         ? {
-            0: const FlexColumnWidth(1),
+            0: const FlexColumnWidth(2),
             1: const FlexColumnWidth(3),
             2: const FlexColumnWidth(2),
-            3: const FlexColumnWidth(4),
+            3: const FlexColumnWidth(3),
             4: const FlexColumnWidth(2),
             5: const FlexColumnWidth(2),
             6: const FlexColumnWidth(2),
@@ -709,54 +709,8 @@ class UserHomeScreen extends BaseScreenWidget {
                               ),
                             );
                           }),
-                      if (isDesktop(context)) ...[
-                        SizedBox(
-                          width: resources.dimen.dp20,
-                        ),
-                        Text(
-                          '${resources.string.status}:',
-                          style: context.textFontWeight600
-                              .onFontSize(resources.fontSize.dp10),
-                        ),
-                        SizedBox(
-                          width: resources.dimen.dp20,
-                        ),
-                        DropDownWidget<StatusType>(
-                          width: 120,
-                          list: getStatusTypes(),
-                          borderRadius: 15,
-                          iconSize: 16,
-                          selectedValue: filteredStatus,
-                          fontStyle: context.textFontWeight400
-                              .onFontSize(resources.fontSize.dp10),
-                          callback: (p0) {
-                            filteredStatus = p0 ?? StatusType.all;
-                            _onDataChange.value = !(_onDataChange.value);
-                          },
-                        )
-                      ],
                     ],
                   ),
-                  if (!isDesktop(context)) ...[
-                    SizedBox(
-                      height: resources.dimen.dp10,
-                    ),
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: DropDownWidget<String>(
-                        width: 120,
-                        list: const ['All Status', '', 'Priority', 'Status'],
-                        labelText: resources.string.status,
-                        borderRadius: 15,
-                        iconSize: 16,
-                        selectedValue: 'All Status',
-                        labelfontStyle: context.textFontWeight600
-                            .onFontSize(resources.fontSize.dp10),
-                        fontStyle: context.textFontWeight400
-                            .onFontSize(resources.fontSize.dp10),
-                      ),
-                    )
-                  ],
                   SizedBox(
                     height: resources.dimen.dp20,
                   ),
@@ -848,6 +802,7 @@ class UserHomeScreen extends BaseScreenWidget {
                             builder: (context, snapShot) {
                               final filterTickets =
                                   (snapShot.data?.entity?.items ?? []);
+
                               // .where((ticket) =>
                               //     ticket.status != StatusType.closed &&
                               //     ticket.status != StatusType.reject)

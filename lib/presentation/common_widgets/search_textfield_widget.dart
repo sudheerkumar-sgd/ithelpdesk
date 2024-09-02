@@ -10,6 +10,7 @@ import '../bloc/services/services_bloc.dart';
 
 const double defaultHeight = 20;
 
+// ignore: must_be_immutable
 class SearchDropDownWidget extends StatelessWidget {
   final double height;
   final String? hintText;

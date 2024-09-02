@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:flutter_svg/svg.dart';
@@ -21,6 +22,7 @@ import 'package:ithelpdesk/presentation/utils/location.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:mime/mime.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'dart:html' as html;
 
 Future<void> openMapsSheet(
     BuildContext context, String title, double lat, double lang) async {
@@ -365,6 +367,58 @@ Future<String> getDeviceId() async {
   return '';
 }
 
+Future<void> printData(
+    {String? title, String? headerData, String? bodyData}) async {
+  final htmlString = '''
+  <html>
+    <head>
+        <title>$title</title>
+        </head>
+        <meta charset="utf-8">
+        <style>
+        table {
+    border: solid #000 !important;
+    border-width: 1px 0 0 1px !important;
+}
+th, td {
+    border: solid #000 !important;
+    border-width: 0 1px 1px 0 !important;
+}
+        </style>
+        <body>
+            <script>
+          window.onload = function() {
+            window.print();
+            window.onafterprint = function() {
+              window.close(); // Close the window after printing
+            };
+          };
+        </script>
+            <table id="tickets" class="display" style="width:100%;">
+                <thead>
+                    $headerData
+                    </thead>
+                    <tbody>
+                        $bodyData
+                        </tbody>
+                    </table>
+                </body>
+            </html>
+  ''';
+
+  final blob = html.Blob([htmlString], 'text/html');
+
+  final url = html.Url.createObjectUrlFromBlob(blob);
+
+  html.window.open(url, '_blank');
+
+  html.Url.revokeObjectUrl(url);
+}
+
+reloadPage() {
+  html.window.location.reload();
+}
+
 String get getPaymentRedirectUrl =>
     '${FlavorConfig.instance.values.mdPortalBaseUrl}/work-management/payment-view/';
 
@@ -379,7 +433,6 @@ String get getImageBaseUrl =>
 
 List<StatusType> getStatusTypes() {
   return [
-    StatusType.all,
     StatusType.notAssigned,
     StatusType.open,
     StatusType.hold,

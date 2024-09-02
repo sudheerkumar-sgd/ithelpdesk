@@ -1,7 +1,6 @@
-import 'dart:convert';
-
 import 'package:excel/excel.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
@@ -12,36 +11,32 @@ import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart
 import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dropdown_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/report_list_widget.dart';
-import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
 
 import '../../domain/entities/user_credentials_entity.dart';
 import '../../injection_container.dart';
 import '../requests/view_request.dart';
-import 'dart:html' as html;
-import 'package:flutter/services.dart';
 
+// ignore: must_be_immutable
 class ReportsScreen extends BaseScreenWidget {
   ReportsScreen({super.key});
   final ServicesBloc _servicesBloc = sl<ServicesBloc>();
   List<dynamic>? tickets;
-  String? selectedCategory;
+  ValueNotifier<int?> _selectedCategory = ValueNotifier(null);
   String? selectedStatus;
+  List<String>? ticketsHeaderData;
 
   Widget _getFilters(BuildContext context) {
     final resources = context.resources;
-    final statusTypes = [
-      resources.string.allRequests.replaceAll('\nRequests', ' Requests'),
-      resources.string.notAssignedRequests
-          .replaceAll('\nRequests', ' Requests'),
-      resources.string.openRequests.replaceAll('\nRequests', ' Requests'),
-      resources.string.closedRequests.replaceAll('\nRequests', ' Requests'),
-      resources.string.activeRequests.replaceAll('\nRequests', ' Requests'),
-      resources.string.dueRequests.replaceAll('\nRequests', ' Requests'),
+    final categories = const [
+      'All',
+      'Assigned Tickets',
+      'My Tickets',
     ];
     return Wrap(
       alignment: WrapAlignment.end,
       runSpacing: resources.dimen.dp10,
       runAlignment: WrapAlignment.start,
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         SizedBox(
           width: 200,
@@ -56,50 +51,49 @@ class ReportsScreen extends BaseScreenWidget {
                 width: resources.dimen.dp5,
               ),
               Expanded(
-                child: DropDownWidget(
+                child: DropDownWidget<String>(
                   height: 32,
-                  list: const [
-                    'All',
-                    'Assigned Tickets',
-                    'My Tickets',
-                  ],
-                  selectedValue: selectedCategory ?? 'All',
+                  list: categories,
+                  selectedValue: categories[_selectedCategory.value ?? 0],
                   iconSize: 20,
                   fontStyle: context.textFontWeight400
                       .onFontSize(resources.fontSize.dp12),
+                  callback: (p0) {
+                    _selectedCategory.value = categories.indexOf(p0 ?? 'All');
+                  },
                 ),
               ),
             ],
           ),
         ),
-        SizedBox(
-          width: resources.dimen.dp10,
-        ),
-        SizedBox(
-          width: 200,
-          child: Row(
-            children: [
-              Text(
-                resources.string.status,
-                style: context.textFontWeight600
-                    .onFontSize(resources.fontSize.dp10),
-              ),
-              SizedBox(
-                width: resources.dimen.dp10,
-              ),
-              Expanded(
-                child: DropDownWidget(
-                  height: 32,
-                  list: statusTypes,
-                  iconSize: 20,
-                  selectedValue: selectedStatus ?? statusTypes[0],
-                  fontStyle: context.textFontWeight400
-                      .onFontSize(resources.fontSize.dp12),
-                ),
-              ),
-            ],
-          ),
-        ),
+        // SizedBox(
+        //   width: resources.dimen.dp10,
+        // ),
+        // SizedBox(
+        //   width: 200,
+        //   child: Row(
+        //     children: [
+        //       Text(
+        //         resources.string.status,
+        //         style: context.textFontWeight600
+        //             .onFontSize(resources.fontSize.dp10),
+        //       ),
+        //       SizedBox(
+        //         width: resources.dimen.dp10,
+        //       ),
+        //       Expanded(
+        //         child: DropDownWidget(
+        //           height: 32,
+        //           list: statusTypes,
+        //           iconSize: 20,
+        //           selectedValue: selectedStatus ?? statusTypes[0],
+        //           fontStyle: context.textFontWeight400
+        //               .onFontSize(resources.fontSize.dp12),
+        //         ),
+        //       ),
+        //     ],
+        //   ),
+        // ),
         // SizedBox(
         //   width: resources.dimen.dp10,
         // ),
@@ -171,7 +165,7 @@ class ReportsScreen extends BaseScreenWidget {
         ),
         InkWell(
           onTap: () {
-            _generateAndPrintQrCode();
+            _printData(ticketsHeaderData ?? []);
           },
           child: ActionButtonWidget(
             text: resources.string.print,
@@ -187,48 +181,21 @@ class ReportsScreen extends BaseScreenWidget {
     );
   }
 
-  Future<void> _generateAndPrintQrCode() async {
-// Generate QR code image
-
-// Convert widget to image
-    ByteData bytes = await rootBundle.load(DrawableAssets.icLogo);
-    var buffer = bytes.buffer;
-    var base64Image = base64.encode(Uint8List.view(buffer));
-
-// // Create a printable HTML document
-// Create a printable HTML document
-    final printableDocument = '''
-    <html>
-      <head>
-        <title>ZYSKY Partner Pin</title>
-      </head>
-      <body>
-        <img src="data:image/png;base64,$base64Image" alt="qr"/>
-        <script>
-          // Automatically trigger the print dialog once the image is loaded
-          window.onload = function() {
-            window.print();
-            window.onafterprint = function() {
-              window.close(); // Close the window after printing
-            };
-          };
-        </script>
-      </body>
-    </html>
-  ''';
-    final htmlString = await rootBundle.loadString('assets/html/print.html');
-
-// Create a Blob from the HTML content
-    final blob = html.Blob([htmlString], 'text/html');
-
-// Create an Object URL for the Blob
-    final url = html.Url.createObjectUrlFromBlob(blob);
-
-// Open a new window with the printable document
-    final newWindow = html.window.open(url, '_blank');
-
-// Revoke the Object URL to free resources
-    html.Url.revokeObjectUrl(url);
+  Future<void> _printData(List<String> headers) async {
+    String tableHeader = '<tr>';
+    for (var item in headers) {
+      tableHeader = '$tableHeader\n <td>$item</td>';
+    }
+    tableHeader = '$tableHeader\n</tr>';
+    String tableBody = '';
+    tickets?.forEach((item) {
+      tableBody = '$tableBody\n<tr>';
+      item.toJson().forEach((k, v) {
+        tableBody = '$tableBody\n <td>$v</td>';
+      });
+      tableBody = '$tableBody\n</tr>';
+    });
+    printData(title: "Tickets", headerData: tableHeader, bodyData: tableBody);
   }
 
   List<Widget> _getFilterBar(BuildContext context) {
@@ -255,7 +222,7 @@ class ReportsScreen extends BaseScreenWidget {
   @override
   Widget build(BuildContext context) {
     final resources = context.resources;
-    final ticketsHeaderData = isDesktop(context)
+    ticketsHeaderData = isDesktop(context)
         ? [
             'ID',
             'EmployeeName',
@@ -317,14 +284,35 @@ class ReportsScreen extends BaseScreenWidget {
                     }),
                     builder: (context, snapsShot) {
                       tickets = snapsShot.data?.entity?.items;
-                      return snapsShot.data?.entity?.items.isNotEmpty == true
-                          ? ReportListWidget(
-                              ticketsHeaderData: ticketsHeaderData,
-                              ticketsData: snapsShot.data?.entity?.items ?? [],
-                              ticketsTableColunwidths: ticketsTableColunwidths,
-                              showActionButtons: true,
-                              onTicketSelected: (ticket) {
-                                ViewRequest.start(context, ticket);
+                      return tickets?.isNotEmpty == true
+                          ? ValueListenableBuilder(
+                              valueListenable: _selectedCategory,
+                              builder: (context, value, child) {
+                                var filteredTickets = tickets;
+                                if (value == 1) {
+                                  filteredTickets = tickets
+                                      ?.where((item) =>
+                                          item.userID !=
+                                          UserCredentialsEntity.details().id)
+                                      .toList();
+                                } else if (value == 2) {
+                                  filteredTickets = tickets
+                                      ?.where((item) =>
+                                          item.userID ==
+                                          UserCredentialsEntity.details().id)
+                                      .toSet()
+                                      .toList();
+                                }
+                                return ReportListWidget(
+                                  ticketsHeaderData: ticketsHeaderData ?? [],
+                                  ticketsData: filteredTickets ?? [],
+                                  ticketsTableColunwidths:
+                                      ticketsTableColunwidths,
+                                  showActionButtons: true,
+                                  onTicketSelected: (ticket) {
+                                    ViewRequest.start(context, ticket);
+                                  },
+                                );
                               },
                             )
                           : const Center(child: CircularProgressIndicator());

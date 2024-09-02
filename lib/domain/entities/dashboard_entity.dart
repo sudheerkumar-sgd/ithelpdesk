@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
-import 'package:ithelpdesk/core/extensions/string_extension.dart';
 import 'package:ithelpdesk/domain/entities/base_entity.dart';
 
 import 'master_data_entities.dart';
@@ -183,8 +182,8 @@ class TicketEntity extends BaseEntity {
         "employeeName": creator ?? '',
         "Category": categoryName ?? '',
         "subject": subject ?? '',
-        "status": (status?.name ?? '').capitalize(),
-        "priority": (priority?.name ?? '').capitalize(),
+        "status": status,
+        "priority": priority,
         "assignee": assignedTo ?? '',
         "department": departmentName ?? '',
         "createDate": createdOn ?? '',
@@ -193,8 +192,8 @@ class TicketEntity extends BaseEntity {
         "id": id ?? '',
         "Category": categoryName ?? '',
         "subject": subject ?? '',
-        "status": (status?.name ?? '').capitalize(),
-        "priority": (priority?.name ?? '').capitalize(),
+        "status": status,
+        "priority": priority,
         "createDate": createdOn ?? '',
       };
   Map<String, dynamic> toCreateJson() {
