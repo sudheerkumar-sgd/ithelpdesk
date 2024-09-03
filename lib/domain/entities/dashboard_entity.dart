@@ -74,6 +74,11 @@ class TicketEntity extends BaseEntity {
     return (userID == UserCredentialsEntity.details().id);
   }
 
+  @override
+  List<Object?> get props => [
+        id,
+      ];
+
   List<ActionButtonEntity> getActionButtonsForMytickets(BuildContext context) {
     final actionButtons = List<ActionButtonEntity>.empty(growable: true);
     actionButtons.add(ActionButtonEntity(
@@ -102,7 +107,7 @@ class TicketEntity extends BaseEntity {
         userType == AssigneType.approver) {
       actionButtons.add(ActionButtonEntity(
           id: StatusType.reAssign.value,
-          nameEn: 'Re-Assign',
+          nameEn: context.resources.string.reAssign,
           color: context.resources.color.viewBgColorLight));
       return actionButtons;
     }
@@ -135,7 +140,7 @@ class TicketEntity extends BaseEntity {
       actionButtons.add(ActionButtonEntity(
           id: StatusType.resubmit.value,
           nameEn: status == StatusType.hold
-              ? 'Re-Open'
+              ? context.resources.string.reOpen
               : context.resources.string.open,
           color: context.resources.color.viewBgColor));
     }
@@ -190,7 +195,6 @@ class TicketEntity extends BaseEntity {
       };
   Map<String, dynamic> toMobileJson() => {
         "id": id ?? '',
-        "Category": categoryName ?? '',
         "subject": subject ?? '',
         "status": status,
         "priority": priority,
@@ -217,8 +221,27 @@ class TicketEntity extends BaseEntity {
         (finalComments ?? '').isNotEmpty ? finalComments : null;
     data['serviceId'] = serviceId;
     data['serviceReqNo'] = serviceReqNo;
+    data['isChargeable'] = isChargeable;
     return data;
   }
+
+  Map<String, dynamic> toExcel() => {
+        "id": id ?? '',
+        "employeeName": creator ?? '',
+        "category": categoryName ?? '',
+        "subject": subject ?? '',
+        'description': description,
+        "status": status,
+        "priority": priority,
+        "assignee": assignedTo ?? '',
+        "department": departmentName ?? '',
+        'mobileNumber': mobileNumber ?? '',
+        'serviceId': serviceId ?? '',
+        'serviceReqNo': serviceReqNo ?? '',
+        'requestType': 2,
+        'isChargeable': isChargeable ?? false ? 'Yes' : 'No',
+        "createDate": createdOn ?? '',
+      };
 }
 
 class TicketHistoryEntity extends BaseEntity {

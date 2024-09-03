@@ -162,7 +162,7 @@ class UserHomeScreen extends BaseScreenWidget {
         case 1:
           {
             var item = {
-              'name': 'Support',
+              'name': resources.string.support,
               'count': ticketsByCategoryEntity[i].count ?? 0,
               'color': Colors.orange
             };
@@ -172,7 +172,7 @@ class UserHomeScreen extends BaseScreenWidget {
         case 2:
           {
             var item = {
-              'name': 'IT Requests',
+              'name': resources.string.itRequests,
               'count': ticketsByCategoryEntity[i].count ?? 0,
               'color': Colors.green
             };
@@ -182,7 +182,7 @@ class UserHomeScreen extends BaseScreenWidget {
         case 3:
           {
             var item = {
-              'name': 'Eservice',
+              'name': resources.string.eservices,
               'count': ticketsByCategoryEntity[i].count ?? 0,
               'color': Colors.blue
             };
@@ -192,7 +192,7 @@ class UserHomeScreen extends BaseScreenWidget {
         case 4:
           {
             var item = {
-              'name': 'Application',
+              'name': resources.string.application,
               'count': ticketsByCategoryEntity[i].count ?? 0,
               'color': Colors.cyan
             };
@@ -314,39 +314,6 @@ class UserHomeScreen extends BaseScreenWidget {
         'count': 0
       },
     ];
-
-    final ticketsHeaderData = isDesktop(context)
-        ? [
-            'ID',
-            'EmployeeName',
-            'Category',
-            'Subject',
-            'Status',
-            'Priority',
-            'Assignee',
-            'Dept',
-            'CreateDate'
-          ]
-        : ['ID', 'Category', 'Subject', 'Status', 'Priority', 'CreateDate'];
-    final ticketsTableColunwidths = isDesktop(context)
-        ? {
-            0: const FlexColumnWidth(2),
-            1: const FlexColumnWidth(3),
-            2: const FlexColumnWidth(2),
-            3: const FlexColumnWidth(3),
-            4: const FlexColumnWidth(2),
-            5: const FlexColumnWidth(2),
-            6: const FlexColumnWidth(2),
-            7: const FlexColumnWidth(1),
-            8: const FlexColumnWidth(3),
-          }
-        : {
-            0: const FlexColumnWidth(1),
-            1: const FlexColumnWidth(4),
-            2: const FlexColumnWidth(2),
-            3: const FlexColumnWidth(2),
-            4: const FlexColumnWidth(2),
-          };
     return SafeArea(
         child: Scaffold(
       resizeToAvoidBottomInset: false,
@@ -570,7 +537,7 @@ class UserHomeScreen extends BaseScreenWidget {
                         ),
                       ),
                       Text(
-                        'Filter by Date: ',
+                        '${resources.string.filterByDate}: ',
                         style: context.textFontWeight600
                             .onFontSize(resources.fontSize.dp10),
                       ),
@@ -614,7 +581,7 @@ class UserHomeScreen extends BaseScreenWidget {
                                       TextSpan(
                                           text: value.isNotEmpty
                                               ? value[0]
-                                              : 'Start Date',
+                                              : resources.string.startDate,
                                           children: const [
                                             WidgetSpan(
                                               child: Padding(
@@ -658,14 +625,15 @@ class UserHomeScreen extends BaseScreenWidget {
                                         Dialogs.showInfoDialog(
                                             context,
                                             PopupType.fail,
-                                            'Please Select Start Date');
+                                            resources.string.pleaseSelect +
+                                                resources.string.startDate);
                                       }
                                     },
                                     child: Text.rich(
                                       TextSpan(
                                           text: value.length > 1
                                               ? value[1]
-                                              : 'End Date',
+                                              : resources.string.endDate,
                                           children: const [
                                             WidgetSpan(
                                               child: Padding(
@@ -729,7 +697,7 @@ class UserHomeScreen extends BaseScreenWidget {
                               }
                             },
                             child: ActionButtonWidget(
-                              text: "Assigned Tickets",
+                              text: resources.string.assignedTickets,
                               padding: EdgeInsets.symmetric(
                                   vertical: resources.dimen.dp7,
                                   horizontal: resources.dimen.dp20),
@@ -759,7 +727,7 @@ class UserHomeScreen extends BaseScreenWidget {
                                 }
                               },
                               child: ActionButtonWidget(
-                                text: "My Tickets",
+                                text: resources.string.myTickets,
                                 padding: EdgeInsets.symmetric(
                                     vertical: resources.dimen.dp7,
                                     horizontal: resources.dimen.dp20),
@@ -809,10 +777,7 @@ class UserHomeScreen extends BaseScreenWidget {
                               // .toList();
                               return filterTickets.isNotEmpty
                                   ? ReportListWidget(
-                                      ticketsHeaderData: ticketsHeaderData,
                                       ticketsData: filterTickets,
-                                      ticketsTableColunwidths:
-                                          ticketsTableColunwidths,
                                       onTicketSelected: (ticket) {
                                         ViewRequest.start(context, ticket);
                                       },
@@ -820,7 +785,7 @@ class UserHomeScreen extends BaseScreenWidget {
                                   : Padding(
                                       padding: const EdgeInsets.only(top: 20.0),
                                       child: Text(
-                                        'No Tickets',
+                                        resources.string.noTickets,
                                         style: context.textFontWeight600,
                                       ),
                                     );

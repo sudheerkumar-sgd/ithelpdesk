@@ -123,7 +123,7 @@ class ViewRequest extends BaseScreenWidget {
                           child: Row(
                             children: [
                               Text(
-                                "Team Commnets",
+                                context.resources.string.teamCommnets,
                                 style: context.textFontWeight600,
                               ),
                               const Spacer(),
@@ -253,7 +253,7 @@ class ViewRequest extends BaseScreenWidget {
                 if ((value?['employeeId'] ?? 0) > 0) {
                   updateTicket.assignedUserID = (value['employeeId'] ?? 0);
                   _updateTicket(context, updateTicket,
-                      "Do you want return to ${(value['employeeName'] ?? '')}?");
+                      "${context.resources.string.doYouWantReturnTo} ${(value['employeeName'] ?? '')}?");
                 }
               }
             });
@@ -266,7 +266,7 @@ class ViewRequest extends BaseScreenWidget {
             Dialogs.showDialogWithClose(
               context,
               TicketActionWidget(
-                message: "Do you want to Resubmit?",
+                message: "${context.resources.string.doYouWantToResubmit}?",
                 isCommentRequired: false,
               ),
               maxWidth: isDesktop(context) ? 400 : null,
@@ -285,7 +285,8 @@ class ViewRequest extends BaseScreenWidget {
             if (ticket.categoryID == 2 && ticket.subCategoryID == 19) {
               updateTicket.status = StatusType.approve;
               updateTicket.assignedUserID = ticket.userID;
-              _updateTicket(context, updateTicket, "Do you want to Approve'?",
+              _updateTicket(context, updateTicket,
+                  "${context.resources.string.doYouWantToApprove} ?",
                   apiUrl: updateTicketByStatusApiUrl);
             } else {
               Dialogs.showDialogWithClose(
@@ -302,7 +303,8 @@ class ViewRequest extends BaseScreenWidget {
                 if (value['forwordCategory'] > 0) {
                   updateTicket.subCategoryID = value['forwordCategory'];
                 }
-                _updateTicket(context, updateTicket, "Do you want to Forword ?",
+                _updateTicket(context, updateTicket,
+                    "${context.resources.string.doYouWantToForword} ?",
                     apiUrl: forwordTicketApiUrl);
               });
             }
@@ -320,7 +322,8 @@ class ViewRequest extends BaseScreenWidget {
               if (value['employee'] > 0) {
                 updateTicket.assignedUserID = value['employee'];
               }
-              _updateTicket(context, updateTicket, "Do you want to Forword ?",
+              _updateTicket(context, updateTicket,
+                  "${context.resources.string.doYouWantToForword} ?",
                   apiUrl: forwordTicketApiUrl);
             });
           }
@@ -331,21 +334,14 @@ class ViewRequest extends BaseScreenWidget {
           updateTicket.status =
               status == StatusType.resubmit ? StatusType.open : status;
           _updateTicket(context, updateTicket,
-              'Do you want to ${updateTicket.status?.name.toString()}');
+              '${context.resources.string.doYouWantTo} ${updateTicket.status?.name.toString()}');
       }
     }
   }
 
   Widget _getDataForm(BuildContext context) {
     final resources = context.resources;
-    final priorities = isSelectedLocalEn
-        ? [
-            'Low',
-            'Medium',
-            'High',
-            'Critical',
-          ]
-        : ['منخفض', 'متوسط', 'عالي', 'حرج'];
+    final priorities = getPriorityTypes();
     _contactNoController.text = ticket.mobileNumber ?? '';
     _reasonController.text = ticket.subject ?? '';
     _descriptionController.text = ticket.description ?? '';
@@ -399,7 +395,7 @@ class ViewRequest extends BaseScreenWidget {
                       width: resources.dimen.dp40,
                     ),
                     Expanded(
-                        child: DropDownWidget(
+                        child: DropDownWidget<PriorityType>(
                       list: priorities,
                       isEnabled: ticket.canEnable(),
                       labelText: resources.string.priority,
@@ -409,8 +405,7 @@ class ViewRequest extends BaseScreenWidget {
                           .withPrefix(resources.string.pleaseSelect),
                       borderRadius: 0,
                       fillColor: resources.color.colorWhite,
-                      selectedValue:
-                          priorities[(ticket.priority?.value ?? 1) - 1],
+                      selectedValue: ticket.priority,
                       callback: (value) {
                         //priority = priorities.indexOf(value ?? '');
                       },
@@ -556,7 +551,7 @@ class ViewRequest extends BaseScreenWidget {
           ),
           if (ticket.attachments?.isNotEmpty == true) ...[
             Text(
-              "Attachments",
+              resources.string.attachments,
               style: context.textFontWeight600,
             ),
             SizedBox(
@@ -669,11 +664,12 @@ class ViewRequest extends BaseScreenWidget {
           child: BlocListener<ServicesBloc, ServicesState>(
             listener: (context, state) {
               if (state is OnLoading) {
-                Dialogs.showInfoLoader(context, 'Updating Ticket');
+                Dialogs.showInfoLoader(
+                    context, resources.string.updatingTicket);
               } else if (state is OnUpdateTicket) {
                 Dialogs.dismiss(context);
                 Dialogs.showInfoDialog(context, PopupType.success,
-                        'Successfully Updated ${state.onUpdateTicketResult}')
+                        '${resources.string.updatingTicket} ${state.onUpdateTicketResult}')
                     .then((value) {
                   Navigator.pop(context);
                 });
@@ -695,12 +691,13 @@ class ViewRequest extends BaseScreenWidget {
                         flex: 3,
                         child: Text.rich(
                           TextSpan(
-                              text: 'UAQGOV-ITHD- ${ticket.id}\n',
-                              style: context.textFontWeight600,
+                              text: 'UAQGOV-ITHD-${ticket.id}\n',
+                              style: context.textFontWeight600
+                                  .onFontFamily(fontFamily: fontFamilyEN),
                               children: [
                                 TextSpan(
                                     text:
-                                        'Created by ${ticket.creator} on ${ticket.createdOn}',
+                                        '${resources.string.createdBy} ${ticket.creator} ${resources.string.on} ${ticket.createdOn}',
                                     style: context.textFontWeight400
                                         .onFontSize(resources.fontSize.dp10)
                                         .onColor(resources.color.textColorLight)
@@ -717,7 +714,7 @@ class ViewRequest extends BaseScreenWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                'status:',
+                                '${resources.string.status}: ',
                                 style: context.textFontWeight600,
                               ),
                               SizedBox(
@@ -830,7 +827,7 @@ class ViewRequest extends BaseScreenWidget {
                         Expanded(
                             child: DropdownMenuWidget(
                           items: popupActionButtons,
-                          titleText: 'Other Actions',
+                          titleText: resources.string.otherActions,
                           onItemSelected: (p0) {
                             _onActionClicked(
                                 context, StatusType.fromId(p0.id ?? 1));

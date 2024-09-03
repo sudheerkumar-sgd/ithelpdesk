@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
+import 'package:ithelpdesk/core/extensions/string_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
 import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart';
@@ -27,10 +28,10 @@ class ReportsScreen extends BaseScreenWidget {
 
   Widget _getFilters(BuildContext context) {
     final resources = context.resources;
-    final categories = const [
-      'All',
-      'Assigned Tickets',
-      'My Tickets',
+    final categories = [
+      resources.string.all,
+      resources.string.assignedTickets,
+      resources.string.myTickets,
     ];
     return Wrap(
       alignment: WrapAlignment.end,
@@ -136,9 +137,9 @@ class ReportsScreen extends BaseScreenWidget {
               List<CellValue> headerlist = List.empty(growable: true);
               List<CellValue> list = List.empty(growable: true);
 
-              item.toJson().forEach((k, v) {
+              item.toExcel().forEach((k, v) {
                 if (sheetObject.rows.isEmpty) {
-                  final cellValue = TextCellValue("$k");
+                  final cellValue = TextCellValue("$k".capitalize());
                   headerlist.add(cellValue);
                 }
                 final cellValue = TextCellValue("$v");
@@ -222,40 +223,6 @@ class ReportsScreen extends BaseScreenWidget {
   @override
   Widget build(BuildContext context) {
     final resources = context.resources;
-    ticketsHeaderData = isDesktop(context)
-        ? [
-            'ID',
-            'EmployeeName',
-            'Category',
-            'Subject',
-            'Status',
-            'Priority',
-            'Assignee',
-            'Department',
-            'CreateDate',
-          ]
-        : ['ID', 'Subject', 'Status', 'Priority', 'CreateDate', 'Action'];
-    final ticketsTableColunwidths = isDesktop(context)
-        ? {
-            0: const FlexColumnWidth(1),
-            1: const FlexColumnWidth(3),
-            2: const FlexColumnWidth(2),
-            3: const FlexColumnWidth(4),
-            4: const FlexColumnWidth(2),
-            5: const FlexColumnWidth(2),
-            6: const FlexColumnWidth(3),
-            7: const FlexColumnWidth(1),
-            8: const FlexColumnWidth(3),
-          }
-        : {
-            0: const FlexColumnWidth(1),
-            1: const FlexColumnWidth(4),
-            2: const FlexColumnWidth(2),
-            3: const FlexColumnWidth(2),
-            4: const FlexColumnWidth(2),
-            5: const FlexColumnWidth(3),
-          };
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: context.resources.color.appScaffoldBg,
@@ -304,10 +271,7 @@ class ReportsScreen extends BaseScreenWidget {
                                       .toList();
                                 }
                                 return ReportListWidget(
-                                  ticketsHeaderData: ticketsHeaderData ?? [],
                                   ticketsData: filteredTickets ?? [],
-                                  ticketsTableColunwidths:
-                                      ticketsTableColunwidths,
                                   showActionButtons: true,
                                   onTicketSelected: (ticket) {
                                     ViewRequest.start(context, ticket);

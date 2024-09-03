@@ -440,3 +440,12 @@ List<StatusType> getStatusTypes() {
     StatusType.closed,
   ];
 }
+
+List<PriorityType> getPriorityTypes() {
+  return [
+    PriorityType.low,
+    PriorityType.medium,
+    PriorityType.high,
+    PriorityType.critical,
+  ];
+}

@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/extensions/string_extension.dart';
 
 enum ThemeEnum {
@@ -67,7 +68,18 @@ enum PriorityType {
 
   @override
   String toString() {
-    return name.capitalize();
+    switch (this) {
+      case low:
+        return isSelectedLocalEn ? name.capitalize() : 'منخفض';
+      case medium:
+        return isSelectedLocalEn ? name.capitalize() : 'متوسط';
+      case high:
+        return isSelectedLocalEn ? name.capitalize() : 'عالي';
+      case critical:
+        return isSelectedLocalEn ? name.capitalize() : 'حرج';
+      default:
+        return name.toString();
+    }
   }
 }
 
@@ -99,7 +111,26 @@ enum StatusType {
 
   @override
   String toString() {
-    return name.capitalize();
+    switch (this) {
+      case closed:
+        return isSelectedLocalEn ? name.capitalize() : '';
+      case reject:
+        return isSelectedLocalEn ? name.capitalize() : '';
+      case hold:
+        return isSelectedLocalEn ? name.capitalize() : '';
+      case returned:
+        return isSelectedLocalEn ? name.capitalize() : '';
+      case open:
+        return isSelectedLocalEn ? name.capitalize() : '';
+      case forword:
+        return isSelectedLocalEn ? name.capitalize() : '';
+      case reAssign:
+        return isSelectedLocalEn ? name.capitalize() : '';
+      case resubmit:
+        return isSelectedLocalEn ? name.capitalize() : '';
+      default:
+        return name.capitalize();
+    }
   }
 
   Color getColor() {
@@ -128,6 +159,19 @@ enum AssigneType {
   const AssigneType(this.value);
 
   factory AssigneType.fromId(int value) {
+    return values.firstWhere((e) => e.value == value);
+  }
+}
+
+enum AppBarItem {
+  vacation(1),
+  language(2),
+  user(2);
+
+  final int value;
+  const AppBarItem(this.value);
+
+  factory AppBarItem.fromId(int value) {
     return values.firstWhere((e) => e.value == value);
   }
 }

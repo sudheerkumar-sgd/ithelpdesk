@@ -28,7 +28,7 @@ class SubCategoryEntity extends BaseEntity {
 
   @override
   String toString() {
-    return isSelectedLocalEn ? name ?? '' : nameAr ?? '';
+    return (isSelectedLocalEn ? name ?? '' : nameAr ?? name) ?? '';
   }
 
   @override
@@ -56,7 +56,7 @@ class ReasonsEntity extends BaseEntity {
 
   @override
   String toString() {
-    return isSelectedLocalEn ? reason ?? '' : reasonAr ?? '';
+    return (isSelectedLocalEn ? reason ?? '' : reasonAr ?? reason) ?? '';
   }
 
   @override
@@ -84,7 +84,10 @@ class EserviceEntity extends BaseEntity {
 
   @override
   String toString() {
-    return isSelectedLocalEn ? servicENAMEEN ?? '' : servicENAMEAR ?? '';
+    return (isSelectedLocalEn
+            ? servicENAMEEN ?? ''
+            : servicENAMEAR ?? servicENAMEEN) ??
+        '';
   }
 
   @override
@@ -101,7 +104,7 @@ class ActionButtonEntity extends BaseEntity {
       {this.id, this.nameEn, this.nameAr, this.iconPth, this.color});
   @override
   String toString() {
-    return isSelectedLocalEn ? nameEn ?? '' : nameAr ?? '';
+    return (isSelectedLocalEn ? nameEn ?? '' : nameAr ?? nameEn) ?? '';
   }
 
   @override

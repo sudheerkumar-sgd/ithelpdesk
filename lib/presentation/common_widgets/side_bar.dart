@@ -141,4 +141,9 @@ class SideBar extends StatelessWidget {
               ]);
             }));
   }
+
+  selectItem(int index) {
+    _selectedIndex.value = index;
+    onItemSelected(3);
+  }
 }

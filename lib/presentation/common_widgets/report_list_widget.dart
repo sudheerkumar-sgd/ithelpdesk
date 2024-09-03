@@ -9,21 +9,18 @@ import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
+import 'package:ithelpdesk/domain/entities/single_data_entity.dart';
 import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 import 'package:ithelpdesk/res/drawables/background_box_decoration.dart';
 
 import 'multi_select_dialog_widget.dart';
 
 class ReportListWidget extends StatelessWidget {
-  final List<String> ticketsHeaderData;
   final List<dynamic> ticketsData;
-  final Map<int, FlexColumnWidth>? ticketsTableColunwidths;
   final bool showActionButtons;
   final Function(TicketEntity)? onTicketSelected;
   ReportListWidget(
-      {required this.ticketsHeaderData,
-      required this.ticketsData,
-      this.ticketsTableColunwidths,
+      {required this.ticketsData,
       this.showActionButtons = false,
       this.onTicketSelected,
       super.key});
@@ -36,17 +33,17 @@ class ReportListWidget extends StatelessWidget {
   int pageCount = 20;
   List<StatusType> filteredStatus = List<StatusType>.empty(growable: true);
 
-  IconData _getFilerOrSortIcon(String tableColumn) {
-    switch (tableColumn.toLowerCase()) {
-      case 'createdate':
+  IconData _getFilerOrSortIcon(NameIDEntity tableColumn) {
+    switch (tableColumn.id) {
+      case 9:
         return (dateSort == 1
             ? Icons.arrow_upward_sharp
             : Icons.arrow_downward_sharp);
-      case 'priority':
+      case 6:
         return prioritySort == 1
             ? Icons.arrow_downward_sharp
             : Icons.arrow_upward_sharp;
-      case 'status':
+      case 5:
         return Icons.filter_list;
       default:
         return Icons.sort;
@@ -92,6 +89,44 @@ class ReportListWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final resources = context.resources;
 
+    final ticketsHeaderData = isDesktop(context)
+        ? [
+            NameIDEntity(1, resources.string.id),
+            NameIDEntity(2, resources.string.employeeName),
+            NameIDEntity(3, resources.string.category),
+            NameIDEntity(4, resources.string.subject),
+            NameIDEntity(5, resources.string.status),
+            NameIDEntity(6, resources.string.priority),
+            NameIDEntity(7, resources.string.assignee),
+            NameIDEntity(8, resources.string.department),
+            NameIDEntity(9, resources.string.createDate),
+          ]
+        : [
+            NameIDEntity(1, resources.string.id),
+            NameIDEntity(4, resources.string.subject),
+            NameIDEntity(5, resources.string.status),
+            NameIDEntity(6, resources.string.priority),
+            NameIDEntity(9, resources.string.createDate),
+          ];
+    final ticketsTableColunwidths = isDesktop(context)
+        ? {
+            0: const FlexColumnWidth(2),
+            1: const FlexColumnWidth(3),
+            2: const FlexColumnWidth(2),
+            3: const FlexColumnWidth(3),
+            4: const FlexColumnWidth(2),
+            5: const FlexColumnWidth(2),
+            6: const FlexColumnWidth(2),
+            7: const FlexColumnWidth(1),
+            8: const FlexColumnWidth(3),
+          }
+        : {
+            0: const FlexColumnWidth(2),
+            1: const FlexColumnWidth(4),
+            2: const FlexColumnWidth(2),
+            3: const FlexColumnWidth(2),
+            4: const FlexColumnWidth(2),
+          };
     return ValueListenableBuilder(
         valueListenable: _onSortChange,
         builder: (context, value, child) {
@@ -140,13 +175,12 @@ class ReportListWidget extends StatelessWidget {
                             padding: EdgeInsets.symmetric(
                                 vertical: resources.dimen.dp10,
                                 horizontal: resources.dimen.dp10),
-                            child: (ticketsHeaderData[index] == 'CreateDate' ||
-                                    ticketsHeaderData[index] == 'Priority' ||
-                                    ticketsHeaderData[index] == 'Status')
+                            child: (ticketsHeaderData[index].id == 9 ||
+                                    ticketsHeaderData[index].id == 6 ||
+                                    ticketsHeaderData[index].id == 5)
                                 ? InkWell(
                                     onTap: () {
-                                      if (ticketsHeaderData[index] ==
-                                          'CreateDate') {
+                                      if (ticketsHeaderData[index].id == 9) {
                                         sortBy = 'date';
                                         if (dateSort == 1) {
                                           dateSort = 0;
@@ -157,8 +191,8 @@ class ReportListWidget extends StatelessWidget {
 
                                         _onSortChange.value =
                                             !_onSortChange.value;
-                                      } else if (ticketsHeaderData[index] ==
-                                          'Priority') {
+                                      } else if (ticketsHeaderData[index].id ==
+                                          6) {
                                         sortBy = 'priority';
                                         if (prioritySort == 1) {
                                           prioritySort = 0;
@@ -169,8 +203,8 @@ class ReportListWidget extends StatelessWidget {
 
                                         _onSortChange.value =
                                             !_onSortChange.value;
-                                      } else if (ticketsHeaderData[index] ==
-                                          'Status') {
+                                      } else if (ticketsHeaderData[index].id ==
+                                          5) {
                                         Dialogs.showDialogWithClose(
                                                 context,
                                                 MultiSelectDialogWidget<
@@ -195,7 +229,8 @@ class ReportListWidget extends StatelessWidget {
                                     },
                                     child: Text.rich(
                                       TextSpan(
-                                          text: ticketsHeaderData[index],
+                                          text: ticketsHeaderData[index]
+                                              .toString(),
                                           children: [
                                             WidgetSpan(
                                                 alignment:
@@ -221,7 +256,7 @@ class ReportListWidget extends StatelessWidget {
                                     ),
                                   )
                                 : Text(
-                                    ticketsHeaderData[index],
+                                    ticketsHeaderData[index].toString(),
                                     textAlign: TextAlign.left,
                                     overflow: TextOverflow.ellipsis,
                                     style: context.textFontWeight600

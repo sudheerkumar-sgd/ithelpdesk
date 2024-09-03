@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
+import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
@@ -12,9 +13,10 @@ class SearchUserAppBarWidget extends StatelessWidget
     implements PreferredSizeWidget {
   final String userName;
   final EdgeInsets? padding;
+  final Function(AppBarItem)? onItemTap;
+  SearchUserAppBarWidget(
+      {required this.userName, this.padding, this.onItemTap, super.key});
   final ValueNotifier _isAvailable = ValueNotifier<bool>(true);
-
-  SearchUserAppBarWidget({required this.userName, this.padding, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -35,41 +37,50 @@ class SearchUserAppBarWidget extends StatelessWidget
               SizedBox(
                 width: screenSize.width * .10,
               ),
-              InkWell(
-                onTap: () {
-                  resources.setLocal(language: isSelectedLocalEn ? 'ar' : 'en');
-                },
-                child: ValueListenableBuilder(
-                    valueListenable: _isAvailable,
-                    builder: (context, value, child) {
-                      return Switch(
+              ValueListenableBuilder(
+                  valueListenable: _isAvailable,
+                  builder: (context, value, child) {
+                    return Tooltip(
+                      message: resources.string.vacation,
+                      child: Switch(
                           activeColor: resources.color.viewBgColor,
                           value: value,
                           onChanged: (value) {
                             _isAvailable.value = value;
-                          });
-                    }),
-              ),
+                          }),
+                    );
+                  }),
               InkWell(
                 onTap: () {
                   resources.setLocal(language: isSelectedLocalEn ? 'ar' : 'en');
                 },
-                child: ImageWidget(
-                        path: isSelectedLocalEn
-                            ? DrawableAssets.icLangAr
-                            : DrawableAssets.icLangEn,
-                        width: 20,
-                        height: 20,
-                        padding: EdgeInsets.all(resources.dimen.dp10))
-                    .loadImageWithMoreTapArea,
+                child: Tooltip(
+                  message: resources.string.language,
+                  child: ImageWidget(
+                          path: isSelectedLocalEn
+                              ? DrawableAssets.icLangAr
+                              : DrawableAssets.icLangEn,
+                          width: 20,
+                          height: 20,
+                          padding: EdgeInsets.all(resources.dimen.dp10))
+                      .loadImageWithMoreTapArea,
+                ),
               ),
-              ImageWidget(
-                      path: DrawableAssets.icUserCircle,
-                      width: 20,
-                      height: 20,
-                      backgroundTint: resources.color.textColorLight,
-                      padding: EdgeInsets.all(resources.dimen.dp10))
-                  .loadImageWithMoreTapArea,
+              InkWell(
+                onTap: () {
+                  onItemTap?.call(AppBarItem.user);
+                },
+                child: Tooltip(
+                  message: resources.string.userProfile,
+                  child: ImageWidget(
+                          path: DrawableAssets.icUserCircle,
+                          width: 20,
+                          height: 20,
+                          backgroundTint: resources.color.textColorLight,
+                          padding: EdgeInsets.all(resources.dimen.dp10))
+                      .loadImageWithMoreTapArea,
+                ),
+              ),
               Text(userName,
                   style: context.textFontWeight600
                       .onFontSize(resources.fontSize.dp12)

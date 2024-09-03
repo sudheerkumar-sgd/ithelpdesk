@@ -4,7 +4,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
-import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/string_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
@@ -64,14 +63,7 @@ class CreateNewRequest extends BaseScreenWidget {
             resources.string.eservices,
             resources.string.application
           ];
-    final priorities = isSelectedLocalEn
-        ? [
-            'Low',
-            'Medium',
-            'High',
-            'Critical',
-          ]
-        : ['منخفض', 'متوسط', 'عالي', 'حرج'];
+    final priorities = getPriorityTypes();
     var noOfCategoryRows = 1;
     var noOfCategoryRowItems = categories.length;
     if (categories.length == 4) {
@@ -95,11 +87,12 @@ class CreateNewRequest extends BaseScreenWidget {
           child: BlocListener<ServicesBloc, ServicesState>(
             listener: (context, state) {
               if (state is OnLoading) {
-                Dialogs.showInfoLoader(context, 'Submitting Request');
+                Dialogs.showInfoLoader(
+                    context, resources.string.submittingRequest);
               } else if (state is OnCreateTicketSuccess) {
                 Dialogs.dismiss(context);
                 Dialogs.showInfoDialog(context, PopupType.success,
-                        'Successfully Submitted\n\n Ticket Id: ${state.createTicketResponse}')
+                        '${resources.string.successfullySubmitted}\n\n Ticket Id: ${state.createTicketResponse}')
                     .then((value) {
                   if (UserCredentialsEntity.details().userType !=
                       UserType.user) {
@@ -363,9 +356,7 @@ class CreateNewRequest extends BaseScreenWidget {
                                         borderRadius: 0,
                                         fillColor: resources.color.colorWhite,
                                         callback: (value) {
-                                          priority = PriorityType.fromId(
-                                              priorities.indexOf(value ?? '') +
-                                                  1);
+                                          priority = value;
                                           _formKey.currentState?.validate();
                                         },
                                       )),

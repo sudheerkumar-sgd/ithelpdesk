@@ -20,7 +20,6 @@ import 'package:ithelpdesk/presentation/reports/reports_navigator_screen.dart';
 import 'package:ithelpdesk/presentation/utils/NavbarNotifier.dart';
 import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 import 'package:ithelpdesk/res/resources.dart';
-import 'package:animated_sidebar/animated_sidebar.dart';
 
 import '../../core/enum/enum.dart';
 import '../requests/create_new_request.dart';
@@ -41,23 +40,17 @@ class _MainScreenState extends State<UserMainScreen> {
   int activeTab = 0;
   double sideBarWidth = 200;
   final UserBloc _userBloc = sl<UserBloc>();
-
-  final List<SidebarItem> items = [
-    SidebarItem(icon: Icons.home, text: 'Home'),
-    SidebarItem(
-      icon: Icons.person,
-      text: 'Management',
-      children: [
-        SidebarChildItem(icon: Icons.person, text: 'Users'),
-        SidebarChildItem(icon: Icons.verified_user, text: 'Roles'),
-      ],
-    ),
-  ];
+  late SideBar sideBar;
 
   Widget getUserAppBar(BuildContext context) {
     return isDesktop(context)
         ? SearchUserAppBarWidget(
             userName: UserCredentialsEntity.details().name ?? "",
+            onItemTap: (p0) {
+              if (p0 == AppBarItem.user) {
+                sideBar.selectItem(3);
+              }
+            },
           )
         : MSearchUserAppBarWidget(
             userName: UserCredentialsEntity.details().name ?? "",
@@ -102,6 +95,11 @@ class _MainScreenState extends State<UserMainScreen> {
   @override
   void initState() {
     super.initState();
+    sideBar = SideBar(
+      onItemSelected: (p0) {
+        _onItemTapped(p0);
+      },
+    );
   }
 
   @override
@@ -138,7 +136,6 @@ class _MainScreenState extends State<UserMainScreen> {
         },
       );
     });
-
     // final isWebMobile = kIsWeb &&
     //     (defaultTargetPlatform == TargetPlatform.iOS ||
     //         defaultTargetPlatform == TargetPlatform.android);
@@ -169,11 +166,7 @@ class _MainScreenState extends State<UserMainScreen> {
                 if (isDesktop(context, size: size.biggest))
                   SizedBox(
                     width: 150,
-                    child: SideBar(
-                      onItemSelected: (p0) {
-                        _onItemTapped(p0);
-                      },
-                    ),
+                    child: sideBar,
                   ),
                 Expanded(
                   child: Column(
