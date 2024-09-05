@@ -93,10 +93,11 @@ enum StatusType {
   duplicate(5),
   returned(6),
   approve(7),
-  forword(8),
+  forward(8),
   resubmit(9),
   transfer(10),
-  reAssign(11);
+  reAssign(11),
+  reopen(9);
 
   final int value;
   const StatusType(this.value);
@@ -113,21 +114,23 @@ enum StatusType {
   String toString() {
     switch (this) {
       case closed:
-        return isSelectedLocalEn ? name.capitalize() : '';
+        return isSelectedLocalEn ? 'Close' : 'اغلاق';
       case reject:
-        return isSelectedLocalEn ? name.capitalize() : '';
+        return isSelectedLocalEn ? 'Reject' : 'رفض';
       case hold:
-        return isSelectedLocalEn ? name.capitalize() : '';
+        return isSelectedLocalEn ? 'Hold' : 'تعليق';
       case returned:
-        return isSelectedLocalEn ? name.capitalize() : '';
+        return isSelectedLocalEn ? 'Return' : 'إرجاع';
       case open:
-        return isSelectedLocalEn ? name.capitalize() : '';
-      case forword:
-        return isSelectedLocalEn ? name.capitalize() : '';
+        return isSelectedLocalEn ? 'Open' : 'مفتوح';
+      case forward:
+        return isSelectedLocalEn ? 'Forward' : 'إلى الأمام';
       case reAssign:
-        return isSelectedLocalEn ? name.capitalize() : '';
+        return isSelectedLocalEn ? 'Re-Assign' : 'إلى الأمام';
       case resubmit:
-        return isSelectedLocalEn ? name.capitalize() : '';
+        return isSelectedLocalEn ? 'Resubmit' : 'إعادة الإرسال';
+      case reopen:
+        return isSelectedLocalEn ? 'Re-Open' : 'إعادة الفتح';
       default:
         return name.capitalize();
     }

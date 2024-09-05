@@ -94,15 +94,11 @@ class CreateNewRequest extends BaseScreenWidget {
                 Dialogs.showInfoDialog(context, PopupType.success,
                         '${resources.string.successfullySubmitted}\n\n Ticket Id: ${state.createTicketResponse}')
                     .then((value) {
-                  if (UserCredentialsEntity.details().userType !=
-                      UserType.user) {
-                    Navigator.pop(context);
-                  }
+                  reloadPage();
                 });
               } else if (state is OnApiError) {
                 Dialogs.dismiss(context);
-                Dialogs.showInfoDialog(context, PopupType.fail, state.message)
-                    .then((value) {});
+                Dialogs.showInfoDialog(context, PopupType.fail, state.message);
               }
             },
             child: Padding(

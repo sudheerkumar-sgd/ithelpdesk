@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,7 +11,6 @@ import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/res/resources.dart';
 
 import '../common_widgets/dropdown_widget.dart';
-import 'package:http/browser_client.dart';
 
 class SplashScreen extends StatelessWidget {
   SplashScreen({super.key});

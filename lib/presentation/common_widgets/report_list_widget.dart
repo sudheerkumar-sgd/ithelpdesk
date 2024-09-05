@@ -236,9 +236,11 @@ class ReportListWidget extends StatelessWidget {
                                                 alignment:
                                                     PlaceholderAlignment.middle,
                                                 child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          left: 5.0),
+                                                  padding: isSelectedLocalEn
+                                                    ? const EdgeInsets.only(
+                                                        left: 5.0)
+                                                    : const EdgeInsets.only(
+                                                        right: 5.0),
                                                   child: Icon(
                                                     _getFilerOrSortIcon(
                                                         ticketsHeaderData[

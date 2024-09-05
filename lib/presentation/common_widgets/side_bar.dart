@@ -24,10 +24,16 @@ class SideBar extends StatelessWidget {
                 ),
                 SizedBox(
                   height: 50,
-                  child: ImageWidget(
-                          path: DrawableAssets.icLogo,
-                          padding: const EdgeInsets.symmetric(horizontal: 20))
-                      .loadImageWithMoreTapArea,
+                  child: InkWell(
+                    onTap: () {
+                      _selectedIndex.value = 0;
+                      onItemSelected(0);
+                    },
+                    child: ImageWidget(
+                            path: DrawableAssets.icLogo,
+                            padding: const EdgeInsets.symmetric(horizontal: 20))
+                        .loadImageWithMoreTapArea,
+                  ),
                 ),
                 SizedBox(
                   height: resources.dimen.dp20,

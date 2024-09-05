@@ -123,7 +123,7 @@ class ViewRequest extends BaseScreenWidget {
                           child: Row(
                             children: [
                               Text(
-                                context.resources.string.teamCommnets,
+                                context.resources.string.teamComments,
                                 style: context.textFontWeight600,
                               ),
                               const Spacer(),
@@ -258,7 +258,7 @@ class ViewRequest extends BaseScreenWidget {
               }
             });
           }
-        case StatusType.resubmit:
+        case StatusType.resubmit || StatusType.reopen:
           {
             updateTicket.status = StatusType.resubmit;
             updateTicket.assignedUserID =
@@ -280,7 +280,7 @@ class ViewRequest extends BaseScreenWidget {
               }
             });
           }
-        case StatusType.approve || StatusType.forword:
+        case StatusType.approve || StatusType.forward:
           {
             if (ticket.categoryID == 2 && ticket.subCategoryID == 19) {
               updateTicket.status = StatusType.approve;
@@ -610,8 +610,10 @@ class ViewRequest extends BaseScreenWidget {
       color: resources.color.colorWhite,
       padding: EdgeInsets.symmetric(
           vertical: resources.dimen.dp15, horizontal: resources.dimen.dp20),
-      margin:
-          EdgeInsets.only(left: isDesktop(context) ? resources.dimen.dp20 : 0),
+      margin: isSelectedLocalEn
+          ? EdgeInsets.only(left: isDesktop(context) ? resources.dimen.dp20 : 0)
+          : EdgeInsets.only(
+              right: isDesktop(context) ? resources.dimen.dp20 : 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -649,8 +651,10 @@ class ViewRequest extends BaseScreenWidget {
         ? ticketActionButtons.sublist(
             0, min(actionButtonsLength, ticketActionButtons.length))
         : ticketActionButtons.sublist(0, 1);
-    var popupActionButtons = List<ActionButtonEntity>.empty(growable: true);
-    if (actionButtonsLength < ticketActionButtons.length) {
+    var popupActionButtons = List<StatusType>.empty(growable: true);
+    if (actionButtonsLength + 1 == ticketActionButtons.length) {
+      actionButtons.addAll(ticketActionButtons.sublist(actionButtonsLength));
+    } else if (actionButtonsLength < ticketActionButtons.length) {
       popupActionButtons = ticketActionButtons.sublist(actionButtonsLength);
     }
 
@@ -671,12 +675,11 @@ class ViewRequest extends BaseScreenWidget {
                 Dialogs.showInfoDialog(context, PopupType.success,
                         '${resources.string.updatingTicket} ${state.onUpdateTicketResult}')
                     .then((value) {
-                  Navigator.pop(context);
+                  reloadPage();
                 });
               } else if (state is OnApiError) {
                 Dialogs.dismiss(context);
-                Dialogs.showInfoDialog(context, PopupType.fail, state.message)
-                    .then((value) {});
+                Dialogs.showInfoDialog(context, PopupType.fail, state.message);
               }
             },
             child: Padding(
@@ -709,7 +712,9 @@ class ViewRequest extends BaseScreenWidget {
                       Expanded(
                         flex: isDesktop(context) ? 1 : 0,
                         child: Padding(
-                          padding: EdgeInsets.only(left: resources.dimen.dp20),
+                          padding: isSelectedLocalEn
+                              ? EdgeInsets.only(left: resources.dimen.dp20)
+                              : EdgeInsets.only(right: resources.dimen.dp20),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -800,12 +805,11 @@ class ViewRequest extends BaseScreenWidget {
                         Expanded(
                           child: InkWell(
                             onTap: () async {
-                              _onActionClicked(context,
-                                  StatusType.fromId(actionButtons[r].id ?? 1));
+                              _onActionClicked(context, actionButtons[r]);
                             },
                             child: ActionButtonWidget(
                               text: (actionButtons[r]).toString(),
-                              color: actionButtons[r].color,
+                              color: actionButtons[r].getColor(),
                               radious: 0,
                               textColor:
                                   r == 0 ? resources.color.textColor : null,
@@ -822,39 +826,15 @@ class ViewRequest extends BaseScreenWidget {
                           ),
                         ]
                       ],
-                      if (popupActionButtons.isNotEmpty &&
-                          popupActionButtons.length > 1)
+                      if (popupActionButtons.isNotEmpty)
                         Expanded(
                             child: DropdownMenuWidget(
                           items: popupActionButtons,
                           titleText: resources.string.otherActions,
                           onItemSelected: (p0) {
-                            _onActionClicked(
-                                context, StatusType.fromId(p0.id ?? 1));
+                            _onActionClicked(context, p0);
                           },
                         )),
-                      if (popupActionButtons.isNotEmpty &&
-                          popupActionButtons.length == 1)
-                        Expanded(
-                          child: InkWell(
-                            onTap: () async {
-                              _onActionClicked(
-                                  context,
-                                  StatusType.fromId(
-                                      popupActionButtons[0].id ?? 1));
-                            },
-                            child: ActionButtonWidget(
-                              text: (popupActionButtons[0]).toString(),
-                              color: popupActionButtons[0].color,
-                              radious: 0,
-                              textColor: resources.color.textColor,
-                              textSize: resources.fontSize.dp12,
-                              padding: EdgeInsets.symmetric(
-                                  vertical: resources.dimen.dp7,
-                                  horizontal: resources.dimen.dp10),
-                            ),
-                          ),
-                        ),
                     ],
                   ),
                 ],

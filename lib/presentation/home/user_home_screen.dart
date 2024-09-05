@@ -401,25 +401,61 @@ class UserHomeScreen extends BaseScreenWidget {
                                     child: InkWell(
                                       child: Container(
                                         color: resources.color.colorWhite,
-                                        margin: EdgeInsets.only(
-                                          left: index == requestTypesColumns - 1
-                                              ? resources.dimen.dp15
-                                              : index == 0
-                                                  ? 0
-                                                  : index ==
-                                                          requestTypesColumns -
-                                                              2
-                                                      ? resources.dimen.dp15
-                                                      : resources.dimen.dp5,
-                                          right: index < requestTypesColumns - 2
-                                              ? index == 0
-                                                  ? resources.dimen.dp15
-                                                  : resources.dimen.dp5
-                                              : index < requestTypesColumns - 1
-                                                  ? resources.dimen.dp5
-                                                  : 0,
-                                          top: i > 0 ? resources.dimen.dp20 : 0,
-                                        ),
+                                        margin: isSelectedLocalEn
+                                            ? EdgeInsets.only(
+                                                left: index ==
+                                                        requestTypesColumns - 1
+                                                    ? resources.dimen.dp15
+                                                    : index == 0
+                                                        ? 0
+                                                        : index ==
+                                                                requestTypesColumns -
+                                                                    2
+                                                            ? resources
+                                                                .dimen.dp15
+                                                            : resources
+                                                                .dimen.dp5,
+                                                right: index <
+                                                        requestTypesColumns - 2
+                                                    ? index == 0
+                                                        ? resources.dimen.dp15
+                                                        : resources.dimen.dp5
+                                                    : index <
+                                                            requestTypesColumns -
+                                                                1
+                                                        ? resources.dimen.dp5
+                                                        : 0,
+                                                top: i > 0
+                                                    ? resources.dimen.dp20
+                                                    : 0,
+                                              )
+                                            : EdgeInsets.only(
+                                                right: index ==
+                                                        requestTypesColumns - 1
+                                                    ? resources.dimen.dp15
+                                                    : index == 0
+                                                        ? 0
+                                                        : index ==
+                                                                requestTypesColumns -
+                                                                    2
+                                                            ? resources
+                                                                .dimen.dp15
+                                                            : resources
+                                                                .dimen.dp5,
+                                                left: index <
+                                                        requestTypesColumns - 2
+                                                    ? index == 0
+                                                        ? resources.dimen.dp15
+                                                        : resources.dimen.dp5
+                                                    : index <
+                                                            requestTypesColumns -
+                                                                1
+                                                        ? resources.dimen.dp5
+                                                        : 0,
+                                                top: i > 0
+                                                    ? resources.dimen.dp20
+                                                    : 0,
+                                              ),
                                         padding: EdgeInsets.all(
                                             resources.dimen.dp10),
                                         child: Column(
@@ -582,12 +618,15 @@ class UserHomeScreen extends BaseScreenWidget {
                                           text: value.isNotEmpty
                                               ? value[0]
                                               : resources.string.startDate,
-                                          children: const [
+                                          children: [
                                             WidgetSpan(
                                               child: Padding(
-                                                padding:
-                                                    EdgeInsets.only(left: 5.0),
-                                                child: Icon(
+                                                padding: isSelectedLocalEn
+                                                    ? const EdgeInsets.only(
+                                                        left: 5.0)
+                                                    : const EdgeInsets.only(
+                                                        right: 5.0),
+                                                child: const Icon(
                                                   Icons.calendar_month_sharp,
                                                   size: 16,
                                                 ),
@@ -634,12 +673,15 @@ class UserHomeScreen extends BaseScreenWidget {
                                           text: value.length > 1
                                               ? value[1]
                                               : resources.string.endDate,
-                                          children: const [
+                                          children: [
                                             WidgetSpan(
                                               child: Padding(
-                                                padding:
-                                                    EdgeInsets.only(left: 5.0),
-                                                child: Icon(
+                                                padding: isSelectedLocalEn
+                                                    ? const EdgeInsets.only(
+                                                        left: 5.0)
+                                                    : const EdgeInsets.only(
+                                                        right: 5.0),
+                                                child: const Icon(
                                                   Icons.calendar_month_sharp,
                                                   size: 16,
                                                 ),

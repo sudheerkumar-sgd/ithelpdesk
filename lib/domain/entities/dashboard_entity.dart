@@ -79,24 +79,18 @@ class TicketEntity extends BaseEntity {
         id,
       ];
 
-  List<ActionButtonEntity> getActionButtonsForMytickets(BuildContext context) {
-    final actionButtons = List<ActionButtonEntity>.empty(growable: true);
-    actionButtons.add(ActionButtonEntity(
-        id: StatusType.closed.value,
-        nameEn: context.resources.string.close,
-        color: context.resources.color.viewBgColorLight));
+  List<StatusType> getActionButtonsForMytickets(BuildContext context) {
+    final actionButtons = List<StatusType>.empty(growable: true);
+    actionButtons.add(StatusType.closed);
     if (status == StatusType.returned &&
         assignedUserID == UserCredentialsEntity.details().id) {
-      actionButtons.add(ActionButtonEntity(
-          id: StatusType.resubmit.value,
-          nameEn: 'Resubmit',
-          color: context.resources.color.colorGreen26B757));
+      actionButtons.add(StatusType.resubmit);
     }
     return actionButtons;
   }
 
-  List<ActionButtonEntity> getActionButtonsForAssigned(BuildContext context) {
-    final actionButtons = List<ActionButtonEntity>.empty(growable: true);
+  List<StatusType> getActionButtonsForAssigned(BuildContext context) {
+    final actionButtons = List<StatusType>.empty(growable: true);
     if (status == StatusType.closed ||
         status == StatusType.reject ||
         userType == null) {
@@ -105,67 +99,39 @@ class TicketEntity extends BaseEntity {
     if (assignedUserID != null &&
         assignedUserID != UserCredentialsEntity.details().id &&
         userType == AssigneType.approver) {
-      actionButtons.add(ActionButtonEntity(
-          id: StatusType.reAssign.value,
-          nameEn: context.resources.string.reAssign,
-          color: context.resources.color.viewBgColorLight));
+      actionButtons.add(StatusType.reAssign);
       return actionButtons;
     }
     if (status != StatusType.returned &&
         (assignedUserID == UserCredentialsEntity.details().id ||
             assignedUserID == null)) {
-      actionButtons.add(ActionButtonEntity(
-          id: StatusType.returned.value,
-          nameEn: context.resources.string.returnText,
-          color: context.resources.color.colorWhite));
+      actionButtons.add(StatusType.returned);
     }
     if (status == StatusType.open &&
         (userType == AssigneType.approver ||
             (userType == AssigneType.implementer && (teamCount ?? 0) > 1))) {
-      actionButtons.add(ActionButtonEntity(
-          id: assigneType == AssigneType.implementer
-              ? StatusType.forword.value
-              : StatusType.approve.value,
-          nameEn: assigneType == AssigneType.implementer
-              ? context.resources.string.forwardTo
-              : context.resources.string.approve,
-          color: context.resources.color.colorGreen26B757));
+      actionButtons.add(assigneType == AssigneType.implementer
+          ? StatusType.forward
+          : StatusType.approve);
     }
-    actionButtons.add(ActionButtonEntity(
-        id: StatusType.closed.value,
-        nameEn: context.resources.string.close,
-        color: context.resources.color.viewBgColorLight));
+    actionButtons.add(StatusType.closed);
     if (status == StatusType.hold &&
         assignedUserID == UserCredentialsEntity.details().id) {
-      actionButtons.add(ActionButtonEntity(
-          id: StatusType.resubmit.value,
-          nameEn: status == StatusType.hold
-              ? context.resources.string.reOpen
-              : context.resources.string.open,
-          color: context.resources.color.viewBgColor));
+      actionButtons.add(StatusType.reopen);
     }
     if (status == StatusType.returned &&
         assignedUserID == UserCredentialsEntity.details().id) {
-      ActionButtonEntity(
-          id: StatusType.resubmit.value,
-          nameEn: context.resources.string.resubmit,
-          color: context.resources.color.colorGreen26B757);
+      StatusType.resubmit;
     }
     if (status != StatusType.hold &&
         assignedUserID == UserCredentialsEntity.details().id) {
-      actionButtons.add(ActionButtonEntity(
-          id: StatusType.hold.value,
-          nameEn: context.resources.string.hold,
-          color: context.resources.color.viewBgColor));
+      actionButtons.add(StatusType.hold);
     }
-    actionButtons.add(ActionButtonEntity(
-        id: StatusType.reject.value,
-        nameEn: context.resources.string.reject,
-        color: context.resources.color.rejected));
+    actionButtons.add(StatusType.reject);
     return actionButtons;
   }
 
-  List<ActionButtonEntity> getActionButtons(BuildContext context) {
+  List<StatusType> getActionButtons(BuildContext context) {
     return isMyTicket()
         ? getActionButtonsForMytickets(context)
         : getActionButtonsForAssigned(context);
