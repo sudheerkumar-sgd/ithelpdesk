@@ -45,8 +45,9 @@ class CreateNewRequest extends BaseScreenWidget {
   final TextEditingController _reasonController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _reqNoController = TextEditingController();
+  final TextEditingController _serviceNameController = TextEditingController();
   PriorityType? priority;
-  int? serviceID;
+  final ValueNotifier<int?> _serviceID = ValueNotifier(null);
 
   @override
   Widget build(BuildContext context) {
@@ -409,20 +410,61 @@ class CreateNewRequest extends BaseScreenWidget {
                                                       .string.serviceName
                                                       .withPrefix(resources
                                                           .string.pleaseSelect),
-                                                  errorMessage: resources
-                                                      .string.serviceName
-                                                      .withPrefix(resources
-                                                          .string.pleaseSelect),
+                                                  errorMessage: value < 3
+                                                      ? resources
+                                                          .string.serviceName
+                                                          .withPrefix(resources
+                                                              .string
+                                                              .pleaseSelect)
+                                                      : '',
                                                   borderRadius: 0,
                                                   fillColor: resources
                                                       .color.colorWhite,
                                                   callback: (value) {
+                                                    _serviceID.value = value.id;
                                                     _formKey.currentState
                                                         ?.validate();
-                                                    serviceID = value.id;
                                                   },
                                                 );
                                               });
+                                        }),
+                                    ValueListenableBuilder(
+                                        valueListenable: _serviceID,
+                                        builder: (context, value, child) {
+                                          return value == 0
+                                              ? Padding(
+                                                  padding: EdgeInsets.only(
+                                                      top:
+                                                          resources.dimen.dp10),
+                                                  child: RightIconTextWidget(
+                                                    hintText: resources
+                                                        .string.serviceName
+                                                        .withPrefix(resources
+                                                            .string
+                                                            .pleaseEnter),
+                                                    errorMessage: resources
+                                                        .string.serviceName
+                                                        .withPrefix(resources
+                                                            .string
+                                                            .pleaseEnter),
+                                                    textController:
+                                                        _serviceNameController,
+                                                    fillColor: resources
+                                                        .color.colorWhite,
+                                                    borderSide: BorderSide(
+                                                        color: context
+                                                            .resources
+                                                            .color
+                                                            .sideBarItemUnselected,
+                                                        width: 1),
+                                                    borderRadius: 0,
+                                                    onChanged: (value) {
+                                                      _formKey.currentState
+                                                          ?.validate();
+                                                    },
+                                                  ),
+                                                )
+                                              : const SizedBox();
                                         }),
                                     SizedBox(
                                       height: resources.dimen.dp10,
@@ -444,6 +486,14 @@ class CreateNewRequest extends BaseScreenWidget {
                                       borderRadius: 0,
                                       onChanged: (value) {
                                         _formKey.currentState?.validate();
+                                      },
+                                      isValid: (p0) {
+                                        if (value > 2) return null;
+                                        return p0.isEmpty
+                                            ? resources.string.requestNo
+                                                .withPrefix(resources
+                                                    .string.pleaseEnter)
+                                            : null;
                                       },
                                     ),
                                     SizedBox(
@@ -618,8 +668,10 @@ class CreateNewRequest extends BaseScreenWidget {
                                 ticket.description =
                                     _descriptionController.text;
                                 ticket.priority = priority;
-                                ticket.serviceId = serviceID;
+                                ticket.serviceId = _serviceID.value;
                                 ticket.serviceReqNo = _reqNoController.text;
+                                ticket.serviceName =
+                                    _serviceNameController.text;
                                 final data = ticket.toCreateJson();
                                 data['files'] = multiUploadAttachmentWidget
                                     .getSelectedFilesData()

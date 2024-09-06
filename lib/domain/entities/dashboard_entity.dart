@@ -2,10 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
-import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/domain/entities/base_entity.dart';
 
-import 'master_data_entities.dart';
 import 'user_credentials_entity.dart';
 
 class DashboardEntity extends BaseEntity {
@@ -65,6 +63,7 @@ class TicketEntity extends BaseEntity {
   int? serviceId;
   String? computerName;
   String? serviceReqNo;
+  String? serviceName;
   List<String>? attachments;
   int? teamCount;
   AssigneType? userType;
@@ -187,6 +186,7 @@ class TicketEntity extends BaseEntity {
         (finalComments ?? '').isNotEmpty ? finalComments : null;
     data['serviceId'] = serviceId;
     data['serviceReqNo'] = serviceReqNo;
+    data['serviceName'] = serviceName;
     data['isChargeable'] = isChargeable;
     return data;
   }
@@ -204,6 +204,7 @@ class TicketEntity extends BaseEntity {
         'mobileNumber': mobileNumber ?? '',
         'serviceId': serviceId ?? '',
         'serviceReqNo': serviceReqNo ?? '',
+        'serviceName': serviceName ?? '',
         'requestType': 2,
         'isChargeable': isChargeable ?? false ? 'Yes' : 'No',
         "createDate": createdOn ?? '',

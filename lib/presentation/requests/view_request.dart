@@ -58,6 +58,7 @@ class ViewRequest extends BaseScreenWidget {
   final TextEditingController _reasonController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _reqNoController = TextEditingController();
+  final TextEditingController _servieNameController = TextEditingController();
 
   final ValueNotifier<bool> _isExanded = ValueNotifier(false);
 
@@ -346,6 +347,7 @@ class ViewRequest extends BaseScreenWidget {
     _reasonController.text = ticket.subject ?? '';
     _descriptionController.text = ticket.description ?? '';
     _reqNoController.text = ticket.serviceReqNo ?? '';
+    _servieNameController.text = ticket.serviceName ?? '';
     return Container(
       padding: EdgeInsets.symmetric(
           vertical: resources.dimen.dp15, horizontal: resources.dimen.dp20),
@@ -457,6 +459,24 @@ class ViewRequest extends BaseScreenWidget {
                           callback: (value) {},
                         );
                       }),
+                  if (ticket.serviceId == 0) ...[
+                    SizedBox(
+                      height: resources.dimen.dp10,
+                    ),
+                    RightIconTextWidget(
+                      isEnabled: false,
+                      textController: _servieNameController,
+                      hintText: resources.string.serviceName
+                          .withPrefix(resources.string.pleaseEnter),
+                      errorMessage: resources.string.serviceName
+                          .withPrefix(resources.string.pleaseEnter),
+                      fillColor: resources.color.colorWhite,
+                      borderSide: BorderSide(
+                          color: context.resources.color.sideBarItemUnselected,
+                          width: 1),
+                      borderRadius: 0,
+                    ),
+                  ],
                   SizedBox(
                     height: resources.dimen.dp10,
                   ),

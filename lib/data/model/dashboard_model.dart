@@ -151,6 +151,7 @@ class TicketsModel extends BaseModel {
   bool? isCustomAssign;
   int? serviceId;
   String? serviceReqNo;
+  String? serviceName;
   List<String>? attachments;
   int? teamCount;
   bool? isMaxLevel;
@@ -194,6 +195,7 @@ class TicketsModel extends BaseModel {
     isCustomAssign = json['isCustomAssign'];
     serviceId = json['serviceId'];
     serviceReqNo = json['serviceReqNo'];
+    serviceName = json['serviceName'];
     teamCount = json['teamCount'];
     userType = json['userType'];
     isMaxLevel = json['isMaxLevel'];
@@ -245,6 +247,7 @@ class TicketsModel extends BaseModel {
     ticketsEntity.computerName = computerName;
     ticketsEntity.serviceId = serviceId;
     ticketsEntity.serviceReqNo = serviceReqNo;
+    ticketsEntity.serviceName = serviceName;
     ticketsEntity.attachments = attachments;
     ticketsEntity.teamCount = teamCount;
     ticketsEntity.isMaxLevel = isMaxLevel;

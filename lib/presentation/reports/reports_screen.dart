@@ -1,6 +1,5 @@
 import 'package:excel/excel.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
@@ -22,7 +21,7 @@ class ReportsScreen extends BaseScreenWidget {
   ReportsScreen({super.key});
   final ServicesBloc _servicesBloc = sl<ServicesBloc>();
   List<dynamic>? tickets;
-  ValueNotifier<int?> _selectedCategory = ValueNotifier(null);
+  final ValueNotifier<int?> _selectedCategory = ValueNotifier(null);
   String? selectedStatus;
   List<String>? ticketsHeaderData;
 
@@ -159,7 +158,7 @@ class ReportsScreen extends BaseScreenWidget {
               padding: EdgeInsets.symmetric(
                   vertical: resources.dimen.dp5,
                   horizontal: resources.dimen.dp15),
-              color: resources.color.sideBarItemUnselected),
+              color: resources.color.sideBarItemSelected),
         ),
         SizedBox(
           width: resources.dimen.dp10,
@@ -175,7 +174,7 @@ class ReportsScreen extends BaseScreenWidget {
                 horizontal: resources.dimen.dp15),
             radious: resources.dimen.dp15,
             textSize: resources.fontSize.dp10,
-            color: resources.color.sideBarItemUnselected,
+            color: resources.color.sideBarItemSelected,
           ),
         ),
       ],
@@ -245,42 +244,27 @@ class ReportsScreen extends BaseScreenWidget {
                 SizedBox(
                   height: resources.dimen.dp20,
                 ),
-                FutureBuilder(
-                    future: _servicesBloc.getTticketsByUser(requestParams: {
-                      'userId': UserCredentialsEntity.details().id
-                    }),
-                    builder: (context, snapsShot) {
-                      tickets = snapsShot.data?.entity?.items;
-                      return tickets?.isNotEmpty == true
-                          ? ValueListenableBuilder(
-                              valueListenable: _selectedCategory,
-                              builder: (context, value, child) {
-                                var filteredTickets = tickets;
-                                if (value == 1) {
-                                  filteredTickets = tickets
-                                      ?.where((item) =>
-                                          item.userID !=
-                                          UserCredentialsEntity.details().id)
-                                      .toList();
-                                } else if (value == 2) {
-                                  filteredTickets = tickets
-                                      ?.where((item) =>
-                                          item.userID ==
-                                          UserCredentialsEntity.details().id)
-                                      .toSet()
-                                      .toList();
-                                }
-                                return ReportListWidget(
-                                  ticketsData: filteredTickets ?? [],
+                ValueListenableBuilder(
+                  valueListenable: _selectedCategory,
+                  builder: (context, value, child) {
+                    return FutureBuilder(
+                        future: _servicesBloc.getTticketsByUser(requestParams: {
+                          'ticketType': (value ?? 0) + 1,
+                        }),
+                        builder: (context, snapsShot) {
+                          tickets = snapsShot.data?.entity?.items;
+                          return snapsShot.data == null
+                              ? const Center(child: CircularProgressIndicator())
+                              : ReportListWidget(
+                                  ticketsData: tickets ?? [],
                                   showActionButtons: true,
                                   onTicketSelected: (ticket) {
                                     ViewRequest.start(context, ticket);
                                   },
                                 );
-                              },
-                            )
-                          : const Center(child: CircularProgressIndicator());
-                    })
+                        });
+                  },
+                )
               ],
             ),
           ),
