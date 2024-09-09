@@ -99,6 +99,7 @@
 "all": "الكل",
 "assignedTickets": "التذاكر المخصصة",
 "myTickets": "تذاكري",
+"employeeTickets":"تذاكر الموظفين",
 "noTickets": "لا توجد تذاكر",
 "filterByDate": "تصفية حسب التاريخ",
 "startDate":"تاريخ البدء",

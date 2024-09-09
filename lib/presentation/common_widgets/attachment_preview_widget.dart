@@ -12,10 +12,10 @@ class AttachmentPreviewWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Future.delayed(Duration.zero, () {
-      if (fileName.contains('.pdf')) {
-        Navigator.pop(context);
-        html.window.open('$getImageBaseUrl$fileName', '_blank');
-      }
+      //if (fileName.contains('.pdf')) {
+      Navigator.pop(context);
+      html.window.open('$getImageBaseUrl$fileName', '_blank');
+      //}
     });
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

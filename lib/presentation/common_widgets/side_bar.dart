@@ -5,13 +5,15 @@ import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
 import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
 
 class SideBar extends StatelessWidget {
+  final int seletedItem;
   final Function(int) onItemSelected;
-  SideBar({required this.onItemSelected, super.key});
+  SideBar({required this.onItemSelected, this.seletedItem = 0, super.key});
   final ValueNotifier _selectedIndex = ValueNotifier(0);
 
   @override
   Widget build(BuildContext context) {
     final resources = context.resources;
+    _selectedIndex.value = seletedItem;
     return Drawer(
         backgroundColor: resources.color.colorWhite,
         elevation: 1,

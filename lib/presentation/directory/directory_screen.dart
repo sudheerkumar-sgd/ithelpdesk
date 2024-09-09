@@ -194,101 +194,104 @@ class DirectoryScreen extends BaseScreenWidget {
       5: const FlexColumnWidth(3),
     };
 
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: context.resources.color.appScaffoldBg,
-      body: BlocProvider(
-        create: (context) => _userDataBloc,
-        child: Padding(
-          padding: EdgeInsets.all(resources.dimen.dp20),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text.rich(
-                  TextSpan(
-                      text: '${resources.string.itSupportDirecotry}\n',
-                      style: context.textFontWeight600
-                          .onFontSize(resources.fontSize.dp12),
-                      children: [
-                        TextSpan(
-                            text: '${resources.string.itSupportDirecotryDes}\n',
-                            style: context.textFontWeight400
-                                .onFontSize(resources.fontSize.dp10)
-                                .onColor(resources.color.textColorLight)
-                                .onHeight(1))
-                      ]),
-                ),
-                SizedBox(
-                  height: resources.dimen.dp20,
-                ),
-                isDesktop(context)
-                    ? Row(
-                        children: _getFilterBar(context),
-                      )
-                    : Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: _getFilterBar(context),
-                      ),
-                SizedBox(
-                  height: resources.dimen.dp20,
-                ),
-                FutureBuilder(
-                    future:
-                        _userDataBloc.getDirectoryEmployees(requestParams: {}),
-                    builder: (context, snapShot) {
-                      return ValueListenableBuilder(
-                          valueListenable: _selectedDepartment,
-                          builder: (context, value, child) {
-                            final items = value != null
-                                ? (snapShot.data?.items ?? [])
-                                    .where((item) =>
-                                        item.department == value.shortName)
-                                    .toList()
-                                : (snapShot.data?.items ?? []);
-                            return Table(
-                              columnWidths: ticketsTableColunwidths,
-                              children: [
-                                TableRow(
-                                    children: List.generate(
-                                        ticketsHeaderData.length,
-                                        (index) => Padding(
-                                              padding: EdgeInsets.symmetric(
-                                                  vertical:
-                                                      resources.dimen.dp10),
-                                              child: Text(
-                                                ticketsHeaderData[index],
-                                                textAlign: TextAlign.center,
-                                                style: context.textFontWeight600
-                                                    .onColor(resources
-                                                        .color.textColorLight)
-                                                    .onFontSize(resources
-                                                        .fontSize.dp10),
-                                              ),
-                                            ))),
-                                for (var i = 0; i < items.length; i++) ...[
+    return SelectionArea(
+      child: Scaffold(
+        backgroundColor: context.resources.color.appScaffoldBg,
+        body: BlocProvider(
+          create: (context) => _userDataBloc,
+          child: Padding(
+            padding: EdgeInsets.all(resources.dimen.dp20),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text.rich(
+                    TextSpan(
+                        text: '${resources.string.itSupportDirecotry}\n',
+                        style: context.textFontWeight600
+                            .onFontSize(resources.fontSize.dp12),
+                        children: [
+                          TextSpan(
+                              text:
+                                  '${resources.string.itSupportDirecotryDes}\n',
+                              style: context.textFontWeight400
+                                  .onFontSize(resources.fontSize.dp10)
+                                  .onColor(resources.color.textColorLight)
+                                  .onHeight(1))
+                        ]),
+                  ),
+                  SizedBox(
+                    height: resources.dimen.dp20,
+                  ),
+                  isDesktop(context)
+                      ? Row(
+                          children: _getFilterBar(context),
+                        )
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: _getFilterBar(context),
+                        ),
+                  SizedBox(
+                    height: resources.dimen.dp20,
+                  ),
+                  FutureBuilder(
+                      future: _userDataBloc
+                          .getDirectoryEmployees(requestParams: {}),
+                      builder: (context, snapShot) {
+                        return ValueListenableBuilder(
+                            valueListenable: _selectedDepartment,
+                            builder: (context, value, child) {
+                              final items = value != null
+                                  ? (snapShot.data?.items ?? [])
+                                      .where((item) =>
+                                          item.department == value.shortName)
+                                      .toList()
+                                  : (snapShot.data?.items ?? []);
+                              return Table(
+                                columnWidths: ticketsTableColunwidths,
+                                children: [
                                   TableRow(
-                                      decoration: BackgroundBoxDecoration(
-                                              boxColor:
-                                                  resources.color.colorWhite,
-                                              boxBorder: Border(
-                                                  top: BorderSide(
-                                                      color: resources
-                                                          .color.appScaffoldBg,
-                                                      width: 5),
-                                                  bottom: BorderSide(
-                                                      color: resources
-                                                          .color.appScaffoldBg,
-                                                      width: 5)))
-                                          .roundedCornerBox,
-                                      children: _getDirectoryItem(
-                                          context, items[i], i + 1)),
-                                ]
-                              ],
-                            );
-                          });
-                    })
-              ],
+                                      children: List.generate(
+                                          ticketsHeaderData.length,
+                                          (index) => Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical:
+                                                        resources.dimen.dp10),
+                                                child: Text(
+                                                  ticketsHeaderData[index],
+                                                  textAlign: TextAlign.center,
+                                                  style: context
+                                                      .textFontWeight600
+                                                      .onColor(resources
+                                                          .color.textColorLight)
+                                                      .onFontSize(resources
+                                                          .fontSize.dp10),
+                                                ),
+                                              ))),
+                                  for (var i = 0; i < items.length; i++) ...[
+                                    TableRow(
+                                        decoration: BackgroundBoxDecoration(
+                                                boxColor:
+                                                    resources.color.colorWhite,
+                                                boxBorder: Border(
+                                                    top: BorderSide(
+                                                        color: resources.color
+                                                            .appScaffoldBg,
+                                                        width: 5),
+                                                    bottom: BorderSide(
+                                                        color: resources.color
+                                                            .appScaffoldBg,
+                                                        width: 5)))
+                                            .roundedCornerBox,
+                                        children: _getDirectoryItem(
+                                            context, items[i], i + 1)),
+                                  ]
+                                ],
+                              );
+                            });
+                      })
+                ],
+              ),
             ),
           ),
         ),

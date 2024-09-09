@@ -149,7 +149,7 @@ enum StatusType {
       case open:
         return const Color.fromARGB(255, 237, 105, 11);
       default:
-        return const Color(0xffC9CCC4);
+        return const Color.fromARGB(255, 156, 103, 242);
     }
   }
 }

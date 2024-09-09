@@ -8,6 +8,7 @@ class AppSettingsDB {
   static const String appFontSizeKey = "app_font_size_key";
   static const String isSplashDoneKey = "is_splash_done";
   static const String welcomeTourDone = 'welcome_tour_done';
+  static const String selectedSideBarIndex = 'selected_idebar_index';
 
   Box settingDB = Hive.box(name);
 

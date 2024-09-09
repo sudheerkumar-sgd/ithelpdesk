@@ -82,7 +82,7 @@ class RightIconTextWidget extends StatelessWidget {
         Align(
           alignment: Alignment.center,
           child: TextFormField(
-            enabled: isEnabled,
+            readOnly: !isEnabled,
             maxLines: maxLines,
             maxLength: maxLength,
             keyboardType: textInputType,

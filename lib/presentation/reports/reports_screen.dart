@@ -31,6 +31,7 @@ class ReportsScreen extends BaseScreenWidget {
       resources.string.all,
       resources.string.assignedTickets,
       resources.string.myTickets,
+      resources.string.employeeTickets,
     ];
     return Wrap(
       alignment: WrapAlignment.end,
@@ -222,50 +223,54 @@ class ReportsScreen extends BaseScreenWidget {
   @override
   Widget build(BuildContext context) {
     final resources = context.resources;
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: context.resources.color.appScaffoldBg,
-      body: BlocProvider(
-        create: (context) => _servicesBloc,
-        child: Padding(
-          padding: EdgeInsets.all(resources.dimen.dp20),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                isDesktop(context)
-                    ? Row(
-                        children: _getFilterBar(context),
-                      )
-                    : Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: _getFilterBar(context),
-                      ),
-                SizedBox(
-                  height: resources.dimen.dp20,
-                ),
-                ValueListenableBuilder(
-                  valueListenable: _selectedCategory,
-                  builder: (context, value, child) {
-                    return FutureBuilder(
-                        future: _servicesBloc.getTticketsByUser(requestParams: {
-                          'ticketType': (value ?? 0) + 1,
-                        }),
-                        builder: (context, snapsShot) {
-                          tickets = snapsShot.data?.entity?.items;
-                          return snapsShot.data == null
-                              ? const Center(child: CircularProgressIndicator())
-                              : ReportListWidget(
-                                  ticketsData: tickets ?? [],
-                                  showActionButtons: true,
-                                  onTicketSelected: (ticket) {
-                                    ViewRequest.start(context, ticket);
-                                  },
-                                );
-                        });
-                  },
-                )
-              ],
+    return SelectionArea(
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        backgroundColor: context.resources.color.appScaffoldBg,
+        body: BlocProvider(
+          create: (context) => _servicesBloc,
+          child: Padding(
+            padding: EdgeInsets.all(resources.dimen.dp20),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  isDesktop(context)
+                      ? Row(
+                          children: _getFilterBar(context),
+                        )
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: _getFilterBar(context),
+                        ),
+                  SizedBox(
+                    height: resources.dimen.dp20,
+                  ),
+                  ValueListenableBuilder(
+                    valueListenable: _selectedCategory,
+                    builder: (context, value, child) {
+                      return FutureBuilder(
+                          future:
+                              _servicesBloc.getTticketsByUser(requestParams: {
+                            'ticketType': (value ?? 0) + 1,
+                          }),
+                          builder: (context, snapsShot) {
+                            tickets = snapsShot.data?.entity?.items;
+                            return snapsShot.data == null
+                                ? const Center(
+                                    child: CircularProgressIndicator())
+                                : ReportListWidget(
+                                    ticketsData: tickets ?? [],
+                                    showActionButtons: true,
+                                    onTicketSelected: (ticket) {
+                                      ViewRequest.start(context, ticket);
+                                    },
+                                  );
+                          });
+                    },
+                  )
+                ],
+              ),
             ),
           ),
         ),

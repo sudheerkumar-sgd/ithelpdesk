@@ -8,6 +8,7 @@ bool showSplash = true;
 bool isServicesLoaded = false;
 String appVersion = '';
 Size screenSize = const Size(550, 730);
+int selectedSideBarIndex = 0;
 const String userID = '118';
 // const String username = 'sudheer.akula';
 //const String username = 'mooza.binyeem';

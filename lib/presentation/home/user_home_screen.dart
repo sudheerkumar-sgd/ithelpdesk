@@ -314,7 +314,7 @@ class UserHomeScreen extends BaseScreenWidget {
         'count': 0
       },
     ];
-    return SafeArea(
+    return SelectionArea(
         child: Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: context.resources.color.appScaffoldBg,

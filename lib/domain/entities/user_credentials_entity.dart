@@ -13,6 +13,7 @@ class UserCredentialsEntity {
   UserType? userType;
   bool? isoUser;
   String? isoUserCategories;
+  String? contactNumber;
   UserCredentialsEntity();
   factory UserCredentialsEntity.details() {
     if (userData == null && userToken.isNotEmpty) {
@@ -26,6 +27,7 @@ class UserCredentialsEntity {
       userData?.userType = UserType.fromId(int.tryParse(data['Role']) ?? 7);
       userData?.isoUser = bool.tryParse((data['isoUser'] ?? "false")) ?? false;
       userData?.isoUserCategories = data['isoUserCategories'];
+      userData?.contactNumber = data['contactNumber'];
     }
     return userData ?? UserCredentialsEntity();
   }
@@ -33,6 +35,7 @@ class UserCredentialsEntity {
   factory UserCredentialsEntity.create(String userToken) {
     final userDetails = UserDataDB();
     userDetails.put(UserDataDB.userToken, userToken);
+    userData == null;
     return UserCredentialsEntity.details();
   }
 }

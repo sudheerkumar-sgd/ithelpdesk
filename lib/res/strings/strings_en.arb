@@ -102,6 +102,7 @@
     "all":"All",
     "assignedTickets":"Assigned Tickets",
     "myTickets":"My Tickets",
+    "employeeTickets":"Employee Tickets",
     "noTickets":"No Tickets",
     "filterByDate":"Filter by Date",
     "startDate":"Start Date",

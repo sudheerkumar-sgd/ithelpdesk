@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
+import 'package:ithelpdesk/data/local/app_settings_db.dart';
+import 'package:ithelpdesk/data/local/user_data_db.dart';
 import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
 import 'package:ithelpdesk/injection_container.dart';
 import 'package:ithelpdesk/presentation/bloc/user/user_bloc.dart';
@@ -58,10 +60,8 @@ class _MainScreenState extends State<UserMainScreen> {
   }
 
   void _onItemTapped(int index) {
-    if (_selectedIndex.value == index) {
-      _navbarNotifier.onBackButtonPressed(_selectedIndex.value);
-    }
     _selectedIndex.value = index;
+    context.appSettingsDB.put(AppSettingsDB.selectedSideBarIndex, index);
   }
 
   Widget getScreen(int index) {
@@ -95,10 +95,13 @@ class _MainScreenState extends State<UserMainScreen> {
   @override
   void initState() {
     super.initState();
+    _selectedIndex.value = context.appSettingsDB
+        .get(AppSettingsDB.selectedSideBarIndex, defaultValue: 0);
     sideBar = SideBar(
       onItemSelected: (p0) {
         _onItemTapped(p0);
       },
+      seletedItem: _selectedIndex.value,
     );
   }
 
@@ -171,16 +174,14 @@ class _MainScreenState extends State<UserMainScreen> {
                 Expanded(
                   child: Column(
                     children: [
-                      (UserCredentialsEntity.details().name?.isNotEmpty == true)
-                          ? getUserAppBar(context)
-                          : FutureBuilder(
-                              future: _userBloc.validateUser({}),
-                              builder: (context, snapShot) {
-                                UserCredentialsEntity.create(
-                                    snapShot.data?.token ?? '');
-                                userToken = snapShot.data?.token ?? '';
-                                return getUserAppBar(context);
-                              }),
+                      FutureBuilder(
+                          future: _userBloc.validateUser({}),
+                          builder: (context, snapShot) {
+                            UserCredentialsEntity.create(
+                                snapShot.data?.token ?? '');
+                            userToken = snapShot.data?.token ?? '';
+                            return getUserAppBar(context);
+                          }),
                       ValueListenableBuilder(
                           valueListenable: _selectedIndex,
                           builder: (context, index, child) {

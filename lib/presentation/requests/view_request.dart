@@ -14,6 +14,7 @@ import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/data/remote/api_urls.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
 import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
+import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
 import 'package:ithelpdesk/injection_container.dart';
 import 'package:ithelpdesk/presentation/bloc/master_data/master_data_bloc.dart';
 import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
@@ -334,6 +335,8 @@ class ViewRequest extends BaseScreenWidget {
           }
           updateTicket.status =
               status == StatusType.resubmit ? StatusType.open : status;
+          updateTicket.assignedUserID =
+              updateTicket.assignedUserID ?? UserCredentialsEntity.details().id;
           _updateTicket(context, updateTicket,
               '${context.resources.string.doYouWantTo} ${updateTicket.status?.name.toString()}');
       }
@@ -678,103 +681,122 @@ class ViewRequest extends BaseScreenWidget {
       popupActionButtons = ticketActionButtons.sublist(actionButtonsLength);
     }
 
-    return Scaffold(
-        backgroundColor: resources.color.appScaffoldBg,
-        body: MultiBlocProvider(
-          providers: [
-            BlocProvider(create: (context) => _servicesBloc),
-            BlocProvider(create: (context) => _masterDataBloc),
-          ],
-          child: BlocListener<ServicesBloc, ServicesState>(
-            listener: (context, state) {
-              if (state is OnLoading) {
-                Dialogs.showInfoLoader(
-                    context, resources.string.updatingTicket);
-              } else if (state is OnUpdateTicket) {
-                Dialogs.dismiss(context);
-                Dialogs.showInfoDialog(context, PopupType.success,
-                        '${resources.string.updatingTicket} ${state.onUpdateTicketResult}')
-                    .then((value) {
-                  reloadPage();
-                });
-              } else if (state is OnApiError) {
-                Dialogs.dismiss(context);
-                Dialogs.showInfoDialog(context, PopupType.fail, state.message);
-              }
-            },
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                  horizontal: resources.dimen.dp15,
-                  vertical: resources.dimen.dp20),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        flex: 3,
-                        child: Text.rich(
-                          TextSpan(
-                              text: 'UAQGOV-ITHD-${ticket.id}\n',
-                              style: context.textFontWeight600
-                                  .onFontFamily(fontFamily: fontFamilyEN),
-                              children: [
-                                TextSpan(
-                                    text:
-                                        '${resources.string.createdBy} ${ticket.creator} ${resources.string.on} ${ticket.createdOn}',
-                                    style: context.textFontWeight400
-                                        .onFontSize(resources.fontSize.dp10)
-                                        .onColor(resources.color.textColorLight)
-                                        .onHeight(1)
-                                        .onFontFamily(fontFamily: fontFamilyEN))
-                              ]),
-                        ),
-                      ),
-                      Expanded(
-                        flex: isDesktop(context) ? 1 : 0,
-                        child: Padding(
-                          padding: isSelectedLocalEn
-                              ? EdgeInsets.only(left: resources.dimen.dp20)
-                              : EdgeInsets.only(right: resources.dimen.dp20),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                '${resources.string.status}: ',
-                                style: context.textFontWeight600,
-                              ),
-                              SizedBox(
-                                width: resources.dimen.dp5,
-                              ),
-                              Text(
-                                (ticket.status ?? StatusType.open).toString(),
-                                style: context.textFontWeight700.onColor(
-                                    (ticket.status ?? StatusType.open)
-                                        .getColor()),
-                              ),
-                            ],
+    return SelectionArea(
+      child: Scaffold(
+          backgroundColor: resources.color.appScaffoldBg,
+          body: MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (context) => _servicesBloc),
+              BlocProvider(create: (context) => _masterDataBloc),
+            ],
+            child: BlocListener<ServicesBloc, ServicesState>(
+              listener: (context, state) {
+                if (state is OnLoading) {
+                  Dialogs.showInfoLoader(
+                      context, resources.string.updatingTicket);
+                } else if (state is OnUpdateTicket) {
+                  Dialogs.dismiss(context);
+                  Dialogs.showInfoDialog(context, PopupType.success,
+                          '${resources.string.updatingTicket} ${state.onUpdateTicketResult}')
+                      .then((value) {
+                    reloadPage();
+                  });
+                } else if (state is OnApiError) {
+                  Dialogs.dismiss(context);
+                  Dialogs.showInfoDialog(
+                      context, PopupType.fail, state.message);
+                }
+              },
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: resources.dimen.dp15,
+                    vertical: resources.dimen.dp20),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: Text.rich(
+                            TextSpan(
+                                text: 'UAQGOV-ITHD-${ticket.id}\n',
+                                style: context.textFontWeight600
+                                    .onFontFamily(fontFamily: fontFamilyEN),
+                                children: [
+                                  TextSpan(
+                                      text:
+                                          '${resources.string.createdBy} ${ticket.creator} ${resources.string.on} ${ticket.createdOn}',
+                                      style: context.textFontWeight400
+                                          .onFontSize(resources.fontSize.dp10)
+                                          .onColor(
+                                              resources.color.textColorLight)
+                                          .onHeight(1)
+                                          .onFontFamily(
+                                              fontFamily: fontFamilyEN))
+                                ]),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: resources.dimen.dp10,
-                  ),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          IntrinsicHeight(
-                            child: isDesktop(context)
-                                ? Row(
-                                    children: [
-                                      Expanded(
-                                        child: _getDataForm(context),
-                                      ),
-                                      SizedBox(
-                                        width: 280,
-                                        child: FutureBuilder(
+                        Expanded(
+                          flex: isDesktop(context) ? 1 : 0,
+                          child: Padding(
+                            padding: isSelectedLocalEn
+                                ? EdgeInsets.only(left: resources.dimen.dp20)
+                                : EdgeInsets.only(right: resources.dimen.dp20),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  '${resources.string.status}: ',
+                                  style: context.textFontWeight600,
+                                ),
+                                SizedBox(
+                                  width: resources.dimen.dp5,
+                                ),
+                                Text(
+                                  (ticket.status ?? StatusType.open).toString(),
+                                  style: context.textFontWeight700.onColor(
+                                      (ticket.status ?? StatusType.open)
+                                          .getColor()),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: resources.dimen.dp10,
+                    ),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            IntrinsicHeight(
+                              child: isDesktop(context)
+                                  ? Row(
+                                      children: [
+                                        Expanded(
+                                          child: _getDataForm(context),
+                                        ),
+                                        SizedBox(
+                                          width: 280,
+                                          child: FutureBuilder(
+                                              future: _servicesBloc
+                                                  .getTicketHistory(
+                                                      requestParams: {
+                                                    "ticketID": ticket.id
+                                                  }),
+                                              builder: (context, snapShot) {
+                                                return _getStatusWidget(context,
+                                                    snapShot.data?.items ?? []);
+                                              }),
+                                        )
+                                      ],
+                                    )
+                                  : Column(
+                                      children: [
+                                        FutureBuilder(
                                             future: _servicesBloc
                                                 .getTicketHistory(
                                                     requestParams: {
@@ -784,83 +806,68 @@ class ViewRequest extends BaseScreenWidget {
                                               return _getStatusWidget(context,
                                                   snapShot.data?.items ?? []);
                                             }),
-                                      )
-                                    ],
-                                  )
-                                : Column(
-                                    children: [
-                                      FutureBuilder(
-                                          future: _servicesBloc
-                                              .getTicketHistory(requestParams: {
-                                            "ticketID": ticket.id
-                                          }),
-                                          builder: (context, snapShot) {
-                                            return _getStatusWidget(context,
-                                                snapShot.data?.items ?? []);
-                                          }),
-                                      SizedBox(
-                                        height: resources.dimen.dp20,
-                                      ),
-                                      _getDataForm(context),
-                                    ],
-                                  ),
-                          ),
-                        ],
+                                        SizedBox(
+                                          height: resources.dimen.dp20,
+                                        ),
+                                        _getDataForm(context),
+                                      ],
+                                    ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: resources.dimen.dp20,
-                  ),
-                  if ((ticket.status != StatusType.closed &&
-                      ticket.status != StatusType.reject)) ...[
-                    _getComments(context),
                     SizedBox(
                       height: resources.dimen.dp20,
                     ),
-                  ],
-                  Row(
-                    children: [
-                      for (int r = 0; r < actionButtons.length; r++) ...[
-                        Expanded(
-                          child: InkWell(
-                            onTap: () async {
-                              _onActionClicked(context, actionButtons[r]);
-                            },
-                            child: ActionButtonWidget(
-                              text: (actionButtons[r]).toString(),
-                              color: actionButtons[r].getColor(),
-                              radious: 0,
-                              textColor:
-                                  r == 0 ? resources.color.textColor : null,
-                              textSize: resources.fontSize.dp12,
-                              padding: EdgeInsets.symmetric(
-                                  vertical: resources.dimen.dp7,
-                                  horizontal: resources.dimen.dp10),
+                    if ((ticket.status != StatusType.closed &&
+                        ticket.status != StatusType.reject)) ...[
+                      _getComments(context),
+                      SizedBox(
+                        height: resources.dimen.dp20,
+                      ),
+                    ],
+                    Row(
+                      children: [
+                        for (int r = 0; r < actionButtons.length; r++) ...[
+                          Expanded(
+                            child: InkWell(
+                              onTap: () async {
+                                _onActionClicked(context, actionButtons[r]);
+                              },
+                              child: ActionButtonWidget(
+                                text: (actionButtons[r]).toString(),
+                                color: actionButtons[r].getColor(),
+                                radious: 0,
+                                textSize: resources.fontSize.dp12,
+                                padding: EdgeInsets.symmetric(
+                                    vertical: resources.dimen.dp7,
+                                    horizontal: resources.dimen.dp10),
+                              ),
                             ),
                           ),
-                        ),
-                        if (r < actionButtons.length) ...[
-                          SizedBox(
-                            width: resources.dimen.dp10,
-                          ),
-                        ]
+                          if (r < actionButtons.length) ...[
+                            SizedBox(
+                              width: resources.dimen.dp10,
+                            ),
+                          ]
+                        ],
+                        if (popupActionButtons.isNotEmpty)
+                          Expanded(
+                              child: DropdownMenuWidget(
+                            items: popupActionButtons,
+                            titleText: resources.string.otherActions,
+                            onItemSelected: (p0) {
+                              _onActionClicked(context, p0);
+                            },
+                          )),
                       ],
-                      if (popupActionButtons.isNotEmpty)
-                        Expanded(
-                            child: DropdownMenuWidget(
-                          items: popupActionButtons,
-                          titleText: resources.string.otherActions,
-                          onItemSelected: (p0) {
-                            _onActionClicked(context, p0);
-                          },
-                        )),
-                    ],
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ));
+          )),
+    );
   }
 }
