@@ -70,7 +70,8 @@ class TicketEntity extends BaseEntity {
   bool? isMaxLevel;
 
   bool isMyTicket() {
-    return (userID == UserCredentialsEntity.details().id);
+    return (userID == UserCredentialsEntity.details().id &&
+        assignedUserID != userID);
   }
 
   @override
@@ -80,7 +81,9 @@ class TicketEntity extends BaseEntity {
 
   List<StatusType> getActionButtonsForMytickets(BuildContext context) {
     final actionButtons = List<StatusType>.empty(growable: true);
-    actionButtons.add(StatusType.closed);
+    if (status != StatusType.reject && status != StatusType.closed) {
+      actionButtons.add(StatusType.closed);
+    }
     if (status == StatusType.returned &&
         assignedUserID == UserCredentialsEntity.details().id) {
       actionButtons.add(StatusType.resubmit);
@@ -109,9 +112,9 @@ class TicketEntity extends BaseEntity {
     if (status == StatusType.open &&
         (userType == AssigneType.approver ||
             (userType == AssigneType.implementer && (teamCount ?? 0) > 1))) {
-      actionButtons.add(assigneType == AssigneType.implementer
-          ? StatusType.forward
-          : StatusType.approve);
+      actionButtons.add(assigneType == AssigneType.approver
+          ? StatusType.approve
+          : StatusType.forward);
     }
     actionButtons.add(StatusType.closed);
     if (status == StatusType.hold &&

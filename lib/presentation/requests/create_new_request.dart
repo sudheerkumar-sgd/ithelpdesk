@@ -421,10 +421,17 @@ class CreateNewRequest extends BaseScreenWidget {
                                                                 value
                                                           }),
                                                 builder: (context, snapShot) {
+                                                  final items =
+                                                      snapShot.data?.items ??
+                                                          [];
+                                                  items.sort((a, b) => a
+                                                      .toString()
+                                                      .toLowerCase()
+                                                      .compareTo(b
+                                                          .toString()
+                                                          .toLowerCase()));
                                                   return DropDownWidget(
-                                                    list:
-                                                        snapShot.data?.items ??
-                                                            [],
+                                                    list: items,
                                                     labelText: resources
                                                         .string.serviceName,
                                                     hintText: resources
@@ -663,7 +670,9 @@ class CreateNewRequest extends BaseScreenWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             InkWell(
-                              onTap: () {},
+                              onTap: () {
+                                Navigator.pop(context);
+                              },
                               child: ActionButtonWidget(
                                 text: resources.string.cancel,
                                 color: resources.color.colorWhite,

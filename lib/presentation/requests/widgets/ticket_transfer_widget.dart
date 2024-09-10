@@ -165,7 +165,11 @@ class TicketTransferWidget extends StatelessWidget {
                               .getAssignedEmployees(requestParams: {
                             'departmentID':
                                 UserCredentialsEntity.details().departmentID,
-                            'subcategoryID': ticketEntity.subCategoryID,
+                            'subcategoryID': (ticketEntity.categoryID == 3 ||
+                                    ticketEntity.assigneType ==
+                                        AssigneType.implementer)
+                                ? ticketEntity.subCategoryID
+                                : null,
                             'categoryID': ticketEntity.categoryID,
                           }),
                           builder: (context, snapShot) {

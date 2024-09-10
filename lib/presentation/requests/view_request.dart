@@ -87,7 +87,9 @@ class ViewRequest extends BaseScreenWidget {
         });
   }
 
-  Widget _getComments(BuildContext context, {EdgeInsets? padding}) {
+  Widget _getComments(BuildContext context,
+      {EdgeInsets? padding, bool? isExpand}) {
+    _isExanded.value = isExpand ?? false;
     return FutureBuilder(
         future: _servicesBloc
             .getTicketComments(requestParams: {'ticketID': ticket.id}),
@@ -620,7 +622,8 @@ class ViewRequest extends BaseScreenWidget {
             _getComments(context,
                 padding: EdgeInsets.symmetric(
                   vertical: context.resources.dimen.dp15,
-                ))
+                ),
+                isExpand: true)
           ],
         ],
       ),
