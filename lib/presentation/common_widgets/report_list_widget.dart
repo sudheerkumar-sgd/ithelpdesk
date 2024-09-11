@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable
 
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -8,11 +9,13 @@ import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
+import 'package:ithelpdesk/data/remote/api_urls.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
 import 'package:ithelpdesk/domain/entities/single_data_entity.dart';
 import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 import 'package:ithelpdesk/res/drawables/background_box_decoration.dart';
-
+import '../../injection_container.dart';
+import '../bloc/master_data/master_data_bloc.dart';
 import 'multi_select_dialog_widget.dart';
 
 class ReportListWidget extends StatelessWidget {
@@ -31,7 +34,32 @@ class ReportListWidget extends StatelessWidget {
   String sortBy = '';
   int page = 1;
   int pageCount = 20;
-  List<StatusType> filteredStatus = List<StatusType>.empty(growable: true);
+  final List<int> _selectedEmployees = List<int>.empty(growable: true);
+  final List<int> _selectedDepartments = List<int>.empty(growable: true);
+  final List<StatusType> _filteredStatus =
+      List<StatusType>.empty(growable: true);
+  final _masterDataBloc = sl<MasterDataBloc>();
+  List<dynamic>? _employees;
+  List<dynamic>? _departments;
+
+  Future<List> _getEmpleyees() async {
+    if (_employees != null) {
+      return Future.value(_employees);
+    }
+    final result = await _masterDataBloc.getAssignedEmployees(
+        requestParams: {}, apiUrl: assignedEmployeesByUserApiUrl);
+    _employees = result.items;
+    return Future.value(_employees);
+  }
+
+  Future<List> _getDepartments() async {
+    if (_departments != null) {
+      return Future.value(_departments);
+    }
+    final result = await _masterDataBloc.getDepartments(requestParams: {});
+    _departments = result.items;
+    return Future.value(_departments);
+  }
 
   IconData _getFilerOrSortIcon(NameIDEntity tableColumn) {
     switch (tableColumn.id) {
@@ -44,6 +72,10 @@ class ReportListWidget extends StatelessWidget {
             ? Icons.arrow_downward_sharp
             : Icons.arrow_upward_sharp;
       case 5:
+        return Icons.filter_list;
+      case 7:
+        return Icons.filter_list;
+      case 8:
         return Icons.filter_list;
       default:
         return Icons.sort;
@@ -76,7 +108,11 @@ class ReportListWidget extends StatelessWidget {
                           .onFontSize(context.resources.fontSize.dp10)
                           .onColor(value.getColor())
                       : context.textFontWeight600
-                          .onFontSize(context.resources.fontSize.dp10),
+                          .onFontSize(context.resources.fontSize.dp10)
+                          .onFontFamily(
+                              fontFamily: isStringArabic(value.toString())
+                                  ? fontFamilyAR
+                                  : fontFamilyEN),
             ),
           ),
         ),
@@ -117,7 +153,7 @@ class ReportListWidget extends StatelessWidget {
             4: const FlexColumnWidth(2),
             5: const FlexColumnWidth(2),
             6: const FlexColumnWidth(2),
-            7: const FlexColumnWidth(1),
+            7: const FlexColumnWidth(2),
             8: const FlexColumnWidth(3),
           }
         : {
@@ -131,11 +167,23 @@ class ReportListWidget extends StatelessWidget {
         valueListenable: _onSortChange,
         builder: (context, value, child) {
           var filteredData = ticketsData;
-          if (filteredStatus.isNotEmpty) {
+          if (_filteredStatus.isNotEmpty) {
             filteredData = filteredData
-                .where((item) => (filteredStatus.contains(item.status) ||
-                    (filteredStatus.contains(StatusType.notAssigned) &&
+                .where((item) => (_filteredStatus.contains(item.status) ||
+                    (_filteredStatus.contains(StatusType.notAssigned) &&
                         item.assignedUserID == null)))
+                .toList();
+          }
+          if (_selectedEmployees.isNotEmpty) {
+            filteredData = filteredData
+                .where((item) =>
+                    (_selectedEmployees.contains(item.assignedUserID)))
+                .toList();
+          }
+          if (_selectedDepartments.isNotEmpty) {
+            filteredData = filteredData
+                .where((item) =>
+                    (_selectedDepartments.contains(item.departmentID)))
                 .toList();
           }
           if (sortBy == 'date') {
@@ -177,9 +225,11 @@ class ReportListWidget extends StatelessWidget {
                                 horizontal: resources.dimen.dp10),
                             child: (ticketsHeaderData[index].id == 9 ||
                                     ticketsHeaderData[index].id == 6 ||
-                                    ticketsHeaderData[index].id == 5)
+                                    ticketsHeaderData[index].id == 5 ||
+                                    ticketsHeaderData[index].id == 7 ||
+                                    ticketsHeaderData[index].id == 8)
                                 ? InkWell(
-                                    onTap: () {
+                                    onTap: () async {
                                       if (ticketsHeaderData[index].id == 9) {
                                         sortBy = 'date';
                                         if (dateSort == 1) {
@@ -210,7 +260,8 @@ class ReportListWidget extends StatelessWidget {
                                                 MultiSelectDialogWidget<
                                                     StatusType>(
                                                   list: getStatusTypes(),
-                                                  selectedItems: filteredStatus,
+                                                  selectedItems:
+                                                      _filteredStatus,
                                                 ),
                                                 maxWidth: isDesktop(context)
                                                     ? 250
@@ -218,13 +269,80 @@ class ReportListWidget extends StatelessWidget {
                                                 showClose: false)
                                             .then((value) {
                                           if (value != null) {
-                                            filteredStatus.clear();
-                                            filteredStatus.addAll(value);
+                                            _filteredStatus.clear();
+                                            _filteredStatus.addAll(value);
                                             page = 1;
                                             _onSortChange.value =
                                                 !_onSortChange.value;
                                           }
                                         });
+                                      } else if (ticketsHeaderData[index].id ==
+                                          7) {
+                                        final items = await _getEmpleyees();
+                                        final selectedEmployees = items
+                                            .where((item) => _selectedEmployees
+                                                .contains(item.id))
+                                            .toList();
+                                        if (context.mounted) {
+                                          Dialogs.showDialogWithClose(
+                                                  context,
+                                                  MultiSelectDialogWidget(
+                                                    list: items,
+                                                    selectedItems:
+                                                        selectedEmployees,
+                                                  ),
+                                                  maxWidth: isDesktop(context)
+                                                      ? 400
+                                                      : null,
+                                                  showClose: false)
+                                              .then((value) {
+                                            if (value != null) {
+                                              _selectedEmployees.clear();
+                                              final ids = (value as List)
+                                                  .map((item) =>
+                                                      (item.id ?? 0) as int)
+                                                  .toList();
+                                              _selectedEmployees.addAll(ids);
+                                              page = 1;
+                                              _onSortChange.value =
+                                                  !_onSortChange.value;
+                                            }
+                                          });
+                                        }
+                                      } else if (ticketsHeaderData[index].id ==
+                                          8) {
+                                        final items = await _getDepartments();
+                                        final selectedDepartments = items
+                                            .where((item) =>
+                                                _selectedDepartments
+                                                    .contains(item.id))
+                                            .toList();
+                                        if (context.mounted) {
+                                          Dialogs.showDialogWithClose(
+                                                  context,
+                                                  MultiSelectDialogWidget(
+                                                    list: items,
+                                                    selectedItems:
+                                                        selectedDepartments,
+                                                  ),
+                                                  maxWidth: isDesktop(context)
+                                                      ? 400
+                                                      : null,
+                                                  showClose: false)
+                                              .then((value) {
+                                            if (value != null) {
+                                              _selectedDepartments.clear();
+                                              final ids = (value as List)
+                                                  .map((item) =>
+                                                      (item.id ?? 0) as int)
+                                                  .toList();
+                                              _selectedDepartments.addAll(ids);
+                                              page = 1;
+                                              _onSortChange.value =
+                                                  !_onSortChange.value;
+                                            }
+                                          });
+                                        }
                                       }
                                     },
                                     child: Text.rich(
@@ -237,10 +355,10 @@ class ReportListWidget extends StatelessWidget {
                                                     PlaceholderAlignment.middle,
                                                 child: Padding(
                                                   padding: isSelectedLocalEn
-                                                    ? const EdgeInsets.only(
-                                                        left: 5.0)
-                                                    : const EdgeInsets.only(
-                                                        right: 5.0),
+                                                      ? const EdgeInsets.only(
+                                                          left: 5.0)
+                                                      : const EdgeInsets.only(
+                                                          right: 5.0),
                                                   child: Icon(
                                                     _getFilerOrSortIcon(
                                                         ticketsHeaderData[

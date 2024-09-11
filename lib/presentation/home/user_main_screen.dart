@@ -177,9 +177,9 @@ class _MainScreenState extends State<UserMainScreen> {
                       FutureBuilder(
                           future: _userBloc.validateUser({}),
                           builder: (context, snapShot) {
+                            userToken = snapShot.data?.token ?? '';
                             UserCredentialsEntity.create(
                                 snapShot.data?.token ?? '');
-                            userToken = snapShot.data?.token ?? '';
                             return getUserAppBar(context);
                           }),
                       ValueListenableBuilder(

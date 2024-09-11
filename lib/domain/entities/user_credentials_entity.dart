@@ -15,8 +15,8 @@ class UserCredentialsEntity {
   String? isoUserCategories;
   String? contactNumber;
   UserCredentialsEntity();
-  factory UserCredentialsEntity.details() {
-    if (userData == null && userToken.isNotEmpty) {
+  factory UserCredentialsEntity.details({isDataChanged = false}) {
+    if ((userData == null || isDataChanged) && userToken.isNotEmpty) {
       userData = UserCredentialsEntity();
       String normalizedSource = base64Url.normalize(userToken.split(".")[1]);
       final data = jsonDecode(utf8.decode(base64Url.decode(normalizedSource)));
@@ -36,6 +36,6 @@ class UserCredentialsEntity {
     final userDetails = UserDataDB();
     userDetails.put(UserDataDB.userToken, userToken);
     userData == null;
-    return UserCredentialsEntity.details();
+    return UserCredentialsEntity.details(isDataChanged: true);
   }
 }

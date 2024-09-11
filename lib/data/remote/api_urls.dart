@@ -103,6 +103,8 @@ const String directoryEmployeesApiUrl =
     '${apiFolderUrl}User/GetDirectoryEmployees';
 const String assignedEmployeesApiUrl =
     '${apiFolderUrl}MasterData/GetAssignedEmployees';
+const String assignedEmployeesByUserApiUrl =
+    '${apiFolderUrl}MasterData/GetAssignedEmployeesByUser';
 const String previousAssignedEmployeesApiUrl =
     '${apiFolderUrl}MasterData/GetPreviousAssignies';
 const String createTicketApiUrl = '${apiFolderUrl}CreateTicket';

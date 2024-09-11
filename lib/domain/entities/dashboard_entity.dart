@@ -1,7 +1,9 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:flutter/material.dart';
+import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
+import 'package:ithelpdesk/core/extensions/string_extension.dart';
 import 'package:ithelpdesk/domain/entities/base_entity.dart';
 
 import 'user_credentials_entity.dart';
@@ -31,9 +33,11 @@ class TicketsByCategoryEntity extends BaseEntity {
 class TicketEntity extends BaseEntity {
   int? id;
   String? subject;
+  String? subjectAr;
   int? subjectID;
   int? categoryID;
   String? categoryName;
+  String? categoryNameAr;
   int? subCategoryID;
   String? date;
   int? departmentID;
@@ -68,6 +72,7 @@ class TicketEntity extends BaseEntity {
   int? teamCount;
   AssigneType? userType;
   bool? isMaxLevel;
+  IssueType? issuType;
 
   bool isMyTicket() {
     return (userID == UserCredentialsEntity.details().id &&
@@ -93,9 +98,12 @@ class TicketEntity extends BaseEntity {
 
   List<StatusType> getActionButtonsForAssigned(BuildContext context) {
     final actionButtons = List<StatusType>.empty(growable: true);
-    if (status == StatusType.closed ||
-        status == StatusType.reject ||
-        userType == null) {
+
+    if (status == StatusType.closed && userType == AssigneType.approver) {
+      actionButtons.add(StatusType.reopen);
+      return actionButtons;
+    }
+    if (status == StatusType.closed || status == StatusType.reject) {
       return actionButtons;
     }
     if (assignedUserID != null &&
@@ -104,22 +112,29 @@ class TicketEntity extends BaseEntity {
       actionButtons.add(StatusType.reAssign);
       return actionButtons;
     }
-    if (status != StatusType.returned &&
-        (assignedUserID == UserCredentialsEntity.details().id ||
-            assignedUserID == null)) {
+    if ((assignedUserID == UserCredentialsEntity.details().id ||
+        assignedUserID == null)) {
       actionButtons.add(StatusType.returned);
     }
-    if (status == StatusType.open &&
+    if ((status == StatusType.open || status == StatusType.acquired) &&
         (userType == AssigneType.approver ||
             (userType == AssigneType.implementer && (teamCount ?? 0) > 1))) {
-      actionButtons.add(assigneType == AssigneType.approver
-          ? StatusType.approve
-          : StatusType.forward);
+      if (userType == AssigneType.implementer) {
+        actionButtons.add(StatusType.forward);
+      } else {
+        actionButtons.add(
+            assignedUserID == null ? StatusType.approve : StatusType.reAssign);
+      }
+    }
+    if ((status == StatusType.open || status == StatusType.returned) &&
+        assignedUserID == UserCredentialsEntity.details().id &&
+        userType == AssigneType.implementer) {
+      actionButtons.add(StatusType.acquired);
     }
     actionButtons.add(StatusType.closed);
     if (status == StatusType.hold &&
         assignedUserID == UserCredentialsEntity.details().id) {
-      actionButtons.add(StatusType.reopen);
+      actionButtons.add(StatusType.open);
     }
     if (status == StatusType.returned &&
         assignedUserID == UserCredentialsEntity.details().id) {
@@ -150,11 +165,21 @@ class TicketEntity extends BaseEntity {
         status != StatusType.reject;
   }
 
+  bool get isCommentRequired =>
+      status == StatusType.hold ||
+      status == StatusType.reject ||
+      status == StatusType.closed;
+
+  bool get showIssueType => status == StatusType.closed && categoryID == 3;
+
   Map<String, dynamic> toJson() => {
         "id": id ?? '',
         "employeeName": creator ?? '',
-        "Category": categoryName ?? '',
-        "subject": subject ?? '',
+        "Category": isSelectedLocalEn
+            ? categoryName ?? ''
+            : categoryNameAr ?? (categoryName ?? ''),
+        "subject":
+            isSelectedLocalEn ? subject ?? '' : subjectAr ?? (subject ?? ''),
         "status": status,
         "priority": priority,
         "assignee": assignedTo ?? '',
@@ -163,7 +188,8 @@ class TicketEntity extends BaseEntity {
       };
   Map<String, dynamic> toMobileJson() => {
         "id": id ?? '',
-        "subject": subject ?? '',
+        "subject":
+            isSelectedLocalEn ? subject ?? '' : subjectAr ?? (subject ?? ''),
         "status": status,
         "priority": priority,
         "createDate": createdOn ?? '',
@@ -191,6 +217,7 @@ class TicketEntity extends BaseEntity {
     data['serviceReqNo'] = serviceReqNo;
     data['serviceName'] = serviceName;
     data['isChargeable'] = isChargeable;
+    data['issuType'] = issuType?.value;
     return data;
   }
 
@@ -208,6 +235,7 @@ class TicketEntity extends BaseEntity {
         'serviceId': serviceId ?? '',
         'serviceReqNo': serviceReqNo ?? '',
         'serviceName': serviceName ?? '',
+        'issueType': (issuType?.name ?? '').capitalize(),
         'requestType': 2,
         'isChargeable': isChargeable ?? false ? 'Yes' : 'No',
         "createDate": createdOn ?? '',

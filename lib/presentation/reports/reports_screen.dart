@@ -20,8 +20,10 @@ import '../requests/view_request.dart';
 class ReportsScreen extends BaseScreenWidget {
   ReportsScreen({super.key});
   final ServicesBloc _servicesBloc = sl<ServicesBloc>();
+  // final _masterDataBloc = sl<MasterDataBloc>();
   List<dynamic>? tickets;
   final ValueNotifier<int?> _selectedCategory = ValueNotifier(null);
+  // final ValueNotifier<UserEntity?> _selectedEmployee = ValueNotifier(null);
   String? selectedStatus;
   List<String>? ticketsHeaderData;
 
@@ -67,6 +69,58 @@ class ReportsScreen extends BaseScreenWidget {
             ],
           ),
         ),
+        // ValueListenableBuilder(
+        //     valueListenable: _selectedCategory,
+        //     builder: (context, category, child) {
+        //       return (category == 0 || category == 3)
+        //           ? SizedBox(
+        //               width: 250,
+        //               child: Row(
+        //                 children: [
+        //                   SizedBox(
+        //                     width: resources.dimen.dp20,
+        //                   ),
+        //                   Text(
+        //                     resources.string.employee,
+        //                     style: context.textFontWeight600
+        //                         .onFontSize(resources.fontSize.dp10),
+        //                   ),
+        //                   SizedBox(
+        //                     width: resources.dimen.dp5,
+        //                   ),
+        //                   Expanded(
+        //                     child: FutureBuilder(
+        //                         future: _masterDataBloc.getAssignedEmployees(
+        //                             requestParams: {},
+        //                             apiUrl: assignedEmployeesByUserApiUrl),
+        //                         builder: (context, snapShot) {
+        //                           final items = snapShot.data?.items ?? [];
+        //                           if (items.isNotEmpty) {
+        //                             final employee = UserEntity();
+        //                             employee.id = 0;
+        //                             employee.name = resources.string.all;
+        //                             _selectedEmployee.value = employee;
+        //                             items.insert(0, employee);
+        //                           }
+        //                           return DropDownWidget(
+        //                             isEnabled: true,
+        //                             height: 32,
+        //                             iconSize: 20,
+        //                             selectedValue: _selectedEmployee.value,
+        //                             fontStyle: context.textFontWeight400
+        //                                 .onFontSize(resources.fontSize.dp12),
+        //                             list: items,
+        //                             callback: (value) {
+        //                               _selectedEmployee.value = value;
+        //                             },
+        //                           );
+        //                         }),
+        //                   ),
+        //                 ],
+        //               ),
+        //             )
+        //           : const SizedBox();
+        //     }),
         // SizedBox(
         //   width: resources.dimen.dp10,
         // ),

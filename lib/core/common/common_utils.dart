@@ -438,6 +438,8 @@ List<StatusType> getStatusTypes() {
     StatusType.hold,
     StatusType.reject,
     StatusType.closed,
+    StatusType.returned,
+    StatusType.acquired,
   ];
 }
 

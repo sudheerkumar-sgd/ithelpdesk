@@ -115,8 +115,10 @@ class TicketsByCategoryModel extends BaseModel {
 class TicketsModel extends BaseModel {
   int? id;
   String? subject;
+  String? subjectAr;
   int? categoryID;
   String? categoryName;
+  String? categoryNameAr;
   int? subCategoryID;
   int? subjectID;
   int? assigneType;
@@ -155,14 +157,17 @@ class TicketsModel extends BaseModel {
   List<String>? attachments;
   int? teamCount;
   bool? isMaxLevel;
+  IssueType? issuType;
 
   TicketsModel.fromJson(Map<String, dynamic> ticketsJson) {
     final json = ticketsJson['data'] ?? ticketsJson;
     id = json['id'];
     subject = json['subject'];
+    subjectAr = json['subjectAr'];
     subjectID = json['subjectID'];
     categoryID = json['categoryID'];
     categoryName = json['category'];
+    categoryNameAr = json['categoryAr'];
     subCategoryID = json['subCategoryID'];
     date = json['date'];
     description = json['description'];
@@ -199,6 +204,7 @@ class TicketsModel extends BaseModel {
     teamCount = json['teamCount'];
     userType = json['userType'];
     isMaxLevel = json['isMaxLevel'];
+    issuType = json['issuType'];
     if (json['attachments'] is List) {
       attachments = List.empty(growable: true);
       json['attachments']
@@ -211,9 +217,11 @@ class TicketsModel extends BaseModel {
     var ticketsEntity = TicketEntity();
     ticketsEntity.id = id;
     ticketsEntity.subject = subject;
+    ticketsEntity.subjectAr = subjectAr;
     ticketsEntity.subjectID = subjectID;
     ticketsEntity.categoryID = categoryID;
     ticketsEntity.categoryName = categoryName;
+    ticketsEntity.categoryNameAr = categoryNameAr;
     ticketsEntity.subCategoryID = subCategoryID;
     ticketsEntity.date = date;
     ticketsEntity.description = description;
@@ -251,6 +259,7 @@ class TicketsModel extends BaseModel {
     ticketsEntity.attachments = attachments;
     ticketsEntity.teamCount = teamCount;
     ticketsEntity.isMaxLevel = isMaxLevel;
+    ticketsEntity.issuType = issuType;
     return ticketsEntity;
   }
 }

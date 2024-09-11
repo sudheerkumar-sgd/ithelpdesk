@@ -95,9 +95,10 @@ enum StatusType {
   approve(7),
   forward(8),
   resubmit(9),
-  transfer(10),
-  reAssign(11),
-  reopen(9);
+  reopen(10),
+  acquired(11),
+  transfer(12),
+  reAssign(13);
 
   final int value;
   const StatusType(this.value);
@@ -131,6 +132,8 @@ enum StatusType {
         return isSelectedLocalEn ? 'Resubmit' : 'إعادة الإرسال';
       case reopen:
         return isSelectedLocalEn ? 'Re-Open' : 'إعادة الفتح';
+      case acquired:
+        return isSelectedLocalEn ? 'Acquire' : 'يكتسب';
       default:
         return name.capitalize();
     }
@@ -147,6 +150,8 @@ enum StatusType {
       case returned:
         return const Color.fromARGB(255, 6, 101, 202);
       case open:
+        return const Color.fromARGB(255, 237, 105, 11);
+      case acquired:
         return const Color.fromARGB(255, 237, 105, 11);
       default:
         return const Color.fromARGB(255, 156, 103, 242);
@@ -202,5 +207,34 @@ enum UserType {
 
   factory UserType.fromName(String value) {
     return values.firstWhere((e) => e.name.contains(value.toLowerCase()));
+  }
+}
+
+enum IssueType {
+  customer(1),
+  employee(2),
+  system(3);
+
+  final int value;
+  const IssueType(this.value);
+
+  factory IssueType.fromId(int value) {
+    return values.firstWhere((e) => e.value == value);
+  }
+
+  factory IssueType.fromName(String value) {
+    return values.firstWhere((e) => e.name.contains(value.toLowerCase()));
+  }
+
+  @override
+  String toString() {
+    switch (this) {
+      case customer:
+        return isSelectedLocalEn ? 'Customer' : 'عميل';
+      case employee:
+        return isSelectedLocalEn ? 'Employee' : 'موظف';
+      case system:
+        return isSelectedLocalEn ? 'System' : 'نظام';
+    }
   }
 }

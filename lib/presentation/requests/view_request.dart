@@ -20,6 +20,7 @@ import 'package:ithelpdesk/presentation/bloc/master_data/master_data_bloc.dart';
 import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
 import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
+import 'package:ithelpdesk/presentation/common_widgets/confirm_dialog_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dropdown_menu_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dropdown_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
@@ -220,13 +221,15 @@ class ViewRequest extends BaseScreenWidget {
     Dialogs.showDialogWithClose(
       context,
       TicketActionWidget(
-          message: message,
-          isCommentRequired: (updateTicket.status == StatusType.hold ||
-              updateTicket.status == StatusType.reject)),
-      maxWidth: isDesktop(context) ? 400 : null,
+        message: message,
+        isCommentRequired: updateTicket.isCommentRequired,
+        showIssueType: updateTicket.showIssueType,
+      ),
+      maxWidth: isDesktop(context) ? 450 : null,
     ).then((dialogResult) {
       if (dialogResult != null) {
         updateTicket.finalComments = dialogResult['comments'];
+        updateTicket.issuType = dialogResult['issuType'];
         final data = updateTicket.toCreateJson();
         data['files'] = dialogResult['files'];
         _servicesBloc.updateTicketByStatus(apiUrl: apiUrl, requestParams: data);
@@ -241,6 +244,7 @@ class ViewRequest extends BaseScreenWidget {
     {
       final updateTicket = TicketEntity();
       updateTicket.id = ticket.id;
+      updateTicket.categoryID = ticket.categoryID;
       switch (status) {
         case StatusType.returned:
           {
@@ -264,9 +268,11 @@ class ViewRequest extends BaseScreenWidget {
           }
         case StatusType.resubmit || StatusType.reopen:
           {
-            updateTicket.status = StatusType.resubmit;
-            updateTicket.assignedUserID =
-                ticket.previousAssignedID ?? ticket.userID;
+            updateTicket.status = status;
+            if (status == StatusType.resubmit) {
+              updateTicket.assignedUserID =
+                  ticket.previousAssignedID ?? ticket.userID;
+            }
             Dialogs.showDialogWithClose(
               context,
               TicketActionWidget(
@@ -315,21 +321,30 @@ class ViewRequest extends BaseScreenWidget {
           }
         case StatusType.reAssign:
           {
-            Dialogs.showDialogWithClose(
-                    context,
-                    TicketTransferWidget(
-                      ticketEntity: ticket,
-                    ),
-                    maxWidth: 350)
-                .then((value) async {
-              updateTicket.status = StatusType.open;
-              if (value['employee'] > 0) {
-                updateTicket.assignedUserID = value['employee'];
-              }
-              _updateTicket(context, updateTicket,
-                  "${context.resources.string.doYouWantToForword} ?",
-                  apiUrl: forwordTicketApiUrl);
-            });
+            if (ticket.status == StatusType.acquired) {
+              Dialogs.showDialogWithClose(
+                  context,
+                  showClose: false,
+                  ConformDialogWidget(
+                      message:
+                          "This ticket already acquired by ${ticket.assignedTo}\n Do you want to Reassign?"));
+            } else {
+              Dialogs.showDialogWithClose(
+                      context,
+                      TicketTransferWidget(
+                        ticketEntity: ticket,
+                      ),
+                      maxWidth: 350)
+                  .then((value) async {
+                updateTicket.status = StatusType.open;
+                if (value['employee'] > 0) {
+                  updateTicket.assignedUserID = value['employee'];
+                }
+                _updateTicket(context, updateTicket,
+                    "${context.resources.string.doYouWantToForword} ?",
+                    apiUrl: forwordTicketApiUrl);
+              });
+            }
           }
         default:
           if (status == StatusType.closed) {
@@ -823,8 +838,7 @@ class ViewRequest extends BaseScreenWidget {
                     SizedBox(
                       height: resources.dimen.dp20,
                     ),
-                    if ((ticket.status != StatusType.closed &&
-                        ticket.status != StatusType.reject)) ...[
+                    if (ticket.status != StatusType.reject) ...[
                       _getComments(context),
                       SizedBox(
                         height: resources.dimen.dp20,
