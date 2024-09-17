@@ -6,7 +6,6 @@ import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/data/local/app_settings_db.dart';
-import 'package:ithelpdesk/data/local/user_data_db.dart';
 import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
 import 'package:ithelpdesk/injection_container.dart';
 import 'package:ithelpdesk/presentation/bloc/user/user_bloc.dart';
@@ -60,6 +59,9 @@ class _MainScreenState extends State<UserMainScreen> {
   }
 
   void _onItemTapped(int index) {
+    if (_selectedIndex.value == index) {
+      _navbarNotifier.onBackButtonPressed(_selectedIndex.value);
+    }
     _selectedIndex.value = index;
     context.appSettingsDB.put(AppSettingsDB.selectedSideBarIndex, index);
   }

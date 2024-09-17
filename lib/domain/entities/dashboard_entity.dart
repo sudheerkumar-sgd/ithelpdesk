@@ -170,7 +170,7 @@ class TicketEntity extends BaseEntity {
       status == StatusType.reject ||
       status == StatusType.closed;
 
-  bool get showIssueType => status == StatusType.closed && categoryID == 3;
+  bool get showIssueType => (status == StatusType.closed && categoryID == 3);
 
   Map<String, dynamic> toJson() => {
         "id": id ?? '',

@@ -44,14 +44,6 @@ class OnMostUsedServicesSuccess extends ServicesState {
   List<Object?> get props => [mostUsedServicesEntity];
 }
 
-class OnRequestsSuccess extends ServicesState {
-  final ApiEntity<RequestsListEntity> requestsListEntity;
-
-  OnRequestsSuccess({required this.requestsListEntity});
-  @override
-  List<Object?> get props => [requestsListEntity];
-}
-
 class OnFavoriteSuccess extends ServicesState {
   final List<ServiceEntity> favoriteServices;
 
@@ -114,14 +106,6 @@ class OnServiceDetailsResponse extends ServicesState {
   OnServiceDetailsResponse({required this.serviceDetailsEntity});
   @override
   List<Object?> get props => [serviceDetailsEntity];
-}
-
-class OnNotificationsResponse extends ServicesState {
-  final ApiEntity<NotificationListEntity> notifications;
-
-  OnNotificationsResponse({required this.notifications});
-  @override
-  List<Object?> get props => [notifications];
 }
 
 class OnEmailSubmitSuccess extends ServicesState {

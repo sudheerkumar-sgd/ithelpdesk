@@ -196,7 +196,9 @@ enum UserType {
   erp(9),
   applications(10),
   mdAdmin(11),
-  dedAdmin(12);
+  dedAdmin(12),
+  mdServices(13),
+  dedServices(14);
 
   final int value;
   const UserType(this.value);

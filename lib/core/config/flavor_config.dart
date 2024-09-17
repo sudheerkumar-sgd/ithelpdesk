@@ -8,14 +8,11 @@ enum Flavor {
 class FlavorValues {
   final String portalBaseUrl;
   final String mdSOABaseUrl;
-  final String mdPortalBaseUrl;
-  final String policeDomainBaseUrl;
 
-  FlavorValues(
-      {required this.portalBaseUrl,
-      required this.mdSOABaseUrl,
-      required this.mdPortalBaseUrl,
-      required this.policeDomainBaseUrl});
+  FlavorValues({
+    required this.portalBaseUrl,
+    required this.mdSOABaseUrl,
+  });
 }
 
 class FlavorConfig {

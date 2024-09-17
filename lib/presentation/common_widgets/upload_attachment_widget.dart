@@ -4,11 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
-import 'package:ithelpdesk/domain/entities/request_form_entities.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dialog_upload_attachment.dart';
 import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
 import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
+
+import '../../domain/entities/master_data_entities.dart';
 
 const double defaultHeight = 27;
 

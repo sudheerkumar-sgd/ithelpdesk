@@ -124,3 +124,25 @@ class DepartmentEntity extends BaseEntity {
   @override
   List<Object?> get props => [id];
 }
+
+class UploadResponseEntity extends BaseEntity {
+  int? documentDataId;
+  int? documentTypeId;
+  int? did;
+  String? documentName;
+  String? documentData;
+  String? documentType;
+
+  @override
+  List<Object?> get props => [documentDataId];
+
+  Map<String, dynamic> toJson() => {
+        'fileId': documentDataId,
+        'fileDid': did,
+        'fileName': documentName,
+      };
+  @override
+  String toString() {
+    return documentName ?? '';
+  }
+}

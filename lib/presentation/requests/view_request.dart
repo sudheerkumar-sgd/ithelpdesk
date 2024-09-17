@@ -218,23 +218,30 @@ class ViewRequest extends BaseScreenWidget {
 
   _updateTicket(BuildContext context, TicketEntity updateTicket, String message,
       {String apiUrl = updateTicketByStatusApiUrl}) {
-    Dialogs.showDialogWithClose(
-      context,
-      TicketActionWidget(
-        message: message,
-        isCommentRequired: updateTicket.isCommentRequired,
-        showIssueType: updateTicket.showIssueType,
-      ),
-      maxWidth: isDesktop(context) ? 450 : null,
-    ).then((dialogResult) {
-      if (dialogResult != null) {
-        updateTicket.finalComments = dialogResult['comments'];
-        updateTicket.issuType = dialogResult['issuType'];
-        final data = updateTicket.toCreateJson();
-        data['files'] = dialogResult['files'];
-        _servicesBloc.updateTicketByStatus(apiUrl: apiUrl, requestParams: data);
-      }
-    });
+    ticket.status = updateTicket.status;
+    if (updateTicket.status == StatusType.acquired) {
+      final data = updateTicket.toCreateJson();
+      _servicesBloc.updateTicketByStatus(apiUrl: apiUrl, requestParams: data);
+    } else {
+      Dialogs.showDialogWithClose(
+        context,
+        TicketActionWidget(
+          message: message,
+          isCommentRequired: updateTicket.isCommentRequired,
+          showIssueType: updateTicket.showIssueType,
+        ),
+        maxWidth: isDesktop(context) ? 450 : null,
+      ).then((dialogResult) {
+        if (dialogResult != null) {
+          updateTicket.finalComments = dialogResult['comments'];
+          updateTicket.issuType = dialogResult['issuType'];
+          final data = updateTicket.toCreateJson();
+          data['files'] = dialogResult['files'];
+          _servicesBloc.updateTicketByStatus(
+              apiUrl: apiUrl, requestParams: data);
+        }
+      });
+    }
   }
 
   _onActionClicked(
@@ -717,7 +724,9 @@ class ViewRequest extends BaseScreenWidget {
                   Dialogs.showInfoDialog(context, PopupType.success,
                           '${resources.string.updatingTicket} ${state.onUpdateTicketResult}')
                       .then((value) {
-                    reloadPage();
+                    if (ticket.status != StatusType.acquired) {
+                      reloadPage();
+                    }
                   });
                 } else if (state is OnApiError) {
                   Dialogs.dismiss(context);

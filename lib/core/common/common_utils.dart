@@ -419,15 +419,6 @@ reloadPage() {
   html.window.location.reload();
 }
 
-String get getPaymentRedirectUrl =>
-    '${FlavorConfig.instance.values.mdPortalBaseUrl}/work-management/payment-view/';
-
-String get getRequestRedirectUrl =>
-    '${FlavorConfig.instance.values.mdPortalBaseUrl}/e-services/request-service/';
-
-String get getRequestViewUrl =>
-    '${FlavorConfig.instance.values.mdPortalBaseUrl}/e-services/request-view/';
-
 String get getImageBaseUrl =>
     '${FlavorConfig.instance.values.portalBaseUrl}Attachments/';
 

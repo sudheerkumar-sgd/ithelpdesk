@@ -15,10 +15,9 @@ void main() async {
   FlavorConfig(
     flavor: Flavor.PRODUCTION,
     values: FlavorValues(
-        portalBaseUrl: basePortalUrlProduction,
-        mdSOABaseUrl: baseUrlMDSOAProd,
-        mdPortalBaseUrl: baseMDUrlProduction,
-        policeDomainBaseUrl: baseUrlPoliceDomain),
+      portalBaseUrl: baseUrlProduction,
+      mdSOABaseUrl: baseUrlSOAProd,
+    ),
   );
   await di.init();
   usePathUrlStrategy();

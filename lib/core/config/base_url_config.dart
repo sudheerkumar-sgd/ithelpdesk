@@ -8,13 +8,9 @@ const String baseUrlPoliceDomain = 'https://www.uaq.ae/uaqws/police/';
 const String baseUrlSOAStg =
     'https://stgmdmobile.uaq.ae/soa-infra/resources/UAQDEV/';
 
-const String baseUrlMDSOAProd =
+const String baseUrlSOAProd =
     'https://mdmobile.uaq.ae/soa-infra/resources/Integration/';
 
-const String basePortalUrlDevelopment = 'https://localhost:44325/';
+const String baseUrlDevelopment = 'https://localhost:44325/';
 
-const String basePortalUrlProduction = 'https://uatithelpdesk.uaqgov.ae:5009/';
-
-const String baseMDUrlDevelopment = 'https://stgmdservices.uaq.ae';
-
-const String baseMDUrlProduction = 'https://mdservices.uaq.ae';
+const String baseUrlProduction = 'http://192.168.51.28:5003/';
