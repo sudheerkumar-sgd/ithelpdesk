@@ -3,11 +3,12 @@
 import 'package:ithelpdesk/data/model/base_model.dart';
 import 'package:ithelpdesk/data/model/dashboard_model.dart';
 import 'package:ithelpdesk/data/model/login_model.dart';
+import 'package:ithelpdesk/domain/entities/base_entity.dart';
 import 'package:ithelpdesk/domain/entities/directory_entity.dart';
 import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
 
 class ListModel extends BaseModel {
-  List<dynamic> items = [];
+  List<BaseEntity> items = [];
   ListModel.fromSubCategoryJson(Map<String, dynamic> json) {
     if (json['data'] is List) {
       for (var json in (json['data'] as List)) {

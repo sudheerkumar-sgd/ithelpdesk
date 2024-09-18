@@ -197,7 +197,7 @@ class ViewRequest extends BaseScreenWidget {
                                               ],
                                               TextSpan(
                                                   text:
-                                                      '- ${items[index].userName ?? ""}',
+                                                      '- ${item.userName ?? ""}',
                                                   style: context
                                                       .textFontWeight400
                                                       .onFontSize(context
@@ -396,13 +396,16 @@ class ViewRequest extends BaseScreenWidget {
                                   'categoryID': ticket.categoryID
                                 }),
                             builder: (context, snapShot) {
-                              _subCategoryValue.value ??= (snapShot
-                                          .data?.items ??
+                              var selectedValue = (snapShot.data?.items ??
                                       List<SubCategoryEntity>.empty())
                                   .where((subCategory) =>
                                       (subCategory as SubCategoryEntity).id ==
                                       ticket.subCategoryID)
                                   .firstOrNull;
+                              if (selectedValue != null) {
+                                _subCategoryValue.value ??=
+                                    selectedValue as SubCategoryEntity;
+                              }
                               return DropDownWidget(
                                 list: snapShot.data?.items ?? [],
                                 labelText: resources.string.subCategory,
@@ -468,10 +471,10 @@ class ViewRequest extends BaseScreenWidget {
                         'departmentID': ticket.subCategoryID
                       }),
                       builder: (context, snapShot) {
-                        EserviceEntity? selectedValue =
-                            (snapShot.data?.items ?? [])
-                                .where((item) => item.id == ticket.serviceId)
-                                .firstOrNull;
+                        var selectedValue = snapShot.data?.items
+                            .where((item) =>
+                                (item as EserviceEntity).id == ticket.serviceId)
+                            .firstOrNull;
                         return DropDownWidget(
                           isEnabled: ticket.canEnable(),
                           list: snapShot.data?.items ?? [],

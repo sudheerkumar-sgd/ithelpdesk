@@ -6,7 +6,7 @@ import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/domain/entities/base_entity.dart';
 
 class ListEntity extends BaseEntity {
-  List<dynamic> items = [];
+  List<BaseEntity> items = [];
 }
 
 class SubCategoryEntity extends BaseEntity {

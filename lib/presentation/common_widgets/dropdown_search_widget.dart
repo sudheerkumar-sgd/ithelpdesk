@@ -56,6 +56,7 @@ class DropdownSearchWidget<T extends Object> extends StatelessWidget {
         },
         fieldViewBuilder:
             (context, textEditingController, focusNode, onFieldSubmitted) {
+          textEditingController.text = selectedValue?.toString() ?? '';
           return RightIconTextWidget(
             isEnabled: true,
             height: resources.dimen.dp27,
@@ -65,6 +66,10 @@ class DropdownSearchWidget<T extends Object> extends StatelessWidget {
             textController: textEditingController,
             suffixIconPath: DrawableAssets.icChevronDown,
             focusNode: focusNode,
+            fillColor: resources.color.colorWhite,
+            borderSide: BorderSide(
+                color: context.resources.color.sideBarItemUnselected, width: 1),
+            borderRadius: 0,
           );
         },
         optionsViewBuilder: (context, onSelected, options) => Align(

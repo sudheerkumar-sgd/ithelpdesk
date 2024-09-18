@@ -13,4 +13,4 @@ const String baseUrlSOAProd =
 
 const String baseUrlDevelopment = 'https://localhost:44325/';
 
-const String baseUrlProduction = 'http://192.168.51.28:5003/';
+const String baseUrlProduction = 'https://uatithelpdesk.uaqgov.ae:5009/';

@@ -94,8 +94,8 @@ class TicketReturnWidget extends StatelessWidget {
                                 : previousAssignedEmployeesApiUrl),
                         builder: (context, snapShot) {
                           final items = snapShot.data?.items ?? [];
-                          items.removeWhere(
-                              (item) => item.id == ticketEntity.userID);
+                          items.removeWhere((item) =>
+                              (item as UserEntity).id == ticketEntity.userID);
                           if (snapShot.data != null) {
                             final userEntity = UserEntity();
                             userEntity.id = ticketEntity.userID;
@@ -103,7 +103,7 @@ class TicketReturnWidget extends StatelessWidget {
                             items.insert(0, userEntity);
                           }
                           if (items.length == 1) {
-                            _selectedEmployee = items[0];
+                            _selectedEmployee = items[0] as UserEntity;
                           }
 
                           return Padding(
@@ -117,7 +117,7 @@ class TicketReturnWidget extends StatelessWidget {
                               selectedValue: _selectedEmployee,
                               borderRadius: 0,
                               callback: (value) {
-                                _selectedEmployee = value;
+                                _selectedEmployee = value as UserEntity;
                               },
                             ),
                           );

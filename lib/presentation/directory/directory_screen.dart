@@ -244,7 +244,9 @@ class DirectoryScreen extends BaseScreenWidget {
                               final items = value != null
                                   ? (snapShot.data?.items ?? [])
                                       .where((item) =>
-                                          item.department == value.shortName)
+                                          (item as DirectoryEntity)
+                                              .department ==
+                                          value.shortName)
                                       .toList()
                                   : (snapShot.data?.items ?? []);
                               return Table(
@@ -284,7 +286,9 @@ class DirectoryScreen extends BaseScreenWidget {
                                                         width: 5)))
                                             .roundedCornerBox,
                                         children: _getDirectoryItem(
-                                            context, items[i], i + 1)),
+                                            context,
+                                            items[i] as DirectoryEntity,
+                                            i + 1)),
                                   ]
                                 ],
                               );

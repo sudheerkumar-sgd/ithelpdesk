@@ -7,6 +7,7 @@ import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/string_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
+import 'package:ithelpdesk/domain/entities/base_entity.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
 import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
 import 'package:ithelpdesk/injection_container.dart';
@@ -24,6 +25,7 @@ import 'package:page_transition/page_transition.dart';
 
 import '../../core/enum/enum.dart';
 import '../../domain/entities/user_credentials_entity.dart';
+import '../common_widgets/dropdown_search_widget.dart';
 
 class CreateNewRequest extends BaseScreenWidget {
   static start(BuildContext context) {
@@ -47,7 +49,7 @@ class CreateNewRequest extends BaseScreenWidget {
   final TextEditingController _reqNoController = TextEditingController();
   final TextEditingController _serviceNameController = TextEditingController();
   PriorityType? priority;
-  final ValueNotifier<int?> _serviceID = ValueNotifier(null);
+  final ValueNotifier<EserviceEntity?> _serviceID = ValueNotifier(null);
 
   @override
   Widget build(BuildContext context) {
@@ -302,10 +304,11 @@ class CreateNewRequest extends BaseScreenWidget {
                                                                         .details()
                                                                     .isoUserCategories ??
                                                                 "")
-                                                            .contains((item
-                                                                        .id ??
-                                                                    '')
-                                                                .toString()));
+                                                            .contains(
+                                                                ((item as SubCategoryEntity)
+                                                                            .id ??
+                                                                        '')
+                                                                    .toString()));
                                                   }
                                                   return DropDownWidget(
                                                     list:
@@ -330,6 +333,8 @@ class CreateNewRequest extends BaseScreenWidget {
                                                       _subCategoryValue.value =
                                                           (p0 as SubCategoryEntity)
                                                               .id;
+                                                      _serviceID.value = null;
+                                                      _reasonValue.value = null;
                                                       _formKey.currentState
                                                           ?.validate();
                                                     },
@@ -430,7 +435,7 @@ class CreateNewRequest extends BaseScreenWidget {
                                                       .compareTo(b
                                                           .toString()
                                                           .toLowerCase()));
-                                                  return DropDownWidget(
+                                                  return DropdownSearchWidget(
                                                     list: items,
                                                     labelText: resources
                                                         .string.serviceName,
@@ -446,12 +451,13 @@ class CreateNewRequest extends BaseScreenWidget {
                                                                 .string
                                                                 .pleaseSelect)
                                                         : '',
-                                                    borderRadius: 0,
                                                     fillColor: resources
                                                         .color.colorWhite,
+                                                    selectedValue:
+                                                        _serviceID.value,
                                                     callback: (value) {
-                                                      _serviceID.value =
-                                                          value.id;
+                                                      _serviceID.value = (value
+                                                          as EserviceEntity);
                                                       _formKey.currentState
                                                           ?.validate();
                                                     },
@@ -461,7 +467,7 @@ class CreateNewRequest extends BaseScreenWidget {
                                       ValueListenableBuilder(
                                           valueListenable: _serviceID,
                                           builder: (context, value, child) {
-                                            return value == 0
+                                            return value?.id == 0
                                                 ? Padding(
                                                     padding: EdgeInsets.only(
                                                         top: resources
@@ -545,7 +551,8 @@ class CreateNewRequest extends BaseScreenWidget {
                                                           'subCategoryID': value
                                                         }),
                                               builder: (context, snapShot) {
-                                                return DropDownWidget(
+                                                return DropdownSearchWidget<
+                                                    BaseEntity>(
                                                   list: snapShot.data?.items ??
                                                       [],
                                                   labelText:
@@ -558,11 +565,13 @@ class CreateNewRequest extends BaseScreenWidget {
                                                       .string.reason
                                                       .withPrefix(resources
                                                           .string.pleaseSelect),
-                                                  borderRadius: 0,
                                                   fillColor: resources
                                                       .color.colorWhite,
+                                                  selectedValue:
+                                                      _reasonValue.value,
                                                   callback: (value) {
-                                                    _reasonValue.value = value;
+                                                    _reasonValue.value =
+                                                        value as ReasonsEntity;
                                                     _formKey.currentState
                                                         ?.validate();
                                                   },
@@ -706,7 +715,7 @@ class CreateNewRequest extends BaseScreenWidget {
                                   ticket.description =
                                       _descriptionController.text;
                                   ticket.priority = priority;
-                                  ticket.serviceId = _serviceID.value;
+                                  ticket.serviceId = _serviceID.value?.id;
                                   ticket.serviceReqNo = _reqNoController.text;
                                   ticket.serviceName =
                                       _serviceNameController.text;
