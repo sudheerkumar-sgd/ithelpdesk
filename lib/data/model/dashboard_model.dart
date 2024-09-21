@@ -157,7 +157,7 @@ class TicketsModel extends BaseModel {
   List<String>? attachments;
   int? teamCount;
   bool? isMaxLevel;
-  IssueType? issuType;
+  IssueType? issueType;
 
   TicketsModel.fromJson(Map<String, dynamic> ticketsJson) {
     final json = ticketsJson['data'] ?? ticketsJson;
@@ -204,7 +204,7 @@ class TicketsModel extends BaseModel {
     teamCount = json['teamCount'];
     userType = json['userType'];
     isMaxLevel = json['isMaxLevel'];
-    issuType = json['issuType'];
+    issueType = json['issuType'];
     if (json['attachments'] is List) {
       attachments = List.empty(growable: true);
       json['attachments']
@@ -259,7 +259,7 @@ class TicketsModel extends BaseModel {
     ticketsEntity.attachments = attachments;
     ticketsEntity.teamCount = teamCount;
     ticketsEntity.isMaxLevel = isMaxLevel;
-    ticketsEntity.issuType = issuType;
+    ticketsEntity.issueType = issueType;
     return ticketsEntity;
   }
 }

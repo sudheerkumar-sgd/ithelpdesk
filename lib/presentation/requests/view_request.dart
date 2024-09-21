@@ -234,7 +234,7 @@ class ViewRequest extends BaseScreenWidget {
       ).then((dialogResult) {
         if (dialogResult != null) {
           updateTicket.finalComments = dialogResult['comments'];
-          updateTicket.issuType = dialogResult['issuType'];
+          updateTicket.issueType = dialogResult['issueType'];
           final data = updateTicket.toCreateJson();
           data['files'] = dialogResult['files'];
           _servicesBloc.updateTicketByStatus(

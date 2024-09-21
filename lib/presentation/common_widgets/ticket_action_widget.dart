@@ -68,6 +68,7 @@ class TicketActionWidget extends StatelessWidget {
                     IssueType.customer,
                     IssueType.employee,
                     IssueType.system,
+                    IssueType.other,
                   ],
                   labelText: context.resources.string.issueType,
                   hintText: context.resources.string.issueType,

@@ -215,7 +215,8 @@ enum UserType {
 enum IssueType {
   customer(1),
   employee(2),
-  system(3);
+  system(3),
+  other(4);
 
   final int value;
   const IssueType(this.value);
@@ -236,6 +237,8 @@ enum IssueType {
       case employee:
         return isSelectedLocalEn ? 'Employee' : 'موظف';
       case system:
+        return isSelectedLocalEn ? 'System' : 'نظام';
+      case other:
         return isSelectedLocalEn ? 'System' : 'نظام';
     }
   }
