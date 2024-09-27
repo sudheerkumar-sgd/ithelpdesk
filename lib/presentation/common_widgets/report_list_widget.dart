@@ -11,6 +11,7 @@ import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/data/remote/api_urls.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
+import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
 import 'package:ithelpdesk/domain/entities/single_data_entity.dart';
 import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 import 'package:ithelpdesk/res/drawables/background_box_decoration.dart';
@@ -58,6 +59,11 @@ class ReportListWidget extends StatelessWidget {
     }
     final result = await _masterDataBloc.getDepartments(requestParams: {});
     _departments = result.items;
+    final externalDpt = DepartmentEntity();
+    externalDpt.id = 0;
+    externalDpt.shortName = 'External';
+    externalDpt.name = 'External';
+    _departments?.add(externalDpt);
     return Future.value(_departments);
   }
 

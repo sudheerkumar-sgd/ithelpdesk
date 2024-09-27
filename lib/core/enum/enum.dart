@@ -239,7 +239,7 @@ enum IssueType {
       case system:
         return isSelectedLocalEn ? 'System' : 'نظام';
       case other:
-        return isSelectedLocalEn ? 'System' : 'نظام';
+        return isSelectedLocalEn ? 'Other' : 'نظام';
     }
   }
 }

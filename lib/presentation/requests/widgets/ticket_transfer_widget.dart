@@ -163,8 +163,7 @@ class TicketTransferWidget extends StatelessWidget {
                       FutureBuilder(
                           future: _masterDataBloc
                               .getAssignedEmployees(requestParams: {
-                            'departmentID':
-                                UserCredentialsEntity.details().departmentID,
+                            'departmentID': null,
                             'subcategoryID': (ticketEntity.categoryID == 3 ||
                                     ticketEntity.assigneType ==
                                         AssigneType.implementer)

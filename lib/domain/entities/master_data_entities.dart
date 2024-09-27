@@ -118,7 +118,7 @@ class DepartmentEntity extends BaseEntity {
 
   @override
   String toString() {
-    return name ?? '';
+    return shortName ?? '';
   }
 
   @override
