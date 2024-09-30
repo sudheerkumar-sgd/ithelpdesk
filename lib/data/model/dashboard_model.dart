@@ -204,7 +204,7 @@ class TicketsModel extends BaseModel {
     teamCount = json['teamCount'];
     userType = json['userType'];
     isMaxLevel = json['isMaxLevel'];
-    issueType = json['issuType'];
+    issueType = json['issueType'];
     if (json['attachments'] is List) {
       attachments = List.empty(growable: true);
       json['attachments']

@@ -54,13 +54,13 @@ class TicketTransferWidget extends StatelessWidget {
                               style: context.textFontWeight400
                                   .onFontSize(resources.fontSize.dp12),
                             ),
-                            groupValue: 14,
+                            groupValue: 16,
                             visualDensity: const VisualDensity(
                                 horizontal: -4, vertical: -4),
                             controlAffinity: ListTileControlAffinity.leading,
                             value: value,
                             onChanged: (isChecked) {
-                              _forwordTocategory.value = 14;
+                              _forwordTocategory.value = 16;
                             }),
                       ),
                       Flexible(
@@ -71,13 +71,13 @@ class TicketTransferWidget extends StatelessWidget {
                               style: context.textFontWeight400
                                   .onFontSize(resources.fontSize.dp12),
                             ),
-                            groupValue: 16,
+                            groupValue: 14,
                             visualDensity: const VisualDensity(
                                 horizontal: -4, vertical: -4),
                             controlAffinity: ListTileControlAffinity.leading,
                             value: value,
                             onChanged: (isChecked) {
-                              _forwordTocategory.value = 16;
+                              _forwordTocategory.value = 14;
                             }),
                       ),
                     ],

@@ -116,7 +116,9 @@ class TicketEntity extends BaseEntity {
         assignedUserID == null)) {
       actionButtons.add(StatusType.returned);
     }
-    if ((status == StatusType.open || status == StatusType.acquired) &&
+    if ((status == StatusType.open ||
+            status == StatusType.acquired ||
+            status == StatusType.returned) &&
         (userType == AssigneType.approver ||
             (userType == AssigneType.implementer && (teamCount ?? 0) > 1))) {
       if (userType == AssigneType.implementer) {
