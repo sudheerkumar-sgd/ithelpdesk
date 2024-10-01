@@ -5,7 +5,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
-import 'package:ithelpdesk/core/common/log.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
@@ -263,7 +262,6 @@ class ViewRequest extends BaseScreenWidget {
                     maxWidth: 350)
                 .then((value) async {
               if (value != null) {
-                printLog(value);
                 updateTicket.status = StatusType.returned;
                 if ((value?['employeeId'] ?? 0) > 0) {
                   updateTicket.assignedUserID = (value['employeeId'] ?? 0);
