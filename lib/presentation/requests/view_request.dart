@@ -62,6 +62,7 @@ class ViewRequest extends BaseScreenWidget {
   final TextEditingController _servieNameController = TextEditingController();
 
   final ValueNotifier<bool> _isExanded = ValueNotifier(false);
+  final ValueNotifier<bool> _onDataChanged = ValueNotifier(false);
 
   Widget _getChargeWidget(BuildContext context) {
     return ValueListenableBuilder(
@@ -694,18 +695,6 @@ class ViewRequest extends BaseScreenWidget {
   @override
   Widget build(BuildContext context) {
     final resources = context.resources;
-    final ticketActionButtons = ticket.getActionButtons(context);
-    final actionButtonsLength = isDesktop(context) ? 3 : 1;
-    final actionButtons = isDesktop(context)
-        ? ticketActionButtons.sublist(
-            0, min(actionButtonsLength, ticketActionButtons.length))
-        : ticketActionButtons.sublist(0, 1);
-    var popupActionButtons = List<StatusType>.empty(growable: true);
-    if (actionButtonsLength + 1 == ticketActionButtons.length) {
-      actionButtons.addAll(ticketActionButtons.sublist(actionButtonsLength));
-    } else if (actionButtonsLength < ticketActionButtons.length) {
-      popupActionButtons = ticketActionButtons.sublist(actionButtonsLength);
-    }
 
     return SelectionArea(
       child: Scaffold(
@@ -721,12 +710,17 @@ class ViewRequest extends BaseScreenWidget {
                   Dialogs.showInfoLoader(
                       context, resources.string.updatingTicket);
                 } else if (state is OnUpdateTicket) {
+                  final updatedTicket = state.onUpdateTicketResult.entity;
+                  ticket.assignedUserID = updatedTicket?.assignedUserID;
+                  ticket.status = updatedTicket?.status;
                   Dialogs.dismiss(context);
                   Dialogs.showInfoDialog(context, PopupType.success,
-                          '${resources.string.updatingTicket} ${state.onUpdateTicketResult}')
+                          '${resources.string.updatingTicket} UAQGOV-ITHD-${ticket.id}')
                       .then((value) {
                     if (ticket.status != StatusType.acquired) {
                       reloadPage();
+                    } else {
+                      _onDataChanged.value = !(_onDataChanged.value);
                     }
                   });
                 } else if (state is OnApiError) {
@@ -809,15 +803,24 @@ class ViewRequest extends BaseScreenWidget {
                                         ),
                                         SizedBox(
                                           width: 280,
-                                          child: FutureBuilder(
-                                              future: _servicesBloc
-                                                  .getTicketHistory(
-                                                      requestParams: {
-                                                    "ticketID": ticket.id
-                                                  }),
-                                              builder: (context, snapShot) {
-                                                return _getStatusWidget(context,
-                                                    snapShot.data?.items ?? []);
+                                          child: ValueListenableBuilder(
+                                              valueListenable: _onDataChanged,
+                                              builder: (context, onDataChanged,
+                                                  child) {
+                                                return FutureBuilder(
+                                                    future: _servicesBloc
+                                                        .getTicketHistory(
+                                                            requestParams: {
+                                                          "ticketID": ticket.id
+                                                        }),
+                                                    builder:
+                                                        (context, snapShot) {
+                                                      return _getStatusWidget(
+                                                          context,
+                                                          snapShot.data
+                                                                  ?.items ??
+                                                              []);
+                                                    });
                                               }),
                                         )
                                       ],
@@ -848,48 +851,77 @@ class ViewRequest extends BaseScreenWidget {
                     SizedBox(
                       height: resources.dimen.dp20,
                     ),
-                    if (ticket.status != StatusType.reject) ...[
+                    if (ticket.status != StatusType.reject &&
+                        ticket.status != StatusType.closed) ...[
                       _getComments(context),
                       SizedBox(
                         height: resources.dimen.dp20,
                       ),
                     ],
-                    Row(
-                      children: [
-                        for (int r = 0; r < actionButtons.length; r++) ...[
-                          Expanded(
-                            child: InkWell(
-                              onTap: () async {
-                                _onActionClicked(context, actionButtons[r]);
-                              },
-                              child: ActionButtonWidget(
-                                text: (actionButtons[r]).toString(),
-                                color: actionButtons[r].getColor(),
-                                radious: 0,
-                                textSize: resources.fontSize.dp12,
-                                padding: EdgeInsets.symmetric(
-                                    vertical: resources.dimen.dp7,
-                                    horizontal: resources.dimen.dp10),
-                              ),
-                            ),
-                          ),
-                          if (r < actionButtons.length) ...[
-                            SizedBox(
-                              width: resources.dimen.dp10,
-                            ),
-                          ]
-                        ],
-                        if (popupActionButtons.isNotEmpty)
-                          Expanded(
-                              child: DropdownMenuWidget(
-                            items: popupActionButtons,
-                            titleText: resources.string.otherActions,
-                            onItemSelected: (p0) {
-                              _onActionClicked(context, p0);
-                            },
-                          )),
-                      ],
-                    ),
+                    ValueListenableBuilder(
+                        valueListenable: _onDataChanged,
+                        builder: (context, onDataChange, child) {
+                          final ticketActionButtons =
+                              ticket.getActionButtons(context);
+                          final actionButtonsLength =
+                              isDesktop(context) ? 3 : 1;
+                          final actionButtons = isDesktop(context)
+                              ? ticketActionButtons.sublist(
+                                  0,
+                                  min(actionButtonsLength,
+                                      ticketActionButtons.length))
+                              : ticketActionButtons.sublist(0, 1);
+                          var popupActionButtons =
+                              List<StatusType>.empty(growable: true);
+                          if (actionButtonsLength + 1 ==
+                              ticketActionButtons.length) {
+                            actionButtons.addAll(ticketActionButtons
+                                .sublist(actionButtonsLength));
+                          } else if (actionButtonsLength <
+                              ticketActionButtons.length) {
+                            popupActionButtons = ticketActionButtons
+                                .sublist(actionButtonsLength);
+                          }
+                          return Row(
+                            children: [
+                              for (int r = 0;
+                                  r < actionButtons.length;
+                                  r++) ...[
+                                Expanded(
+                                  child: InkWell(
+                                    onTap: () async {
+                                      _onActionClicked(
+                                          context, actionButtons[r]);
+                                    },
+                                    child: ActionButtonWidget(
+                                      text: (actionButtons[r]).toString(),
+                                      color: actionButtons[r].getColor(),
+                                      radious: 0,
+                                      textSize: resources.fontSize.dp12,
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: resources.dimen.dp7,
+                                          horizontal: resources.dimen.dp10),
+                                    ),
+                                  ),
+                                ),
+                                if (r < actionButtons.length) ...[
+                                  SizedBox(
+                                    width: resources.dimen.dp10,
+                                  ),
+                                ]
+                              ],
+                              if (popupActionButtons.isNotEmpty)
+                                Expanded(
+                                    child: DropdownMenuWidget(
+                                  items: popupActionButtons,
+                                  titleText: resources.string.otherActions,
+                                  onItemSelected: (p0) {
+                                    _onActionClicked(context, p0);
+                                  },
+                                )),
+                            ],
+                          );
+                        }),
                   ],
                 ),
               ),

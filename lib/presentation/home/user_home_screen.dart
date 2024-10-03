@@ -731,7 +731,7 @@ class UserHomeScreen extends BaseScreenWidget {
                           Expanded(
                               child: InkWell(
                             onTap: () {
-                              if (selectTicketCategory == 2) {
+                              if (selectTicketCategory != 1) {
                                 ticketsData =
                                     _dashboardEntity?.assignedTickets ?? [];
                                 selectTicketCategory = 1;
@@ -761,7 +761,7 @@ class UserHomeScreen extends BaseScreenWidget {
                           Expanded(
                             child: InkWell(
                               onTap: () {
-                                if (selectTicketCategory == 1) {
+                                if (selectTicketCategory != 2) {
                                   ticketsData =
                                       _dashboardEntity?.myTickets ?? [];
                                   selectTicketCategory = 2;
@@ -779,16 +779,48 @@ class UserHomeScreen extends BaseScreenWidget {
                                       : resources.color.colorWhite,
                                   radious: 0,
                                   boarderWidth: resources.dimen.dp1,
-                                  boarderColor: selectTicketCategory == 1
-                                      ? resources.color.colorGray9E9E9E
-                                      : resources.color.viewBgColor,
+                                  boarderColor: selectTicketCategory == 2
+                                      ? resources.color.viewBgColor
+                                      : resources.color.colorGray9E9E9E,
                                 ).roundedCornerBox,
                                 textColor: selectTicketCategory == 2
                                     ? resources.color.colorWhite
                                     : resources.color.textColor,
                               ),
                             ),
-                          )
+                          ),
+                          if (_dashboardEntity?.teamTickets.isNotEmpty == true)
+                            Expanded(
+                              child: InkWell(
+                                onTap: () {
+                                  if (selectTicketCategory != 3) {
+                                    ticketsData =
+                                        _dashboardEntity?.teamTickets ?? [];
+                                    selectTicketCategory = 3;
+                                    _onDataChange.value = !_onDataChange.value;
+                                  }
+                                },
+                                child: ActionButtonWidget(
+                                  text: 'Team Tickets',
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: resources.dimen.dp7,
+                                      horizontal: resources.dimen.dp20),
+                                  decoration: BackgroundBoxDecoration(
+                                    boxColor: selectTicketCategory == 3
+                                        ? resources.color.viewBgColor
+                                        : resources.color.colorWhite,
+                                    radious: 0,
+                                    boarderWidth: resources.dimen.dp1,
+                                    boarderColor: selectTicketCategory == 3
+                                        ? resources.color.viewBgColor
+                                        : resources.color.colorGray9E9E9E,
+                                  ).roundedCornerBox,
+                                  textColor: selectTicketCategory == 3
+                                      ? resources.color.colorWhite
+                                      : resources.color.textColor,
+                                ),
+                              ),
+                            )
                         ]);
                       }),
                   ValueListenableBuilder(

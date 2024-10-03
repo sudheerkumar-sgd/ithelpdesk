@@ -14,6 +14,7 @@ class DashboardModel extends BaseModel {
   List<TicketsByCategoryEntity>? ticketsByCategory;
   List<TicketEntity> assignedTickets = [];
   List<TicketEntity> myTickets = [];
+  List<TicketEntity> teamTickets = [];
 
   DashboardModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -45,6 +46,12 @@ class DashboardModel extends BaseModel {
         myTickets.add(TicketsModel.fromJson(v).toEntity());
       });
     }
+    if (json['teamTickets'] != null) {
+      teamTickets = <TicketEntity>[];
+      json['teamTickets'].forEach((v) {
+        teamTickets.add(TicketsModel.fromJson(v).toEntity());
+      });
+    }
   }
 
   @override
@@ -58,6 +65,7 @@ class DashboardModel extends BaseModel {
     dashboardEntity.ticketsByCategory = ticketsByCategory;
     dashboardEntity.assignedTickets = assignedTickets;
     dashboardEntity.myTickets = myTickets;
+    dashboardEntity.teamTickets = teamTickets;
     return dashboardEntity;
   }
 }
@@ -127,7 +135,7 @@ class TicketsModel extends BaseModel {
   String? description;
   int? departmentID;
   String? departmentName;
-  String? priority;
+  PriorityType? priority;
   String? mobileNumber;
   int? userID;
   String? creator;
@@ -142,7 +150,7 @@ class TicketsModel extends BaseModel {
   bool? isDeleted;
   String? dueDate;
   String? finalComments;
-  String? status;
+  StatusType? status;
   String? createdOn;
   String? reopenedOn;
   String? closedOn;
@@ -173,12 +181,14 @@ class TicketsModel extends BaseModel {
     description = json['description'];
     departmentID = json['departmentID'];
     departmentName = json['departmentName'];
-    priority = json['priority'];
+    priority = json['priority'] is int
+        ? PriorityType.fromId(json['priority'] ?? PriorityType.low.index)
+        : PriorityType.fromName(json['priority'] ?? PriorityType.low.name);
     mobileNumber = json['mobileNumber'];
     userID = json['userID'];
     creator = json['creator'];
     level = json['level'];
-    assignedTo = json['assignedTo'];
+    assignedTo = '${json['assignedTo'] ?? ''}';
     assignedUserID = json['assignedUserID'];
     assigneType = json['assigneType'];
     previousAssignedID = json['previousAssignedID'];
@@ -189,7 +199,9 @@ class TicketsModel extends BaseModel {
     isDeleted = json['isDeleted'];
     dueDate = json['dueDate'];
     finalComments = json['finalComments'];
-    status = json['status'];
+    status = json['status'] is int
+        ? StatusType.fromId(json['status'])
+        : StatusType.fromName(json['status'] ?? StatusType.open.name);
     createdOn = json['createdOn'];
     reopenedOn = json['reopenedOn'];
     closedOn = json['closedOn'];
@@ -227,8 +239,7 @@ class TicketsModel extends BaseModel {
     ticketsEntity.description = description;
     ticketsEntity.departmentID = departmentID;
     ticketsEntity.departmentName = departmentName;
-    ticketsEntity.priority =
-        PriorityType.fromName(priority ?? PriorityType.low.name);
+    ticketsEntity.priority = priority;
     ticketsEntity.mobileNumber = mobileNumber;
     ticketsEntity.userID = userID;
     ticketsEntity.creator = creator;
@@ -246,7 +257,7 @@ class TicketsModel extends BaseModel {
     ticketsEntity.isDeleted = isDeleted;
     ticketsEntity.dueDate = dueDate;
     ticketsEntity.finalComments = finalComments;
-    ticketsEntity.status = StatusType.fromName(status ?? StatusType.open.name);
+    ticketsEntity.status = status;
     ticketsEntity.createdOn = createdOn;
     ticketsEntity.reopenedOn = reopenedOn;
     ticketsEntity.closedOn = closedOn;

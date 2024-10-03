@@ -79,7 +79,7 @@ class ServicesBloc extends Cubit<ServicesState> {
     final result = await servicesUseCase.updateTicketByStatus(
         apiUrl: apiUrl, requestParams: requestParams);
     emit(result.fold((l) => OnApiError(message: _getErrorMessage(l)), (r) {
-      return OnUpdateTicket(onUpdateTicketResult: r.entity?.value);
+      return OnUpdateTicket(onUpdateTicketResult: r);
     }));
   }
 

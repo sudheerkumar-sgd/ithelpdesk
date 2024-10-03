@@ -18,6 +18,7 @@ class DashboardEntity extends BaseEntity {
   List<TicketsByCategoryEntity>? ticketsByCategory;
   List<TicketEntity> assignedTickets = [];
   List<TicketEntity> myTickets = [];
+  List<TicketEntity> teamTickets = [];
 }
 
 class TicketsByMonthEntity extends BaseEntity {
@@ -99,6 +100,13 @@ class TicketEntity extends BaseEntity {
   List<StatusType> getActionButtonsForAssigned(BuildContext context) {
     final actionButtons = List<StatusType>.empty(growable: true);
 
+    if (status == StatusType.open &&
+        assignedUserID != null &&
+        userType == AssigneType.implementer &&
+        assignedUserID != UserCredentialsEntity.details().id) {
+      actionButtons.add(StatusType.acquired);
+      return actionButtons;
+    }
     if (status == StatusType.closed && userType == AssigneType.approver) {
       actionButtons.add(StatusType.reopen);
       return actionButtons;
