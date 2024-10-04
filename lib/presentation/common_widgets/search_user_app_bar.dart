@@ -3,6 +3,7 @@ import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
+import 'package:ithelpdesk/data/local/user_data_db.dart';
 import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/search_textfield_widget.dart';
 import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
@@ -16,11 +17,13 @@ class SearchUserAppBarWidget extends StatelessWidget
   final Function(AppBarItem)? onItemTap;
   SearchUserAppBarWidget(
       {required this.userName, this.padding, this.onItemTap, super.key});
-  final ValueNotifier _isAvailable = ValueNotifier<bool>(true);
+  final ValueNotifier _isAvailable = ValueNotifier<bool>(false);
 
   @override
   Widget build(BuildContext context) {
     final resources = context.resources;
+    _isAvailable.value =
+        context.userDataDB.get(UserDataDB.userOnvaction, defaultValue: false);
     return Container(
       padding: padding ?? const EdgeInsets.symmetric(horizontal: 20),
       height: 100,
@@ -47,6 +50,9 @@ class SearchUserAppBarWidget extends StatelessWidget
                           value: value,
                           onChanged: (value) {
                             _isAvailable.value = value;
+                            context.userDataDB
+                                .put(UserDataDB.userOnvaction, value);
+                            onItemTap?.call(AppBarItem.vacation);
                           }),
                     );
                   }),

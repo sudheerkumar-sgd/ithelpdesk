@@ -36,6 +36,14 @@ class OnUpdateFirbaseTokenResponse extends UserState {
   List<Object?> get props => [updateFirbaseTokenEntity];
 }
 
+class UpdateVactionStatus extends UserState {
+  final String updateVactionStatus;
+
+  UpdateVactionStatus({required this.updateVactionStatus});
+  @override
+  List<Object?> get props => [updateVactionStatus];
+}
+
 class OnLoginApiError extends UserState {
   final String message;
 

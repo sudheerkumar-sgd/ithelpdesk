@@ -93,6 +93,7 @@ const String submitHappinessMeterApiUrl =
 const String apiFolderUrl = 'api/';
 const String validateUserApiUrl = '${apiFolderUrl}User/ValidateUser';
 const String userDetailsApiUrl = '${apiFolderUrl}User/GetUserDetails';
+const String updateVactionStatusUrl = '${apiFolderUrl}User/setVacation';
 const String dashboardApiUrl = '${apiFolderUrl}Dashboard/GetDashboard';
 const String subcategoriesApiUrl = '${apiFolderUrl}MasterData/GetSubCategories';
 const String reasonsApiUrl = '${apiFolderUrl}MasterData/GetReasons';

@@ -33,6 +33,15 @@ class UserBloc extends Cubit<UserState> {
     return result.fold((l) => ListEntity(), (r) => r.entity ?? ListEntity());
   }
 
+  Future<void> setVaction({required Map<String, dynamic> requestParams}) async {
+    emit(OnLoginLoading());
+    final result =
+        await userUseCase.updateVactionStatus(requestParams: requestParams);
+    emit(result.fold((l) => OnLoginApiError(message: _getErrorMessage(l)), (r) {
+      return UpdateVactionStatus(updateVactionStatus: r.entity?.value);
+    }));
+  }
+
   String _getErrorMessage(Failure failure) {
     return failure.errorMessage;
   }

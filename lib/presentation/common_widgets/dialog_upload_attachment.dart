@@ -20,7 +20,7 @@ class DialogUploadAttachmentWidget extends StatelessWidget {
   const DialogUploadAttachmentWidget(
       {this.fileType = UploadOptions.any,
       this.allowedExtensions = const [],
-      this.maxSize = 1,
+      this.maxSize = 5,
       super.key});
 
   _getFile(BuildContext context, UploadOptions selectedOption) async {

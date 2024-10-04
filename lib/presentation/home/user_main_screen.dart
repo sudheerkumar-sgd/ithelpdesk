@@ -6,6 +6,7 @@ import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/data/local/app_settings_db.dart';
+import 'package:ithelpdesk/data/local/user_data_db.dart';
 import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
 import 'package:ithelpdesk/injection_container.dart';
 import 'package:ithelpdesk/presentation/bloc/user/user_bloc.dart';
@@ -44,12 +45,22 @@ class _MainScreenState extends State<UserMainScreen> {
   late SideBar sideBar;
 
   Widget getUserAppBar(BuildContext context) {
+    context.userDataDB.put(
+        UserDataDB.userOnvaction,
+        UserCredentialsEntity.details().userOnvaction ??
+            context.userDataDB
+                .get(UserDataDB.userOnvaction, defaultValue: false));
     return isDesktop(context)
         ? SearchUserAppBarWidget(
             userName: UserCredentialsEntity.details().name ?? "",
             onItemTap: (p0) {
               if (p0 == AppBarItem.user) {
                 sideBar.selectItem(3);
+              } else if (p0 == AppBarItem.vacation) {
+                _userBloc.setVaction(requestParams: {
+                  'vacation': context.userDataDB
+                      .get(UserDataDB.userOnvaction, defaultValue: false)
+                });
               }
             },
           )
@@ -152,49 +163,66 @@ class _MainScreenState extends State<UserMainScreen> {
         onPopInvoked: (didPop) async {
           await _navbarNotifier.onBackButtonPressed(_selectedIndex.value);
         },
-        child: Scaffold(
-          backgroundColor: resources.color.colorWhite,
-          resizeToAvoidBottomInset: false,
-          drawer: SizedBox(
-            width: 200,
-            child: SideBar(
-              onItemSelected: (p0) {
-                _onItemTapped(p0);
-              },
+        child: BlocProvider(
+          create: (context) => _userBloc,
+          child: BlocListener<UserBloc, UserState>(
+            listener: (context, state) {
+              if (state is OnLoginLoading) {
+                Dialogs.loader(context);
+              } else if (state is UpdateVactionStatus) {
+                Dialogs.dismiss(context);
+                Dialogs.showInfoDialog(
+                    context, PopupType.success, state.updateVactionStatus);
+              } else if (state is OnLoginApiError) {
+                Dialogs.dismiss(context);
+                Dialogs.showInfoDialog(context, PopupType.fail, state.message);
+              }
+            },
+            child: Scaffold(
+              backgroundColor: resources.color.colorWhite,
+              resizeToAvoidBottomInset: false,
+              drawer: SizedBox(
+                width: 200,
+                child: SideBar(
+                  onItemSelected: (p0) {
+                    _onItemTapped(p0);
+                  },
+                ),
+              ),
+              body: LayoutBuilder(builder: (context, size) {
+                screenSize = size.biggest;
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (isDesktop(context, size: size.biggest))
+                      SizedBox(
+                        width: 150,
+                        child: sideBar,
+                      ),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          FutureBuilder(
+                              future: _userBloc.validateUser({}),
+                              builder: (context, snapShot) {
+                                userToken = snapShot.data?.token ?? '';
+                                UserCredentialsEntity.create(
+                                    snapShot.data?.token ?? '');
+                                return getUserAppBar(context);
+                              }),
+                          ValueListenableBuilder(
+                              valueListenable: _selectedIndex,
+                              builder: (context, index, child) {
+                                return Expanded(child: getScreen(index));
+                              }),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              }),
             ),
           ),
-          body: LayoutBuilder(builder: (context, size) {
-            screenSize = size.biggest;
-            return Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (isDesktop(context, size: size.biggest))
-                  SizedBox(
-                    width: 150,
-                    child: sideBar,
-                  ),
-                Expanded(
-                  child: Column(
-                    children: [
-                      FutureBuilder(
-                          future: _userBloc.validateUser({}),
-                          builder: (context, snapShot) {
-                            userToken = snapShot.data?.token ?? '';
-                            UserCredentialsEntity.create(
-                                snapShot.data?.token ?? '');
-                            return getUserAppBar(context);
-                          }),
-                      ValueListenableBuilder(
-                          valueListenable: _selectedIndex,
-                          builder: (context, index, child) {
-                            return Expanded(child: getScreen(index));
-                          }),
-                    ],
-                  ),
-                ),
-              ],
-            );
-          }),
         ),
       ),
     );

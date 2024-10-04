@@ -9,7 +9,9 @@ import 'package:ithelpdesk/domain/repository/apis_repository.dart';
 import 'package:ithelpdesk/domain/usecase/base_usecase.dart';
 
 import '../../data/model/master_data_models.dart';
+import '../../data/model/single_data_model.dart';
 import '../entities/master_data_entities.dart';
+import '../entities/single_data_entity.dart';
 
 class UserUseCase extends BaseUseCase {
   final ApisRepository apisRepository;
@@ -63,6 +65,22 @@ class UserUseCase extends BaseUseCase {
       return Left(l);
     }, (r) {
       var apiResponseEntity = r.toEntity<ListEntity>();
+      return Right(apiResponseEntity);
+    });
+  }
+
+  Future<Either<Failure, ApiEntity<SingleDataEntity>>> updateVactionStatus(
+      {required Map<String, dynamic> requestParams}) async {
+    var apiResponse =
+        await apisRepository.postWithMultipartData<SingleDataModel>(
+      apiUrl: updateVactionStatusUrl,
+      requestParams: requestParams,
+      responseModel: SingleDataModel.fromCreateRequest,
+    );
+    return apiResponse.fold((l) {
+      return Left(l);
+    }, (r) {
+      var apiResponseEntity = r.toEntity<SingleDataEntity>();
       return Right(apiResponseEntity);
     });
   }

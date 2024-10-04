@@ -8,7 +8,7 @@ const String electricityNumber = "991";
 const String waterNumber = "992";
 const String servicesInListView = "LIST";
 const String servicesInGridView = "GRID";
-const int maxUploadFilesize = 1024 * 1024;
+const int maxUploadFilesize = 1024 * 1024 * 5 ;
 
 const mobileRegx = r'^05[0-9]{8}$';
 const emailTemplatePath = 'assets/json/email_template.txt';

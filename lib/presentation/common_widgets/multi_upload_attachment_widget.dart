@@ -60,7 +60,7 @@ class MultiUploadAttachmentWidget extends StatelessWidget {
       this.fileType,
       this.allowedExtensions = const [],
       this.selectedFileData,
-      this.maxSize = 1,
+      this.maxSize = 5,
       super.key});
   final ValueNotifier<bool> _isUploadChanged = ValueNotifier(false);
   final _uploadFiles = List<Map>.empty(growable: true);

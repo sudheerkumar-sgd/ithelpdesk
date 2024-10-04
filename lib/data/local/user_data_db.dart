@@ -15,6 +15,7 @@ class UserDataDB {
   static const String userType = 'user_type';
   static const String userToken = 'user_token';
   static const String userFavorites = 'user_favorites';
+  static const String userOnvaction = 'user_on_vaction';
   static const String userMobileNumber = 'user_mobilenumber';
   static const String homeTourDone = 'home_tour_done';
 

@@ -10,7 +10,7 @@ class SingleDataModel extends BaseModel {
 
   factory SingleDataModel.fromCreateRequest(Map<String, dynamic> json) {
     var createRequestModel = SingleDataModel();
-    createRequestModel.value = json['data']?['ticketId'];
+    createRequestModel.value = json['data']?['ticketId'] ?? json['message'];
     return createRequestModel;
   }
 

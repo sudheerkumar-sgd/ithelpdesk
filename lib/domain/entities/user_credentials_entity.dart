@@ -14,6 +14,7 @@ class UserCredentialsEntity {
   bool? isoUser;
   String? isoUserCategories;
   String? contactNumber;
+  bool? userOnvaction;
   UserCredentialsEntity();
   factory UserCredentialsEntity.details({isDataChanged = false}) {
     if ((userData == null || isDataChanged) && userToken.isNotEmpty) {
@@ -28,6 +29,8 @@ class UserCredentialsEntity {
       userData?.isoUser = bool.tryParse((data['isoUser'] ?? "false")) ?? false;
       userData?.isoUserCategories = data['isoUserCategories'];
       userData?.contactNumber = data['contactNumber'];
+      userData?.userOnvaction =
+          bool.tryParse('${data['onVacation'] ?? false}'.toLowerCase());
     }
     return userData ?? UserCredentialsEntity();
   }
