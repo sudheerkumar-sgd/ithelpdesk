@@ -48,6 +48,10 @@ class CreateNewRequest extends BaseScreenWidget {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _reqNoController = TextEditingController();
   final TextEditingController _serviceNameController = TextEditingController();
+  final TextEditingController _tradeLicenseNameController =
+      TextEditingController();
+  final TextEditingController _tradeLicenseNumberController =
+      TextEditingController();
   PriorityType? priority;
   final ValueNotifier<EserviceEntity?> _serviceID = ValueNotifier(null);
 
@@ -507,6 +511,7 @@ class CreateNewRequest extends BaseScreenWidget {
                                       ),
                                       RightIconTextWidget(
                                         textController: _reqNoController,
+                                        textInputType: TextInputType.number,
                                         labelText: resources.string.requestNo,
                                         hintText: resources.string.requestNo
                                             .withPrefix(
@@ -525,13 +530,130 @@ class CreateNewRequest extends BaseScreenWidget {
                                         },
                                         isValid: (p0) {
                                           if (value > 2) return null;
-                                          return p0.isEmpty
+                                          return p0.length < 4
                                               ? resources.string.requestNo
                                                   .withPrefix(resources
                                                       .string.pleaseEnter)
                                               : null;
                                         },
                                       ),
+                                      SizedBox(
+                                        height: resources.dimen.dp10,
+                                      ),
+                                      ValueListenableBuilder(
+                                          valueListenable: _subCategoryValue,
+                                          builder: (context, value, child) {
+                                            return value == 2
+                                                ? Row(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Expanded(
+                                                        child:
+                                                            RightIconTextWidget(
+                                                          textController:
+                                                              _tradeLicenseNameController,
+                                                          labelText: resources
+                                                              .string
+                                                              .tradeLicenseName,
+                                                          hintText: resources
+                                                              .string
+                                                              .tradeLicenseName
+                                                              .withPrefix(resources
+                                                                  .string
+                                                                  .pleaseEnter),
+                                                          errorMessage: resources
+                                                              .string
+                                                              .tradeLicenseName
+                                                              .withPrefix(resources
+                                                                  .string
+                                                                  .pleaseEnter),
+                                                          fillColor: resources
+                                                              .color.colorWhite,
+                                                          borderSide: BorderSide(
+                                                              color: context
+                                                                  .resources
+                                                                  .color
+                                                                  .sideBarItemUnselected,
+                                                              width: 1),
+                                                          borderRadius: 0,
+                                                          onChanged: (value) {
+                                                            _formKey
+                                                                .currentState
+                                                                ?.validate();
+                                                          },
+                                                          isValid: (p0) {
+                                                            return p0.isEmpty
+                                                                ? resources
+                                                                    .string
+                                                                    .tradeLicenseName
+                                                                    .withPrefix(
+                                                                        resources
+                                                                            .string
+                                                                            .pleaseEnter)
+                                                                : null;
+                                                          },
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        width: resources
+                                                            .dimen.dp40,
+                                                      ),
+                                                      Expanded(
+                                                        child:
+                                                            RightIconTextWidget(
+                                                          textController:
+                                                              _tradeLicenseNumberController,
+                                                          labelText: resources
+                                                              .string
+                                                              .tradeLicenseNumber,
+                                                          textInputType:
+                                                              TextInputType
+                                                                  .number,
+                                                          hintText: resources
+                                                              .string
+                                                              .tradeLicenseNumber
+                                                              .withPrefix(resources
+                                                                  .string
+                                                                  .pleaseEnter),
+                                                          errorMessage: resources
+                                                              .string
+                                                              .tradeLicenseNumber
+                                                              .withPrefix(resources
+                                                                  .string
+                                                                  .pleaseEnter),
+                                                          fillColor: resources
+                                                              .color.colorWhite,
+                                                          borderSide: BorderSide(
+                                                              color: context
+                                                                  .resources
+                                                                  .color
+                                                                  .sideBarItemUnselected,
+                                                              width: 1),
+                                                          borderRadius: 0,
+                                                          onChanged: (value) {
+                                                            _formKey
+                                                                .currentState
+                                                                ?.validate();
+                                                          },
+                                                          isValid: (p0) {
+                                                            return p0.isEmpty
+                                                                ? resources
+                                                                    .string
+                                                                    .tradeLicenseNumber
+                                                                    .withPrefix(
+                                                                        resources
+                                                                            .string
+                                                                            .pleaseEnter)
+                                                                : null;
+                                                          },
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  )
+                                                : const SizedBox();
+                                          }),
                                       SizedBox(
                                         height: resources.dimen.dp10,
                                       ),
@@ -719,6 +841,10 @@ class CreateNewRequest extends BaseScreenWidget {
                                   ticket.serviceReqNo = _reqNoController.text;
                                   ticket.serviceName =
                                       _serviceNameController.text;
+                                  ticket.tradeLicenseName =
+                                      _tradeLicenseNameController.text;
+                                  ticket.tradeLicenseNumber = int.parse(
+                                      _tradeLicenseNumberController.text);
                                   final data = ticket.toCreateJson();
                                   data['files'] = multiUploadAttachmentWidget
                                       .getSelectedFilesData()

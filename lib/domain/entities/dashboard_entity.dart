@@ -74,6 +74,8 @@ class TicketEntity extends BaseEntity {
   AssigneType? userType;
   bool? isMaxLevel;
   IssueType? issueType;
+  String? tradeLicenseName;
+  int? tradeLicenseNumber;
 
   bool isMyTicket() {
     return (userID == UserCredentialsEntity.details().id &&
@@ -226,6 +228,8 @@ class TicketEntity extends BaseEntity {
     data['serviceId'] = serviceId;
     data['serviceReqNo'] = serviceReqNo;
     data['serviceName'] = serviceName;
+    data['tradeLicenseName'] = tradeLicenseName;
+    data['tradeLicenseNumber'] = tradeLicenseNumber;
     data['isChargeable'] = isChargeable;
     data['issueType'] = issueType?.value;
     return data;
@@ -250,6 +254,7 @@ class TicketEntity extends BaseEntity {
         'requestType': 2,
         'isChargeable': isChargeable ?? false ? 'Yes' : 'No',
         "createDate": createdOn ?? '',
+        "closedDate": closedOn ?? '',
       };
 }
 

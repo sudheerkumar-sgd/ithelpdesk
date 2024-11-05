@@ -166,6 +166,8 @@ class TicketsModel extends BaseModel {
   int? teamCount;
   bool? isMaxLevel;
   int? issueType;
+  String? tradeLicenseName;
+  int? tradeLicenseNumber;
 
   TicketsModel.fromJson(Map<String, dynamic> ticketsJson) {
     final json = ticketsJson['data'] ?? ticketsJson;
@@ -213,6 +215,8 @@ class TicketsModel extends BaseModel {
     serviceId = json['serviceId'];
     serviceReqNo = json['serviceReqNo'];
     serviceName = json['serviceName'];
+    tradeLicenseName = json['tradeLicenseName'];
+    tradeLicenseNumber = json['tradeLicenseNumber'];
     teamCount = json['teamCount'];
     userType = json['userType'];
     isMaxLevel = json['isMaxLevel'];
@@ -267,6 +271,8 @@ class TicketsModel extends BaseModel {
     ticketsEntity.serviceId = serviceId;
     ticketsEntity.serviceReqNo = serviceReqNo;
     ticketsEntity.serviceName = serviceName;
+    ticketsEntity.tradeLicenseName = tradeLicenseName;
+    ticketsEntity.tradeLicenseNumber = tradeLicenseNumber;
     ticketsEntity.attachments = attachments;
     ticketsEntity.teamCount = teamCount;
     ticketsEntity.isMaxLevel = isMaxLevel;

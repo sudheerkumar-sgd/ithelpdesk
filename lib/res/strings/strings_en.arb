@@ -128,5 +128,7 @@
     "on":"on",
     "otherActions":"Other Actions",
     "vacation":"Vacation",
-    "language":"Language"
+    "language":"Language",
+    "tradeLicenseName":"TradeLicense Name",
+    "tradeLicenseNumber":"TradeLicense Number"
 }

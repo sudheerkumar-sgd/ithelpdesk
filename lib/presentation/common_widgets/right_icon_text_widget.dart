@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
@@ -86,6 +87,9 @@ class RightIconTextWidget extends StatelessWidget {
             maxLines: maxLines,
             maxLength: maxLength,
             keyboardType: textInputType,
+            inputFormatters: textInputType == TextInputType.number
+                ? [FilteringTextInputFormatter.digitsOnly]
+                : null,
             obscureText:
                 textInputType == TextInputType.visiblePassword ? true : false,
             textInputAction: textInputAction,

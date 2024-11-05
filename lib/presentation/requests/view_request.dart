@@ -60,6 +60,10 @@ class ViewRequest extends BaseScreenWidget {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _reqNoController = TextEditingController();
   final TextEditingController _servieNameController = TextEditingController();
+  final TextEditingController _tradeLicenseNameController =
+      TextEditingController();
+  final TextEditingController _tradeLicenseNumberController =
+      TextEditingController();
 
   final ValueNotifier<bool> _isExanded = ValueNotifier(false);
   final ValueNotifier<bool> _onDataChanged = ValueNotifier(false);
@@ -374,6 +378,8 @@ class ViewRequest extends BaseScreenWidget {
     _descriptionController.text = ticket.description ?? '';
     _reqNoController.text = ticket.serviceReqNo ?? '';
     _servieNameController.text = ticket.serviceName ?? '';
+    _tradeLicenseNameController.text = ticket.tradeLicenseName ?? '';
+    _tradeLicenseNumberController.text = '${ticket.tradeLicenseNumber ?? 0}';
     return Container(
       padding: EdgeInsets.symmetric(
           vertical: resources.dimen.dp15, horizontal: resources.dimen.dp20),
@@ -524,6 +530,54 @@ class ViewRequest extends BaseScreenWidget {
                     borderRadius: 0,
                     onChanged: (value) {},
                   ),
+                  if (ticket.subCategoryID == 2) ...[
+                    SizedBox(
+                      height: resources.dimen.dp10,
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: RightIconTextWidget(
+                            isEnabled: false,
+                            textController: _tradeLicenseNameController,
+                            labelText: resources.string.tradeLicenseName,
+                            hintText: resources.string.tradeLicenseName
+                                .withPrefix(resources.string.pleaseEnter),
+                            errorMessage: resources.string.tradeLicenseName
+                                .withPrefix(resources.string.pleaseEnter),
+                            fillColor: resources.color.colorWhite,
+                            borderSide: BorderSide(
+                                color: context
+                                    .resources.color.sideBarItemUnselected,
+                                width: 1),
+                            borderRadius: 0,
+                          ),
+                        ),
+                        SizedBox(
+                          width: resources.dimen.dp40,
+                        ),
+                        Expanded(
+                          child: RightIconTextWidget(
+                            isEnabled: false,
+                            textController: _tradeLicenseNumberController,
+                            labelText: resources.string.tradeLicenseNumber,
+                            textInputType: TextInputType.number,
+                            hintText: resources.string.tradeLicenseNumber
+                                .withPrefix(resources.string.pleaseEnter),
+                            errorMessage: resources.string.tradeLicenseNumber
+                                .withPrefix(resources.string.pleaseEnter),
+                            fillColor: resources.color.colorWhite,
+                            borderSide: BorderSide(
+                                color: context
+                                    .resources.color.sideBarItemUnselected,
+                                width: 1),
+                            borderRadius: 0,
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
                   SizedBox(
                     height: resources.dimen.dp10,
                   ),

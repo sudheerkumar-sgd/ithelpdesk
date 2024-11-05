@@ -20,6 +20,10 @@ extension StringExtension on String {
     return RegExp(r'^05[0-9]{8}$').hasMatch(this);
   }
 
+  bool isNumeric() {
+    return RegExp(r'\d+$').hasMatch(this);
+  }
+
   String withPrefix(String prefix) {
     return '$prefix $this';
   }
