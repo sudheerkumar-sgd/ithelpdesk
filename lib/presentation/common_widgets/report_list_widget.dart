@@ -37,6 +37,7 @@ class ReportListWidget extends StatelessWidget {
   int pageCount = 20;
   final List<int> _selectedEmployees = List<int>.empty(growable: true);
   final List<int> _selectedDepartments = List<int>.empty(growable: true);
+  final List<int> _selectedCategories = List<int>.empty(growable: true);
   final List<StatusType> _filteredStatus =
       List<StatusType>.empty(growable: true);
   final _masterDataBloc = sl<MasterDataBloc>();
@@ -142,12 +143,14 @@ class ReportListWidget extends StatelessWidget {
             NameIDEntity(7, resources.string.assignee),
             NameIDEntity(8, resources.string.department),
             NameIDEntity(9, resources.string.createDate),
+            NameIDEntity(9, resources.string.updateDate),
           ]
         : [
             NameIDEntity(1, resources.string.id),
             NameIDEntity(4, resources.string.subject),
             NameIDEntity(5, resources.string.status),
             NameIDEntity(6, resources.string.priority),
+            NameIDEntity(9, resources.string.createDate),
             NameIDEntity(9, resources.string.createDate),
           ];
     final ticketsTableColunwidths = isDesktop(context)
@@ -161,6 +164,7 @@ class ReportListWidget extends StatelessWidget {
             6: const FlexColumnWidth(2),
             7: const FlexColumnWidth(2),
             8: const FlexColumnWidth(3),
+            9: const FlexColumnWidth(3),
           }
         : {
             0: const FlexColumnWidth(2),
@@ -173,6 +177,12 @@ class ReportListWidget extends StatelessWidget {
         valueListenable: _onSortChange,
         builder: (context, value, child) {
           var filteredData = ticketsData;
+          if (_selectedCategories.isNotEmpty) {
+            filteredData = filteredData
+                .where(
+                    (item) => (_selectedCategories.contains(item.categoryID)))
+                .toList();
+          }
           if (_filteredStatus.isNotEmpty) {
             filteredData = filteredData
                 .where((item) => (_filteredStatus.contains(item.status) ||
@@ -233,6 +243,7 @@ class ReportListWidget extends StatelessWidget {
                                     ticketsHeaderData[index].id == 6 ||
                                     ticketsHeaderData[index].id == 5 ||
                                     ticketsHeaderData[index].id == 7 ||
+                                    ticketsHeaderData[index].id == 3 ||
                                     ticketsHeaderData[index].id == 8)
                                 ? InkWell(
                                     onTap: () async {
@@ -343,6 +354,48 @@ class ReportListWidget extends StatelessWidget {
                                                       (item.id ?? 0) as int)
                                                   .toList();
                                               _selectedDepartments.addAll(ids);
+                                              page = 1;
+                                              _onSortChange.value =
+                                                  !_onSortChange.value;
+                                            }
+                                          });
+                                        }
+                                      } else if (ticketsHeaderData[index].id ==
+                                          3) {
+                                        final List<NameIDEntity> items = [
+                                          NameIDEntity(1, "IT Support",
+                                              nameAr: "الدعم الفني"),
+                                          NameIDEntity(2, "ISO CR",
+                                              nameAr: "نماذج طلبات التغيير"),
+                                          NameIDEntity(3, "Eservices",
+                                              nameAr: "الخدمات"),
+                                          NameIDEntity(4, "Application",
+                                              nameAr: "الانظمة"),
+                                        ];
+                                        final selectedCategories = items
+                                            .where((item) => _selectedCategories
+                                                .contains(item.id))
+                                            .toList();
+                                        if (context.mounted) {
+                                          Dialogs.showDialogWithClose(
+                                                  context,
+                                                  MultiSelectDialogWidget(
+                                                    list: items,
+                                                    selectedItems:
+                                                        selectedCategories,
+                                                  ),
+                                                  maxWidth: isDesktop(context)
+                                                      ? 400
+                                                      : null,
+                                                  showClose: false)
+                                              .then((value) {
+                                            if (value != null) {
+                                              _selectedCategories.clear();
+                                              final ids = (value as List)
+                                                  .map((item) =>
+                                                      (item.id as int))
+                                                  .toList();
+                                              _selectedCategories.addAll(ids);
                                               page = 1;
                                               _onSortChange.value =
                                                   !_onSortChange.value;

@@ -19,4 +19,9 @@ class NameIDEntity extends BaseEntity {
   String toString() {
     return (isSelectedLocalEn ? name : nameAr ?? name) ?? '';
   }
+
+  @override
+  List<Object?> get props => [
+        id,
+      ];
 }

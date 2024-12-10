@@ -197,6 +197,7 @@ class TicketEntity extends BaseEntity {
         "assignee": assignedTo ?? '',
         "department": departmentName ?? '',
         "createDate": createdOn ?? '',
+        "updateDate": updatedOn ?? '',
       };
   Map<String, dynamic> toMobileJson() => {
         "id": id ?? '',
@@ -249,6 +250,8 @@ class TicketEntity extends BaseEntity {
         'serviceId': serviceId ?? '',
         'serviceReqNo': serviceReqNo ?? '',
         'serviceName': serviceName ?? '',
+        'tradeLicenseName': tradeLicenseName ?? '',
+        'tradeLicenseNumber': tradeLicenseNumber ?? '',
         'Issue Type': (issueType?.name ?? '').capitalize(),
         'Reason For Issue': finalComments,
         'requestType': 2,

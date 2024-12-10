@@ -1,6 +1,8 @@
-import 'package:excel/excel.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
@@ -11,10 +13,17 @@ import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart
 import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dropdown_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/report_list_widget.dart';
+import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 
+import '../../core/common/log.dart';
+import '../../core/constants/constants.dart';
+import '../../domain/entities/dashboard_entity.dart';
 import '../../domain/entities/user_credentials_entity.dart';
 import '../../injection_container.dart';
+import '../../res/drawables/background_box_decoration.dart';
+import '../common_widgets/alert_dialog_widget.dart';
 import '../requests/view_request.dart';
+import 'package:excel/excel.dart' as excelpackage;
 
 // ignore: must_be_immutable
 class ReportsScreen extends BaseScreenWidget {
@@ -26,6 +35,33 @@ class ReportsScreen extends BaseScreenWidget {
   // final ValueNotifier<UserEntity?> _selectedEmployee = ValueNotifier(null);
   String? selectedStatus;
   List<String>? ticketsHeaderData;
+  Future<bool> exportToExcel(List<dynamic> tickets) async {
+    try {
+      var excel = excelpackage.Excel.createExcel();
+      var sheetObject = excel[excel.getDefaultSheet() ?? 'SheetName'];
+      for (var (item as TicketEntity) in tickets) {
+        List<excelpackage.CellValue> headerlist = List.empty(growable: true);
+        List<excelpackage.CellValue> list = List.empty(growable: true);
+        item.toExcel().forEach((k, v) {
+          if (sheetObject.rows.isEmpty) {
+            final cellValue = excelpackage.TextCellValue(k.capitalize());
+            headerlist.add(cellValue);
+          }
+          final cellValue = excelpackage.TextCellValue("$v");
+          list.add(cellValue);
+        });
+        if (sheetObject.rows.isEmpty) {
+          sheetObject.appendRow(headerlist);
+        }
+        sheetObject.appendRow(list);
+      }
+      excel.save(fileName: 'Tickets.xlsx');
+    } catch (e) {
+      printLog(e);
+      return false;
+    }
+    return true;
+  }
 
   Widget _getFilters(BuildContext context) {
     final resources = context.resources;
@@ -184,27 +220,220 @@ class ReportsScreen extends BaseScreenWidget {
         ),
         InkWell(
           onTap: () {
-            var excel = Excel.createExcel();
-            var sheetObject = excel[excel.getDefaultSheet() ?? 'SheetName'];
+            final ValueNotifier<List<String>> filteredDates = ValueNotifier([]);
 
-            tickets?.forEach((item) {
-              List<CellValue> headerlist = List.empty(growable: true);
-              List<CellValue> list = List.empty(growable: true);
-
-              item.toExcel().forEach((k, v) {
-                if (sheetObject.rows.isEmpty) {
-                  final cellValue = TextCellValue("$k".capitalize());
-                  headerlist.add(cellValue);
-                }
-                final cellValue = TextCellValue("$v");
-                list.add(cellValue);
-              });
-              if (sheetObject.rows.isEmpty) {
-                sheetObject.appendRow(headerlist);
+            Dialogs.showDialogWithClose(
+              context,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: resources.dimen.dp20,
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '${resources.string.filterByDate}: ',
+                        style: context.textFontWeight600
+                            .onFontSize(resources.fontSize.dp10),
+                      ),
+                      SizedBox(
+                        width: resources.dimen.dp10,
+                      ),
+                      ValueListenableBuilder(
+                          valueListenable: filteredDates,
+                          builder: (context, value, child) {
+                            return Container(
+                              decoration: BackgroundBoxDecoration(
+                                      radious: resources.dimen.dp15,
+                                      boarderColor:
+                                          resources.color.sideBarItemUnselected)
+                                  .roundedCornerBox,
+                              padding: EdgeInsets.symmetric(
+                                vertical: resources.dimen.dp5,
+                              ),
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    width: resources.dimen.dp10,
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      showDatePicker(
+                                              context: context,
+                                              firstDate: DateTime.now().add(
+                                                  const Duration(days: -365)),
+                                              lastDate: DateTime.now())
+                                          .then((dateTime) {
+                                        if (dateTime != null) {
+                                          filteredDates.value =
+                                              List<String>.empty(growable: true)
+                                                ..add(getDateByformat(
+                                                    'yyyy/MM/dd', dateTime));
+                                        }
+                                      });
+                                    },
+                                    child: Text.rich(
+                                      TextSpan(
+                                          text: value.isNotEmpty
+                                              ? value[0]
+                                              : resources.string.startDate,
+                                          children: [
+                                            WidgetSpan(
+                                              child: Padding(
+                                                padding: isSelectedLocalEn
+                                                    ? const EdgeInsets.only(
+                                                        left: 5.0)
+                                                    : const EdgeInsets.only(
+                                                        right: 5.0),
+                                                child: const Icon(
+                                                  Icons.calendar_month_sharp,
+                                                  size: 16,
+                                                ),
+                                              ),
+                                            )
+                                          ]),
+                                      style: context.textFontWeight400
+                                          .onFontSize(resources.fontSize.dp10),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: resources.dimen.dp10,
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      if (value.isNotEmpty) {
+                                        showDatePicker(
+                                                context: context,
+                                                initialDate:
+                                                    getDateTimeByString(
+                                                        'yyyy/MM/dd', value[0]),
+                                                firstDate: getDateTimeByString(
+                                                    'yyyy/MM/dd', value[0]),
+                                                lastDate: DateTime.now())
+                                            .then((dateTime) {
+                                          if (dateTime != null) {
+                                            filteredDates.value =
+                                                List<String>.empty(
+                                                    growable: true)
+                                                  ..add(value[0])
+                                                  ..add(getDateByformat(
+                                                      'yyyy/MM/dd', dateTime));
+                                          }
+                                        });
+                                      } else {
+                                        Dialogs.showInfoDialog(
+                                            context,
+                                            PopupType.fail,
+                                            resources.string.pleaseSelect +
+                                                resources.string.startDate);
+                                      }
+                                    },
+                                    child: Text.rich(
+                                      TextSpan(
+                                          text: value.length > 1
+                                              ? value[1]
+                                              : resources.string.endDate,
+                                          children: [
+                                            WidgetSpan(
+                                              child: Padding(
+                                                padding: isSelectedLocalEn
+                                                    ? const EdgeInsets.only(
+                                                        left: 5.0)
+                                                    : const EdgeInsets.only(
+                                                        right: 5.0),
+                                                child: const Icon(
+                                                  Icons.calendar_month_sharp,
+                                                  size: 16,
+                                                ),
+                                              ),
+                                            )
+                                          ]),
+                                      style: context.textFontWeight400
+                                          .onFontSize(resources.fontSize.dp10),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: resources.dimen.dp5,
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      if (filteredDates.value.isNotEmpty) {
+                                        filteredDates.value = List.empty();
+                                      }
+                                    },
+                                    child: const Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 5),
+                                      child: Icon(
+                                        Icons.clear,
+                                        size: 16,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: resources.dimen.dp5,
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                    ],
+                  ),
+                  SizedBox(
+                    height: resources.dimen.dp30,
+                  ),
+                  InkWell(
+                    onTap: () {
+                      if (filteredDates.value.length == 2) {
+                        Navigator.of(context, rootNavigator: true)
+                            .pop(filteredDates.value);
+                      }
+                    },
+                    child: ActionButtonWidget(
+                        text: resources.string.submit,
+                        radious: resources.dimen.dp15,
+                        textSize: resources.fontSize.dp10,
+                        padding: EdgeInsets.symmetric(
+                            vertical: resources.dimen.dp5,
+                            horizontal: resources.dimen.dp15),
+                        color: resources.color.sideBarItemSelected),
+                  ),
+                ],
+              ),
+              maxWidth: 350,
+            ).then((value) async {
+              if (value == null) {
+                return;
               }
-              sheetObject.appendRow(list);
+              if (context.mounted) {
+                Dialogs.loader(context);
+              }
+              Future.delayed(const Duration(milliseconds: 200), () async {
+                var dateFormat = DateFormat('dd-MMM-yyyy HH:mm');
+                var startTime =
+                    DateFormat('yyyy/MM/dd').parse(filteredDates.value[0]);
+                var endTime =
+                    DateFormat('yyyy/MM/dd').parse(filteredDates.value[1]);
+                final filterTickets = tickets
+                        ?.where((item) => (dateFormat
+                                    .parse(item.createdOn ?? '', true)
+                                    .compareTo(startTime) >=
+                                0 &&
+                            dateFormat
+                                    .parse(item.createdOn ?? '', true)
+                                    .compareTo(endTime) <=
+                                0))
+                        .toList() ??
+                    [];
+                await _servicesBloc.exportToExcel(filterTickets);
+
+                if (context.mounted) {
+                  Dialogs.dismiss(context);
+                }
+              });
             });
-            excel.save(fileName: 'Tickets.xlsx');
           },
           child: ActionButtonWidget(
               text: resources.string.download,

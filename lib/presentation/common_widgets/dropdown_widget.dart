@@ -149,7 +149,7 @@ class DropDownWidget<T> extends StatelessWidget {
                           fontFamily: fontFamily.isNotEmpty
                               ? fontFamily
                               : context.resources.isLocalEn
-                                  ? fontFamilyEN
+                                  ?  fontFamilyEN
                                   : fontFamilyAR)
                       .onFontSize(context.resources.fontSize.dp12),
                   onChanged: isEnabled

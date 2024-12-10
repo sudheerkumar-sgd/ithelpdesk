@@ -102,8 +102,8 @@ class RightIconTextWidget extends StatelessWidget {
                 return isValid?.call(value ?? '');
               } else if (errorMessage.isNotEmpty &&
                   (value == null ||
-                      value.isEmpty ||
-                      value.length < maxLengthValidation ||
+                      value.trim().isEmpty ||
+                      value.trim().length < maxLengthValidation ||
                       !RegExp(regex ?? '').hasMatch(value))) {
                 return errorMessage.isNotEmpty ? errorMessage : null;
               }

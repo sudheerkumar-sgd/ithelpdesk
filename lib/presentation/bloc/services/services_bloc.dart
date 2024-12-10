@@ -83,6 +83,14 @@ class ServicesBloc extends Cubit<ServicesState> {
     }));
   }
 
+  Future<ServicesState> exportToExcel(List<dynamic> tickets) async {
+    //emit(OnLoading());
+    final result = await servicesUseCase.exportToExcel(tickets);
+    return (result.fold((l) => OnApiError(message: _getErrorMessage(l)), (r) {
+      return OnExportExcel(response: r);
+    }));
+  }
+
   String _getErrorMessage(Failure failure) {
     return failure.errorMessage;
   }

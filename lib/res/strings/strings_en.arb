@@ -41,6 +41,7 @@
     "assignee":"Assignee",
     "department":"Department",
     "createDate":"Create Date",
+    "updateDate":"Update Date",
     "create":"Create",
     "step":"Step",
     "step1Des":"Select your Ticket Category",

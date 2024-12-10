@@ -1,5 +1,8 @@
 import 'package:dartz/dartz.dart';
+import 'package:excel/excel.dart';
+import 'package:ithelpdesk/core/common/log.dart';
 import 'package:ithelpdesk/core/error/failures.dart';
+import 'package:ithelpdesk/core/extensions/string_extension.dart';
 import 'package:ithelpdesk/data/model/api_response_model.dart';
 import 'package:ithelpdesk/data/model/dashboard_model.dart';
 import 'package:ithelpdesk/data/model/master_data_models.dart';
@@ -127,5 +130,33 @@ class ServicesUseCase extends BaseUseCase {
       var apiResponseEntity = r.toEntity<TicketEntity>();
       return Right(apiResponseEntity);
     });
+  }
+
+  Future<Either<Failure, bool>> exportToExcel(List<dynamic> tickets) async {
+    try {
+      var excel = Excel.createExcel();
+      var sheetObject = excel[excel.getDefaultSheet() ?? 'SheetName'];
+      for (var (item as TicketEntity) in tickets) {
+        List<CellValue> headerlist = List.empty(growable: true);
+        List<CellValue> list = List.empty(growable: true);
+        item.toExcel().forEach((k, v) {
+          if (sheetObject.rows.isEmpty) {
+            final cellValue = TextCellValue(k.capitalize());
+            headerlist.add(cellValue);
+          }
+          final cellValue = TextCellValue("$v");
+          list.add(cellValue);
+        });
+        if (sheetObject.rows.isEmpty) {
+          sheetObject.appendRow(headerlist);
+        }
+        sheetObject.appendRow(list);
+      }
+      excel.save(fileName: 'Tickets.xlsx');
+    } catch (e) {
+      printLog(e);
+      return const Right(false);
+    }
+    return const Right(true);
   }
 }

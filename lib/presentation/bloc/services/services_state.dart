@@ -36,6 +36,14 @@ class OnUpdateTicket extends ServicesState {
   List<Object?> get props => [onUpdateTicketResult];
 }
 
+class OnExportExcel extends ServicesState {
+  final bool response;
+
+  OnExportExcel({required this.response});
+  @override
+  List<Object?> get props => [response];
+}
+
 class OnMostUsedServicesSuccess extends ServicesState {
   final ApiEntity<MostUsedServicesEntity> mostUsedServicesEntity;
 

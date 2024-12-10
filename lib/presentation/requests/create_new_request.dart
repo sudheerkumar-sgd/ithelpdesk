@@ -843,7 +843,7 @@ class CreateNewRequest extends BaseScreenWidget {
                                       _serviceNameController.text;
                                   ticket.tradeLicenseName =
                                       _tradeLicenseNameController.text;
-                                  ticket.tradeLicenseNumber = int.parse(
+                                  ticket.tradeLicenseNumber = int.tryParse(
                                       _tradeLicenseNumberController.text);
                                   final data = ticket.toCreateJson();
                                   data['files'] = multiUploadAttachmentWidget
