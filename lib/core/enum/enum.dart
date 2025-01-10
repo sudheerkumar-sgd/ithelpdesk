@@ -77,8 +77,6 @@ enum PriorityType {
         return isSelectedLocalEn ? name.capitalize() : 'عالي';
       case critical:
         return isSelectedLocalEn ? name.capitalize() : 'حرج';
-      default:
-        return name.toString();
     }
   }
 }

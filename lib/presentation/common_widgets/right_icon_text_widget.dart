@@ -17,6 +17,7 @@ class RightIconTextWidget extends StatelessWidget {
   final TextInputAction? textInputAction;
   final TextEditingController? textController;
   final String? suffixIconPath;
+  final String? prefixIconPath;
   final int? maxLines;
   final int? maxLength;
   final int maxLengthValidation;
@@ -39,6 +40,7 @@ class RightIconTextWidget extends StatelessWidget {
       this.errorMessage = '',
       this.textController,
       this.suffixIconPath,
+      this.prefixIconPath,
       this.textInputType,
       this.textInputAction,
       this.maxLines = 1,
@@ -133,11 +135,25 @@ class RightIconTextWidget extends StatelessWidget {
                         suffixIconClick?.call();
                       },
                       child: Padding(
-                        padding: context.resources.isLocalEn
-                            ? const EdgeInsets.only(right: 15.0)
-                            : const EdgeInsets.only(left: 15.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
                         child: ImageWidget(
                           path: suffixIconPath ?? '',
+                        ).loadImage,
+                      ),
+                    )
+                  : null,
+              prefixIconConstraints:
+                  BoxConstraints(maxHeight: height, minHeight: height),
+              prefixIcon: (prefixIconPath ?? '').isNotEmpty
+                  ? InkWell(
+                      onTap: () {
+                        suffixIconClick?.call();
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: ImageWidget(
+                          width: 20,
+                          path: prefixIconPath ?? '',
                         ).loadImage,
                       ),
                     )

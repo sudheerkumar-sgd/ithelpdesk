@@ -10,6 +10,7 @@ import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/domain/entities/base_entity.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
 import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
+import 'package:ithelpdesk/domain/entities/user_entity.dart';
 import 'package:ithelpdesk/injection_container.dart';
 import 'package:ithelpdesk/presentation/bloc/master_data/master_data_bloc.dart';
 import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
@@ -54,6 +55,7 @@ class CreateNewRequest extends BaseScreenWidget {
       TextEditingController();
   PriorityType? priority;
   final ValueNotifier<EserviceEntity?> _serviceID = ValueNotifier(null);
+  final ValueNotifier<UserEntity?> _raisedBy = ValueNotifier(null);
 
   @override
   Widget build(BuildContext context) {
@@ -286,6 +288,7 @@ class CreateNewRequest extends BaseScreenWidget {
                                     horizontal: resources.dimen.dp20),
                                 color: resources.color.colorWhite,
                                 child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Row(
                                       crossAxisAlignment:
@@ -390,28 +393,118 @@ class CreateNewRequest extends BaseScreenWidget {
                                     SizedBox(
                                       height: resources.dimen.dp10,
                                     ),
-                                    RightIconTextWidget(
-                                      textInputType: TextInputType.number,
-                                      labelText: resources
-                                          .string.contactNoTelephoneExt,
-                                      hintText: resources
-                                          .string.contactNoTelephoneExt
-                                          .withPrefix(
-                                              resources.string.pleaseEnter),
-                                      errorMessage: resources
-                                          .string.contactNoTelephoneExt
-                                          .withPrefix(
-                                              resources.string.pleaseEnter),
-                                      textController: _contactNoController,
-                                      fillColor: resources.color.colorWhite,
-                                      borderSide: BorderSide(
-                                          color: context.resources.color
-                                              .sideBarItemUnselected,
-                                          width: 1),
-                                      borderRadius: 0,
-                                      onChanged: (value) {
-                                        _formKey.currentState?.validate();
-                                      },
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Expanded(
+                                          child: RightIconTextWidget(
+                                            textInputType: TextInputType.number,
+                                            labelText: resources
+                                                .string.contactNoTelephoneExt,
+                                            hintText: resources
+                                                .string.contactNoTelephoneExt
+                                                .withPrefix(resources
+                                                    .string.pleaseEnter),
+                                            errorMessage: resources
+                                                .string.contactNoTelephoneExt
+                                                .withPrefix(resources
+                                                    .string.pleaseEnter),
+                                            textController:
+                                                _contactNoController,
+                                            fillColor:
+                                                resources.color.colorWhite,
+                                            borderSide: BorderSide(
+                                                color: context.resources.color
+                                                    .sideBarItemUnselected,
+                                                width: 1),
+                                            borderRadius: 0,
+                                            onChanged: (value) {
+                                              _formKey.currentState?.validate();
+                                            },
+                                          ),
+                                        ),
+                                        if (value == 2) ...[
+                                          SizedBox(
+                                            width: resources.dimen.dp40,
+                                          ),
+                                          Expanded(
+                                            child: ValueListenableBuilder(
+                                                valueListenable:
+                                                    _subCategoryValue,
+                                                builder: (context,
+                                                    categoryValue, child) {
+                                                  int departmentID = 1;
+                                                  if (categoryValue == 1 ||
+                                                      categoryValue == 3) {
+                                                    departmentID = 5;
+                                                  } else if (categoryValue ==
+                                                      2) {
+                                                    departmentID = 2;
+                                                  } else if (categoryValue ==
+                                                      4) {
+                                                    departmentID = 1;
+                                                  } else if (categoryValue ==
+                                                      25) {
+                                                    departmentID = 18;
+                                                  }
+                                                  return FutureBuilder(
+                                                      future: value == -1
+                                                          ? Future.value(
+                                                              ListEntity())
+                                                          : _masterDataBloc
+                                                              .getEmployees(
+                                                                  requestParams: {
+                                                                  'departmentID':
+                                                                      departmentID,
+                                                                }),
+                                                      builder:
+                                                          (context, snapShot) {
+                                                        final items = snapShot
+                                                                .data?.items ??
+                                                            [];
+                                                        items.sort((a, b) => a
+                                                            .toString()
+                                                            .toLowerCase()
+                                                            .compareTo(b
+                                                                .toString()
+                                                                .toLowerCase()));
+                                                        return DropdownSearchWidget(
+                                                          list: items,
+                                                          labelText: resources
+                                                              .string.raisedBy,
+                                                          hintText: resources
+                                                              .string.raisedBy
+                                                              .withPrefix(resources
+                                                                  .string
+                                                                  .pleaseSelect),
+                                                          errorMessage: value <
+                                                                  3
+                                                              ? resources.string
+                                                                  .raisedBy
+                                                                  .withPrefix(
+                                                                      resources
+                                                                          .string
+                                                                          .pleaseSelect)
+                                                              : '',
+                                                          fillColor: resources
+                                                              .color.colorWhite,
+                                                          selectedValue:
+                                                              _raisedBy.value,
+                                                          callback: (value) {
+                                                            _raisedBy.value =
+                                                                (value
+                                                                    as UserEntity);
+                                                            _formKey
+                                                                .currentState
+                                                                ?.validate();
+                                                          },
+                                                        );
+                                                      });
+                                                }),
+                                          ),
+                                        ]
+                                      ],
                                     ),
                                     SizedBox(
                                       height: resources.dimen.dp10,
@@ -841,6 +934,7 @@ class CreateNewRequest extends BaseScreenWidget {
                                   ticket.serviceReqNo = _reqNoController.text;
                                   ticket.serviceName =
                                       _serviceNameController.text;
+                                  ticket.raisedBy = _raisedBy.value?.id;
                                   ticket.tradeLicenseName =
                                       _tradeLicenseNameController.text;
                                   ticket.tradeLicenseNumber = int.tryParse(

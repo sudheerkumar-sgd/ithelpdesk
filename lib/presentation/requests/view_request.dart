@@ -56,6 +56,7 @@ class ViewRequest extends BaseScreenWidget {
   final MasterDataBloc _masterDataBloc = sl<MasterDataBloc>();
   final ValueNotifier<ReasonsEntity?> _reasonValue = ValueNotifier(null);
   final TextEditingController _contactNoController = TextEditingController();
+  final TextEditingController _rasisedByController = TextEditingController();
   final TextEditingController _reasonController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _reqNoController = TextEditingController();
@@ -314,7 +315,7 @@ class ViewRequest extends BaseScreenWidget {
                       TicketTransferWidget(
                         ticketEntity: ticket,
                       ),
-                      maxWidth: 350)
+                      maxWidth: 450)
                   .then((value) async {
                 updateTicket.status = StatusType.open;
                 if (value['employee'] > 0) {
@@ -344,7 +345,7 @@ class ViewRequest extends BaseScreenWidget {
                       TicketTransferWidget(
                         ticketEntity: ticket,
                       ),
-                      maxWidth: 350)
+                      maxWidth: 450)
                   .then((value) async {
                 updateTicket.status = StatusType.open;
                 if (value['employee'] > 0) {
@@ -374,6 +375,7 @@ class ViewRequest extends BaseScreenWidget {
     final resources = context.resources;
     final priorities = getPriorityTypes();
     _contactNoController.text = ticket.mobileNumber ?? '';
+    _rasisedByController.text = ticket.raisedByName ?? '';
     _reasonController.text = ticket.subject ?? '';
     _descriptionController.text = ticket.description ?? '';
     _reqNoController.text = ticket.serviceReqNo ?? '';
@@ -452,20 +454,46 @@ class ViewRequest extends BaseScreenWidget {
                 SizedBox(
                   height: resources.dimen.dp10,
                 ),
-                RightIconTextWidget(
-                  isEnabled: false,
-                  labelText: resources.string.contactNoTelephoneExt,
-                  hintText: resources.string.contactNoTelephoneExt
-                      .withPrefix(resources.string.pleaseEnter),
-                  errorMessage: resources.string.contactNoTelephoneExt
-                      .withPrefix(resources.string.pleaseEnter),
-                  textController: _contactNoController,
-                  fillColor: resources.color.colorWhite,
-                  borderSide: BorderSide(
-                      color: context.resources.color.sideBarItemUnselected,
-                      width: 1),
-                  borderRadius: 0,
-                  onChanged: (value) {},
+                Row(
+                  children: [
+                    Expanded(
+                      child: RightIconTextWidget(
+                        isEnabled: false,
+                        labelText: resources.string.contactNoTelephoneExt,
+                        hintText: resources.string.contactNoTelephoneExt
+                            .withPrefix(resources.string.pleaseEnter),
+                        errorMessage: resources.string.contactNoTelephoneExt
+                            .withPrefix(resources.string.pleaseEnter),
+                        textController: _contactNoController,
+                        fillColor: resources.color.colorWhite,
+                        borderSide: BorderSide(
+                            color:
+                                context.resources.color.sideBarItemUnselected,
+                            width: 1),
+                        borderRadius: 0,
+                        onChanged: (value) {},
+                      ),
+                    ),
+                    if (ticket.categoryID == 3) ...[
+                      SizedBox(
+                        width: resources.dimen.dp40,
+                      ),
+                      Expanded(
+                        child: RightIconTextWidget(
+                          isEnabled: false,
+                          labelText: resources.string.raisedBy,
+                          textController: _rasisedByController,
+                          fillColor: resources.color.colorWhite,
+                          borderSide: BorderSide(
+                              color:
+                                  context.resources.color.sideBarItemUnselected,
+                              width: 1),
+                          borderRadius: 0,
+                          onChanged: (value) {},
+                        ),
+                      ),
+                    ]
+                  ],
                 ),
                 SizedBox(
                   height: resources.dimen.dp10,

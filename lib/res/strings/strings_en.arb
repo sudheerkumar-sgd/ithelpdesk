@@ -131,5 +131,8 @@
     "vacation":"Vacation",
     "language":"Language",
     "tradeLicenseName":"TradeLicense Name",
-    "tradeLicenseNumber":"TradeLicense Number"
+    "tradeLicenseNumber":"TradeLicense Number",
+    "raisedBy":"Raised By",
+    "network":"Network",
+    "nextLevel":"Next Level"
 }

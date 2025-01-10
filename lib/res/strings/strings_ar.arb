@@ -127,7 +127,10 @@
     "otherActions":"إجراءات أخرى",
     "vacation":"إجازة",
     "language":"اللغة",
-    "tradeLicenseName":"TradeLicense Name",
-    "tradeLicenseNumber":"TradeLicense Number"
+    "tradeLicenseName":"اسم الرخصة التجارية",
+    "tradeLicenseNumber":"رقم الرخصة التجارية",
+    "raisedBy":"مربى من قِبل",
+    "network":"شبكة",
+    "nextLevel":"المستوى التالي"
 
 }

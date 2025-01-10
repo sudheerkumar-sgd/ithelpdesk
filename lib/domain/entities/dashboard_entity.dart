@@ -76,6 +76,13 @@ class TicketEntity extends BaseEntity {
   IssueType? issueType;
   String? tradeLicenseName;
   int? tradeLicenseNumber;
+  int? raisedBy;
+  String? raisedByName;
+
+  @override
+  String toString() {
+    return '$id - $subject';
+  }
 
   bool isMyTicket() {
     return (userID == UserCredentialsEntity.details().id &&
@@ -233,6 +240,7 @@ class TicketEntity extends BaseEntity {
     data['tradeLicenseNumber'] = tradeLicenseNumber;
     data['isChargeable'] = isChargeable;
     data['issueType'] = issueType?.value;
+    data['raisedBy'] = raisedBy;
     return data;
   }
 
@@ -253,8 +261,9 @@ class TicketEntity extends BaseEntity {
         'tradeLicenseName': tradeLicenseName ?? '',
         'tradeLicenseNumber': tradeLicenseNumber ?? '',
         'Issue Type': (issueType?.name ?? '').capitalize(),
-        'Reason For Issue': finalComments,
+        'Reason For Issue': finalComments ?? '',
         'requestType': 2,
+        'raisedBy': raisedByName ?? '',
         'isChargeable': isChargeable ?? false ? 'Yes' : 'No',
         "createDate": createdOn ?? '',
         "closedDate": closedOn ?? '',
