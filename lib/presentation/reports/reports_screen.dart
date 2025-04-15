@@ -30,11 +30,15 @@ class ReportsScreen extends BaseScreenWidget {
   ReportsScreen({super.key});
   final ServicesBloc _servicesBloc = sl<ServicesBloc>();
   // final _masterDataBloc = sl<MasterDataBloc>();
-  List<dynamic>? tickets;
-  final ValueNotifier<int?> _selectedCategory = ValueNotifier(null);
+  List<TicketEntity> tickets = List.empty(growable: true);
+  int? index;
+  int? totalPagecount;
+  final ValueNotifier<bool> _onFilterChange = ValueNotifier(false);
+  int? _selectedCategory = 0;
   // final ValueNotifier<UserEntity?> _selectedEmployee = ValueNotifier(null);
   String? selectedStatus;
   List<String>? ticketsHeaderData;
+  Map<String, dynamic>? filteredData;
   Future<bool> exportToExcel(List<dynamic> tickets) async {
     try {
       var excel = excelpackage.Excel.createExcel();
@@ -93,12 +97,14 @@ class ReportsScreen extends BaseScreenWidget {
                 child: DropDownWidget<String>(
                   height: 32,
                   list: categories,
-                  selectedValue: categories[_selectedCategory.value ?? 0],
+                  selectedValue: categories[_selectedCategory ?? 0],
                   iconSize: 20,
                   fontStyle: context.textFontWeight400
                       .onFontSize(resources.fontSize.dp12),
                   callback: (p0) {
-                    _selectedCategory.value = categories.indexOf(p0 ?? 'All');
+                    _selectedCategory = categories.indexOf(p0 ?? 'All');
+                    index = 0;
+                    _updateTickets(context);
                   },
                 ),
               ),
@@ -416,18 +422,24 @@ class ReportsScreen extends BaseScreenWidget {
                     DateFormat('yyyy/MM/dd').parse(filteredDates.value[0]);
                 var endTime =
                     DateFormat('yyyy/MM/dd').parse(filteredDates.value[1]);
-                final filterTickets = tickets
-                        ?.where((item) => (dateFormat
-                                    .parse(item.createdOn ?? '', true)
-                                    .compareTo(startTime) >=
-                                0 &&
-                            dateFormat
-                                    .parse(item.createdOn ?? '', true)
-                                    .compareTo(endTime) <=
-                                0))
-                        .toList() ??
-                    [];
-                await _servicesBloc.exportToExcel(filterTickets);
+                Map<String, dynamic> requestParams = {
+                  'ticketType': (_selectedCategory ?? 0) + 1,
+                  'category': (filteredData?['categories'] is List)
+                      ? (filteredData?['categories'].join(', '))
+                      : null,
+                  'department': (filteredData?['departments'] is List)
+                      ? (filteredData?['departments'].join(', '))
+                      : null,
+                  'status': (filteredData?['status'] is List)
+                      ? (filteredData?['status'].join(', '))
+                      : null,
+                  'startDate': dateFormat.format(startTime),
+                  'endDate': dateFormat.format(endTime),
+                };
+                final filterTickets = await _servicesBloc.getTticketsByUser(
+                    requestParams: requestParams);
+                await _servicesBloc
+                    .exportToExcel(filterTickets.entity?.ticketsList ?? []);
 
                 if (context.mounted) {
                   Dialogs.dismiss(context);
@@ -472,13 +484,13 @@ class ReportsScreen extends BaseScreenWidget {
     }
     tableHeader = '$tableHeader\n</tr>';
     String tableBody = '';
-    tickets?.forEach((item) {
+    for (var item in tickets) {
       tableBody = '$tableBody\n<tr>';
       item.toJson().forEach((k, v) {
         tableBody = '$tableBody\n <td>$v</td>';
       });
       tableBody = '$tableBody\n</tr>';
-    });
+    }
     printData(title: "Tickets", headerData: tableHeader, bodyData: tableBody);
   }
 
@@ -503,9 +515,44 @@ class ReportsScreen extends BaseScreenWidget {
     ];
   }
 
+  _updateTickets(
+    BuildContext context,
+  ) async {
+    if ((index ?? 0) == 0) {
+      tickets.clear();
+    }
+    Dialogs.loader(context);
+    Map<String, dynamic> requestParams = {
+      'ticketType': (_selectedCategory ?? 0) + 1,
+      'index': index ?? 0,
+      'category': (filteredData?['categories'] is List)
+          ? (filteredData?['categories'].join(', '))
+          : null,
+      'department': (filteredData?['departments'] is List)
+          ? (filteredData?['departments'].join(', '))
+          : null,
+      'status': (filteredData?['status'] is List)
+          ? (filteredData?['status'].join(', '))
+          : null,
+    };
+    final newTickets =
+        await _servicesBloc.getTticketsByUser(requestParams: requestParams);
+    if (context.mounted) {
+      Dialogs.dismiss(context);
+      tickets.addAll(newTickets.entity?.ticketsList ?? []);
+      totalPagecount = newTickets.entity?.totalCount;
+      _onFilterChange.value = !_onFilterChange.value;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final resources = context.resources;
+    Future.delayed(Duration.zero, () {
+      if (tickets.isEmpty && context.mounted) {
+        _updateTickets(context);
+      }
+    });
     return SelectionArea(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
@@ -530,25 +577,33 @@ class ReportsScreen extends BaseScreenWidget {
                     height: resources.dimen.dp20,
                   ),
                   ValueListenableBuilder(
-                    valueListenable: _selectedCategory,
+                    valueListenable: _onFilterChange,
                     builder: (context, value, child) {
-                      return FutureBuilder(
-                          future:
-                              _servicesBloc.getTticketsByUser(requestParams: {
-                            'ticketType': (value ?? 0) + 1,
-                          }),
-                          builder: (context, snapsShot) {
-                            tickets = snapsShot.data?.entity?.items;
-                            return snapsShot.data == null
-                                ? const Center(
-                                    child: CircularProgressIndicator())
-                                : ReportListWidget(
-                                    ticketsData: tickets ?? [],
-                                    showActionButtons: true,
-                                    onTicketSelected: (ticket) {
-                                      ViewRequest.start(context, ticket);
-                                    },
-                                  );
+                      return ValueListenableBuilder(
+                          valueListenable: _onFilterChange,
+                          builder: (context, value, child) {
+                            return ReportListWidget(
+                              ticketsData: tickets,
+                              showActionButtons: true,
+                              pageIndex: (index ?? 0) + 1,
+                              totalPagecount: totalPagecount ?? 0,
+                              filters: filteredData,
+                              onTicketSelected: (ticket) {
+                                ViewRequest.start(context, ticket);
+                              },
+                              onFilterChange: (p0) {
+                                filteredData = p0;
+                                index = 0;
+                                _updateTickets(context);
+                              },
+                              onPageChange: (page) {
+                                index = (index ?? 0) + page;
+                                if (page == 1 &&
+                                    (index ?? 0) >= tickets.length / 20) {
+                                  _updateTickets(context);
+                                }
+                              },
+                            );
                           });
                     },
                   )

@@ -22,11 +22,21 @@ import 'multi_select_dialog_widget.dart';
 class ReportListWidget extends StatelessWidget {
   final List<dynamic> ticketsData;
   final bool showActionButtons;
+  final int pageIndex;
+  final int? totalPagecount;
+  final Map<String, dynamic>? filters;
   final Function(TicketEntity)? onTicketSelected;
+  final Function(int)? onPageChange;
+  final Function(Map<String, dynamic>)? onFilterChange;
   ReportListWidget(
       {required this.ticketsData,
       this.showActionButtons = false,
+      this.pageIndex = 1,
+      this.totalPagecount,
       this.onTicketSelected,
+      this.filters,
+      this.onPageChange,
+      this.onFilterChange,
       super.key});
 
   final ValueNotifier<bool> _onSortChange = ValueNotifier(false);
@@ -38,8 +48,7 @@ class ReportListWidget extends StatelessWidget {
   final List<int> _selectedEmployees = List<int>.empty(growable: true);
   final List<int> _selectedDepartments = List<int>.empty(growable: true);
   final List<int> _selectedCategories = List<int>.empty(growable: true);
-  final List<StatusType> _filteredStatus =
-      List<StatusType>.empty(growable: true);
+  final List<int> _filteredStatus = List<int>.empty(growable: true);
   final _masterDataBloc = sl<MasterDataBloc>();
   List<dynamic>? _employees;
   List<dynamic>? _departments;
@@ -128,10 +137,24 @@ class ReportListWidget extends StatelessWidget {
     return list;
   }
 
+  int _getPageCount(
+    int cuttentpageCount,
+  ) {
+    if (cuttentpageCount == ticketsData.length) {
+      return totalPagecount ?? cuttentpageCount;
+    } else {
+      return cuttentpageCount;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final resources = context.resources;
+    _selectedCategories.addAll(filters?['categories'] ?? []);
+    _filteredStatus.addAll(filters?['status'] ?? []);
+    _selectedDepartments.addAll(filters?['departments'] ?? []);
 
+    page = pageIndex;
     final ticketsHeaderData = isDesktop(context)
         ? [
             NameIDEntity(1, resources.string.id),
@@ -177,31 +200,31 @@ class ReportListWidget extends StatelessWidget {
         valueListenable: _onSortChange,
         builder: (context, value, child) {
           var filteredData = ticketsData;
-          if (_selectedCategories.isNotEmpty) {
-            filteredData = filteredData
-                .where(
-                    (item) => (_selectedCategories.contains(item.categoryID)))
-                .toList();
-          }
-          if (_filteredStatus.isNotEmpty) {
-            filteredData = filteredData
-                .where((item) => (_filteredStatus.contains(item.status) ||
-                    (_filteredStatus.contains(StatusType.notAssigned) &&
-                        item.assignedUserID == null)))
-                .toList();
-          }
+          // if (_selectedCategories.isNotEmpty) {
+          //   filteredData = filteredData
+          //       .where(
+          //           (item) => (_selectedCategories.contains(item.categoryID)))
+          //       .toList();
+          // }
+          // if (_filteredStatus.isNotEmpty) {
+          //   filteredData = filteredData
+          //       .where((item) => (_filteredStatus.contains(item.status) ||
+          //           (_filteredStatus.contains(StatusType.notAssigned) &&
+          //               item.assignedUserID == null)))
+          //       .toList();
+          // }
           if (_selectedEmployees.isNotEmpty) {
             filteredData = filteredData
                 .where((item) =>
                     (_selectedEmployees.contains(item.assignedUserID)))
                 .toList();
           }
-          if (_selectedDepartments.isNotEmpty) {
-            filteredData = filteredData
-                .where((item) =>
-                    (_selectedDepartments.contains(item.departmentID)))
-                .toList();
-          }
+          // if (_selectedDepartments.isNotEmpty) {
+          //   filteredData = filteredData
+          //       .where((item) =>
+          //           (_selectedDepartments.contains(item.departmentID)))
+          //       .toList();
+          // }
           if (sortBy == 'date') {
             filteredData.sort(
               (a, b) {
@@ -228,7 +251,8 @@ class ReportListWidget extends StatelessWidget {
           }
           final startIndex = (page - 1) * pageCount;
           final currentPageData = filteredData.sublist(
-              startIndex, min(startIndex + 20, filteredData.length));
+              min(startIndex, filteredData.length),
+              min(startIndex + 20, filteredData.length));
           return Table(
             columnWidths: ticketsTableColunwidths,
             children: [
@@ -267,7 +291,6 @@ class ReportListWidget extends StatelessWidget {
                                           prioritySort = 1;
                                         }
                                         page = 1;
-
                                         _onSortChange.value =
                                             !_onSortChange.value;
                                       } else if (ticketsHeaderData[index].id ==
@@ -278,19 +301,33 @@ class ReportListWidget extends StatelessWidget {
                                                     StatusType>(
                                                   list: getStatusTypes(),
                                                   selectedItems:
-                                                      _filteredStatus,
+                                                      getStatusTypes()
+                                                          .where((e) =>
+                                                              _filteredStatus
+                                                                  .contains(
+                                                                      e.value))
+                                                          .toList(),
                                                 ),
                                                 maxWidth: isDesktop(context)
                                                     ? 250
                                                     : null,
                                                 showClose: false)
                                             .then((value) {
-                                          if (value != null) {
+                                          if (value != null &&
+                                              value is List<StatusType>) {
                                             _filteredStatus.clear();
-                                            _filteredStatus.addAll(value);
+                                            _filteredStatus.addAll(
+                                                value.map((e) => e.value));
                                             page = 1;
-                                            _onSortChange.value =
-                                                !_onSortChange.value;
+                                            onFilterChange?.call({
+                                              'categories': _selectedCategories,
+                                              'status': _filteredStatus,
+                                              'employees': _selectedEmployees,
+                                              'departments':
+                                                  _selectedDepartments
+                                            });
+                                            // _onSortChange.value =
+                                            //     !_onSortChange.value;
                                           }
                                         });
                                       } else if (ticketsHeaderData[index].id ==
@@ -355,8 +392,16 @@ class ReportListWidget extends StatelessWidget {
                                                   .toList();
                                               _selectedDepartments.addAll(ids);
                                               page = 1;
-                                              _onSortChange.value =
-                                                  !_onSortChange.value;
+
+                                              onFilterChange?.call({
+                                                'categories':
+                                                    _selectedCategories,
+                                                'status': _filteredStatus,
+                                                'departments':
+                                                    _selectedDepartments
+                                              });
+                                              // _onSortChange.value =
+                                              //     !_onSortChange.value;
                                             }
                                           });
                                         }
@@ -397,8 +442,16 @@ class ReportListWidget extends StatelessWidget {
                                                   .toList();
                                               _selectedCategories.addAll(ids);
                                               page = 1;
-                                              _onSortChange.value =
-                                                  !_onSortChange.value;
+
+                                              onFilterChange?.call({
+                                                'categories':
+                                                    _selectedCategories,
+                                                'status': _filteredStatus,
+                                                'departments':
+                                                    _selectedDepartments
+                                              });
+                                              // _onSortChange.value =
+                                              //     !_onSortChange.value;
                                             }
                                           });
                                         }
@@ -481,6 +534,7 @@ class ReportListWidget extends StatelessWidget {
                                   onTap: () {
                                     if (page > 1) {
                                       page--;
+                                      onPageChange?.call(-1);
                                       _onSortChange.value =
                                           !(_onSortChange.value);
                                     }
@@ -497,7 +551,9 @@ class ReportListWidget extends StatelessWidget {
                                   ),
                                 ),
                                 Text(
-                                    '${min(page * pageCount, filteredData.length)} / ${filteredData.length}',
+                                    '${min(page * pageCount, filteredData.length)} / ${_getPageCount(
+                                      filteredData.length,
+                                    )}',
                                     style: context.textFontWeight500
                                         .onFontSize(resources.fontSize.dp12)
                                         .onFontFamily(
@@ -505,10 +561,17 @@ class ReportListWidget extends StatelessWidget {
                                 InkWell(
                                   onTap: () {
                                     if (page * pageCount <
-                                        (filteredData.length)) {
+                                        _getPageCount(filteredData.length)) {
                                       page++;
-                                      _onSortChange.value =
-                                          !(_onSortChange.value);
+                                      if (page <=
+                                          (filteredData.length / 20).toInt()) {
+                                        _onSortChange.value =
+                                            !(_onSortChange.value);
+                                      }
+                                      if (ticketsData.length ==
+                                          filteredData.length) {
+                                        onPageChange?.call(1);
+                                      }
                                     }
                                   },
                                   child: Padding(
@@ -516,7 +579,8 @@ class ReportListWidget extends StatelessWidget {
                                         EdgeInsets.all(resources.dimen.dp5),
                                     child: Icon(Icons.chevron_right_sharp,
                                         color: page * pageCount <
-                                                (filteredData.length)
+                                                _getPageCount(
+                                                    filteredData.length)
                                             ? null
                                             : resources.color.colorGray9E9E9E),
                                   ),

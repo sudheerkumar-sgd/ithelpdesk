@@ -120,6 +120,30 @@ class TicketsByCategoryModel extends BaseModel {
   }
 }
 
+class TicketsPageModel extends BaseModel {
+  List<TicketEntity> ticketsList = [];
+  int? totalCount;
+  int? pageCount;
+  TicketsPageModel.fromJson(Map<String, dynamic> json) {
+    if (json['data']?['tickets'] is List) {
+      json['data']?['tickets'].forEach((v) {
+        ticketsList.add(TicketsModel.fromJson(v).toEntity());
+      });
+    }
+    totalCount = json['data']?['totalCount'];
+    pageCount = json['data']?['pageCount'];
+  }
+
+  @override
+  TicketPageEntity toEntity() {
+    final ticketPageEntity = TicketPageEntity();
+    ticketPageEntity.ticketsList = ticketsList;
+    ticketPageEntity.totalCount = totalCount;
+    ticketPageEntity.pageCount = pageCount;
+    return ticketPageEntity;
+  }
+}
+
 class TicketsModel extends BaseModel {
   int? id;
   String? subject;

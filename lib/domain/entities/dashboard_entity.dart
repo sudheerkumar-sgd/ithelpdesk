@@ -31,6 +31,12 @@ class TicketsByCategoryEntity extends BaseEntity {
   int? count;
 }
 
+class TicketPageEntity extends BaseEntity {
+  List<TicketEntity> ticketsList = [];
+  int? totalCount;
+  int? pageCount;
+}
+
 class TicketEntity extends BaseEntity {
   int? id;
   String? subject;
@@ -137,8 +143,10 @@ class TicketEntity extends BaseEntity {
             status == StatusType.acquired ||
             status == StatusType.returned) &&
         (userType == AssigneType.approver ||
-            (userType == AssigneType.implementer && (teamCount ?? 0) > 1))) {
-      if (userType == AssigneType.implementer) {
+            (userType == AssigneType.implementer ||
+                assignedUserID == UserCredentialsEntity.details().id))) {
+      if (userType == AssigneType.implementer ||
+          assignedUserID == UserCredentialsEntity.details().id) {
         actionButtons.add(StatusType.forward);
       } else {
         actionButtons.add(

@@ -2,6 +2,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/common/log.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
@@ -44,6 +45,22 @@ class UserHomeScreen extends BaseScreenWidget {
     final tickets = ApiEntity<ListEntity>();
     final listEntity = ListEntity();
     listEntity.items = ticketsData;
+    tickets.entity = listEntity;
+    return Future.value(tickets);
+  }
+
+  Future<ApiEntity<ListEntity>> _getAllTickets() async {
+    var dateFormat = DateFormat('dd-MMM-yyyy HH:mm');
+    var startTime = DateFormat('yyyy/MM/dd').parse(_filteredDates.value[0]);
+    var endTime = DateFormat('yyyy/MM/dd').parse(_filteredDates.value[1]);
+    final alltickets = await _servicesBloc.getTticketsByUser(requestParams: {
+      'ticketType': selectTicketCategory,
+      'startDate': dateFormat.format(startTime),
+      'endDate': dateFormat.format(endTime),
+    });
+    final tickets = ApiEntity<ListEntity>();
+    final listEntity = ListEntity();
+    listEntity.items = alltickets.entity?.ticketsList ?? [];
     tickets.entity = listEntity;
     return Future.value(tickets);
   }
@@ -830,17 +847,7 @@ class UserHomeScreen extends BaseScreenWidget {
                             future: (_filteredDates.value.length < 2 &&
                                     filteredStatus == StatusType.all)
                                 ? _getDashboradTickets()
-                                : _servicesBloc
-                                    .getTticketsByUser(requestParams: {
-                                    'isUserTickets': selectTicketCategory == 2,
-                                    'startDate': _filteredDates.value.length < 2
-                                        ? null
-                                        : _filteredDates.value[0],
-                                    'endDate': _filteredDates.value.length < 2
-                                        ? null
-                                        : _filteredDates.value[1],
-                                    'status': filteredStatus
-                                  }),
+                                : _getAllTickets(),
                             builder: (context, snapShot) {
                               final filterTickets =
                                   (snapShot.data?.entity?.items ?? []);

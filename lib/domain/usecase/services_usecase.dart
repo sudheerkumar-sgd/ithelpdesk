@@ -86,17 +86,17 @@ class ServicesUseCase extends BaseUseCase {
     });
   }
 
-  Future<Either<Failure, ApiEntity<ListEntity>>> getTticketsByUser(
+  Future<Either<Failure, ApiEntity<TicketPageEntity>>> getTticketsByUser(
       {required Map<String, dynamic> requestParams}) async {
-    var apiResponse = await apisRepository.get<ListModel>(
+    var apiResponse = await apisRepository.get<TicketsPageModel>(
       apiUrl: ticketsByUserApiUrl,
       requestParams: requestParams,
-      responseModel: ListModel.fromTicketsJson,
+      responseModel: TicketsPageModel.fromJson,
     );
     return apiResponse.fold((l) {
       return Left(l);
     }, (r) {
-      var apiResponseEntity = r.toEntity<ListEntity>();
+      var apiResponseEntity = r.toEntity<TicketPageEntity>();
       return Right(apiResponseEntity);
     });
   }

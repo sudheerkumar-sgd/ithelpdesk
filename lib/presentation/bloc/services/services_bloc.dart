@@ -24,7 +24,7 @@ class ServicesBloc extends Cubit<ServicesState> {
     }));
   }
 
-  Future<ApiEntity<ListEntity>> getTticketsByUser(
+  Future<ApiEntity<TicketPageEntity>> getTticketsByUser(
       {required Map<String, dynamic> requestParams}) async {
     emit(OnLoading());
     final result =
