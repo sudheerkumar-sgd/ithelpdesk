@@ -84,6 +84,8 @@ class TicketEntity extends BaseEntity {
   int? tradeLicenseNumber;
   int? raisedBy;
   String? raisedByName;
+  String? email;
+  String? customerMobileNumber;
 
   @override
   String toString() {
@@ -249,6 +251,8 @@ class TicketEntity extends BaseEntity {
     data['isChargeable'] = isChargeable;
     data['issueType'] = issueType?.value;
     data['raisedBy'] = raisedBy;
+    data['email'] = email;
+    data['customerMobileNumber'] = customerMobileNumber;
     return data;
   }
 

@@ -92,6 +92,7 @@
     "reason":"السبب",
     "pleaseSelect":"يرجى التحديد",
     "pleaseEnter":"يرجى ادخال",
+    "enterValid":"أدخل قيمة صحيحة",
     "approve": "الموافقة",
     "open": "مفتوح",
     "resubmit": "إعادة الإرسال",
@@ -131,6 +132,8 @@
     "tradeLicenseNumber":"رقم الرخصة التجارية",
     "raisedBy":"مربى من قِبل",
     "network":"شبكة",
+    "customerEmail":"البريد الإلكتروني للعميل",
+    "customerMobileNumber":"رقم الجوال الخاص بالعميل",
     "nextLevel":"المستوى التالي"
 
 }

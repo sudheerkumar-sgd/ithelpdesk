@@ -49,6 +49,10 @@ class CreateNewRequest extends BaseScreenWidget {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _reqNoController = TextEditingController();
   final TextEditingController _serviceNameController = TextEditingController();
+  final TextEditingController _customerEmailController =
+      TextEditingController();
+  final TextEditingController _customerMobileNumberController =
+      TextEditingController();
   final TextEditingController _tradeLicenseNameController =
       TextEditingController();
   final TextEditingController _tradeLicenseNumberController =
@@ -854,6 +858,91 @@ class CreateNewRequest extends BaseScreenWidget {
                                         _formKey.currentState?.validate();
                                       },
                                     ),
+                                    if (value == 2) ...[
+                                      SizedBox(
+                                        height: resources.dimen.dp20,
+                                      ),
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Expanded(
+                                            child: RightIconTextWidget(
+                                              textController:
+                                                  _customerEmailController,
+                                              labelText: resources
+                                                  .string.customerEmail,
+                                              hintText: resources
+                                                  .string.customerEmail
+                                                  .withPrefix(resources
+                                                      .string.pleaseEnter),
+                                              errorMessage: resources
+                                                  .string.customerEmail
+                                                  .withPrefix(resources
+                                                      .string.pleaseEnter),
+                                              fillColor:
+                                                  resources.color.colorWhite,
+                                              borderSide: BorderSide(
+                                                  color: context.resources.color
+                                                      .sideBarItemUnselected,
+                                                  width: 1),
+                                              borderRadius: 0,
+                                              onChanged: (value) {
+                                                _formKey.currentState
+                                                    ?.validate();
+                                              },
+                                              isValid: (p0) {
+                                                return p0.isEmpty
+                                                    ? resources
+                                                        .string.customerEmail
+                                                        .withPrefix(resources
+                                                            .string.pleaseEnter)
+                                                    : p0.isValidEmail()
+                                                        ? null
+                                                        : resources.string
+                                                            .customerEmail
+                                                            .withPrefix(resources
+                                                                .string
+                                                                .enterValid);
+                                              },
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: resources.dimen.dp40,
+                                          ),
+                                          Expanded(
+                                            child: RightIconTextWidget(
+                                              textController:
+                                                  _customerMobileNumberController,
+                                              labelText: resources
+                                                  .string.customerMobileNumber,
+                                              textInputType:
+                                                  TextInputType.number,
+                                              maxLength: 10,
+                                              hintText: resources
+                                                  .string.customerMobileNumber
+                                                  .withPrefix(resources
+                                                      .string.pleaseEnter),
+                                              // errorMessage: resources
+                                              //     .string.customerMobileNumber
+                                              //     .withPrefix(resources
+                                              //         .string.pleaseEnter),
+                                              fillColor:
+                                                  resources.color.colorWhite,
+                                              borderSide: BorderSide(
+                                                  color: context.resources.color
+                                                      .sideBarItemUnselected,
+                                                  width: 1),
+                                              borderRadius: 0,
+                                              onChanged: (value) {
+                                                _formKey.currentState
+                                                    ?.validate();
+                                              },
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                    ],
                                   ],
                                 ),
                               );
@@ -939,6 +1028,9 @@ class CreateNewRequest extends BaseScreenWidget {
                                       _tradeLicenseNameController.text;
                                   ticket.tradeLicenseNumber = int.tryParse(
                                       _tradeLicenseNumberController.text);
+                                  ticket.email = _customerEmailController.text;
+                                  ticket.customerMobileNumber =
+                                      _customerMobileNumberController.text;
                                   final data = ticket.toCreateJson();
                                   data['files'] = multiUploadAttachmentWidget
                                       .getSelectedFilesData()

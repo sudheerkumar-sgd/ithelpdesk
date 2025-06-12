@@ -95,6 +95,7 @@
     "reason":"Reason",
     "pleaseSelect":"Please Select",
     "pleaseEnter":"Please Enter",
+    "enterValid":"Enter Valid",
     "approve":"Approve",
     "open":"Open",
     "resubmit":"Resubmit",
@@ -134,5 +135,7 @@
     "tradeLicenseNumber":"TradeLicense Number",
     "raisedBy":"Raised By",
     "network":"Network",
+    "customerEmail":"Customer Email",
+    "customerMobileNumber":"Customer Mobile Number",
     "nextLevel":"Next Level"
 }
