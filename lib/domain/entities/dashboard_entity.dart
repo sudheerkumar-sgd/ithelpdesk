@@ -111,6 +111,10 @@ class TicketEntity extends BaseEntity {
         assignedUserID == UserCredentialsEntity.details().id) {
       actionButtons.add(StatusType.resubmit);
     }
+    if (status == StatusType.closed &&
+        assignedUserID == UserCredentialsEntity.details().id) {
+      actionButtons.add(StatusType.reopen);
+    }
     return actionButtons;
   }
 
@@ -283,6 +287,7 @@ class TicketEntity extends BaseEntity {
 }
 
 class TicketHistoryEntity extends BaseEntity {
+  String? userDisplayName;
   String? userName;
   String? subject;
   String? comment;

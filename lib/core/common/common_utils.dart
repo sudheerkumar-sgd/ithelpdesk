@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
@@ -369,41 +370,128 @@ Future<String> getDeviceId() async {
 
 Future<void> printData(
     {String? title, String? headerData, String? bodyData}) async {
+  String base64Image = await imageAssetToBase64('assets/images/ic_logo.png');
   final htmlString = '''
-  <html>
-    <head>
-        <title>$title</title>
-        </head>
-        <meta charset="utf-8">
-        <style>
-        table {
-    border: solid #000 !important;
-    border-width: 1px 0 0 1px !important;
-}
-th, td {
-    border: solid #000 !important;
-    border-width: 0 1px 1px 0 !important;
-}
-        </style>
-        <body>
-            <script>
-          window.onload = function() {
-            window.print();
-            window.onafterprint = function() {
-              window.close(); // Close the window after printing
-            };
-          };
-        </script>
-            <table id="tickets" class="display" style="width:100%;">
-                <thead>
-                    $headerData
-                    </thead>
-                    <tbody>
-                        $bodyData
-                        </tbody>
-                    </table>
-                </body>
-            </html>
+  <!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>sgd</title>
+  <style>
+    @page {
+      margin: 1.5cm;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+    }
+
+    .logo {
+      height: 60px;
+    }
+
+    .title {
+      font-size: 24px;
+      font-weight: bold;
+      color: #2B2C34;
+      text-align: center;
+      margin-top: 10px;
+      margin-bottom: 20px;
+    }
+
+    .header-logos {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-logos img {
+      height: 60px;
+    }
+
+    .title-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 15px;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 10px;
+    }
+
+    .title-section .title {
+      flex: 1;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      color: #2B2C34;
+    }
+
+    .title-section .total-tickets {
+      text-align: right;
+      color: red;
+      font-size: 16px;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      page-break-inside: auto;
+    }
+
+    .data-table th {
+      background-color: #2B2C34;
+      color: white;
+      font-weight: bold;
+      padding: 8px;
+      border: 1px solid #ccc;
+      font-size: 13px;
+    }
+
+    .data-table td {
+      padding: 8px;
+      border: 1px solid #ccc;
+      font-size: 13px;
+    }
+
+    .data-table tr:nth-child(even) {
+      background-color: #f9fbfc;
+    }
+
+    .data-table tr:nth-child(odd) {
+      background-color: #ffffff;
+    }
+  </style>
+</head>
+<body onload="window.print(); window.onafterprint = () => window.close();">
+
+  <!-- Logos Row -->
+  <div class="header-logos">
+    <img src="data:image/png;base64,$base64Image"  alt="Left Logo">
+    <img src="data:image/png;base64,$base64Image"  alt="Right Logo">
+  </div>
+
+  <!-- Title and Ticket Count -->
+  <div class="title-section">
+    <div></div> <!-- Spacer -->
+    <div class="title">$title</div>
+    <div class="total-tickets">Total Tickets: 8</div>
+  </div>
+
+  <!-- Data Table -->
+  <table class="data-table">
+    <thead>
+      $headerData
+    </thead>
+    <tbody>
+      $bodyData
+    </tbody>
+  </table>
+</body>
+</html>
+
   ''';
 
   final blob = html.Blob([htmlString], 'text/html');
@@ -441,4 +529,10 @@ List<PriorityType> getPriorityTypes() {
     PriorityType.high,
     PriorityType.critical,
   ];
+}
+
+Future<String> imageAssetToBase64(String path) async {
+  final ByteData bytes = await rootBundle.load(path);
+  final Uint8List list = bytes.buffer.asUint8List();
+  return base64Encode(list);
 }

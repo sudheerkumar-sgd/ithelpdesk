@@ -311,12 +311,14 @@ class TicketsModel extends BaseModel {
 
 class TicketHistoryModel extends BaseModel {
   String? userName;
+  String? userDisplayName;
   String? subject;
   String? comment;
   List<String>? attachments;
   String? date;
 
   TicketHistoryModel.fromJson(Map<String, dynamic> json) {
+    userDisplayName = json['userDisplayName'];
     userName = json['userName'];
     subject = json['subject'];
     comment = json['comment'];
@@ -331,6 +333,7 @@ class TicketHistoryModel extends BaseModel {
   @override
   TicketHistoryEntity toEntity() {
     var ticketHistoryEntity = TicketHistoryEntity();
+    ticketHistoryEntity.userDisplayName = userDisplayName;
     ticketHistoryEntity.userName = userName;
     ticketHistoryEntity.subject = subject;
     ticketHistoryEntity.comment = comment;

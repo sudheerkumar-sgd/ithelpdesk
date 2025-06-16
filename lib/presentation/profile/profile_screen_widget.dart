@@ -8,8 +8,9 @@ import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
 
 import '../../injection_container.dart';
 
-class ProfileScreen extends BaseScreenWidget {
-  ProfileScreen({super.key});
+class ProfileScreenWidget extends BaseScreenWidget {
+  final String? userName;
+  ProfileScreenWidget({this.userName, super.key});
   final UserBloc _userBloc = sl<UserBloc>();
   @override
   Widget build(BuildContext context) {
@@ -17,8 +18,7 @@ class ProfileScreen extends BaseScreenWidget {
 
     return BlocProvider(
       create: (context) => _userBloc,
-      child: Container(
-        color: resources.color.appScaffoldBg,
+      child: Padding(
         padding: EdgeInsets.all(resources.dimen.dp20),
         child: SingleChildScrollView(
           child: Column(
@@ -34,7 +34,7 @@ class ProfileScreen extends BaseScreenWidget {
               ),
               FutureBuilder(
                   future: _userBloc.getUserData(
-                      {'userName': UserCredentialsEntity.details().username}),
+                      {'userName':userName?? UserCredentialsEntity.details().username}),
                   builder: (context, snapShot) {
                     final userEntity = snapShot.data;
                     return Container(

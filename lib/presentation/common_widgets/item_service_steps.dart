@@ -1,4 +1,7 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:ithelpdesk/core/config/app_routes.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/res/drawables/background_box_decoration.dart';
@@ -11,6 +14,7 @@ class ItemServiceSteps extends StatelessWidget {
   final bool? isLastStep;
   final String? attachmentText;
   final Function? attachmentCallback;
+  final Function? userProfileCallback;
   const ItemServiceSteps(
       {this.stepCount,
       required this.stepText,
@@ -19,6 +23,7 @@ class ItemServiceSteps extends StatelessWidget {
       this.isLastStep = false,
       this.attachmentText,
       this.attachmentCallback,
+      this.userProfileCallback,
       super.key});
 
   @override
@@ -59,6 +64,10 @@ class ItemServiceSteps extends StatelessWidget {
                 style: context.textFontWeight700
                     .onFontSize(resources.fontSize.dp12)
                     .onHeight(1.2),
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () {
+                    userProfileCallback?.call();
+                  },
                 children: [
                   if (stepSubText.isNotEmpty)
                     TextSpan(

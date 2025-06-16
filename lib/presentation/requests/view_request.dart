@@ -26,6 +26,7 @@ import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/item_service_steps.dart';
 import 'package:ithelpdesk/presentation/common_widgets/right_icon_text_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/ticket_action_widget.dart';
+import 'package:ithelpdesk/presentation/profile/profile_screen_widget.dart';
 import 'package:ithelpdesk/presentation/requests/widgets/ticket_transfer_widget.dart';
 import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
@@ -42,13 +43,17 @@ class ViewRequest extends BaseScreenWidget {
       PageTransition(
           type: PageTransitionType.rightToLeft,
           child: ViewRequest(
-            ticket: ticket,
+            ticketDetails: ticket,
           )),
     );
   }
 
-  final TicketEntity ticket;
-  ViewRequest({required this.ticket, super.key});
+  final TicketEntity? ticketDetails;
+  final String? ticketId;
+  ViewRequest({this.ticketDetails, this.ticketId, super.key});
+  late TicketEntity ticket;
+  Size screenDimentions = screenSize;
+  String apiResponseMessage = '';
   final ValueNotifier _isChargeable = ValueNotifier(false);
   final ValueNotifier<SubCategoryEntity?> _subCategoryValue =
       ValueNotifier(null);
@@ -235,7 +240,7 @@ class ViewRequest extends BaseScreenWidget {
           isCommentRequired: updateTicket.isCommentRequired,
           showIssueType: updateTicket.showIssueType,
         ),
-        maxWidth: isDesktop(context) ? 450 : null,
+        maxWidth: isDesktop(context, size: screenDimentions) ? 450 : null,
       ).then((dialogResult) {
         if (dialogResult != null) {
           updateTicket.finalComments = dialogResult['comments'];
@@ -268,6 +273,9 @@ class ViewRequest extends BaseScreenWidget {
                     maxWidth: 350)
                 .then((value) async {
               if (value != null) {
+                if (!context.mounted) {
+                  return;
+                }
                 updateTicket.status = StatusType.returned;
                 if ((value?['employeeId'] ?? 0) > 0) {
                   updateTicket.assignedUserID = (value['employeeId'] ?? 0);
@@ -290,7 +298,7 @@ class ViewRequest extends BaseScreenWidget {
                 message: "${context.resources.string.doYouWantToResubmit}?",
                 isCommentRequired: false,
               ),
-              maxWidth: isDesktop(context) ? 400 : null,
+              maxWidth: isDesktop(context, size: screenDimentions) ? 400 : null,
             ).then((dialogResult) {
               if (dialogResult != null) {
                 updateTicket.finalComments = dialogResult['comments'];
@@ -743,9 +751,14 @@ class ViewRequest extends BaseScreenWidget {
       padding: EdgeInsets.symmetric(
           vertical: resources.dimen.dp15, horizontal: resources.dimen.dp20),
       margin: isSelectedLocalEn
-          ? EdgeInsets.only(left: isDesktop(context) ? resources.dimen.dp20 : 0)
+          ? EdgeInsets.only(
+              left: isDesktop(context, size: screenDimentions)
+                  ? resources.dimen.dp20
+                  : 0)
           : EdgeInsets.only(
-              right: isDesktop(context) ? resources.dimen.dp20 : 0),
+              right: isDesktop(context, size: screenDimentions)
+                  ? resources.dimen.dp20
+                  : 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -764,11 +777,80 @@ class ViewRequest extends BaseScreenWidget {
                       : ticket.status == StatusType.reject
                           ? resources.color.rejected
                           : resources.color.pending,
-              stepText: steps[i].userName ?? "",
+              stepText: steps[i].userDisplayName ?? "",
               stepSubText: '${steps[i].subject}\n${steps[i].date}',
               isLastStep: i == steps.length - 1,
+              userProfileCallback: () {
+                Dialogs.showDialogWithClose(
+                  context,
+                  ProfileScreenWidget(
+                    userName: steps[i].userName ?? "",
+                  ),
+                  maxWidth:
+                      isDesktop(context, size: screenDimentions) ? 400 : null,
+                );
+              },
             )
           ]
+        ],
+      ),
+    );
+  }
+
+  Future<TicketEntity> _getTicketDetails() async {
+    if (ticketDetails != null) {
+      return Future.value(ticketDetails!);
+    } else {
+      final tickets = await _servicesBloc
+          .getTicketDetails(requestParams: {'ticketId': ticketId});
+      return Future.value(tickets.firstOrNull);
+    }
+  }
+
+  Widget _getScrollwidget(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          IntrinsicHeight(
+            child: isDesktop(context, size: screenDimentions)
+                ? Row(
+                    children: [
+                      Expanded(
+                        child: _getDataForm(context),
+                      ),
+                      SizedBox(
+                        width: 280,
+                        child: ValueListenableBuilder(
+                            valueListenable: _onDataChanged,
+                            builder: (context, onDataChanged, child) {
+                              return FutureBuilder(
+                                  future: _servicesBloc.getTicketHistory(
+                                      requestParams: {"ticketID": ticket.id}),
+                                  builder: (context, snapShot) {
+                                    return _getStatusWidget(
+                                        context, snapShot.data?.items ?? []);
+                                  });
+                            }),
+                      )
+                    ],
+                  )
+                : Column(
+                    children: [
+                      FutureBuilder(
+                          future: _servicesBloc.getTicketHistory(
+                              requestParams: {"ticketID": ticket.id}),
+                          builder: (context, snapShot) {
+                            return _getStatusWidget(
+                                context, snapShot.data?.items ?? []);
+                          }),
+                      SizedBox(
+                        height: context.resources.dimen.dp20,
+                      ),
+                      _getDataForm(context),
+                    ],
+                  ),
+          ),
         ],
       ),
     );
@@ -777,45 +859,47 @@ class ViewRequest extends BaseScreenWidget {
   @override
   Widget build(BuildContext context) {
     final resources = context.resources;
-
-    return SelectionArea(
-      child: Scaffold(
-          backgroundColor: resources.color.appScaffoldBg,
-          body: MultiBlocProvider(
-            providers: [
-              BlocProvider(create: (context) => _servicesBloc),
-              BlocProvider(create: (context) => _masterDataBloc),
-            ],
-            child: BlocListener<ServicesBloc, ServicesState>(
-              listener: (context, state) {
-                if (state is OnLoading) {
-                  Dialogs.showInfoLoader(
-                      context, resources.string.updatingTicket);
-                } else if (state is OnUpdateTicket) {
-                  final updatedTicket = state.onUpdateTicketResult.entity;
-                  ticket.assignedUserID = updatedTicket?.assignedUserID;
-                  ticket.status = updatedTicket?.status;
-                  Dialogs.dismiss(context);
-                  Dialogs.showInfoDialog(context, PopupType.success,
-                          '${resources.string.updatingTicket} UAQGOV-ITHD-${ticket.id}')
-                      .then((value) {
-                    if (ticket.status != StatusType.acquired) {
-                      reloadPage();
-                    } else {
-                      _onDataChanged.value = !(_onDataChanged.value);
-                    }
-                  });
-                } else if (state is OnApiError) {
-                  Dialogs.dismiss(context);
-                  Dialogs.showInfoDialog(
-                      context, PopupType.fail, state.message);
+    screenDimentions = getScrrenSize(context);
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => _servicesBloc),
+        BlocProvider(create: (context) => _masterDataBloc),
+      ],
+      child: BlocListener<ServicesBloc, ServicesState>(
+        listener: (context, state) {
+          if (state is OnLoading) {
+            Dialogs.showInfoLoader(context, resources.string.updatingTicket);
+          } else if (state is OnUpdateTicket) {
+            final updatedTicket = state.onUpdateTicketResult.entity;
+            ticket.assignedUserID = updatedTicket?.assignedUserID;
+            ticket.status = updatedTicket?.status;
+            Dialogs.dismiss(context);
+            Dialogs.showInfoDialog(context, PopupType.success,
+                    '${resources.string.updatingTicket} UAQGOV-ITHD-${ticket.id}')
+                .then((value) {
+              if (ticket.status != StatusType.acquired) {
+                reloadPage();
+              } else {
+                _onDataChanged.value = !(_onDataChanged.value);
+              }
+            });
+          } else if (state is OnApiError) {
+            Dialogs.dismiss(context);
+            Dialogs.showInfoDialog(context, PopupType.fail, state.message);
+          }
+        },
+        child: Container(
+          color: resources.color.appScaffoldBg,
+          padding: EdgeInsets.symmetric(
+              horizontal: resources.dimen.dp15, vertical: resources.dimen.dp20),
+          child: FutureBuilder(
+              future: _getTicketDetails(),
+              builder: (context, snapShot) {
+                if (snapShot.data == null) {
+                  return const SizedBox();
                 }
-              },
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                    horizontal: resources.dimen.dp15,
-                    vertical: resources.dimen.dp20),
-                child: Column(
+                ticket = snapShot.data ?? ticket;
+                return Column(
                   children: [
                     Row(
                       children: [
@@ -841,7 +925,9 @@ class ViewRequest extends BaseScreenWidget {
                           ),
                         ),
                         Expanded(
-                          flex: isDesktop(context) ? 1 : 0,
+                          flex: isDesktop(context, size: screenDimentions)
+                              ? 1
+                              : 0,
                           child: Padding(
                             padding: isSelectedLocalEn
                                 ? EdgeInsets.only(left: resources.dimen.dp20)
@@ -871,65 +957,11 @@ class ViewRequest extends BaseScreenWidget {
                     SizedBox(
                       height: resources.dimen.dp10,
                     ),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            IntrinsicHeight(
-                              child: isDesktop(context)
-                                  ? Row(
-                                      children: [
-                                        Expanded(
-                                          child: _getDataForm(context),
-                                        ),
-                                        SizedBox(
-                                          width: 280,
-                                          child: ValueListenableBuilder(
-                                              valueListenable: _onDataChanged,
-                                              builder: (context, onDataChanged,
-                                                  child) {
-                                                return FutureBuilder(
-                                                    future: _servicesBloc
-                                                        .getTicketHistory(
-                                                            requestParams: {
-                                                          "ticketID": ticket.id
-                                                        }),
-                                                    builder:
-                                                        (context, snapShot) {
-                                                      return _getStatusWidget(
-                                                          context,
-                                                          snapShot.data
-                                                                  ?.items ??
-                                                              []);
-                                                    });
-                                              }),
-                                        )
-                                      ],
-                                    )
-                                  : Column(
-                                      children: [
-                                        FutureBuilder(
-                                            future: _servicesBloc
-                                                .getTicketHistory(
-                                                    requestParams: {
-                                                  "ticketID": ticket.id
-                                                }),
-                                            builder: (context, snapShot) {
-                                              return _getStatusWidget(context,
-                                                  snapShot.data?.items ?? []);
-                                            }),
-                                        SizedBox(
-                                          height: resources.dimen.dp20,
-                                        ),
-                                        _getDataForm(context),
-                                      ],
-                                    ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                    ticketId != null
+                        ? _getScrollwidget(context)
+                        : Expanded(
+                            child: _getScrollwidget(context),
+                          ),
                     SizedBox(
                       height: resources.dimen.dp20,
                     ),
@@ -946,13 +978,16 @@ class ViewRequest extends BaseScreenWidget {
                           final ticketActionButtons =
                               ticket.getActionButtons(context);
                           final actionButtonsLength =
-                              isDesktop(context) ? 3 : 1;
-                          final actionButtons = isDesktop(context)
-                              ? ticketActionButtons.sublist(
-                                  0,
-                                  min(actionButtonsLength,
-                                      ticketActionButtons.length))
-                              : ticketActionButtons.sublist(0, 1);
+                              isDesktop(context, size: screenDimentions)
+                                  ? 3
+                                  : 1;
+                          final actionButtons =
+                              isDesktop(context, size: screenDimentions)
+                                  ? ticketActionButtons.sublist(
+                                      0,
+                                      min(actionButtonsLength,
+                                          ticketActionButtons.length))
+                                  : ticketActionButtons.sublist(0, 1);
                           var popupActionButtons =
                               List<StatusType>.empty(growable: true);
                           if (actionButtonsLength + 1 ==
@@ -1005,10 +1040,10 @@ class ViewRequest extends BaseScreenWidget {
                           );
                         }),
                   ],
-                ),
-              ),
-            ),
-          )),
+                );
+              }),
+        ),
+      ),
     );
   }
 }

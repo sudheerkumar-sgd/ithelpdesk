@@ -46,6 +46,18 @@ class ServicesBloc extends Cubit<ServicesState> {
     });
   }
 
+  Future<List<TicketEntity>> getTicketDetails(
+      {required Map<String, dynamic> requestParams}) async {
+    emit(OnLoading());
+    final result =
+        await servicesUseCase.getTicketDetails(requestParams: requestParams);
+    return result.fold((l) => [], (r) {
+      return (r.entity?.items ?? [])
+          .map((item) => item as TicketEntity)
+          .toList();
+    });
+  }
+
   Future<void> createRequest(
       {required Map<String, dynamic> requestParams}) async {
     emit(OnLoading());

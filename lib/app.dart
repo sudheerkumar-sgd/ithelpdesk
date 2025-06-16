@@ -17,7 +17,7 @@ class App extends StatelessWidget {
     theme.fontFamily(
         locale.languageCode == LocalEnum.ar.name ? fontFamilyAR : fontFamilyEN);
     userToken = context.userDataDB.get(UserDataDB.userToken, defaultValue: '');
-    return MaterialApp(
+    return MaterialApp.router(
       locale: locale,
       debugShowCheckedModeBanner: false,
       title: 'itHelpDesk',
@@ -26,8 +26,7 @@ class App extends StatelessWidget {
       supportedLocales: AppLocalizations.supportedLocales,
       onGenerateTitle: (BuildContext context) =>
           context.resources.string.appTitle,
-      initialRoute: AppRoutes.userMainRoute,
-      routes: AppRoutes.getRoutes(),
+      routerConfig: AppRoutes.getAppRoutes(),
     );
   }
 }

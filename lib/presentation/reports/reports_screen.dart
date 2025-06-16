@@ -37,7 +37,6 @@ class ReportsScreen extends BaseScreenWidget {
   int? _selectedCategory = 0;
   // final ValueNotifier<UserEntity?> _selectedEmployee = ValueNotifier(null);
   String? selectedStatus;
-  List<String>? ticketsHeaderData;
   Map<String, dynamic>? filteredData;
   Future<bool> exportToExcel(List<dynamic> tickets) async {
     try {
@@ -461,7 +460,7 @@ class ReportsScreen extends BaseScreenWidget {
         ),
         InkWell(
           onTap: () {
-            _printData(ticketsHeaderData ?? []);
+            _printData();
           },
           child: ActionButtonWidget(
             text: resources.string.print,
@@ -477,7 +476,15 @@ class ReportsScreen extends BaseScreenWidget {
     );
   }
 
-  Future<void> _printData(List<String> headers) async {
+  Future<void> _printData() async {
+    List<String> headers = List.empty(growable: true);
+    if (tickets.isNotEmpty) {
+      tickets.first.toJson().forEach((k, v) {
+        if (!headers.contains(k.capitalize())) {
+          headers.add(k.capitalize());
+        }
+      });
+    }
     String tableHeader = '<tr>';
     for (var item in headers) {
       tableHeader = '$tableHeader\n <td>$item</td>';

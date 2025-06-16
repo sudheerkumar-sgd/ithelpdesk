@@ -116,6 +116,7 @@ const String ticketCommentsApiUrl = '${apiFolderUrl}Ticket/GetTicketComments';
 const String ticketsByUserApiUrl = '${apiFolderUrl}Ticket/GetTickets';
 const String getTicketsBySearchApiUrl =
     '${apiFolderUrl}Ticket/GetTicketsBySearch';
+const String getTicketsDetailsApiUrl = '${apiFolderUrl}Ticket/GetTicketById';
 const String updateTicketByStatusApiUrl =
     '${apiFolderUrl}CreateTicket/UpdateTicket';
 const String forwordTicketApiUrl = '${apiFolderUrl}CreateTicket/ForwordTicket';

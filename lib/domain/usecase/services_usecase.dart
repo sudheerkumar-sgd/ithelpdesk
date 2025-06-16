@@ -116,6 +116,21 @@ class ServicesUseCase extends BaseUseCase {
     });
   }
 
+  Future<Either<Failure, ApiEntity<ListEntity>>> getTicketDetails(
+      {required Map<String, dynamic> requestParams}) async {
+    var apiResponse = await apisRepository.get<ListModel>(
+      apiUrl: getTicketsDetailsApiUrl,
+      requestParams: requestParams,
+      responseModel: ListModel.fromTicketsJson,
+    );
+    return apiResponse.fold((l) {
+      return Left(l);
+    }, (r) {
+      var apiResponseEntity = r.toEntity<ListEntity>();
+      return Right(apiResponseEntity);
+    });
+  }
+
   Future<Either<Failure, ApiEntity<TicketEntity>>> updateTicketByStatus(
       {required String apiUrl,
       required Map<String, dynamic> requestParams}) async {
