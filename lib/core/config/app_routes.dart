@@ -33,6 +33,10 @@ class AppRoutes {
         builder: (context, state) => const UserMainScreen(),
       ),
       GoRoute(
+        path: AppRoutes.userMainRoute,
+        builder: (context, state) => const UserMainScreen(),
+      ),
+      GoRoute(
         path: '${AppRoutes.profileRoute}/:username',
         name: 'profile',
         builder: (context, state) {

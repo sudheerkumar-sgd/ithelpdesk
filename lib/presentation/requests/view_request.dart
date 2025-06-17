@@ -37,20 +37,22 @@ import '../common_widgets/attachment_preview_widget.dart';
 import 'widgets/ticket_return_widget.dart';
 
 class ViewRequest extends BaseScreenWidget {
-  static start(BuildContext context, TicketEntity ticket) {
+  static start(BuildContext context, TicketEntity ticket, {bool? isMyTicket}) {
     Navigator.push(
       context,
       PageTransition(
           type: PageTransitionType.rightToLeft,
           child: ViewRequest(
             ticketDetails: ticket,
+            isMyTicket: isMyTicket,
           )),
     );
   }
 
   final TicketEntity? ticketDetails;
   final String? ticketId;
-  ViewRequest({this.ticketDetails, this.ticketId, super.key});
+  final bool? isMyTicket;
+  ViewRequest({this.ticketDetails, this.ticketId, this.isMyTicket, super.key});
   late TicketEntity ticket;
   Size screenDimentions = screenSize;
   String apiResponseMessage = '';
@@ -975,8 +977,9 @@ class ViewRequest extends BaseScreenWidget {
                     ValueListenableBuilder(
                         valueListenable: _onDataChanged,
                         builder: (context, onDataChange, child) {
-                          final ticketActionButtons =
-                              ticket.getActionButtons(context);
+                          final ticketActionButtons = ticket.getActionButtons(
+                              context,
+                              showMyTicketActions: isMyTicket ?? false);
                           final actionButtonsLength =
                               isDesktop(context, size: screenDimentions)
                                   ? 3

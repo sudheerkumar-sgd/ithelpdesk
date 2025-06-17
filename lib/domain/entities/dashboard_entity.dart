@@ -1,6 +1,7 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:flutter/material.dart';
+import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/string_extension.dart';
@@ -112,7 +113,9 @@ class TicketEntity extends BaseEntity {
       actionButtons.add(StatusType.resubmit);
     }
     if (status == StatusType.closed &&
-        assignedUserID == UserCredentialsEntity.details().id) {
+        getDays(getDateTimeByString('dd-MMM-yyyy HH:mm', closedOn ?? ''),
+                DateTime.now()) <
+            5) {
       actionButtons.add(StatusType.reopen);
     }
     return actionButtons;
@@ -181,8 +184,9 @@ class TicketEntity extends BaseEntity {
     return actionButtons;
   }
 
-  List<StatusType> getActionButtons(BuildContext context) {
-    return isMyTicket()
+  List<StatusType> getActionButtons(BuildContext context,
+      {bool showMyTicketActions = false}) {
+    return (showMyTicketActions || isMyTicket())
         ? getActionButtonsForMytickets(context)
         : getActionButtonsForAssigned(context);
   }
@@ -226,7 +230,20 @@ class TicketEntity extends BaseEntity {
             isSelectedLocalEn ? subject ?? '' : subjectAr ?? (subject ?? ''),
         "status": status,
         "priority": priority,
-        "createDate": createdOn ?? '',
+        "updatedDate": updatedOn ?? createdOn ?? '',
+      };
+  Map<String, dynamic> toITCategotyPrintJson() => {
+        "TicketNo": id ?? '',
+        "Department": departmentName ?? '',
+        "CreatedDate": createdOn ?? '',
+        closedOn != null ? 'ClosedDate' : 'UpdatedDate':
+            closedOn != null ? closedOn ?? '' : updatedOn ?? createdOn ?? '',
+        "AssignedTo": assignedTo ?? '',
+        "ClosedBy": status == StatusType.closed ? assignedTo ?? '' : '',
+        "status": status,
+        "priority": priority,
+        "TransferredBy": transferBy ?? '',
+        "Charges": isChargeable ?? false ? '50' : '',
       };
   Map<String, dynamic> toCreateJson() {
     final Map<String, dynamic> data = <String, dynamic>{};

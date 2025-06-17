@@ -85,12 +85,14 @@ class UserHomeScreen extends BaseScreenWidget {
         lineChartData
             .add(FlSpot(double.parse('${i + 1}'), monthData.count ?? 0));
         tilesData.add(Expanded(
-          child: Text(textAlign: TextAlign.right, '${monthData.month}'),
+          child: Text(
+              textAlign: TextAlign.right,
+              monthName(monthData.month?.toInt() ?? 1)),
         ));
       } else {
         lineChartData.add(FlSpot(double.parse('${i + 1}'), 0));
         tilesData.add(Expanded(
-          child: Text(textAlign: TextAlign.right, '$startMonth'),
+          child: Text(textAlign: TextAlign.right, monthName(startMonth)),
         ));
       }
     }
@@ -860,7 +862,9 @@ class UserHomeScreen extends BaseScreenWidget {
                                   ? ReportListWidget(
                                       ticketsData: filterTickets,
                                       onTicketSelected: (ticket) {
-                                        ViewRequest.start(context, ticket);
+                                        ViewRequest.start(context, ticket,
+                                            isMyTicket:
+                                                selectTicketCategory == 2);
                                       },
                                     )
                                   : Padding(

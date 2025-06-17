@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
+import 'package:ithelpdesk/core/config/flavor_config.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/string_extension.dart';
@@ -13,6 +14,7 @@ import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart
 import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dropdown_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/report_list_widget.dart';
+import 'package:ithelpdesk/presentation/reports/widgets/report_filter_widget.dart';
 import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 
 import '../../core/common/log.dart';
@@ -38,6 +40,7 @@ class ReportsScreen extends BaseScreenWidget {
   // final ValueNotifier<UserEntity?> _selectedEmployee = ValueNotifier(null);
   String? selectedStatus;
   Map<String, dynamic>? filteredData;
+  final ValueNotifier<List<String>> filteredDates = ValueNotifier([]);
   Future<bool> exportToExcel(List<dynamic> tickets) async {
     try {
       var excel = excelpackage.Excel.createExcel();
@@ -80,6 +83,156 @@ class ReportsScreen extends BaseScreenWidget {
       runAlignment: WrapAlignment.start,
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '${resources.string.filterByDate}: ',
+              style:
+                  context.textFontWeight600.onFontSize(resources.fontSize.dp10),
+            ),
+            SizedBox(
+              width: resources.dimen.dp10,
+            ),
+            ValueListenableBuilder(
+                valueListenable: filteredDates,
+                builder: (context, value, child) {
+                  return Container(
+                    decoration: BackgroundBoxDecoration(
+                            radious: resources.dimen.dp15,
+                            boarderColor: resources.color.sideBarItemUnselected)
+                        .roundedCornerBox,
+                    padding: EdgeInsets.symmetric(
+                      vertical: resources.dimen.dp5,
+                    ),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: resources.dimen.dp10,
+                        ),
+                        InkWell(
+                          onTap: () {
+                            showDatePicker(
+                                    context: context,
+                                    firstDate: DateTime.now()
+                                        .add(const Duration(days: -365)),
+                                    lastDate: DateTime.now())
+                                .then((dateTime) {
+                              if (dateTime != null) {
+                                filteredDates
+                                    .value = List<String>.empty(growable: true)
+                                  ..add(
+                                      getDateByformat('yyyy/MM/dd', dateTime));
+                              }
+                            });
+                          },
+                          child: Text.rich(
+                            TextSpan(
+                                text: value.isNotEmpty
+                                    ? value[0]
+                                    : resources.string.startDate,
+                                children: [
+                                  WidgetSpan(
+                                    child: Padding(
+                                      padding: isSelectedLocalEn
+                                          ? const EdgeInsets.only(left: 5.0)
+                                          : const EdgeInsets.only(right: 5.0),
+                                      child: const Icon(
+                                        Icons.calendar_month_sharp,
+                                        size: 16,
+                                      ),
+                                    ),
+                                  )
+                                ]),
+                            style: context.textFontWeight400
+                                .onFontSize(resources.fontSize.dp10),
+                          ),
+                        ),
+                        SizedBox(
+                          width: resources.dimen.dp10,
+                        ),
+                        InkWell(
+                          onTap: () {
+                            if (value.isNotEmpty) {
+                              showDatePicker(
+                                      context: context,
+                                      initialDate: getDateTimeByString(
+                                          'yyyy/MM/dd', value[0]),
+                                      firstDate: getDateTimeByString(
+                                          'yyyy/MM/dd', value[0]),
+                                      lastDate: DateTime.now())
+                                  .then((dateTime) {
+                                if (dateTime != null) {
+                                  filteredDates.value =
+                                      List<String>.empty(growable: true)
+                                        ..add(value[0])
+                                        ..add(getDateByformat(
+                                            'yyyy/MM/dd', dateTime));
+                                  if (context.mounted) {
+                                    _updateTickets(context);
+                                  }
+                                }
+                              });
+                            } else {
+                              Dialogs.showInfoDialog(
+                                  context,
+                                  PopupType.fail,
+                                  resources.string.pleaseSelect +
+                                      resources.string.startDate);
+                            }
+                          },
+                          child: Text.rich(
+                            TextSpan(
+                                text: value.length > 1
+                                    ? value[1]
+                                    : resources.string.endDate,
+                                children: [
+                                  WidgetSpan(
+                                    child: Padding(
+                                      padding: isSelectedLocalEn
+                                          ? const EdgeInsets.only(left: 5.0)
+                                          : const EdgeInsets.only(right: 5.0),
+                                      child: const Icon(
+                                        Icons.calendar_month_sharp,
+                                        size: 16,
+                                      ),
+                                    ),
+                                  )
+                                ]),
+                            style: context.textFontWeight400
+                                .onFontSize(resources.fontSize.dp10),
+                          ),
+                        ),
+                        SizedBox(
+                          width: resources.dimen.dp5,
+                        ),
+                        InkWell(
+                          onTap: () {
+                            if (filteredDates.value.isNotEmpty) {
+                              filteredDates.value = List.empty();
+                            }
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 5),
+                            child: Icon(
+                              Icons.clear,
+                              size: 16,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: resources.dimen.dp5,
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+          ],
+        ),
+
+        SizedBox(
+          width: resources.dimen.dp20,
+        ),
         SizedBox(
           width: 200,
           child: Row(
@@ -224,227 +377,237 @@ class ReportsScreen extends BaseScreenWidget {
           width: resources.dimen.dp10,
         ),
         InkWell(
-          onTap: () {
-            final ValueNotifier<List<String>> filteredDates = ValueNotifier([]);
+          onTap: () async {
+            if (context.mounted) {
+              Dialogs.loader(context);
+            }
+            final allTicketsResponse = await _servicesBloc.getTticketsByUser(
+                requestParams: _getFilteredData(null));
+            await _servicesBloc
+                .exportToExcel(allTicketsResponse.entity?.ticketsList ?? []);
+            if (context.mounted) {
+              Dialogs.dismiss(context);
+            }
+            // final ValueNotifier<List<String>> filteredDates = ValueNotifier([]);
 
-            Dialogs.showDialogWithClose(
-              context,
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: resources.dimen.dp20,
-                  ),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        '${resources.string.filterByDate}: ',
-                        style: context.textFontWeight600
-                            .onFontSize(resources.fontSize.dp10),
-                      ),
-                      SizedBox(
-                        width: resources.dimen.dp10,
-                      ),
-                      ValueListenableBuilder(
-                          valueListenable: filteredDates,
-                          builder: (context, value, child) {
-                            return Container(
-                              decoration: BackgroundBoxDecoration(
-                                      radious: resources.dimen.dp15,
-                                      boarderColor:
-                                          resources.color.sideBarItemUnselected)
-                                  .roundedCornerBox,
-                              padding: EdgeInsets.symmetric(
-                                vertical: resources.dimen.dp5,
-                              ),
-                              child: Row(
-                                children: [
-                                  SizedBox(
-                                    width: resources.dimen.dp10,
-                                  ),
-                                  InkWell(
-                                    onTap: () {
-                                      showDatePicker(
-                                              context: context,
-                                              firstDate: DateTime.now().add(
-                                                  const Duration(days: -365)),
-                                              lastDate: DateTime.now())
-                                          .then((dateTime) {
-                                        if (dateTime != null) {
-                                          filteredDates.value =
-                                              List<String>.empty(growable: true)
-                                                ..add(getDateByformat(
-                                                    'yyyy/MM/dd', dateTime));
-                                        }
-                                      });
-                                    },
-                                    child: Text.rich(
-                                      TextSpan(
-                                          text: value.isNotEmpty
-                                              ? value[0]
-                                              : resources.string.startDate,
-                                          children: [
-                                            WidgetSpan(
-                                              child: Padding(
-                                                padding: isSelectedLocalEn
-                                                    ? const EdgeInsets.only(
-                                                        left: 5.0)
-                                                    : const EdgeInsets.only(
-                                                        right: 5.0),
-                                                child: const Icon(
-                                                  Icons.calendar_month_sharp,
-                                                  size: 16,
-                                                ),
-                                              ),
-                                            )
-                                          ]),
-                                      style: context.textFontWeight400
-                                          .onFontSize(resources.fontSize.dp10),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: resources.dimen.dp10,
-                                  ),
-                                  InkWell(
-                                    onTap: () {
-                                      if (value.isNotEmpty) {
-                                        showDatePicker(
-                                                context: context,
-                                                initialDate:
-                                                    getDateTimeByString(
-                                                        'yyyy/MM/dd', value[0]),
-                                                firstDate: getDateTimeByString(
-                                                    'yyyy/MM/dd', value[0]),
-                                                lastDate: DateTime.now())
-                                            .then((dateTime) {
-                                          if (dateTime != null) {
-                                            filteredDates.value =
-                                                List<String>.empty(
-                                                    growable: true)
-                                                  ..add(value[0])
-                                                  ..add(getDateByformat(
-                                                      'yyyy/MM/dd', dateTime));
-                                          }
-                                        });
-                                      } else {
-                                        Dialogs.showInfoDialog(
-                                            context,
-                                            PopupType.fail,
-                                            resources.string.pleaseSelect +
-                                                resources.string.startDate);
-                                      }
-                                    },
-                                    child: Text.rich(
-                                      TextSpan(
-                                          text: value.length > 1
-                                              ? value[1]
-                                              : resources.string.endDate,
-                                          children: [
-                                            WidgetSpan(
-                                              child: Padding(
-                                                padding: isSelectedLocalEn
-                                                    ? const EdgeInsets.only(
-                                                        left: 5.0)
-                                                    : const EdgeInsets.only(
-                                                        right: 5.0),
-                                                child: const Icon(
-                                                  Icons.calendar_month_sharp,
-                                                  size: 16,
-                                                ),
-                                              ),
-                                            )
-                                          ]),
-                                      style: context.textFontWeight400
-                                          .onFontSize(resources.fontSize.dp10),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: resources.dimen.dp5,
-                                  ),
-                                  InkWell(
-                                    onTap: () {
-                                      if (filteredDates.value.isNotEmpty) {
-                                        filteredDates.value = List.empty();
-                                      }
-                                    },
-                                    child: const Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(horizontal: 5),
-                                      child: Icon(
-                                        Icons.clear,
-                                        size: 16,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: resources.dimen.dp5,
-                                  ),
-                                ],
-                              ),
-                            );
-                          }),
-                    ],
-                  ),
-                  SizedBox(
-                    height: resources.dimen.dp30,
-                  ),
-                  InkWell(
-                    onTap: () {
-                      if (filteredDates.value.length == 2) {
-                        Navigator.of(context, rootNavigator: true)
-                            .pop(filteredDates.value);
-                      }
-                    },
-                    child: ActionButtonWidget(
-                        text: resources.string.submit,
-                        radious: resources.dimen.dp15,
-                        textSize: resources.fontSize.dp10,
-                        padding: EdgeInsets.symmetric(
-                            vertical: resources.dimen.dp5,
-                            horizontal: resources.dimen.dp15),
-                        color: resources.color.sideBarItemSelected),
-                  ),
-                ],
-              ),
-              maxWidth: 350,
-            ).then((value) async {
-              if (value == null) {
-                return;
-              }
-              if (context.mounted) {
-                Dialogs.loader(context);
-              }
-              Future.delayed(const Duration(milliseconds: 200), () async {
-                var dateFormat = DateFormat('dd-MMM-yyyy HH:mm');
-                var startTime =
-                    DateFormat('yyyy/MM/dd').parse(filteredDates.value[0]);
-                var endTime =
-                    DateFormat('yyyy/MM/dd').parse(filteredDates.value[1]);
-                Map<String, dynamic> requestParams = {
-                  'ticketType': (_selectedCategory ?? 0) + 1,
-                  'category': (filteredData?['categories'] is List)
-                      ? (filteredData?['categories'].join(', '))
-                      : null,
-                  'department': (filteredData?['departments'] is List)
-                      ? (filteredData?['departments'].join(', '))
-                      : null,
-                  'status': (filteredData?['status'] is List)
-                      ? (filteredData?['status'].join(', '))
-                      : null,
-                  'startDate': dateFormat.format(startTime),
-                  'endDate': dateFormat.format(endTime),
-                };
-                final filterTickets = await _servicesBloc.getTticketsByUser(
-                    requestParams: requestParams);
-                await _servicesBloc
-                    .exportToExcel(filterTickets.entity?.ticketsList ?? []);
+            // Dialogs.showDialogWithClose(
+            //   context,
+            //   Column(
+            //     crossAxisAlignment: CrossAxisAlignment.center,
+            //     children: [
+            //       SizedBox(
+            //         height: resources.dimen.dp20,
+            //       ),
+            //       Row(
+            //         mainAxisSize: MainAxisSize.min,
+            //         children: [
+            //           Text(
+            //             '${resources.string.filterByDate}: ',
+            //             style: context.textFontWeight600
+            //                 .onFontSize(resources.fontSize.dp10),
+            //           ),
+            //           SizedBox(
+            //             width: resources.dimen.dp10,
+            //           ),
+            //           ValueListenableBuilder(
+            //               valueListenable: filteredDates,
+            //               builder: (context, value, child) {
+            //                 return Container(
+            //                   decoration: BackgroundBoxDecoration(
+            //                           radious: resources.dimen.dp15,
+            //                           boarderColor:
+            //                               resources.color.sideBarItemUnselected)
+            //                       .roundedCornerBox,
+            //                   padding: EdgeInsets.symmetric(
+            //                     vertical: resources.dimen.dp5,
+            //                   ),
+            //                   child: Row(
+            //                     children: [
+            //                       SizedBox(
+            //                         width: resources.dimen.dp10,
+            //                       ),
+            //                       InkWell(
+            //                         onTap: () {
+            //                           showDatePicker(
+            //                                   context: context,
+            //                                   firstDate: DateTime.now().add(
+            //                                       const Duration(days: -365)),
+            //                                   lastDate: DateTime.now())
+            //                               .then((dateTime) {
+            //                             if (dateTime != null) {
+            //                               filteredDates.value =
+            //                                   List<String>.empty(growable: true)
+            //                                     ..add(getDateByformat(
+            //                                         'yyyy/MM/dd', dateTime));
+            //                             }
+            //                           });
+            //                         },
+            //                         child: Text.rich(
+            //                           TextSpan(
+            //                               text: value.isNotEmpty
+            //                                   ? value[0]
+            //                                   : resources.string.startDate,
+            //                               children: [
+            //                                 WidgetSpan(
+            //                                   child: Padding(
+            //                                     padding: isSelectedLocalEn
+            //                                         ? const EdgeInsets.only(
+            //                                             left: 5.0)
+            //                                         : const EdgeInsets.only(
+            //                                             right: 5.0),
+            //                                     child: const Icon(
+            //                                       Icons.calendar_month_sharp,
+            //                                       size: 16,
+            //                                     ),
+            //                                   ),
+            //                                 )
+            //                               ]),
+            //                           style: context.textFontWeight400
+            //                               .onFontSize(resources.fontSize.dp10),
+            //                         ),
+            //                       ),
+            //                       SizedBox(
+            //                         width: resources.dimen.dp10,
+            //                       ),
+            //                       InkWell(
+            //                         onTap: () {
+            //                           if (value.isNotEmpty) {
+            //                             showDatePicker(
+            //                                     context: context,
+            //                                     initialDate:
+            //                                         getDateTimeByString(
+            //                                             'yyyy/MM/dd', value[0]),
+            //                                     firstDate: getDateTimeByString(
+            //                                         'yyyy/MM/dd', value[0]),
+            //                                     lastDate: DateTime.now())
+            //                                 .then((dateTime) {
+            //                               if (dateTime != null) {
+            //                                 filteredDates.value =
+            //                                     List<String>.empty(
+            //                                         growable: true)
+            //                                       ..add(value[0])
+            //                                       ..add(getDateByformat(
+            //                                           'yyyy/MM/dd', dateTime));
+            //                               }
+            //                             });
+            //                           } else {
+            //                             Dialogs.showInfoDialog(
+            //                                 context,
+            //                                 PopupType.fail,
+            //                                 resources.string.pleaseSelect +
+            //                                     resources.string.startDate);
+            //                           }
+            //                         },
+            //                         child: Text.rich(
+            //                           TextSpan(
+            //                               text: value.length > 1
+            //                                   ? value[1]
+            //                                   : resources.string.endDate,
+            //                               children: [
+            //                                 WidgetSpan(
+            //                                   child: Padding(
+            //                                     padding: isSelectedLocalEn
+            //                                         ? const EdgeInsets.only(
+            //                                             left: 5.0)
+            //                                         : const EdgeInsets.only(
+            //                                             right: 5.0),
+            //                                     child: const Icon(
+            //                                       Icons.calendar_month_sharp,
+            //                                       size: 16,
+            //                                     ),
+            //                                   ),
+            //                                 )
+            //                               ]),
+            //                           style: context.textFontWeight400
+            //                               .onFontSize(resources.fontSize.dp10),
+            //                         ),
+            //                       ),
+            //                       SizedBox(
+            //                         width: resources.dimen.dp5,
+            //                       ),
+            //                       InkWell(
+            //                         onTap: () {
+            //                           if (filteredDates.value.isNotEmpty) {
+            //                             filteredDates.value = List.empty();
+            //                           }
+            //                         },
+            //                         child: const Padding(
+            //                           padding:
+            //                               EdgeInsets.symmetric(horizontal: 5),
+            //                           child: Icon(
+            //                             Icons.clear,
+            //                             size: 16,
+            //                           ),
+            //                         ),
+            //                       ),
+            //                       SizedBox(
+            //                         width: resources.dimen.dp5,
+            //                       ),
+            //                     ],
+            //                   ),
+            //                 );
+            //               }),
+            //         ],
+            //       ),
+            //       SizedBox(
+            //         height: resources.dimen.dp30,
+            //       ),
+            //       InkWell(
+            //         onTap: () {
+            //           if (filteredDates.value.length == 2) {
+            //             Navigator.of(context, rootNavigator: true)
+            //                 .pop(filteredDates.value);
+            //           }
+            //         },
+            //         child: ActionButtonWidget(
+            //             text: resources.string.submit,
+            //             radious: resources.dimen.dp15,
+            //             textSize: resources.fontSize.dp10,
+            //             padding: EdgeInsets.symmetric(
+            //                 vertical: resources.dimen.dp5,
+            //                 horizontal: resources.dimen.dp15),
+            //             color: resources.color.sideBarItemSelected),
+            //       ),
+            //     ],
+            //   ),
+            //   maxWidth: 350,
+            // ).then((value) async {
+            //   if (value == null) {
+            //     return;
+            //   }
+            //   if (context.mounted) {
+            //     Dialogs.loader(context);
+            //   }
+            //   Future.delayed(const Duration(milliseconds: 200), () async {
+            //     var dateFormat = DateFormat('dd-MMM-yyyy HH:mm');
+            //     var startTime =
+            //         DateFormat('yyyy/MM/dd').parse(filteredDates.value[0]);
+            //     var endTime =
+            //         DateFormat('yyyy/MM/dd').parse(filteredDates.value[1]);
+            //     Map<String, dynamic> requestParams = {
+            //       'ticketType': (_selectedCategory ?? 0) + 1,
+            //       'category': (filteredData?['categories'] is List)
+            //           ? (filteredData?['categories'].join(', '))
+            //           : null,
+            //       'department': (filteredData?['departments'] is List)
+            //           ? (filteredData?['departments'].join(', '))
+            //           : null,
+            //       'status': (filteredData?['status'] is List)
+            //           ? (filteredData?['status'].join(', '))
+            //           : null,
+            //       'startDate': dateFormat.format(startTime),
+            //       'endDate': dateFormat.format(endTime),
+            //     };
+            //     final filterTickets = await _servicesBloc.getTticketsByUser(
+            //         requestParams: requestParams);
+            //     await _servicesBloc
+            //         .exportToExcel(filterTickets.entity?.ticketsList ?? []);
 
-                if (context.mounted) {
-                  Dialogs.dismiss(context);
-                }
-              });
-            });
+            //     if (context.mounted) {
+            //       Dialogs.dismiss(context);
+            //     }
+            //   });
+            // });
           },
           child: ActionButtonWidget(
               text: resources.string.download,
@@ -460,7 +623,7 @@ class ReportsScreen extends BaseScreenWidget {
         ),
         InkWell(
           onTap: () {
-            _printData();
+            _printData(context);
           },
           child: ActionButtonWidget(
             text: resources.string.print,
@@ -476,10 +639,14 @@ class ReportsScreen extends BaseScreenWidget {
     );
   }
 
-  Future<void> _printData() async {
+  Future<void> _printData(BuildContext context) async {
+    Dialogs.loader(context);
+    final allTicketsResponse = await _servicesBloc.getTticketsByUser(
+        requestParams: _getFilteredData(null));
+    final allTickets = allTicketsResponse.entity?.ticketsList ?? [];
     List<String> headers = List.empty(growable: true);
     if (tickets.isNotEmpty) {
-      tickets.first.toJson().forEach((k, v) {
+      tickets.first.toITCategotyPrintJson().forEach((k, v) {
         if (!headers.contains(k.capitalize())) {
           headers.add(k.capitalize());
         }
@@ -491,14 +658,20 @@ class ReportsScreen extends BaseScreenWidget {
     }
     tableHeader = '$tableHeader\n</tr>';
     String tableBody = '';
-    for (var item in tickets) {
+    for (var item in allTickets) {
       tableBody = '$tableBody\n<tr>';
-      item.toJson().forEach((k, v) {
-        tableBody = '$tableBody\n <td>$v</td>';
+      item.toITCategotyPrintJson().forEach((k, v) {
+        tableBody =
+            '$tableBody\n <td>${k == 'TicketNo' ? '''<a href="${FlavorConfig.isProduction() ? "https://ithelpdesk.uaqgov.ae" : "http://localhost:50768"}/ticket/$v" target="_blank"> $v </a>''' : v}</td>';
       });
       tableBody = '$tableBody\n</tr>';
     }
-    printData(title: "Tickets", headerData: tableHeader, bodyData: tableBody);
+    printData(
+        title: "Tickets",
+        headerData: tableHeader,
+        bodyData: tableBody,
+        count: allTickets.length);
+    if (context.mounted) Dialogs.dismiss(context);
   }
 
   List<Widget> _getFilterBar(BuildContext context) {
@@ -529,9 +702,29 @@ class ReportsScreen extends BaseScreenWidget {
       tickets.clear();
     }
     Dialogs.loader(context);
+    final newTickets = await _servicesBloc.getTticketsByUser(
+        requestParams: _getFilteredData(index ?? 0));
+    if (context.mounted) {
+      Dialogs.dismiss(context);
+      tickets.addAll(newTickets.entity?.ticketsList ?? []);
+      totalPagecount = newTickets.entity?.totalCount;
+      _onFilterChange.value = !_onFilterChange.value;
+    }
+  }
+
+  Map<String, dynamic> _getFilteredData(int? index) {
+    String? startDate;
+    String? endDate;
+    if (filteredDates.value.isNotEmpty) {
+      var dateFormat = DateFormat('dd-MMM-yyyy HH:mm');
+      var startTime = DateFormat('yyyy/MM/dd').parse(filteredDates.value[0]);
+      var endTime = DateFormat('yyyy/MM/dd').parse(filteredDates.value[1]);
+      startDate = dateFormat.format(startTime);
+      endDate = dateFormat.format(endTime);
+    }
     Map<String, dynamic> requestParams = {
       'ticketType': (_selectedCategory ?? 0) + 1,
-      'index': index ?? 0,
+      'index': index,
       'category': (filteredData?['categories'] is List)
           ? (filteredData?['categories'].join(', '))
           : null,
@@ -541,15 +734,10 @@ class ReportsScreen extends BaseScreenWidget {
       'status': (filteredData?['status'] is List)
           ? (filteredData?['status'].join(', '))
           : null,
+      'startDate': startDate,
+      'endDate': endDate,
     };
-    final newTickets =
-        await _servicesBloc.getTticketsByUser(requestParams: requestParams);
-    if (context.mounted) {
-      Dialogs.dismiss(context);
-      tickets.addAll(newTickets.entity?.ticketsList ?? []);
-      totalPagecount = newTickets.entity?.totalCount;
-      _onFilterChange.value = !_onFilterChange.value;
-    }
+    return requestParams;
   }
 
   @override

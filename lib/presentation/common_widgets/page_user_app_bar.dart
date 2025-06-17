@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:ithelpdesk/core/config/app_routes.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
 import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
@@ -25,7 +27,9 @@ class PageUserAppBarWidget extends StatelessWidget
                 height: 40,
                 child: InkWell(
                   hoverColor: Colors.transparent,
-                  onTap: () {},
+                  onTap: () {
+                    context.go(AppRoutes.initialRoute);
+                  },
                   child: ImageWidget(
                     path: DrawableAssets.icLogo,
                   ).loadImage,

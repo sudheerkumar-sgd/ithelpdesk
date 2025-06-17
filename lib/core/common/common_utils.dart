@@ -369,14 +369,17 @@ Future<String> getDeviceId() async {
 }
 
 Future<void> printData(
-    {String? title, String? headerData, String? bodyData}) async {
-  String base64Image = await imageAssetToBase64('assets/images/ic_logo.png');
+    {String? title, String? headerData, String? bodyData, int? count}) async {
+  String base64ImageLeft =
+      await imageAssetToBase64('assets/images/ic_logo.png');
+  String base64ImageRight =
+      await imageAssetToBase64('assets/images/ic_sgd_logo.png');
   final htmlString = '''
   <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
-  <title>sgd</title>
+  <title>Report</title>
   <style>
     @page {
       margin: 1.5cm;
@@ -415,7 +418,6 @@ Future<void> printData(
       justify-content: space-between;
       align-items: center;
       margin-top: 15px;
-      border-bottom: 1px solid #ccc;
       padding-bottom: 10px;
     }
 
@@ -463,26 +465,38 @@ Future<void> printData(
     .data-table tr:nth-child(odd) {
       background-color: #ffffff;
     }
+
+    .data-table td.no-border {
+      padding: 8px;
+      border: 0px solid #ccc !important;
+      font-size: 13px;
+      border: none;
+    }
   </style>
 </head>
 <body onload="window.print(); window.onafterprint = () => window.close();">
 
-  <!-- Logos Row -->
+  
+
+  <!-- Data Table -->
+  <table class="data-table">
+    <thead>
+    <!-- Logos Row -->
+    <tr>
+    <td colspan="12" class="no-border">
   <div class="header-logos">
-    <img src="data:image/png;base64,$base64Image"  alt="Left Logo">
-    <img src="data:image/png;base64,$base64Image"  alt="Right Logo">
+    <img src="data:image/png;base64,$base64ImageLeft"  alt="Left Logo">
+    <img src="data:image/png;base64,$base64ImageRight"  alt="Right Logo">
   </div>
 
   <!-- Title and Ticket Count -->
   <div class="title-section">
     <div></div> <!-- Spacer -->
     <div class="title">$title</div>
-    <div class="total-tickets">Total Tickets: 8</div>
+    <div class="total-tickets">Total Tickets: $count</div>
   </div>
-
-  <!-- Data Table -->
-  <table class="data-table">
-    <thead>
+  </td>
+  </tr>
       $headerData
     </thead>
     <tbody>
@@ -497,7 +511,6 @@ Future<void> printData(
   final blob = html.Blob([htmlString], 'text/html');
 
   final url = html.Url.createObjectUrlFromBlob(blob);
-
   html.window.open(url, '_blank');
 
   html.Url.revokeObjectUrl(url);
@@ -535,4 +548,8 @@ Future<String> imageAssetToBase64(String path) async {
   final ByteData bytes = await rootBundle.load(path);
   final Uint8List list = bytes.buffer.asUint8List();
   return base64Encode(list);
+}
+
+String monthName(int month, {String locale = 'en'}) {
+  return DateFormat.MMM(locale).format(DateTime(0, month));
 }
