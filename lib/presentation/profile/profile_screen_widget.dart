@@ -33,8 +33,10 @@ class ProfileScreenWidget extends BaseScreenWidget {
                 height: resources.dimen.dp20,
               ),
               FutureBuilder(
-                  future: _userBloc.getUserData(
-                      {'userName':userName?? UserCredentialsEntity.details().username}),
+                  future: _userBloc.getUserData({
+                    'userName':
+                        userName ?? UserCredentialsEntity.details().username
+                  }),
                   builder: (context, snapShot) {
                     final userEntity = snapShot.data;
                     return Container(
@@ -170,7 +172,7 @@ class ProfileScreenWidget extends BaseScreenWidget {
                             style: context.textFontWeight400
                                 .onFontSize(resources.fontSize.dp10),
                           ),
-                          Text(userEntity?.mobile ?? '',
+                          Text(userEntity?.contactNumber ?? '',
                               style: context.textFontWeight600
                                   .onFontSize(resources.fontSize.dp12)),
                         ],

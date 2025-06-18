@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:ithelpdesk/core/config/app_routes.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
@@ -34,7 +36,8 @@ class SearchUserAppBarWidget extends StatelessWidget
             children: [
               Expanded(child: SearchDropDownWidget(
                 onSearchItemSelected: (item) {
-                  ViewRequest.start(context, item);
+                  context.push(
+                      AppRoutes.ticketRoute.replaceAll(':id', '${item.id}'));
                 },
               )),
               SizedBox(

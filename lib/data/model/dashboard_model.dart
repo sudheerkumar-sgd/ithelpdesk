@@ -15,6 +15,7 @@ class DashboardModel extends BaseModel {
   List<TicketEntity> assignedTickets = [];
   List<TicketEntity> myTickets = [];
   List<TicketEntity> teamTickets = [];
+  List<TicketEntity> historyTickets = [];
 
   DashboardModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -52,6 +53,12 @@ class DashboardModel extends BaseModel {
         teamTickets.add(TicketsModel.fromJson(v).toEntity());
       });
     }
+    if (json['historyTickets'] != null) {
+      historyTickets = <TicketEntity>[];
+      json['historyTickets'].forEach((v) {
+        historyTickets.add(TicketsModel.fromJson(v).toEntity());
+      });
+    }
   }
 
   @override
@@ -66,6 +73,7 @@ class DashboardModel extends BaseModel {
     dashboardEntity.assignedTickets = assignedTickets;
     dashboardEntity.myTickets = myTickets;
     dashboardEntity.teamTickets = teamTickets;
+    dashboardEntity.historyTickets = historyTickets;
     return dashboardEntity;
   }
 }
@@ -193,6 +201,8 @@ class TicketsModel extends BaseModel {
   String? tradeLicenseName;
   int? tradeLicenseNumber;
   String? raisedByName;
+  String? email;
+  String? customerMobileNumber;
 
   TicketsModel.fromJson(Map<String, dynamic> ticketsJson) {
     final json = ticketsJson['data'] ?? ticketsJson;
@@ -247,6 +257,8 @@ class TicketsModel extends BaseModel {
     isMaxLevel = json['isMaxLevel'];
     issueType = json['issueType'];
     raisedByName = json['raisedByName'];
+    email = json['email'];
+    customerMobileNumber = json['customerMobileNumber'];
     if (json['attachments'] is List) {
       attachments = List.empty(growable: true);
       json['attachments']
@@ -303,6 +315,8 @@ class TicketsModel extends BaseModel {
     ticketsEntity.attachments = attachments;
     ticketsEntity.teamCount = teamCount;
     ticketsEntity.isMaxLevel = isMaxLevel;
+    ticketsEntity.email = email;
+    ticketsEntity.customerMobileNumber = customerMobileNumber;
     ticketsEntity.issueType =
         issueType != null ? IssueType.fromId(issueType ?? 4) : null;
     return ticketsEntity;

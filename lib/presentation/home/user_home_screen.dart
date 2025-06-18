@@ -9,6 +9,7 @@ import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
+import 'package:ithelpdesk/data/local/user_data_db.dart';
 import 'package:ithelpdesk/domain/entities/api_entity.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
 import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
@@ -591,6 +592,9 @@ class UserHomeScreen extends BaseScreenWidget {
                           ),
                         ),
                       ),
+                      SizedBox(
+                        width: resources.dimen.dp20,
+                      ),
                       Text(
                         '${resources.string.filterByDate}: ',
                         style: context.textFontWeight600
@@ -839,6 +843,39 @@ class UserHomeScreen extends BaseScreenWidget {
                                       : resources.color.textColor,
                                 ),
                               ),
+                            ),
+                          if (_dashboardEntity?.historyTickets.isNotEmpty ==
+                              true)
+                            Expanded(
+                              child: InkWell(
+                                onTap: () {
+                                  if (selectTicketCategory != 4) {
+                                    ticketsData =
+                                        _dashboardEntity?.historyTickets ?? [];
+                                    selectTicketCategory = 4;
+                                    _onDataChange.value = !_onDataChange.value;
+                                  }
+                                },
+                                child: ActionButtonWidget(
+                                  text: 'Ticket History',
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: resources.dimen.dp7,
+                                      horizontal: resources.dimen.dp20),
+                                  decoration: BackgroundBoxDecoration(
+                                    boxColor: selectTicketCategory == 4
+                                        ? resources.color.viewBgColor
+                                        : resources.color.colorWhite,
+                                    radious: 0,
+                                    boarderWidth: resources.dimen.dp1,
+                                    boarderColor: selectTicketCategory == 4
+                                        ? resources.color.viewBgColor
+                                        : resources.color.colorGray9E9E9E,
+                                  ).roundedCornerBox,
+                                  textColor: selectTicketCategory == 4
+                                      ? resources.color.colorWhite
+                                      : resources.color.textColor,
+                                ),
+                              ),
                             )
                         ]);
                       }),
@@ -852,7 +889,7 @@ class UserHomeScreen extends BaseScreenWidget {
                                 : _getAllTickets(),
                             builder: (context, snapShot) {
                               final filterTickets =
-                                  (snapShot.data?.entity?.items ?? []);
+                                  List.from(snapShot.data?.entity?.items ?? []);
 
                               // .where((ticket) =>
                               //     ticket.status != StatusType.closed &&

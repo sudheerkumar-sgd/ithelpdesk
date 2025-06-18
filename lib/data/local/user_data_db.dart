@@ -18,6 +18,7 @@ class UserDataDB {
   static const String userOnvaction = 'user_on_vaction';
   static const String userMobileNumber = 'user_mobilenumber';
   static const String homeTourDone = 'home_tour_done';
+  static const String showHistoryTickets = 'show_history_tickets';
 
   Box settingDB = Hive.box(name);
   UserDataDB();

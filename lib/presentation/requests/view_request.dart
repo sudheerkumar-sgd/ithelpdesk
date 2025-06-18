@@ -26,6 +26,7 @@ import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/item_service_steps.dart';
 import 'package:ithelpdesk/presentation/common_widgets/right_icon_text_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/ticket_action_widget.dart';
+import 'package:ithelpdesk/presentation/profile/customer_profile_screen_widget.dart';
 import 'package:ithelpdesk/presentation/profile/profile_screen_widget.dart';
 import 'package:ithelpdesk/presentation/requests/widgets/ticket_transfer_widget.dart';
 import 'package:ithelpdesk/presentation/utils/dialogs.dart';
@@ -71,6 +72,8 @@ class ViewRequest extends BaseScreenWidget {
   final TextEditingController _tradeLicenseNameController =
       TextEditingController();
   final TextEditingController _tradeLicenseNumberController =
+      TextEditingController();
+  final TextEditingController _customerEmailController =
       TextEditingController();
 
   final ValueNotifier<bool> _isExanded = ValueNotifier(false);
@@ -392,6 +395,7 @@ class ViewRequest extends BaseScreenWidget {
     _servieNameController.text = ticket.serviceName ?? '';
     _tradeLicenseNameController.text = ticket.tradeLicenseName ?? '';
     _tradeLicenseNumberController.text = '${ticket.tradeLicenseNumber ?? 0}';
+    _customerEmailController.text = ticket.email ?? '';
     return Container(
       padding: EdgeInsets.symmetric(
           vertical: resources.dimen.dp15, horizontal: resources.dimen.dp20),
@@ -684,6 +688,30 @@ class ViewRequest extends BaseScreenWidget {
                   borderRadius: 0,
                   onChanged: (value) {},
                 ),
+                if (ticket.categoryID == 3 && ticket.departmentID != 0) ...[
+                  SizedBox(
+                    height: resources.dimen.dp20,
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: RightIconTextWidget(
+                          isEnabled: false,
+                          textController: _customerEmailController,
+                          labelText: resources.string.customerEmail,
+                          fillColor: resources.color.colorWhite,
+                          borderSide: BorderSide(
+                              color:
+                                  context.resources.color.sideBarItemUnselected,
+                              width: 1),
+                          borderRadius: 0,
+                          onChanged: (value) {},
+                        ),
+                      ),
+                    ],
+                  )
+                ],
               ],
             ),
           ),
@@ -785,9 +813,15 @@ class ViewRequest extends BaseScreenWidget {
               userProfileCallback: () {
                 Dialogs.showDialogWithClose(
                   context,
-                  ProfileScreenWidget(
-                    userName: steps[i].userName ?? "",
-                  ),
+                  ((steps[i].userDisplayName ?? "") == 'Customer')
+                      ? CustomerProfileScreenWidget(
+                          userName: ticket.creator,
+                          userNumber: ticket.mobileNumber,
+                          userEmail: ticket.email,
+                        )
+                      : ProfileScreenWidget(
+                          userName: steps[i].userName ?? "",
+                        ),
                   maxWidth:
                       isDesktop(context, size: screenDimentions) ? 400 : null,
                 );
@@ -890,161 +924,166 @@ class ViewRequest extends BaseScreenWidget {
             Dialogs.showInfoDialog(context, PopupType.fail, state.message);
           }
         },
-        child: Container(
-          color: resources.color.appScaffoldBg,
-          padding: EdgeInsets.symmetric(
-              horizontal: resources.dimen.dp15, vertical: resources.dimen.dp20),
-          child: FutureBuilder(
-              future: _getTicketDetails(),
-              builder: (context, snapShot) {
-                if (snapShot.data == null) {
-                  return const SizedBox();
-                }
-                ticket = snapShot.data ?? ticket;
-                return Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          flex: 3,
-                          child: Text.rich(
-                            TextSpan(
-                                text: 'UAQGOV-ITHD-${ticket.id}\n',
-                                style: context.textFontWeight600
-                                    .onFontFamily(fontFamily: fontFamilyEN),
-                                children: [
-                                  TextSpan(
-                                      text:
-                                          '${resources.string.createdBy} ${ticket.creator} ${resources.string.on} ${ticket.createdOn}',
-                                      style: context.textFontWeight400
-                                          .onFontSize(resources.fontSize.dp10)
-                                          .onColor(
-                                              resources.color.textColorLight)
-                                          .onHeight(1)
-                                          .onFontFamily(
-                                              fontFamily: fontFamilyEN))
-                                ]),
-                          ),
-                        ),
-                        Expanded(
-                          flex: isDesktop(context, size: screenDimentions)
-                              ? 1
-                              : 0,
-                          child: Padding(
-                            padding: isSelectedLocalEn
-                                ? EdgeInsets.only(left: resources.dimen.dp20)
-                                : EdgeInsets.only(right: resources.dimen.dp20),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  '${resources.string.status}: ',
-                                  style: context.textFontWeight600,
-                                ),
-                                SizedBox(
-                                  width: resources.dimen.dp5,
-                                ),
-                                Text(
-                                  (ticket.status ?? StatusType.open).toString(),
-                                  style: context.textFontWeight700.onColor(
-                                      (ticket.status ?? StatusType.open)
-                                          .getColor()),
-                                ),
-                              ],
+        child: SelectionArea(
+          child: Container(
+            color: resources.color.appScaffoldBg,
+            padding: EdgeInsets.symmetric(
+                horizontal: resources.dimen.dp15,
+                vertical: resources.dimen.dp20),
+            child: FutureBuilder(
+                future: _getTicketDetails(),
+                builder: (context, snapShot) {
+                  if (snapShot.data == null) {
+                    return const SizedBox();
+                  }
+                  ticket = snapShot.data ?? ticket;
+                  return Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 3,
+                            child: Text.rich(
+                              TextSpan(
+                                  text: 'UAQGOV-ITHD-${ticket.id}\n',
+                                  style: context.textFontWeight600
+                                      .onFontFamily(fontFamily: fontFamilyEN),
+                                  children: [
+                                    TextSpan(
+                                        text:
+                                            '${resources.string.createdBy} ${ticket.creator} ${resources.string.on} ${ticket.createdOn}',
+                                        style: context.textFontWeight400
+                                            .onFontSize(resources.fontSize.dp10)
+                                            .onColor(
+                                                resources.color.textColorLight)
+                                            .onHeight(1)
+                                            .onFontFamily(
+                                                fontFamily: fontFamilyEN))
+                                  ]),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: resources.dimen.dp10,
-                    ),
-                    ticketId != null
-                        ? _getScrollwidget(context)
-                        : Expanded(
-                            child: _getScrollwidget(context),
+                          Expanded(
+                            flex: isDesktop(context, size: screenDimentions)
+                                ? 1
+                                : 0,
+                            child: Padding(
+                              padding: isSelectedLocalEn
+                                  ? EdgeInsets.only(left: resources.dimen.dp20)
+                                  : EdgeInsets.only(
+                                      right: resources.dimen.dp20),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    '${resources.string.status}: ',
+                                    style: context.textFontWeight600,
+                                  ),
+                                  SizedBox(
+                                    width: resources.dimen.dp5,
+                                  ),
+                                  Text(
+                                    (ticket.status ?? StatusType.open)
+                                        .toString(),
+                                    style: context.textFontWeight700.onColor(
+                                        (ticket.status ?? StatusType.open)
+                                            .getColor()),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
-                    SizedBox(
-                      height: resources.dimen.dp20,
-                    ),
-                    if (ticket.status != StatusType.reject &&
-                        ticket.status != StatusType.closed) ...[
-                      _getComments(context),
+                        ],
+                      ),
+                      SizedBox(
+                        height: resources.dimen.dp10,
+                      ),
+                      ticketId != null
+                          ? _getScrollwidget(context)
+                          : Expanded(
+                              child: _getScrollwidget(context),
+                            ),
                       SizedBox(
                         height: resources.dimen.dp20,
                       ),
-                    ],
-                    ValueListenableBuilder(
-                        valueListenable: _onDataChanged,
-                        builder: (context, onDataChange, child) {
-                          final ticketActionButtons = ticket.getActionButtons(
-                              context,
-                              showMyTicketActions: isMyTicket ?? false);
-                          final actionButtonsLength =
-                              isDesktop(context, size: screenDimentions)
-                                  ? 3
-                                  : 1;
-                          final actionButtons =
-                              isDesktop(context, size: screenDimentions)
-                                  ? ticketActionButtons.sublist(
-                                      0,
-                                      min(actionButtonsLength,
-                                          ticketActionButtons.length))
-                                  : ticketActionButtons.sublist(0, 1);
-                          var popupActionButtons =
-                              List<StatusType>.empty(growable: true);
-                          if (actionButtonsLength + 1 ==
-                              ticketActionButtons.length) {
-                            actionButtons.addAll(ticketActionButtons
-                                .sublist(actionButtonsLength));
-                          } else if (actionButtonsLength <
-                              ticketActionButtons.length) {
-                            popupActionButtons = ticketActionButtons
-                                .sublist(actionButtonsLength);
-                          }
-                          return Row(
-                            children: [
-                              for (int r = 0;
-                                  r < actionButtons.length;
-                                  r++) ...[
-                                Expanded(
-                                  child: InkWell(
-                                    onTap: () async {
-                                      _onActionClicked(
-                                          context, actionButtons[r]);
-                                    },
-                                    child: ActionButtonWidget(
-                                      text: (actionButtons[r]).toString(),
-                                      color: actionButtons[r].getColor(),
-                                      radious: 0,
-                                      textSize: resources.fontSize.dp12,
-                                      padding: EdgeInsets.symmetric(
-                                          vertical: resources.dimen.dp7,
-                                          horizontal: resources.dimen.dp10),
+                      if (ticket.status != StatusType.reject &&
+                          ticket.status != StatusType.closed) ...[
+                        _getComments(context),
+                        SizedBox(
+                          height: resources.dimen.dp20,
+                        ),
+                      ],
+                      ValueListenableBuilder(
+                          valueListenable: _onDataChanged,
+                          builder: (context, onDataChange, child) {
+                            final ticketActionButtons = ticket.getActionButtons(
+                                context,
+                                showMyTicketActions: isMyTicket ?? false);
+                            final actionButtonsLength =
+                                isDesktop(context, size: screenDimentions)
+                                    ? 3
+                                    : 1;
+                            final actionButtons =
+                                isDesktop(context, size: screenDimentions)
+                                    ? ticketActionButtons.sublist(
+                                        0,
+                                        min(actionButtonsLength,
+                                            ticketActionButtons.length))
+                                    : ticketActionButtons.sublist(0, 1);
+                            var popupActionButtons =
+                                List<StatusType>.empty(growable: true);
+                            if (actionButtonsLength + 1 ==
+                                ticketActionButtons.length) {
+                              actionButtons.addAll(ticketActionButtons
+                                  .sublist(actionButtonsLength));
+                            } else if (actionButtonsLength <
+                                ticketActionButtons.length) {
+                              popupActionButtons = ticketActionButtons
+                                  .sublist(actionButtonsLength);
+                            }
+                            return Row(
+                              children: [
+                                for (int r = 0;
+                                    r < actionButtons.length;
+                                    r++) ...[
+                                  Expanded(
+                                    child: InkWell(
+                                      onTap: () async {
+                                        _onActionClicked(
+                                            context, actionButtons[r]);
+                                      },
+                                      child: ActionButtonWidget(
+                                        text: (actionButtons[r]).toString(),
+                                        color: actionButtons[r].getColor(),
+                                        radious: 0,
+                                        textSize: resources.fontSize.dp12,
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: resources.dimen.dp7,
+                                            horizontal: resources.dimen.dp10),
+                                      ),
                                     ),
                                   ),
-                                ),
-                                if (r < actionButtons.length) ...[
-                                  SizedBox(
-                                    width: resources.dimen.dp10,
-                                  ),
-                                ]
+                                  if (r < actionButtons.length) ...[
+                                    SizedBox(
+                                      width: resources.dimen.dp10,
+                                    ),
+                                  ]
+                                ],
+                                if (popupActionButtons.isNotEmpty)
+                                  Expanded(
+                                      child: DropdownMenuWidget(
+                                    items: popupActionButtons,
+                                    titleText: resources.string.otherActions,
+                                    onItemSelected: (p0) {
+                                      _onActionClicked(context, p0);
+                                    },
+                                  )),
                               ],
-                              if (popupActionButtons.isNotEmpty)
-                                Expanded(
-                                    child: DropdownMenuWidget(
-                                  items: popupActionButtons,
-                                  titleText: resources.string.otherActions,
-                                  onItemSelected: (p0) {
-                                    _onActionClicked(context, p0);
-                                  },
-                                )),
-                            ],
-                          );
-                        }),
-                  ],
-                );
-              }),
+                            );
+                          }),
+                    ],
+                  );
+                }),
+          ),
         ),
       ),
     );

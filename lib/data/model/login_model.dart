@@ -56,6 +56,7 @@ class UserModel extends BaseModel {
   String? manager;
   String? department;
   String? mobile;
+  String? contactNumber;
 
   UserModel();
 
@@ -76,6 +77,7 @@ class UserModel extends BaseModel {
     manager = userJson['manager'];
     department = userJson['department'];
     mobile = userJson['mobile'];
+    contactNumber = userJson['contactNumber'];
   }
 
   @override
@@ -99,6 +101,7 @@ class UserModel extends BaseModel {
     userEntity.manager = manager;
     userEntity.department = department;
     userEntity.mobile = mobile;
+    userEntity.contactNumber = contactNumber;
     return userEntity;
   }
 }

@@ -20,6 +20,7 @@ class DashboardEntity extends BaseEntity {
   List<TicketEntity> assignedTickets = [];
   List<TicketEntity> myTickets = [];
   List<TicketEntity> teamTickets = [];
+  List<TicketEntity> historyTickets = [];
 }
 
 class TicketsByMonthEntity extends BaseEntity {

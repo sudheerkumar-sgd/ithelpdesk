@@ -56,6 +56,28 @@ class AppRoutes {
           ));
         },
       ),
+      GoRoute(
+  path: '/viewRequest',
+  pageBuilder: (context, state) {
+    final extra = state.extra as Map;
+    return CustomTransitionPage<void>(
+      key: state.pageKey,
+      child: ViewRequest(
+        ticketDetails: extra['ticketDetails'],
+        isMyTicket: extra['isMyTicket'],
+      ),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        return SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(1, 0),
+            end: Offset.zero,
+          ).animate(animation),
+          child: child,
+        );
+      },
+    );
+  },
+),
     ]);
   }
 }

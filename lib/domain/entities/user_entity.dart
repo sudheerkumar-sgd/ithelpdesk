@@ -33,6 +33,7 @@ class UserEntity extends BaseEntity {
   String? manager;
   String? department;
   String? mobile;
+  String? contactNumber;
 
   @override
   List<Object?> get props => [id];

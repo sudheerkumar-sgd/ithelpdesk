@@ -24,15 +24,25 @@ class PageUserAppBarWidget extends StatelessWidget
           Row(
             children: [
               SizedBox(
-                height: 40,
-                child: InkWell(
-                  hoverColor: Colors.transparent,
-                  onTap: () {
-                    context.go(AppRoutes.initialRoute);
-                  },
+                width: resources.dimen.dp40,
+              ),
+              InkWell(
+                hoverColor: Colors.transparent,
+                onTap: () {
+                  final router = GoRouter.of(context);
+                  if (router.canPop()) {
+                    router.pop();
+                  } else {
+                    router.go(AppRoutes.initialRoute);
+                  }
+                },
+                child: Align(
+                  alignment: Alignment.centerLeft,
                   child: ImageWidget(
-                    path: DrawableAssets.icLogo,
-                  ).loadImage,
+                          width: 80,
+                          path: DrawableAssets.icLogo,
+                          boxType: BoxFit.contain)
+                      .loadImage,
                 ),
               ),
               SizedBox(
