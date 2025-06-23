@@ -49,6 +49,7 @@ class ReportListWidget extends StatelessWidget {
   final List<int> _selectedDepartments = List<int>.empty(growable: true);
   final List<int> _selectedCategories = List<int>.empty(growable: true);
   final List<int> _filteredStatus = List<int>.empty(growable: true);
+  final List<int> _filteredIssueType = List<int>.empty(growable: true);
   final _masterDataBloc = sl<MasterDataBloc>();
   List<dynamic>? _employees;
   List<dynamic>? _departments;
@@ -88,6 +89,8 @@ class ReportListWidget extends StatelessWidget {
             ? Icons.arrow_downward_sharp
             : Icons.arrow_upward_sharp;
       case 5:
+        return Icons.filter_list;
+      case 10:
         return Icons.filter_list;
       case 7:
         return Icons.filter_list;
@@ -147,11 +150,16 @@ class ReportListWidget extends StatelessWidget {
     }
   }
 
+  bool isClickableColumn(int id) {
+    return [9, 6, 5, 7, 3, 8, 10].contains(id);
+  }
+
   @override
   Widget build(BuildContext context) {
     final resources = context.resources;
     _selectedCategories.addAll(filters?['categories'] ?? []);
     _filteredStatus.addAll(filters?['status'] ?? []);
+    _filteredIssueType.addAll(filters?['issueType'] ?? []);
     _selectedDepartments.addAll(filters?['departments'] ?? []);
 
     page = pageIndex;
@@ -162,6 +170,7 @@ class ReportListWidget extends StatelessWidget {
             NameIDEntity(3, resources.string.category),
             NameIDEntity(4, resources.string.subject),
             NameIDEntity(5, resources.string.status),
+            NameIDEntity(10, resources.string.issueType),
             NameIDEntity(6, resources.string.priority),
             NameIDEntity(7, resources.string.assignee),
             NameIDEntity(8, resources.string.department),
@@ -185,8 +194,9 @@ class ReportListWidget extends StatelessWidget {
             5: const FlexColumnWidth(2),
             6: const FlexColumnWidth(2),
             7: const FlexColumnWidth(2),
-            8: const FlexColumnWidth(3),
+            8: const FlexColumnWidth(2),
             9: const FlexColumnWidth(3),
+            10: const FlexColumnWidth(3),
           }
         : {
             0: const FlexColumnWidth(2),
@@ -265,12 +275,8 @@ class ReportListWidget extends StatelessWidget {
                                 padding: EdgeInsets.symmetric(
                                     vertical: resources.dimen.dp10,
                                     horizontal: resources.dimen.dp10),
-                                child: (ticketsHeaderData[index].id == 9 ||
-                                        ticketsHeaderData[index].id == 6 ||
-                                        ticketsHeaderData[index].id == 5 ||
-                                        ticketsHeaderData[index].id == 7 ||
-                                        ticketsHeaderData[index].id == 3 ||
-                                        ticketsHeaderData[index].id == 8)
+                                child: isClickableColumn(
+                                        ticketsHeaderData[index].id ?? 0)
                                     ? InkWell(
                                         onTap: () async {
                                           if (ticketsHeaderData[index].id ==
@@ -328,6 +334,8 @@ class ReportListWidget extends StatelessWidget {
                                                   'categories':
                                                       _selectedCategories,
                                                   'status': _filteredStatus,
+                                                  'issueType':
+                                                      _filteredIssueType,
                                                   'employees':
                                                       _selectedEmployees,
                                                   'departments':
@@ -412,6 +420,8 @@ class ReportListWidget extends StatelessWidget {
                                                     'categories':
                                                         _selectedCategories,
                                                     'status': _filteredStatus,
+                                                    'issueType':
+                                                        _filteredIssueType,
                                                     'departments':
                                                         _selectedDepartments
                                                   });
@@ -467,6 +477,8 @@ class ReportListWidget extends StatelessWidget {
                                                     'categories':
                                                         _selectedCategories,
                                                     'status': _filteredStatus,
+                                                    'issueType':
+                                                        _filteredIssueType,
                                                     'departments':
                                                         _selectedDepartments
                                                   });
@@ -475,6 +487,47 @@ class ReportListWidget extends StatelessWidget {
                                                 }
                                               });
                                             }
+                                          } else if (ticketsHeaderData[index]
+                                                  .id ==
+                                              10) {
+                                            Dialogs.showDialogWithClose(
+                                                    context,
+                                                    MultiSelectDialogWidget<
+                                                        IssueType>(
+                                                      list: getIssueTypes(),
+                                                      selectedItems: getIssueTypes()
+                                                          .where((e) =>
+                                                              _filteredIssueType
+                                                                  .contains(
+                                                                      e.value))
+                                                          .toList(),
+                                                    ),
+                                                    maxWidth: isDesktop(context)
+                                                        ? 250
+                                                        : null,
+                                                    showClose: false)
+                                                .then((value) {
+                                              if (value != null &&
+                                                  value is List<IssueType>) {
+                                                _filteredIssueType.clear();
+                                                _filteredIssueType.addAll(
+                                                    value.map((e) => e.value));
+                                                page = 1;
+                                                onFilterChange?.call({
+                                                  'categories':
+                                                      _selectedCategories,
+                                                  'status': _filteredStatus,
+                                                  'issueType':
+                                                      _filteredIssueType,
+                                                  'employees':
+                                                      _selectedEmployees,
+                                                  'departments':
+                                                      _selectedDepartments
+                                                });
+                                                // _onSortChange.value =
+                                                //     !_onSortChange.value;
+                                              }
+                                            });
                                           }
                                         },
                                         child: Text.rich(

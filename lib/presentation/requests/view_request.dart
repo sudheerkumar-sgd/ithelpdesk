@@ -75,6 +75,7 @@ class ViewRequest extends BaseScreenWidget {
       TextEditingController();
   final TextEditingController _customerEmailController =
       TextEditingController();
+  final TextEditingController _customerIssueType = TextEditingController();
 
   final ValueNotifier<bool> _isExanded = ValueNotifier(false);
   final ValueNotifier<bool> _onDataChanged = ValueNotifier(false);
@@ -396,6 +397,7 @@ class ViewRequest extends BaseScreenWidget {
     _tradeLicenseNameController.text = ticket.tradeLicenseName ?? '';
     _tradeLicenseNumberController.text = '${ticket.tradeLicenseNumber ?? 0}';
     _customerEmailController.text = ticket.email ?? '';
+    _customerIssueType.text = ticket.issueType?.name ?? '';
     return Container(
       padding: EdgeInsets.symmetric(
           vertical: resources.dimen.dp15, horizontal: resources.dimen.dp20),
@@ -698,6 +700,23 @@ class ViewRequest extends BaseScreenWidget {
                       Expanded(
                         child: RightIconTextWidget(
                           isEnabled: false,
+                          textController: _customerIssueType,
+                          labelText: resources.string.issueType,
+                          fillColor: resources.color.colorWhite,
+                          borderSide: BorderSide(
+                              color:
+                                  context.resources.color.sideBarItemUnselected,
+                              width: 1),
+                          borderRadius: 0,
+                          onChanged: (value) {},
+                        ),
+                      ),
+                      SizedBox(
+                        width: resources.dimen.dp40,
+                      ),
+                      Expanded(
+                        child: RightIconTextWidget(
+                          isEnabled: false,
                           textController: _customerEmailController,
                           labelText: resources.string.customerEmail,
                           fillColor: resources.color.colorWhite,
@@ -710,7 +729,7 @@ class ViewRequest extends BaseScreenWidget {
                         ),
                       ),
                     ],
-                  )
+                  ),
                 ],
               ],
             ),

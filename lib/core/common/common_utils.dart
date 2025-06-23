@@ -535,6 +535,15 @@ List<StatusType> getStatusTypes() {
   ];
 }
 
+List<IssueType> getIssueTypes() {
+  return [
+    IssueType.customer,
+    IssueType.employee,
+    IssueType.system,
+    IssueType.other,
+  ];
+}
+
 List<PriorityType> getPriorityTypes() {
   return [
     PriorityType.low,

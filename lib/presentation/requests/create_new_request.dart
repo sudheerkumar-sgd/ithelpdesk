@@ -10,6 +10,7 @@ import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/domain/entities/base_entity.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
 import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
+import 'package:ithelpdesk/domain/entities/single_data_entity.dart';
 import 'package:ithelpdesk/domain/entities/user_entity.dart';
 import 'package:ithelpdesk/injection_container.dart';
 import 'package:ithelpdesk/presentation/bloc/master_data/master_data_bloc.dart';
@@ -347,8 +348,11 @@ class CreateNewRequest extends BaseScreenWidget {
                                                               .id;
                                                       _serviceID.value = null;
                                                       _reasonValue.value = null;
-                                                      _formKey.currentState
-                                                          ?.validate();
+                                                      Future.delayed(
+                                                          Duration.zero, () {
+                                                        _formKey.currentState
+                                                            ?.validate();
+                                                      });
                                                     },
                                                   );
                                                 })),
@@ -430,51 +434,62 @@ class CreateNewRequest extends BaseScreenWidget {
                                           ),
                                         ),
                                         if (value == 2) ...[
-                                          SizedBox(
-                                            width: resources.dimen.dp40,
-                                          ),
-                                          Expanded(
-                                            child: ValueListenableBuilder(
-                                                valueListenable:
-                                                    _subCategoryValue,
-                                                builder: (context,
-                                                    categoryValue, child) {
-                                                  int departmentID = 1;
-                                                  if (categoryValue == 1 ||
-                                                      categoryValue == 3) {
-                                                    departmentID = 5;
-                                                  } else if (categoryValue ==
-                                                      2) {
-                                                    departmentID = 2;
-                                                  } else if (categoryValue ==
-                                                      4) {
-                                                    departmentID = 1;
-                                                  } else if (categoryValue ==
-                                                      25) {
-                                                    departmentID = 18;
-                                                  }
-                                                  return FutureBuilder(
-                                                      future: value == -1
-                                                          ? Future.value(
-                                                              ListEntity())
-                                                          : _masterDataBloc
-                                                              .getEmployees(
-                                                                  requestParams: {
-                                                                  'departmentID':
-                                                                      departmentID,
-                                                                }),
-                                                      builder:
-                                                          (context, snapShot) {
-                                                        final items = snapShot
-                                                                .data?.items ??
-                                                            [];
-                                                        items.sort((a, b) => a
-                                                            .toString()
-                                                            .toLowerCase()
-                                                            .compareTo(b
-                                                                .toString()
-                                                                .toLowerCase()));
-                                                        return DropdownSearchWidget(
+                                          ValueListenableBuilder(
+                                              valueListenable:
+                                                  _subCategoryValue,
+                                              builder: (context, categoryValue,
+                                                  child) {
+                                                if (categoryValue != 2) {
+                                                  return const SizedBox();
+                                                }
+                                                return SizedBox(
+                                                  width: resources.dimen.dp40,
+                                                );
+                                              }),
+                                          ValueListenableBuilder(
+                                              valueListenable:
+                                                  _subCategoryValue,
+                                              builder: (context, categoryValue,
+                                                  child) {
+                                                if (categoryValue != 2) {
+                                                  return const SizedBox();
+                                                }
+                                                int departmentID = 1;
+                                                if (categoryValue == 1 ||
+                                                    categoryValue == 3) {
+                                                  departmentID = 5;
+                                                } else if (categoryValue == 2) {
+                                                  departmentID = 2;
+                                                } else if (categoryValue == 4) {
+                                                  departmentID = 1;
+                                                } else if (categoryValue ==
+                                                    25) {
+                                                  departmentID = 18;
+                                                }
+                                                return FutureBuilder(
+                                                    future: value == -1
+                                                        ? Future.value(
+                                                            ListEntity())
+                                                        : _masterDataBloc
+                                                            .getEmployees(
+                                                                requestParams: {
+                                                                'departmentID':
+                                                                    departmentID,
+                                                              }),
+                                                    builder:
+                                                        (context, snapShot) {
+                                                      final items = snapShot
+                                                              .data?.items ??
+                                                          [];
+                                                      items.sort((a, b) => a
+                                                          .toString()
+                                                          .toLowerCase()
+                                                          .compareTo(b
+                                                              .toString()
+                                                              .toLowerCase()));
+                                                      return Expanded(
+                                                        child:
+                                                            DropdownSearchWidget(
                                                           list: items,
                                                           labelText: resources
                                                               .string.raisedBy,
@@ -504,10 +519,10 @@ class CreateNewRequest extends BaseScreenWidget {
                                                                 .currentState
                                                                 ?.validate();
                                                           },
-                                                        );
-                                                      });
-                                                }),
-                                          ),
+                                                        ),
+                                                      );
+                                                    });
+                                              }),
                                         ]
                                       ],
                                     ),
@@ -520,41 +535,49 @@ class CreateNewRequest extends BaseScreenWidget {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Expanded(
-                                            child: Padding(
-                                              padding: EdgeInsets.only(
-                                                  right: resources.dimen.dp20),
-                                              child: DropDownWidget(
-                                                list: const [
-                                                  'Internal',
-                                                  'External'
-                                                ],
-                                                textController:
-                                                    TextEditingController(),
-                                                labelText:
-                                                    resources.string.issueType,
-                                                hintText: resources
-                                                    .string.issueType
-                                                    .withPrefix(resources
-                                                        .string.pleaseEnter),
-                                                errorMessage: resources
-                                                    .string.issueType
-                                                    .withPrefix(resources
-                                                        .string.pleaseSelect),
-                                                fillColor:
-                                                    resources.color.colorWhite,
-                                                borderRadius: 0,
-                                                callback: (value) {
-                                                  _onIssueTypeSelect.value =
-                                                      (value == 'Internal');
-                                                  Future.delayed(Duration.zero,
-                                                      () {
-                                                    _formKey.currentState
-                                                        ?.validate();
-                                                  });
-                                                },
-                                              ),
+                                            child: DropDownWidget(
+                                              list: [
+                                                NameIDEntity(1, 'Internal',
+                                                    nameAr: 'داخلي'),
+                                                NameIDEntity(2, 'External',
+                                                    nameAr: 'خارجي')
+                                              ],
+                                              textController:
+                                                  TextEditingController(),
+                                              labelText:
+                                                  resources.string.issueType,
+                                              hintText: resources
+                                                  .string.issueType
+                                                  .withPrefix(resources
+                                                      .string.pleaseEnter),
+                                              errorMessage: resources
+                                                  .string.issueType
+                                                  .withPrefix(resources
+                                                      .string.pleaseSelect),
+                                              fillColor:
+                                                  resources.color.colorWhite,
+                                              borderRadius: 0,
+                                              callback: (value) {
+                                                _onIssueTypeSelect.value =
+                                                    (value?.id == 1);
+                                                Future.delayed(Duration.zero,
+                                                    () {
+                                                  _formKey.currentState
+                                                      ?.validate();
+                                                });
+                                              },
                                             ),
                                           ),
+                                          ValueListenableBuilder(
+                                              valueListenable:
+                                                  _onIssueTypeSelect,
+                                              builder: (context, value, child) {
+                                                return SizedBox(
+                                                  width: value ?? true
+                                                      ? 0
+                                                      : resources.dimen.dp40,
+                                                );
+                                              }),
                                           ValueListenableBuilder(
                                               valueListenable:
                                                   _onIssueTypeSelect,
@@ -562,67 +585,58 @@ class CreateNewRequest extends BaseScreenWidget {
                                                 return value ?? true
                                                     ? const SizedBox()
                                                     : Expanded(
-                                                        child: Padding(
-                                                          padding:
-                                                              EdgeInsets.only(
-                                                                  left: resources
-                                                                      .dimen
-                                                                      .dp20),
-                                                          child:
-                                                              RightIconTextWidget(
-                                                            textController:
-                                                                _customerEmailController,
-                                                            labelText: resources
-                                                                .string
-                                                                .customerEmail,
-                                                            hintText: resources
-                                                                .string
-                                                                .customerEmail
-                                                                .withPrefix(
-                                                                    resources
+                                                        child:
+                                                            RightIconTextWidget(
+                                                          textController:
+                                                              _customerEmailController,
+                                                          labelText: resources
+                                                              .string
+                                                              .customerEmail,
+                                                          hintText: resources
+                                                              .string
+                                                              .customerEmail
+                                                              .withPrefix(resources
+                                                                  .string
+                                                                  .pleaseEnter),
+                                                          errorMessage: resources
+                                                              .string
+                                                              .customerEmail
+                                                              .withPrefix(resources
+                                                                  .string
+                                                                  .pleaseEnter),
+                                                          fillColor: resources
+                                                              .color.colorWhite,
+                                                          borderSide: BorderSide(
+                                                              color: context
+                                                                  .resources
+                                                                  .color
+                                                                  .sideBarItemUnselected,
+                                                              width: 1),
+                                                          borderRadius: 0,
+                                                          onChanged: (value) {
+                                                            _formKey
+                                                                .currentState
+                                                                ?.validate();
+                                                          },
+                                                          isValid: (p0) {
+                                                            return p0.isEmpty
+                                                                ? resources
+                                                                    .string
+                                                                    .customerEmail
+                                                                    .withPrefix(
+                                                                        resources
+                                                                            .string
+                                                                            .pleaseEnter)
+                                                                : p0
+                                                                        .isValidEmail()
+                                                                    ? null
+                                                                    : resources
                                                                         .string
-                                                                        .pleaseEnter),
-                                                            errorMessage: resources
-                                                                .string
-                                                                .customerEmail
-                                                                .withPrefix(
-                                                                    resources
-                                                                        .string
-                                                                        .pleaseEnter),
-                                                            fillColor: resources
-                                                                .color
-                                                                .colorWhite,
-                                                            borderSide: BorderSide(
-                                                                color: context
-                                                                    .resources
-                                                                    .color
-                                                                    .sideBarItemUnselected,
-                                                                width: 1),
-                                                            borderRadius: 0,
-                                                            onChanged: (value) {
-                                                              _formKey
-                                                                  .currentState
-                                                                  ?.validate();
-                                                            },
-                                                            isValid: (p0) {
-                                                              return p0.isEmpty
-                                                                  ? resources
-                                                                      .string
-                                                                      .customerEmail
-                                                                      .withPrefix(resources
-                                                                          .string
-                                                                          .pleaseEnter)
-                                                                  : p0
-                                                                          .isValidEmail()
-                                                                      ? null
-                                                                      : resources
-                                                                          .string
-                                                                          .customerEmail
-                                                                          .withPrefix(resources
-                                                                              .string
-                                                                              .enterValid);
-                                                            },
-                                                          ),
+                                                                        .customerEmail
+                                                                        .withPrefix(resources
+                                                                            .string
+                                                                            .enterValid);
+                                                          },
                                                         ),
                                                       );
                                               }),
@@ -744,11 +758,13 @@ class CreateNewRequest extends BaseScreenWidget {
                                         },
                                         isValid: (p0) {
                                           if (value > 2) return null;
-                                          return p0.length < 4
-                                              ? resources.string.requestNo
-                                                  .withPrefix(resources
-                                                      .string.pleaseEnter)
-                                              : null;
+                                          return _subCategoryValue.value != 2
+                                              ? null
+                                              : p0.length < 4
+                                                  ? resources.string.requestNo
+                                                      .withPrefix(resources
+                                                          .string.pleaseEnter)
+                                                  : null;
                                         },
                                       ),
                                       SizedBox(

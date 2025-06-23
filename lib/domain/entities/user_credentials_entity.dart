@@ -17,6 +17,9 @@ class UserCredentialsEntity {
   bool? userOnvaction;
   UserCredentialsEntity();
   factory UserCredentialsEntity.details({isDataChanged = false}) {
+    if (userToken.isEmpty) {
+      userToken = UserDataDB().get(UserDataDB.userToken, defaultValue: '');
+    }
     if ((userData == null || isDataChanged) && userToken.isNotEmpty) {
       userData = UserCredentialsEntity();
       String normalizedSource = base64Url.normalize(userToken.split(".")[1]);

@@ -219,6 +219,7 @@ class TicketEntity extends BaseEntity {
         "subject":
             isSelectedLocalEn ? subject ?? '' : subjectAr ?? (subject ?? ''),
         "status": status,
+        "issueType": issueType?.name ?? '',
         "priority": priority,
         "assignee": assignedTo ?? '',
         "department": departmentName ?? '',

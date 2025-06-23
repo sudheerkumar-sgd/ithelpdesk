@@ -162,11 +162,13 @@ class ReportsScreen extends BaseScreenWidget {
                                       lastDate: DateTime.now())
                                   .then((dateTime) {
                                 if (dateTime != null) {
-                                  filteredDates.value =
-                                      List<String>.empty(growable: true)
-                                        ..add(value[0])
-                                        ..add(getDateByformat(
-                                            'yyyy/MM/dd', dateTime));
+                                  filteredDates.value = List<String>.empty(
+                                      growable: true)
+                                    ..add(value[0])
+                                    ..add(getDateByformat(
+                                        'yyyy/MM/dd',
+                                        dateTime
+                                            .add(const Duration(hours: 24))));
                                   if (context.mounted) {
                                     _updateTickets(context);
                                   }
@@ -209,6 +211,7 @@ class ReportsScreen extends BaseScreenWidget {
                           onTap: () {
                             if (filteredDates.value.isNotEmpty) {
                               filteredDates.value = List.empty();
+                              _updateTickets(context);
                             }
                           },
                           child: const Padding(
@@ -732,6 +735,9 @@ class ReportsScreen extends BaseScreenWidget {
           : null,
       'status': (filteredData?['status'] is List)
           ? (filteredData?['status'].join(', '))
+          : null,
+      'issueType': (filteredData?['issueType'] is List)
+          ? (filteredData?['issueType'].join(', '))
           : null,
       'startDate': startDate,
       'endDate': endDate,

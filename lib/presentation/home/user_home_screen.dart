@@ -9,7 +9,6 @@ import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
-import 'package:ithelpdesk/data/local/user_data_db.dart';
 import 'package:ithelpdesk/domain/entities/api_entity.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
 import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
@@ -69,15 +68,18 @@ class UserHomeScreen extends BaseScreenWidget {
   Widget getLineChart(
       BuildContext context, List<TicketsByMonthEntity> ticketsByMonthEntity) {
     final resources = context.resources;
+    final currentYear = DateTime.now().year;
     final years = [
-      _selectedYear.value,
-      _selectedYear.value - 1,
-      _selectedYear.value - 2
+      currentYear,
+      currentYear - 1,
+      currentYear - 2,
+      currentYear - 3
     ];
     final lineChartData = List<FlSpot>.empty(growable: true);
     final tilesData = List<Widget>.empty(growable: true);
     for (var i = 0; i < 12; i++) {
-      final currentMonth = DateTime.now().month;
+      final currentMonth =
+          _selectedYear.value == DateTime.now().year ? DateTime.now().month : 0;
       final startMonth = ((currentMonth + i) % 12) + 1;
       final monthData = ticketsByMonthEntity
           .where((month) => month.month == startMonth)
@@ -130,6 +132,13 @@ class UserHomeScreen extends BaseScreenWidget {
                 selectedValue: _selectedYear.value,
                 fontStyle: context.textFontWeight400
                     .onFontSize(resources.fontSize.dp10),
+                callback: (p0) {
+                  _selectedYear.value = p0 ?? 2025;
+                  _servicesBloc.getDashboardData(requestParams: {
+                    "userId": UserCredentialsEntity.details().id,
+                    'year': p0 ?? 0
+                  });
+                },
               )
             ],
           ),

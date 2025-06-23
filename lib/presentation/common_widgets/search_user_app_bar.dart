@@ -10,8 +10,6 @@ import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/search_textfield_widget.dart';
 import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
 
-import '../requests/view_request.dart';
-
 class SearchUserAppBarWidget extends StatelessWidget
     implements PreferredSizeWidget {
   final String userName;
