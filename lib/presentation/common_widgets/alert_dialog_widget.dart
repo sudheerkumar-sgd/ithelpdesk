@@ -15,8 +15,13 @@ class AlertDialogWidget extends StatelessWidget {
   final String message;
   final String title;
   final PopupType type;
+  final Widget? customMessageBody;
   const AlertDialogWidget(
-      {required this.message, required this.type, this.title = '', super.key});
+      {required this.message,
+      required this.type,
+      this.title = '',
+      this.customMessageBody,
+      super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -51,12 +56,13 @@ class AlertDialogWidget extends StatelessWidget {
             SizedBox(
               height: context.resources.dimen.dp20,
             ),
-            SelectableText(
-              message,
-              textAlign: TextAlign.center,
-              style: context.textFontWeight400
-                  .onFontSize(context.resources.fontSize.dp12),
-            ),
+            customMessageBody ??
+                SelectableText(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: context.textFontWeight400
+                      .onFontSize(context.resources.fontSize.dp12),
+                ),
             SizedBox(
               height: context.resources.dimen.dp25,
             ),

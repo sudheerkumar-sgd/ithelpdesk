@@ -147,6 +147,21 @@ class ServicesUseCase extends BaseUseCase {
     });
   }
 
+  Future<Either<Failure, ApiEntity<SingleDataEntity>>> submitTicketFeedback(
+      {required Map<String, dynamic> requestParams}) async {
+    var apiResponse = await apisRepository.post<SingleDataModel>(
+      apiUrl: submitUserFeedbackApiUrl,
+      requestParams: requestParams,
+      responseModel: SingleDataModel.fromCreateRequest,
+    );
+    return apiResponse.fold((l) {
+      return Left(l);
+    }, (r) {
+      var apiResponseEntity = r.toEntity<SingleDataEntity>();
+      return Right(apiResponseEntity);
+    });
+  }
+
   Future<Either<Failure, bool>> exportToExcel(List<dynamic> tickets) async {
     try {
       var excel = Excel.createExcel();

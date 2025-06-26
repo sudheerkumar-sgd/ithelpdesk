@@ -541,6 +541,8 @@ List<IssueType> getIssueTypes() {
     IssueType.employee,
     IssueType.system,
     IssueType.other,
+    IssueType.bug,
+    IssueType.datamigration,
   ];
 }
 

@@ -64,12 +64,7 @@ class TicketActionWidget extends StatelessWidget {
             children: [
               if (showIssueType) ...[
                 DropDownWidget(
-                  list: const [
-                    IssueType.customer,
-                    IssueType.employee,
-                    IssueType.system,
-                    IssueType.other,
-                  ],
+                  list: IssueType.values,
                   labelText: context.resources.string.issueType,
                   hintText: context.resources.string.issueType,
                   errorMessage: context.resources.string.issueType

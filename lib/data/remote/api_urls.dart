@@ -109,6 +109,8 @@ const String assignedEmployeesByUserApiUrl =
 const String previousAssignedEmployeesApiUrl =
     '${apiFolderUrl}MasterData/GetPreviousAssignies';
 const String createTicketApiUrl = '${apiFolderUrl}CreateTicket';
+const String submitUserFeedbackApiUrl =
+    '${apiFolderUrl}CreateTicket/SubmitUserFeedback';
 const String createTicketUploadMultiPartApiUrl =
     '${apiFolderUrl}CreateTicket/UploadMultiPart';
 const String ticketHistoryApiUrl = '${apiFolderUrl}Ticket/GetTicketHistory';

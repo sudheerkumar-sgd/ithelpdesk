@@ -494,8 +494,9 @@ class ReportListWidget extends StatelessWidget {
                                                     context,
                                                     MultiSelectDialogWidget<
                                                         IssueType>(
-                                                      list: getIssueTypes(),
-                                                      selectedItems: getIssueTypes()
+                                                      list: IssueType.values,
+                                                      selectedItems: IssueType
+                                                          .values
                                                           .where((e) =>
                                                               _filteredIssueType
                                                                   .contains(

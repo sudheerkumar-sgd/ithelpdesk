@@ -134,6 +134,11 @@
     "network":"شبكة",
     "customerEmail":"البريد الإلكتروني للعميل",
     "customerMobileNumber":"رقم الجوال الخاص بالعميل",
+    "feedBackRatingTitle":"ساعد في تحسين خدمة دعمك",
+    "feedBackRatingTitleDes":"تم حل تذكرة رقم 00000 بنجاح. نرجو منك تقييم تجربتك مع فريق الدعم.",
+    "howWasYourExperience":"كيف كانت تجربتك؟",
+    "tellUsMore":"أخبرنا المزيد",
+    "updatedSuccessfully":"تم إعادة الإرسال بنجاح ",
     "nextLevel":"المستوى التالي"
 
 }

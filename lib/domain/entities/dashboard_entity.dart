@@ -219,7 +219,7 @@ class TicketEntity extends BaseEntity {
         "subject":
             isSelectedLocalEn ? subject ?? '' : subjectAr ?? (subject ?? ''),
         "status": status,
-        "issueType": issueType?.name ?? '',
+        "issueType": issueType?.toString() ?? '',
         "priority": priority,
         "assignee": assignedTo ?? '',
         "department": departmentName ?? '',
@@ -295,7 +295,7 @@ class TicketEntity extends BaseEntity {
         'serviceName': serviceName ?? '',
         'tradeLicenseName': tradeLicenseName ?? '',
         'tradeLicenseNumber': tradeLicenseNumber ?? '',
-        'Issue Type': (issueType?.name ?? '').capitalize(),
+        'Issue Type': (issueType?.toString() ?? '').capitalize(),
         'Reason For Issue': finalComments ?? '',
         'requestType': 2,
         'raisedBy': raisedByName ?? '',

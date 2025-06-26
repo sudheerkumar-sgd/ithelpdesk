@@ -33,10 +33,13 @@ class ProfileScreenWidget extends BaseScreenWidget {
                 height: resources.dimen.dp20,
               ),
               FutureBuilder(
-                  future: _userBloc.getUserData({
-                    'userName':
-                        userName ?? UserCredentialsEntity.details().username
-                  }),
+                  future:
+                      _userBloc.getUserData(int.tryParse(userName ?? '') != null
+                          ? {'id': int.parse(userName ?? '0')}
+                          : {
+                              'userName': userName ??
+                                  UserCredentialsEntity.details().username,
+                            }),
                   builder: (context, snapShot) {
                     final userEntity = snapShot.data;
                     return Container(

@@ -125,6 +125,14 @@ class OnEmailSubmitSuccess extends ServicesState {
   List<Object?> get props => [emailSubmitSuccess];
 }
 
+class OnUpdateTicketSuccess extends ServicesState {
+  final String updateTicketResponse;
+
+  OnUpdateTicketSuccess({required this.updateTicketResponse});
+  @override
+  List<Object?> get props => [updateTicketResponse];
+}
+
 class OnApiError extends ServicesState {
   final String message;
 

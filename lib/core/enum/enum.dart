@@ -213,7 +213,10 @@ enum UserType {
 enum IssueType {
   customer(1),
   employee(2),
+  bug(5),
   system(3),
+  datamigration(6),
+  reports(7),
   other(4);
 
   final int value;
@@ -236,6 +239,12 @@ enum IssueType {
         return isSelectedLocalEn ? 'Employee' : 'موظف';
       case system:
         return isSelectedLocalEn ? 'System' : 'نظام';
+      case bug:
+        return isSelectedLocalEn ? 'Bug' : 'خلل برمجي';
+      case datamigration:
+        return isSelectedLocalEn ? 'Data Migration' : 'ترحيل البيانات';
+      case reports:
+        return isSelectedLocalEn ? 'Reports' : "التقارير";
       case other:
         return isSelectedLocalEn ? 'Other' : 'نظام';
     }

@@ -137,5 +137,10 @@
     "network":"Network",
     "customerEmail":"Customer Email",
     "customerMobileNumber":"Customer Mobile Number",
+    "feedBackRatingTitle":"Help Improve Daamek Service",
+    "feedBackRatingTitleDes":"Your ticket 00000 has been resolved. Please take a moment to provide feedback on your support experience.",
+    "howWasYourExperience":"How was your experience?",
+    "tellUsMore":"Tell us more",
+    "updatedSuccessfully":"Successfully updated",
     "nextLevel":"Next Level"
 }

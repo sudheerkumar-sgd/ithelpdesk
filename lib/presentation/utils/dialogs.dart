@@ -63,13 +63,17 @@ class Dialogs {
 
   static Future showInfoDialog(
       BuildContext context, PopupType popupType, String message,
-      {String title = ''}) async {
+      {String title = '',
+      bool? barrierDismissible,
+      Widget? customMessageBody}) async {
     return showDialog(
       context: context,
+      barrierDismissible: barrierDismissible ?? true,
       builder: (context) => AlertDialogWidget(
         type: popupType,
         message: message,
         title: title,
+        customMessageBody: customMessageBody,
       ),
     );
   }
