@@ -108,4 +108,24 @@ class MasterDataUseCase extends BaseUseCase {
     });
   }
 
+  Future<Either<Failure, ApiEntity<ListEntity>>> getFieldData({
+    required String apiUrl,
+    required Map<String, dynamic> requestParams,
+    required dynamic Function(Map<String, dynamic>) responseModel,
+  }) async {
+    var apiResponse = await apisRepository.get<ListModel>(
+      apiUrl: apiUrl,
+      requestParams: requestParams,
+      responseModel: responseModel,
+    );
+    return apiResponse.fold(
+      (l) {
+        return Left(l);
+      },
+      (r) {
+        var apiResponseEntity = r.toEntity<ListEntity>();
+        return Right(apiResponseEntity);
+      },
+    );
+  }
 }

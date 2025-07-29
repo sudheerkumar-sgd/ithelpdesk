@@ -14,6 +14,7 @@ import 'package:ithelpdesk/core/common/log.dart';
 import 'package:ithelpdesk/core/config/flavor_config.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
+import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/data/local/user_data_db.dart';
@@ -23,7 +24,11 @@ import 'package:ithelpdesk/presentation/utils/location.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:mime/mime.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'dart:html' as html;
+
+import 'package:syncfusion_flutter_xlsio/xlsio.dart' as excel;
+import 'package:web/web.dart' as web;
+import 'package:file_saver/file_saver.dart';
+import 'dart:js_interop';
 
 Future<void> openMapsSheet(
     BuildContext context, String title, double lat, double lang) async {
@@ -508,16 +513,26 @@ Future<void> printData(
 
   ''';
 
-  final blob = html.Blob([htmlString], 'text/html');
+  // final blob = html.Blob([htmlString], 'text/html');
 
-  final url = html.Url.createObjectUrlFromBlob(blob);
-  html.window.open(url, '_blank');
+  // final url = html.Url.createObjectUrlFromBlob(blob);
+  // html.window.open(url, '_blank');
 
-  html.Url.revokeObjectUrl(url);
+  // html.Url.revokeObjectUrl(url);
+
+  final blob =
+      web.Blob([htmlString.toJS].toJS, web.BlobPropertyBag(type: 'text/html'));
+  final url = web.URL.createObjectURL(blob);
+  web.window.open(url, '_blank');
+  web.URL.revokeObjectURL(url);
 }
 
 reloadPage() {
-  html.window.location.reload();
+  web.window.location.reload();
+}
+
+openNewTab(String url) {
+  web.window.open(url, '_blank');
 }
 
 String get getImageBaseUrl =>
@@ -563,4 +578,99 @@ Future<String> imageAssetToBase64(String path) async {
 
 String monthName(int month, {String locale = 'en'}) {
   return DateFormat.MMM(locale).format(DateTime(0, month));
+}
+
+Future<bool> exportToExcel(ExportDataEntity exportData) async {
+  try {
+    final workbook = excel.Workbook();
+    final sheet = workbook.worksheets[0];
+
+    // ✅ This is correct — merge range A1:C1
+    final mergedRange = sheet.getRangeByName('B2:D2');
+    mergedRange.merge();
+
+    // Set title with style
+    final titleCell = sheet.getRangeByName('B2');
+    titleCell.setText(exportData.title);
+    titleCell.cellStyle
+      ..bold = true
+      ..fontSize = 18
+      ..hAlign = excel.HAlignType.left
+      ..fontColor = '#007ACC';
+
+    final mergedRange2 = sheet.getRangeByName('E2:G2');
+    mergedRange2.merge();
+    final titleCell2 = sheet.getRangeByName('E2');
+    titleCell2.setText('Date:${exportData.date}');
+    titleCell2.cellStyle
+      ..bold = true
+      ..fontSize = 14
+      ..hAlign = excel.HAlignType.left
+      ..fontColor = '#007ACC';
+    final columns = exportData.columns;
+    for (int col = 0; col < columns.length; col++) {
+      double estimatedWidth = (columns.length * 0.8).clamp(15, 50);
+      final range = sheet.getRangeByIndex(4, col + 2);
+      range.setText(columns[col]);
+      range.columnWidth = estimatedWidth;
+      final style = range.cellStyle;
+      style.fontSize = 12;
+      style.bold = true;
+      style.fontColor = "#D32030";
+      style.hAlign = excel.HAlignType.left;
+      style.vAlign = excel.VAlignType.top;
+      range.cellStyle = style;
+    }
+
+    for (int row = 0; row < exportData.rows.length; row++) {
+      final item = exportData.rows[row];
+      final columnsData = item.toExcel();
+      int col = 0;
+      for (var item in (columnsData as Map<String, dynamic>).entries) {
+        int estimatedWidth =
+            ('${item.value ?? ''}'.length * 0.8).clamp(15, 50).toInt();
+        final range = sheet.getRangeByIndex(row + 5, col + 2);
+        range.setText('${item.value ?? ''}');
+        range.columnWidth = estimatedWidth.toDouble();
+        final style = range.cellStyle;
+        style.fontSize = 12;
+        style.hAlign = excel.HAlignType.left;
+        style.vAlign = excel.VAlignType.top;
+        style.wrapText = true;
+        range.cellStyle = style;
+        col++;
+      }
+    }
+
+    // Save to file
+    final List<int> bytes = workbook.saveAsStream();
+    workbook.dispose();
+    await FileSaver.instance.saveFile(
+      name: '${exportData.title ?? "TicketReport"}_${exportData.date}',
+      bytes: Uint8List.fromList(bytes),
+      ext: 'xlsx',
+      mimeType: MimeType.microsoftExcel,
+    );
+    // downloadExcelFileUsingWeb(Uint8List.fromList(bytes),
+    //     '${exportData.title ?? "TicketReport"}_${exportData.date}.xlsx');
+  } catch (e) {
+    return false;
+  }
+  return true;
+}
+
+void downloadExcelFileUsingWeb(Uint8List excelBytes, String fileName) {
+  final blob = web.Blob(
+      [excelBytes.toJS].toJS,
+      web.BlobPropertyBag(
+          type:
+              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'));
+  final url = web.URL.createObjectURL(blob);
+
+  final anchor = web.HTMLAnchorElement()
+    ..href = url
+    ..download = fileName;
+
+  anchor.click();
+  web.URL.revokeObjectURL(url); // Clean up the URL
 }

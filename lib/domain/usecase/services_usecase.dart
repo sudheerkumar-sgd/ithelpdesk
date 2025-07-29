@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
-import 'package:excel/excel.dart';
+import 'package:flutter/widgets.dart';
+import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/common/log.dart';
 import 'package:ithelpdesk/core/error/failures.dart';
 import 'package:ithelpdesk/core/extensions/string_extension.dart';
@@ -13,6 +14,7 @@ import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
 import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
 import 'package:ithelpdesk/domain/repository/apis_repository.dart';
 import 'package:ithelpdesk/domain/usecase/base_usecase.dart';
+import 'package:ithelpdesk/core/common/common_utils.dart' as utils;
 
 import '../entities/single_data_entity.dart';
 
@@ -164,25 +166,30 @@ class ServicesUseCase extends BaseUseCase {
 
   Future<Either<Failure, bool>> exportToExcel(List<dynamic> tickets) async {
     try {
-      var excel = Excel.createExcel();
-      var sheetObject = excel[excel.getDefaultSheet() ?? 'SheetName'];
-      for (var (item as TicketEntity) in tickets) {
-        List<CellValue> headerlist = List.empty(growable: true);
-        List<CellValue> list = List.empty(growable: true);
-        item.toExcel().forEach((k, v) {
-          if (sheetObject.rows.isEmpty) {
-            final cellValue = TextCellValue(k.capitalize());
-            headerlist.add(cellValue);
-          }
-          final cellValue = TextCellValue("$v");
-          list.add(cellValue);
-        });
-        if (sheetObject.rows.isEmpty) {
-          sheetObject.appendRow(headerlist);
-        }
-        sheetObject.appendRow(list);
-      }
-      excel.save(fileName: 'Tickets.xlsx');
+      utils.exportToExcel(ExportDataEntity()
+        ..title = 'Tickets'
+        ..date = getDateByformat('dd/MM/yyyy', DateTime.now())
+        ..columns = (TicketEntity().toExcel().keys.toList())
+        ..rows = tickets);
+      // var excel = Excel.createExcel();
+      // var sheetObject = excel[excel.getDefaultSheet() ?? 'SheetName'];
+      // for (var (item as TicketEntity) in tickets) {
+      //   List<CellValue> headerlist = List.empty(growable: true);
+      //   List<CellValue> list = List.empty(growable: true);
+      //   item.toExcel().forEach((k, v) {
+      //     if (sheetObject.rows.isEmpty) {
+      //       final cellValue = TextCellValue(k.capitalize());
+      //       headerlist.add(cellValue);
+      //     }
+      //     final cellValue = TextCellValue("$v");
+      //     list.add(cellValue);
+      //   });
+      //   if (sheetObject.rows.isEmpty) {
+      //     sheetObject.appendRow(headerlist);
+      //   }
+      //   sheetObject.appendRow(list);
+      // }
+      // excel.save(fileName: 'Tickets.xlsx');
     } catch (e) {
       printLog(e);
       return const Right(false);

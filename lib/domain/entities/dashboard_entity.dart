@@ -182,6 +182,9 @@ class TicketEntity extends BaseEntity {
       actionButtons.add(StatusType.hold);
     }
     actionButtons.add(StatusType.reject);
+    if (actionButtons.isEmpty && userID == UserCredentialsEntity.details().id) {
+      actionButtons.addAll(getActionButtonsForMytickets(context));
+    }
     return actionButtons;
   }
 

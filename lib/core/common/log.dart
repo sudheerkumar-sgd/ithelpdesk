@@ -17,13 +17,12 @@ void logFirbaseScreenView({
   );
 }
 
-void logFirbaseEvent(
-    {required String eventname, Map<String, dynamic>? params}) {
+void logFirbaseEvent({required String eventname, Map<String, Object>? params}) {
   FirebaseAnalytics.instance.logEvent(name: eventname, parameters: params);
 }
 
 void logFirbaseEventClick(
-    {required String eventname, Map<String, dynamic>? params}) {
+    {required String eventname, Map<String, Object>? params}) {
   FirebaseAnalytics.instance.logEvent(
       name: '$eventname clicked'.replaceAll(' ', '_'), parameters: params);
 }

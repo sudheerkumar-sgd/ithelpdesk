@@ -17,6 +17,7 @@ import 'package:ithelpdesk/presentation/common_widgets/search_user_app_bar.dart'
 import 'package:ithelpdesk/presentation/common_widgets/side_bar.dart';
 import 'package:ithelpdesk/presentation/directory/directory_navigator_screen.dart';
 import 'package:ithelpdesk/presentation/home/user_home_navigator_screen.dart';
+import 'package:ithelpdesk/presentation/iso/iso_navigator_screen.dart';
 import 'package:ithelpdesk/presentation/profile/profile_navigator_screen.dart';
 import 'package:ithelpdesk/presentation/reports/reports_navigator_screen.dart';
 import 'package:ithelpdesk/presentation/utils/NavbarNotifier.dart';
@@ -90,8 +91,10 @@ class _MainScreenState extends State<UserMainScreen> {
       case 1:
         currentScreen = ReportsNavigatorScreen();
       case 2:
-        currentScreen = DirectoryNavigatorScreen();
+        currentScreen = ISONavigatorScreen();
       case 3:
+        currentScreen = DirectoryNavigatorScreen();
+      case 4:
         currentScreen = ProfileNavigatorScreen();
       default:
         currentScreen =
@@ -196,7 +199,7 @@ class _MainScreenState extends State<UserMainScreen> {
                   children: [
                     if (isDesktop(context, size: size.biggest))
                       SizedBox(
-                        width: 150,
+                        width: 250,
                         child: sideBar,
                       ),
                     Expanded(

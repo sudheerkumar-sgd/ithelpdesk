@@ -24,7 +24,6 @@ import '../../injection_container.dart';
 import '../../res/drawables/background_box_decoration.dart';
 import '../common_widgets/alert_dialog_widget.dart';
 import '../requests/view_request.dart';
-import 'package:excel/excel.dart' as excelpackage;
 
 // ignore: must_be_immutable
 class ReportsScreen extends BaseScreenWidget {
@@ -40,33 +39,6 @@ class ReportsScreen extends BaseScreenWidget {
   String? selectedStatus;
   Map<String, dynamic>? filteredData;
   final ValueNotifier<List<String>> filteredDates = ValueNotifier([]);
-  Future<bool> exportToExcel(List<dynamic> tickets) async {
-    try {
-      var excel = excelpackage.Excel.createExcel();
-      var sheetObject = excel[excel.getDefaultSheet() ?? 'SheetName'];
-      for (var (item as TicketEntity) in tickets) {
-        List<excelpackage.CellValue> headerlist = List.empty(growable: true);
-        List<excelpackage.CellValue> list = List.empty(growable: true);
-        item.toExcel().forEach((k, v) {
-          if (sheetObject.rows.isEmpty) {
-            final cellValue = excelpackage.TextCellValue(k.capitalize());
-            headerlist.add(cellValue);
-          }
-          final cellValue = excelpackage.TextCellValue("$v");
-          list.add(cellValue);
-        });
-        if (sheetObject.rows.isEmpty) {
-          sheetObject.appendRow(headerlist);
-        }
-        sheetObject.appendRow(list);
-      }
-      excel.save(fileName: 'Tickets.xlsx');
-    } catch (e) {
-      printLog(e);
-      return false;
-    }
-    return true;
-  }
 
   Widget _getFilters(BuildContext context) {
     final resources = context.resources;

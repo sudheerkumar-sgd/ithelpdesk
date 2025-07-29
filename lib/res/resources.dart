@@ -4,6 +4,7 @@ import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/data/local/app_settings_db.dart';
+import 'package:ithelpdesk/l10n/app_localizations.dart';
 import 'package:ithelpdesk/res/colors/base_clors.dart';
 import 'package:ithelpdesk/res/dimentions/font_dimension.dart';
 import 'package:ithelpdesk/res/dimentions/font_dimension_big.dart';
@@ -13,7 +14,6 @@ import 'package:ithelpdesk/res/theme/theme_blue.dart';
 import 'colors/theme_blue_colors.dart';
 import 'dimentions/app_dimension.dart';
 import 'dimentions/font_dimension_default.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class Resources {
   final BuildContext context;

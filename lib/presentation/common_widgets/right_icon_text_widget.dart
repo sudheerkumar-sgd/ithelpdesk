@@ -10,6 +10,7 @@ const double defaultHeight = 27;
 class RightIconTextWidget extends StatelessWidget {
   final double height;
   final bool isEnabled;
+  final bool? isReadOnly;
   final String labelText;
   final String hintText;
   final String errorMessage;
@@ -27,6 +28,7 @@ class RightIconTextWidget extends StatelessWidget {
   final BorderSide borderSide;
   final double? borderRadius;
   final Color? fillColor;
+  final Color? disableColor;
   final Function(String)? onChanged;
   final Function? suffixIconClick;
   final Function(String)? isValid;
@@ -35,6 +37,7 @@ class RightIconTextWidget extends StatelessWidget {
   const RightIconTextWidget(
       {this.height = defaultHeight,
       this.isEnabled = true,
+      this.isReadOnly = false,
       this.labelText = '',
       this.hintText = '',
       this.errorMessage = '',
@@ -50,6 +53,7 @@ class RightIconTextWidget extends StatelessWidget {
       this.focusNode,
       this.isMandetory = false,
       this.fillColor,
+      this.disableColor,
       this.borderSide = BorderSide.none,
       this.borderRadius,
       this.onChanged,
@@ -85,7 +89,8 @@ class RightIconTextWidget extends StatelessWidget {
         Align(
           alignment: Alignment.center,
           child: TextFormField(
-            readOnly: !isEnabled,
+            enabled: isEnabled,
+            readOnly: isReadOnly ?? false,
             maxLines: maxLines,
             maxLength: maxLength,
             keyboardType: textInputType,

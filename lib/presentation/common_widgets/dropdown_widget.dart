@@ -90,7 +90,7 @@ class DropDownWidget<T> extends StatelessWidget {
                     filled: true,
                     isDense: true,
                     contentPadding: EdgeInsets.symmetric(
-                        vertical: context.resources.dimen.dp7,
+                        vertical: context.resources.dimen.dp5,
                         horizontal: context.resources.dimen.dp10),
                     fillColor: fillColor ?? const Color(0xFFF7F6F6),
                     focusColor: fillColor ?? const Color(0xFFF7F6F6),
@@ -149,7 +149,7 @@ class DropDownWidget<T> extends StatelessWidget {
                           fontFamily: fontFamily.isNotEmpty
                               ? fontFamily
                               : context.resources.isLocalEn
-                                  ?  fontFamilyEN
+                                  ? fontFamilyEN
                                   : fontFamilyAR)
                       .onFontSize(context.resources.fontSize.dp12),
                   onChanged: isEnabled

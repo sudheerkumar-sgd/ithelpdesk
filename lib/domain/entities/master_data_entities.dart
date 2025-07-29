@@ -146,3 +146,10 @@ class UploadResponseEntity extends BaseEntity {
     return documentName ?? '';
   }
 }
+
+class ExportDataEntity extends BaseEntity {
+  String? title;
+  String? date;
+  List<String> columns = [];
+  dynamic rows;
+}

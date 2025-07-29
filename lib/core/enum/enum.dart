@@ -250,3 +250,26 @@ enum IssueType {
     }
   }
 }
+
+enum FormFieldType {
+  collection,
+  text,
+  number,
+  phone,
+  textarea,
+  email,
+  file,
+  multifile,
+  image,
+  date,
+  dateFrom,
+  dateTo,
+  radiovertical,
+  radio,
+  checkbox,
+  pdfviewer,
+  termsconditions,
+  button,
+  label,
+  labelheader;
+}

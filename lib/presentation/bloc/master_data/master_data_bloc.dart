@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:ithelpdesk/domain/entities/api_entity.dart';
+import 'package:ithelpdesk/domain/entities/base_entity.dart';
 import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
 import 'package:ithelpdesk/domain/usecase/master_data_usecase.dart';
 import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
@@ -67,6 +68,25 @@ class MasterDataBloc extends Cubit<MasterDataState> {
         requestParams: requestParams, apiUrl: apiUrl);
     return result.fold((l) => ListEntity(),
         (r) => OnDataSuccess(listEntity: r).listEntity.entity ?? ListEntity());
+  }
+
+  Future<MasterDataState> getFieldInputData({
+    required String apiUrl,
+    required Map<String, dynamic> requestParams,
+    required dynamic Function(Map<String, dynamic>) requestModel,
+  }) async {
+    final result = await masterDataUseCase.getFieldData(
+      apiUrl: apiUrl,
+      requestParams: requestParams,
+      responseModel: requestModel,
+    );
+    final responseState = result.fold(
+      (l) => OnMasterDataApiError(message: _getErrorMessage(l)),
+      (r) {
+        return OnMasterDataSuccess(responseEntity: r);
+      },
+    );
+    return responseState;
   }
 
   String _getErrorMessage(Failure failure) {

@@ -3,8 +3,8 @@ import 'package:ithelpdesk/core/config/app_routes.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:ithelpdesk/data/local/user_data_db.dart';
+import 'package:ithelpdesk/l10n/app_localizations.dart';
 
 class App extends StatelessWidget {
   const App({super.key});

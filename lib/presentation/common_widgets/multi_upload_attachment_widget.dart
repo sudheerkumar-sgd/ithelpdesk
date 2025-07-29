@@ -175,9 +175,9 @@ class MultiUploadAttachmentWidget extends StatelessWidget {
                             child: Container(
                               padding: EdgeInsets.only(
                                   left: context.resources.dimen.dp10,
-                                  top: context.resources.dimen.dp5,
+                                  top: context.resources.dimen.dp7,
                                   right: context.resources.dimen.dp15,
-                                  bottom: context.resources.dimen.dp5),
+                                  bottom: context.resources.dimen.dp7),
                               decoration: BackgroundBoxDecoration(
                                       boxColor:
                                           context.resources.color.colorWhite,
@@ -218,8 +218,6 @@ class MultiUploadAttachmentWidget extends StatelessWidget {
                                               context
                                                   .resources.string.uploadFile,
                                               style: context.textFontWeight400
-                                                  .onFontSize(context
-                                                      .resources.fontSize.dp12)
                                                   .onColor(context.resources
                                                       .color.colorD6D6D6)
                                                   .onFontFamily(

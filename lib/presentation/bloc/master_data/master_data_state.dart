@@ -20,6 +20,14 @@ class OnDataSuccess extends ServicesState {
   List<Object?> get props => [listEntity];
 }
 
+class OnMasterDataSuccess extends MasterDataState {
+  final ApiEntity<BaseEntity> responseEntity;
+
+  OnMasterDataSuccess({required this.responseEntity});
+  @override
+  List<Object?> get props => [responseEntity];
+}
+
 class OnMasterDataApiError extends MasterDataState {
   final String message;
 

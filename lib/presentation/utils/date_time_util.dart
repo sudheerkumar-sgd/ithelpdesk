@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 
@@ -14,7 +15,17 @@ Future<void> selectDate(BuildContext context,
     required Function(DateTime) callBack}) async {
   final currentDate = DateTime.now();
   DateTime selectedDate = initialDate ?? firstDate ?? currentDate;
-  if (Platform.isAndroid) {
+  if (kIsWeb) {
+    showDatePicker(
+            context: context,
+            firstDate: DateTime.now().add(const Duration(days: -365)),
+            lastDate: DateTime.now())
+        .then((dateTime) {
+      if (dateTime != null) {
+        callBack(dateTime);
+      }
+    });
+  } else if (Platform.isAndroid) {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: initialDate ?? firstDate ?? currentDate,
