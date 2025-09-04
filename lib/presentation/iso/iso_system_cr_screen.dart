@@ -12,8 +12,8 @@ import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart
 import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
 import 'package:ithelpdesk/res/drawables/background_box_decoration.dart';
 
-class IosSystemCrScreen extends BaseScreenWidget {
-  IosSystemCrScreen({super.key});
+class IsoSystemCrScreen extends BaseScreenWidget {
+  IsoSystemCrScreen({super.key});
   final _formKey = GlobalKey<FormState>();
   final Map fieldsData = {};
   final newEmpFormFields = List<FormEntity>.empty(growable: true);

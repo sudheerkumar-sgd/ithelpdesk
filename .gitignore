@@ -28,3 +28,4 @@ doc/api/
 /linux/flutter
 /linux
 linux/flutter/generated_plugin_registrant.cc
+*.log

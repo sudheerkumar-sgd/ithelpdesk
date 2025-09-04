@@ -139,3 +139,14 @@ class ReportCaseResponseEntity extends BaseEntity {
 class EmailSendResponseEntity extends BaseEntity {
   String? messageId;
 }
+
+class UserFeedbackEntity extends BaseEntity {
+  int? id;
+  int? rating;
+  String? comment;
+  String? createdOn;
+  int? userID;
+  int? closedBy;
+  int? ticketID;
+  int? feedbackFrom;
+}

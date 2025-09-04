@@ -416,7 +416,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get customerMobileNumber => 'رقم الجوال الخاص بالعميل';
 
   @override
-  String get feedBackRatingTitle => 'ساعد في تحسين خدمة دعمك';
+  String get feedBackRatingTitle => 'ساعد في تحسينهخدمة مكتب المساعدة';
 
   @override
   String get feedBackRatingTitleDes =>

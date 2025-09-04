@@ -27,6 +27,6 @@ class ProfileNavigatorScreen extends BaseScreenWidget {
 
   @override
   doDispose() {
-    profileScreen.doDispose();
+    //profileScreen.doDispose();
   }
 }

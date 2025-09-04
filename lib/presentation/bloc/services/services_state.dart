@@ -133,6 +133,14 @@ class OnUpdateTicketSuccess extends ServicesState {
   List<Object?> get props => [updateTicketResponse];
 }
 
+class OnApiResponse extends ServicesState {
+  final ApiEntity<BaseEntity> response;
+
+  OnApiResponse({required this.response});
+  @override
+  List<Object?> get props => [response];
+}
+
 class OnApiError extends ServicesState {
   final String message;
 

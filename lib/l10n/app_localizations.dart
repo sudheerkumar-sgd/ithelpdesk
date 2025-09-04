@@ -905,7 +905,7 @@ abstract class AppLocalizations {
   /// No description provided for @feedBackRatingTitle.
   ///
   /// In en, this message translates to:
-  /// **'Help Improve Daamek Service'**
+  /// **'Help Improve ItHelpDesk Service'**
   String get feedBackRatingTitle;
 
   /// No description provided for @feedBackRatingTitleDes.

@@ -7,11 +7,13 @@ import 'package:ithelpdesk/core/extensions/string_extension.dart';
 import 'package:ithelpdesk/data/model/api_response_model.dart';
 import 'package:ithelpdesk/data/model/dashboard_model.dart';
 import 'package:ithelpdesk/data/model/master_data_models.dart';
+import 'package:ithelpdesk/data/model/services_model.dart';
 import 'package:ithelpdesk/data/model/single_data_model.dart';
 import 'package:ithelpdesk/data/remote/api_urls.dart';
 import 'package:ithelpdesk/domain/entities/api_entity.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
 import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
+import 'package:ithelpdesk/domain/entities/services_entity.dart';
 import 'package:ithelpdesk/domain/repository/apis_repository.dart';
 import 'package:ithelpdesk/domain/usecase/base_usecase.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart' as utils;
@@ -160,6 +162,21 @@ class ServicesUseCase extends BaseUseCase {
       return Left(l);
     }, (r) {
       var apiResponseEntity = r.toEntity<SingleDataEntity>();
+      return Right(apiResponseEntity);
+    });
+  }
+
+  Future<Either<Failure, ApiEntity<UserFeedbackEntity>>> getUserTicketFeedback(
+      {required Map<String, dynamic> requestParams}) async {
+    var apiResponse = await apisRepository.get<UserFeedbackModel>(
+      apiUrl: getUserFeedbackByIdApiUrl,
+      requestParams: requestParams,
+      responseModel: UserFeedbackModel.fromJson,
+    );
+    return apiResponse.fold((l) {
+      return Left(l);
+    }, (r) {
+      var apiResponseEntity = r.toEntity<UserFeedbackEntity>();
       return Right(apiResponseEntity);
     });
   }

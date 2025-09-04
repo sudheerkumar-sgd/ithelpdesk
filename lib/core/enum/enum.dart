@@ -196,7 +196,8 @@ enum UserType {
   mdAdmin(11),
   dedAdmin(12),
   mdServices(13),
-  dedServices(14);
+  dedServices(14),
+  itAdmin(15);
 
   final int value;
   const UserType(this.value);

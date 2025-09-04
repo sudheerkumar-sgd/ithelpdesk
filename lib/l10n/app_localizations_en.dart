@@ -417,7 +417,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customerMobileNumber => 'Customer Mobile Number';
 
   @override
-  String get feedBackRatingTitle => 'Help Improve Daamek Service';
+  String get feedBackRatingTitle => 'Help Improve ItHelpDesk Service';
 
   @override
   String get feedBackRatingTitleDes =>

@@ -13,6 +13,7 @@ import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/data/remote/api_urls.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
 import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
+import 'package:ithelpdesk/domain/entities/services_entity.dart';
 import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
 import 'package:ithelpdesk/injection_container.dart';
 import 'package:ithelpdesk/presentation/bloc/master_data/master_data_bloc.dart';
@@ -879,6 +880,7 @@ class ViewRequest extends BaseScreenWidget {
           IntrinsicHeight(
             child: isDesktop(context, size: screenDimentions)
                 ? Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
                         child: _getDataForm(context),
@@ -999,23 +1001,120 @@ class ViewRequest extends BaseScreenWidget {
                                   ? EdgeInsets.only(left: resources.dimen.dp20)
                                   : EdgeInsets.only(
                                       right: resources.dimen.dp20),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Text(
-                                    '${resources.string.status}: ',
-                                    style: context.textFontWeight600,
+                                  Text.rich(
+                                    TextSpan(
+                                        text: '${resources.string.status}: ',
+                                        style: context.textFontWeight600,
+                                        children: [
+                                          TextSpan(
+                                            text: (ticket.status ??
+                                                    StatusType.open)
+                                                .toString(),
+                                            style: context.textFontWeight700
+                                                .onColor((ticket.status ??
+                                                        StatusType.open)
+                                                    .getColor()),
+                                          ),
+                                        ]),
                                   ),
-                                  SizedBox(
-                                    width: resources.dimen.dp5,
-                                  ),
-                                  Text(
-                                    (ticket.status ?? StatusType.open)
-                                        .toString(),
-                                    style: context.textFontWeight700.onColor(
-                                        (ticket.status ?? StatusType.open)
-                                            .getColor()),
-                                  ),
+                                  FutureBuilder(
+                                      future: _servicesBloc
+                                          .getUserTicketFeedback(
+                                              requestParams: {
+                                            "ticketID": ticket.id,
+                                          }),
+                                      builder: (context, snapshot) {
+                                        int value = 0;
+                                        if (snapshot.data is OnApiResponse) {
+                                          value =
+                                              ((snapshot.data as OnApiResponse)
+                                                              .response
+                                                              .entity
+                                                          as UserFeedbackEntity)
+                                                      .rating ??
+                                                  0;
+                                        }
+                                        return value != 0
+                                            ? Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                    ImageWidget(
+                                                            width: 20,
+                                                            path: DrawableAssets
+                                                                .icStar,
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(5),
+                                                            backgroundTint: value >
+                                                                    0
+                                                                ? resources
+                                                                    .color
+                                                                    .viewBgColor
+                                                                : null)
+                                                        .loadImageWithMoreTapArea,
+                                                    ImageWidget(
+                                                            width: 20,
+                                                            path: DrawableAssets
+                                                                .icStar,
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(5),
+                                                            backgroundTint: value >
+                                                                    1
+                                                                ? resources
+                                                                    .color
+                                                                    .viewBgColor
+                                                                : null)
+                                                        .loadImageWithMoreTapArea,
+                                                    ImageWidget(
+                                                            width: 20,
+                                                            path: DrawableAssets
+                                                                .icStar,
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(5),
+                                                            backgroundTint: value >
+                                                                    2
+                                                                ? resources
+                                                                    .color
+                                                                    .viewBgColor
+                                                                : null)
+                                                        .loadImageWithMoreTapArea,
+                                                    ImageWidget(
+                                                            width: 20,
+                                                            path: DrawableAssets
+                                                                .icStar,
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(5),
+                                                            backgroundTint: value >
+                                                                    3
+                                                                ? resources
+                                                                    .color
+                                                                    .viewBgColor
+                                                                : null)
+                                                        .loadImageWithMoreTapArea,
+                                                    ImageWidget(
+                                                            width: 20,
+                                                            path: DrawableAssets
+                                                                .icStar,
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(5),
+                                                            backgroundTint: value >
+                                                                    4
+                                                                ? resources
+                                                                    .color
+                                                                    .viewBgColor
+                                                                : null)
+                                                        .loadImageWithMoreTapArea,
+                                                  ])
+                                            : const SizedBox();
+                                      })
                                 ],
                               ),
                             ),

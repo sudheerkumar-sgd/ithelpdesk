@@ -13,6 +13,7 @@ import 'package:ithelpdesk/data/remote/api_urls.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
 import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
 import 'package:ithelpdesk/domain/entities/single_data_entity.dart';
+import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
 import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 import 'package:ithelpdesk/res/drawables/background_box_decoration.dart';
 import '../../injection_container.dart';
@@ -50,6 +51,7 @@ class ReportListWidget extends StatelessWidget {
   final List<int> _selectedCategories = List<int>.empty(growable: true);
   final List<int> _filteredStatus = List<int>.empty(growable: true);
   final List<int> _filteredIssueType = List<int>.empty(growable: true);
+  bool _chargeable = false;
   final _masterDataBloc = sl<MasterDataBloc>();
   List<dynamic>? _employees;
   List<dynamic>? _departments;
@@ -95,6 +97,8 @@ class ReportListWidget extends StatelessWidget {
       case 7:
         return Icons.filter_list;
       case 8:
+        return Icons.filter_list;
+      case 11:
         return Icons.filter_list;
       default:
         return Icons.sort;
@@ -151,7 +155,7 @@ class ReportListWidget extends StatelessWidget {
   }
 
   bool isClickableColumn(int id) {
-    return [9, 6, 5, 7, 3, 8, 10].contains(id);
+    return [9, 6, 5, 7, 3, 8, 10, 11].contains(id);
   }
 
   @override
@@ -161,6 +165,7 @@ class ReportListWidget extends StatelessWidget {
     _filteredStatus.addAll(filters?['status'] ?? []);
     _filteredIssueType.addAll(filters?['issueType'] ?? []);
     _selectedDepartments.addAll(filters?['departments'] ?? []);
+    _chargeable = filters?['chargeable'] ?? false;
 
     page = pageIndex;
     final ticketsHeaderData = isDesktop(context)
@@ -171,6 +176,7 @@ class ReportListWidget extends StatelessWidget {
             NameIDEntity(4, resources.string.subject),
             NameIDEntity(5, resources.string.status),
             NameIDEntity(10, resources.string.issueType),
+            NameIDEntity(11, resources.string.chargeable),
             NameIDEntity(6, resources.string.priority),
             NameIDEntity(7, resources.string.assignee),
             NameIDEntity(8, resources.string.department),
@@ -195,8 +201,9 @@ class ReportListWidget extends StatelessWidget {
             6: const FlexColumnWidth(2),
             7: const FlexColumnWidth(2),
             8: const FlexColumnWidth(2),
-            9: const FlexColumnWidth(3),
+            9: const FlexColumnWidth(2),
             10: const FlexColumnWidth(3),
+            11: const FlexColumnWidth(3),
           }
         : {
             0: const FlexColumnWidth(2),
@@ -339,7 +346,8 @@ class ReportListWidget extends StatelessWidget {
                                                   'employees':
                                                       _selectedEmployees,
                                                   'departments':
-                                                      _selectedDepartments
+                                                      _selectedDepartments,
+                                                  'chargeable': _chargeable
                                                 });
                                                 // _onSortChange.value =
                                                 //     !_onSortChange.value;
@@ -423,7 +431,8 @@ class ReportListWidget extends StatelessWidget {
                                                     'issueType':
                                                         _filteredIssueType,
                                                     'departments':
-                                                        _selectedDepartments
+                                                        _selectedDepartments,
+                                                    'chargeable': _chargeable
                                                   });
                                                   // _onSortChange.value =
                                                   //     !_onSortChange.value;
@@ -480,7 +489,8 @@ class ReportListWidget extends StatelessWidget {
                                                     'issueType':
                                                         _filteredIssueType,
                                                     'departments':
-                                                        _selectedDepartments
+                                                        _selectedDepartments,
+                                                    'chargeable': _chargeable
                                                   });
                                                   // _onSortChange.value =
                                                   //     !_onSortChange.value;
@@ -523,12 +533,59 @@ class ReportListWidget extends StatelessWidget {
                                                   'employees':
                                                       _selectedEmployees,
                                                   'departments':
-                                                      _selectedDepartments
+                                                      _selectedDepartments,
+                                                  'chargeable': _chargeable
                                                 });
                                                 // _onSortChange.value =
                                                 //     !_onSortChange.value;
                                               }
                                             });
+                                          } else if (ticketsHeaderData[index]
+                                                  .id ==
+                                              11) {
+                                            final List<NameIDEntity> items = [
+                                              NameIDEntity(
+                                                1,
+                                                "Yes",
+                                              )
+                                            ];
+                                            if (context.mounted) {
+                                              Dialogs.showDialogWithClose(
+                                                      context,
+                                                      MultiSelectDialogWidget(
+                                                        list: items,
+                                                        selectedItems:
+                                                            _chargeable
+                                                                ? items
+                                                                : [],
+                                                      ),
+                                                      maxWidth:
+                                                          isDesktop(context)
+                                                              ? 400
+                                                              : null,
+                                                      showClose: false)
+                                                  .then((value) {
+                                                if (value != null) {
+                                                  final ids = (value as List)
+                                                      .map((item) =>
+                                                          (item.id as int))
+                                                      .toList();
+
+                                                  onFilterChange?.call({
+                                                    'categories':
+                                                        _selectedCategories,
+                                                    'status': _filteredStatus,
+                                                    'issueType':
+                                                        _filteredIssueType,
+                                                    'departments':
+                                                        _selectedDepartments,
+                                                    'chargeable': ids.isNotEmpty
+                                                  });
+                                                  // _onSortChange.value =
+                                                  //     !_onSortChange.value;
+                                                }
+                                              });
+                                            }
                                           }
                                         },
                                         child: Text.rich(

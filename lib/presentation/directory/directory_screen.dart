@@ -8,6 +8,8 @@ import 'package:ithelpdesk/presentation/bloc/master_data/master_data_bloc.dart';
 import 'package:ithelpdesk/presentation/bloc/user/user_bloc.dart';
 import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dropdown_widget.dart';
+import 'package:ithelpdesk/presentation/profile/profile_screen_widget.dart';
+import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 
 import '../../core/constants/constants.dart';
 import '../../domain/entities/master_data_entities.dart';
@@ -151,7 +153,17 @@ class DirectoryScreen extends BaseScreenWidget {
             : directoryEntity.toMobileJson(showActionButtons: false))
         .forEach((key, value) {
       list.add(InkWell(
-        onTap: () {},
+        onTap: () {
+          if (key == 'employeeName') {
+            Dialogs.showDialogWithClose(
+              context,
+              ProfileScreenWidget(
+                userName: '${directoryEntity.id}',
+              ),
+              maxWidth: isDesktop(context, size: screenSize) ? 400 : null,
+            );
+          }
+        },
         child: Padding(
           padding: EdgeInsets.symmetric(
               vertical: context.resources.dimen.dp20,

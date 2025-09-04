@@ -18,8 +18,9 @@ class DioLoggingInterceptor extends InterceptorsWrapper {
     //   });
     // } else if (userToken.isNotEmpty) {
     options.headers.addAll({
-      HttpHeaders.contentTypeHeader:
-          'application/json, application/x-www-form-urlencoded, multipart/form-data, text/plain',
+      HttpHeaders.contentTypeHeader: options.method == 'GET'
+          ? 'application/json'
+          : 'application/json, application/x-www-form-urlencoded, multipart/form-data, text/plain',
       HttpHeaders.acceptHeader: "*/*",
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Credentials": true,

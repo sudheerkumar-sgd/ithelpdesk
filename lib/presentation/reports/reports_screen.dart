@@ -14,9 +14,9 @@ import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart
 import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dropdown_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/report_list_widget.dart';
+import 'package:ithelpdesk/presentation/reports/widgets/report_filter_widget.dart';
 import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 
-import '../../core/common/log.dart';
 import '../../core/constants/constants.dart';
 import '../../domain/entities/dashboard_entity.dart';
 import '../../domain/entities/user_credentials_entity.dart';
@@ -26,18 +26,32 @@ import '../common_widgets/alert_dialog_widget.dart';
 import '../requests/view_request.dart';
 
 // ignore: must_be_immutable
-class ReportsScreen extends BaseScreenWidget {
-  ReportsScreen({super.key});
+class ReportsScreen extends StatefulWidget {
+  const ReportsScreen({super.key});
+
+  @override
+  State<ReportsScreen> createState() => _ReportsScreenState();
+}
+
+class _ReportsScreenState extends State<ReportsScreen> {
   final ServicesBloc _servicesBloc = sl<ServicesBloc>();
+
   // final _masterDataBloc = sl<MasterDataBloc>();
   List<TicketEntity> tickets = List.empty(growable: true);
+
   int? index;
+
   int? totalPagecount;
+
   final ValueNotifier<bool> _onFilterChange = ValueNotifier(false);
+
   int? _selectedCategory = 0;
+
   // final ValueNotifier<UserEntity?> _selectedEmployee = ValueNotifier(null);
   String? selectedStatus;
+
   Map<String, dynamic>? filteredData;
+
   final ValueNotifier<List<String>> filteredDates = ValueNotifier([]);
 
   Widget _getFilters(BuildContext context) {
@@ -584,7 +598,7 @@ class ReportsScreen extends BaseScreenWidget {
             // });
           },
           child: ActionButtonWidget(
-              text: resources.string.download,
+              text: 'Excel',
               radious: resources.dimen.dp15,
               textSize: resources.fontSize.dp10,
               padding: EdgeInsets.symmetric(
@@ -600,7 +614,7 @@ class ReportsScreen extends BaseScreenWidget {
             _printData(context);
           },
           child: ActionButtonWidget(
-            text: resources.string.print,
+            text: 'PDF',
             padding: EdgeInsets.symmetric(
                 vertical: resources.dimen.dp5,
                 horizontal: resources.dimen.dp15),
@@ -711,20 +725,35 @@ class ReportsScreen extends BaseScreenWidget {
       'issueType': (filteredData?['issueType'] is List)
           ? (filteredData?['issueType'].join(', '))
           : null,
+      'chargeable': filteredData?['chargeable'] ?? false,
       'startDate': startDate,
       'endDate': endDate,
     };
+    requestParams.removeWhere((key, value) => value == null);
     return requestParams;
+  }
+
+  Timer? _resizeTimer;
+  @override
+  void initState() {
+    super.initState();
+    _resizeTimer?.cancel();
+    _resizeTimer = Timer(const Duration(milliseconds: 400), () {
+      if (tickets.isEmpty && mounted) {
+        _updateTickets(context);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _resizeTimer?.cancel();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final resources = context.resources;
-    Future.delayed(Duration.zero, () {
-      if (tickets.isEmpty && context.mounted) {
-        _updateTickets(context);
-      }
-    });
     return SelectionArea(
       child: Scaffold(
         resizeToAvoidBottomInset: false,

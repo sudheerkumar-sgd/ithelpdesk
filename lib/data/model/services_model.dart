@@ -403,3 +403,41 @@ class EmailSendResponseModel extends BaseModel {
     return emailSendResponseEntity;
   }
 }
+
+class UserFeedbackModel extends BaseModel {
+  int? id;
+  int? rating;
+  String? comment;
+  String? createdOn;
+  int? userID;
+  int? closedBy;
+  int? ticketID;
+  int? feedbackFrom;
+
+  UserFeedbackModel();
+
+  UserFeedbackModel.fromJson(Map<String, dynamic> response) {
+    final json = response['data'];
+    id = json['id'];
+    rating = json['rating'];
+    comment = json['comment'];
+    createdOn = json['createdOn'];
+    userID = json['userID'];
+    closedBy = json['closedBy'];
+    ticketID = json['ticketID'];
+    feedbackFrom = json['feedbackFrom'];
+  }
+
+  @override
+  UserFeedbackEntity toEntity() {
+    return UserFeedbackEntity()
+      ..id = id
+      ..rating = rating
+      ..comment = comment
+      ..createdOn = createdOn
+      ..userID = userID
+      ..closedBy = closedBy
+      ..ticketID = ticketID
+      ..feedbackFrom = feedbackFrom;
+  }
+}

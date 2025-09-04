@@ -79,9 +79,9 @@ class _MainScreenState extends State<UserMainScreen> {
   }
 
   Widget getScreen(int index) {
-    if (currentScreen != null) {
-      currentScreen?.doDispose();
-    }
+    // if (currentScreen != null) {
+    //   currentScreen?.doDispose();
+    // }
     switch (index) {
       case 0:
         currentScreen =
@@ -90,11 +90,11 @@ class _MainScreenState extends State<UserMainScreen> {
                 : UserHomeNavigatorScreen();
       case 1:
         currentScreen = ReportsNavigatorScreen();
+      // case 2:
+      //   currentScreen = ISONavigatorScreen();
       case 2:
-        currentScreen = ISONavigatorScreen();
-      case 3:
         currentScreen = DirectoryNavigatorScreen();
-      case 4:
+      case 3:
         currentScreen = ProfileNavigatorScreen();
       default:
         currentScreen =
@@ -111,50 +111,56 @@ class _MainScreenState extends State<UserMainScreen> {
   @override
   void initState() {
     super.initState();
-    _selectedIndex.value = context.appSettingsDB
-        .get(AppSettingsDB.selectedSideBarIndex, defaultValue: 0);
     sideBar = SideBar(
       onItemSelected: (p0) {
         _onItemTapped(p0);
       },
       seletedItem: _selectedIndex.value,
     );
+    Future.delayed(Duration.zero, () {
+      if (mounted) {
+        _selectedIndex.value = context.appSettingsDB
+            .get(AppSettingsDB.selectedSideBarIndex, defaultValue: 0);
+
+        UserMainScreen.onUnAuthorizedResponse.addListener(
+          () {
+            if (UserMainScreen.onUnAuthorizedResponse.value) {
+              UserMainScreen.onUnAuthorizedResponse.value = false;
+              logout(context);
+            }
+          },
+        );
+
+        UserMainScreen.onNetworkConnectionError.addListener(
+          () {
+            if (UserMainScreen.onNetworkConnectionError.value == 2) {
+              UserMainScreen.onNetworkConnectionError.value = 3;
+              Dialogs.showInfoDialog(context, PopupType.fail,
+                      'No internet connection found.\nCheck your connection and try again.')
+                  .then((value) {
+                UserMainScreen.onNetworkConnectionError.value = 1;
+              });
+            }
+          },
+        );
+      }
+    });
   }
 
   @override
   void dispose() {
-    if (currentScreen != null) {
-      currentScreen?.doDispose();
-    }
+    // if (currentScreen != null) {
+    //   currentScreen?.doDispose();
+    // }
+
+    UserMainScreen.onUnAuthorizedResponse.dispose();
+    UserMainScreen.onNetworkConnectionError.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     Resources resources = context.resources;
-    Future.delayed(Duration.zero, () {
-      UserMainScreen.onUnAuthorizedResponse.addListener(
-        () {
-          if (UserMainScreen.onUnAuthorizedResponse.value) {
-            UserMainScreen.onUnAuthorizedResponse.value = false;
-            logout(context);
-          }
-        },
-      );
-
-      UserMainScreen.onNetworkConnectionError.addListener(
-        () {
-          if (UserMainScreen.onNetworkConnectionError.value == 2) {
-            UserMainScreen.onNetworkConnectionError.value = 3;
-            Dialogs.showInfoDialog(context, PopupType.fail,
-                    'No internet connection found.\nCheck your connection and try again.')
-                .then((value) {
-              UserMainScreen.onNetworkConnectionError.value = 1;
-            });
-          }
-        },
-      );
-    });
     // final isWebMobile = kIsWeb &&
     //     (defaultTargetPlatform == TargetPlatform.iOS ||
     //         defaultTargetPlatform == TargetPlatform.android);

@@ -232,7 +232,7 @@ class TicketsModel extends BaseModel {
     transferBy = json['transferBy'];
     assignedDate = json['assignedDate'];
     forwardedDate = json['forwardedDate'];
-    isChargeable = json['isChargeable'];
+    isChargeable = (json['charge'] ?? '').isNotEmpty;
     isDeleted = json['isDeleted'];
     dueDate = json['dueDate'];
     finalComments = json['finalComments'];

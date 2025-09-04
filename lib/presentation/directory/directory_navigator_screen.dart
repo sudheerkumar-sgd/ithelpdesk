@@ -27,6 +27,6 @@ class DirectoryNavigatorScreen extends BaseScreenWidget {
 
   @override
   doDispose() {
-    directoryScreen.doDispose();
+    //directoryScreen.doDispose();
   }
 }

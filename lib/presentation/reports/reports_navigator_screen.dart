@@ -11,7 +11,7 @@ class ReportsNavigatorScreen extends BaseScreenWidget {
   @override
   Widget build(BuildContext context) {
     reportKey = GlobalKey<NavigatorState>();
-    reportsScreen = ReportsScreen();
+    reportsScreen = const ReportsScreen();
     return Navigator(
       key: reportKey,
       initialRoute: '/',
@@ -26,7 +26,5 @@ class ReportsNavigatorScreen extends BaseScreenWidget {
   }
 
   @override
-  doDispose() {
-    reportsScreen.doDispose();
-  }
+  doDispose() {}
 }

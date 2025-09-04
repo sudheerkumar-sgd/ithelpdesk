@@ -132,7 +132,12 @@ class TicketEntity extends BaseEntity {
       actionButtons.add(StatusType.acquired);
       return actionButtons;
     }
-    if (status == StatusType.closed && userType == AssigneType.approver) {
+    if (status == StatusType.closed &&
+        (userType == AssigneType.approver ||
+            userID == UserCredentialsEntity.details().id) &&
+        getDays(getDateTimeByString('dd-MMM-yyyy HH:mm', closedOn ?? ''),
+                DateTime.now()) <
+            5) {
       actionButtons.add(StatusType.reopen);
       return actionButtons;
     }
@@ -223,6 +228,7 @@ class TicketEntity extends BaseEntity {
             isSelectedLocalEn ? subject ?? '' : subjectAr ?? (subject ?? ''),
         "status": status,
         "issueType": issueType?.toString() ?? '',
+        "charges": isChargeable == true ? 'Yes' : 'No',
         "priority": priority,
         "assignee": assignedTo ?? '',
         "department": departmentName ?? '',

@@ -108,12 +108,21 @@ class ServicesBloc extends Cubit<ServicesState> {
   Future<void> submitTicketFeedback(
       {required Map<String, dynamic> requestParams}) async {
     emit(OnLoading());
-    final result =
-        await servicesUseCase.submitTicketFeedback(requestParams: requestParams);
+    final result = await servicesUseCase.submitTicketFeedback(
+        requestParams: requestParams);
     emit(result.fold(
         (l) => OnApiError(message: _getErrorMessage(l)),
         (r) => OnUpdateTicketSuccess(
             updateTicketResponse: r.entity?.value ?? '')));
+  }
+
+  Future<ServicesState> getUserTicketFeedback(
+      {required Map<String, dynamic> requestParams}) async {
+    //emit(OnLoading());
+    final result = await servicesUseCase.getUserTicketFeedback(
+        requestParams: requestParams);
+    return (result.fold((l) => OnApiError(message: _getErrorMessage(l)),
+        (r) => OnApiResponse(response: r)));
   }
 
   String _getErrorMessage(Failure failure) {

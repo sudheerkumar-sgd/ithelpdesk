@@ -96,88 +96,88 @@ class SideBar extends StatelessWidget {
                 SizedBox(
                   height: resources.dimen.dp10,
                 ),
+                // ListTile(
+                //   onTap: () {
+                //     _onCRClick.value = !_onCRClick.value;
+                //   },
+                //   leading: SizedBox(
+                //     width: 40,
+                //     height: 40,
+                //     child: ImageWidget(
+                //             path: DrawableAssets.icReport,
+                //             backgroundTint: index == 2
+                //                 ? resources.color.sideBarItemSelected
+                //                 : resources.color.sideBarItemUnselected,
+                //             padding: const EdgeInsets.symmetric(horizontal: 5))
+                //         .loadImageWithMoreTapArea,
+                //   ),
+                //   title: Text(
+                //     'CR',
+                //     maxLines: 1,
+                //     overflow: TextOverflow.ellipsis,
+                //     style: context.textFontWeight600
+                //         .onFontSize(resources.fontSize.dp12),
+                //   ),
+                // ),
+                // ValueListenableBuilder(
+                //     valueListenable: _onCRClick,
+                //     builder: (context, onCRClick, child) {
+                //       return onCRClick
+                //           ? ListTile(
+                //               leading: const SizedBox(),
+                //               title: Column(
+                //                 crossAxisAlignment: CrossAxisAlignment.start,
+                //                 children: [
+                //                   InkWell(
+                //                     onTap: () {
+                //                       onItemSelected(2);
+                //                     },
+                //                     child: Padding(
+                //                       padding: const EdgeInsets.symmetric(
+                //                           vertical: 5.0),
+                //                       child: Text(
+                //                         'ISO - System',
+                //                         style: context.textFontWeight600,
+                //                       ),
+                //                     ),
+                //                   ),
+                //                   InkWell(
+                //                       onTap: () {},
+                //                       child: Padding(
+                //                           padding: const EdgeInsets.symmetric(
+                //                               vertical: 5.0),
+                //                           child: Text(
+                //                             'ISO - Network',
+                //                             style: context.textFontWeight600,
+                //                           ))),
+                //                   InkWell(
+                //                       onTap: () {},
+                //                       child: Padding(
+                //                           padding: const EdgeInsets.symmetric(
+                //                               vertical: 5.0),
+                //                           child: Text(
+                //                             'ISO - DBA',
+                //                             style: context.textFontWeight600,
+                //                           ))),
+                //                 ],
+                //               ),
+                //             )
+                //           : const SizedBox.shrink();
+                //     }),
+                // SizedBox(
+                //   height: resources.dimen.dp10,
+                // ),
                 ListTile(
                   onTap: () {
-                    _onCRClick.value = !_onCRClick.value;
-                  },
-                  leading: SizedBox(
-                    width: 40,
-                    height: 40,
-                    child: ImageWidget(
-                            path: DrawableAssets.icReport,
-                            backgroundTint: index == 2
-                                ? resources.color.sideBarItemSelected
-                                : resources.color.sideBarItemUnselected,
-                            padding: const EdgeInsets.symmetric(horizontal: 5))
-                        .loadImageWithMoreTapArea,
-                  ),
-                  title: Text(
-                    'CR',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: context.textFontWeight600
-                        .onFontSize(resources.fontSize.dp12),
-                  ),
-                ),
-                ValueListenableBuilder(
-                    valueListenable: _onCRClick,
-                    builder: (context, onCRClick, child) {
-                      return onCRClick
-                          ? ListTile(
-                              leading: const SizedBox(),
-                              title: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  InkWell(
-                                    onTap: () {
-                                      onItemSelected(2);
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 5.0),
-                                      child: Text(
-                                        'ISO - System',
-                                        style: context.textFontWeight600,
-                                      ),
-                                    ),
-                                  ),
-                                  InkWell(
-                                      onTap: () {},
-                                      child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 5.0),
-                                          child: Text(
-                                            'ISO - Network',
-                                            style: context.textFontWeight600,
-                                          ))),
-                                  InkWell(
-                                      onTap: () {},
-                                      child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 5.0),
-                                          child: Text(
-                                            'ISO - DBA',
-                                            style: context.textFontWeight600,
-                                          ))),
-                                ],
-                              ),
-                            )
-                          : const SizedBox.shrink();
-                    }),
-                SizedBox(
-                  height: resources.dimen.dp10,
-                ),
-                ListTile(
-                  onTap: () {
-                    _selectedIndex.value = 3;
-                    onItemSelected(3);
+                    _selectedIndex.value = 2;
+                    onItemSelected(2);
                   },
                   leading: SizedBox(
                     width: 40,
                     height: 40,
                     child: ImageWidget(
                             path: DrawableAssets.icDirectory,
-                            backgroundTint: index == 3
+                            backgroundTint: index == 2
                                 ? resources.color.sideBarItemSelected
                                 : resources.color.sideBarItemUnselected,
                             padding: const EdgeInsets.symmetric(horizontal: 5))
@@ -196,7 +196,7 @@ class SideBar extends StatelessWidget {
                 ),
                 ListTile(
                   onTap: () {
-                    _selectedIndex.value = 4;
+                    _selectedIndex.value = 3;
                     onItemSelected(3);
                   },
                   leading: SizedBox(
@@ -204,7 +204,7 @@ class SideBar extends StatelessWidget {
                     height: 40,
                     child: ImageWidget(
                             path: DrawableAssets.icUser,
-                            backgroundTint: index == 4
+                            backgroundTint: index == 3
                                 ? resources.color.sideBarItemSelected
                                 : resources.color.sideBarItemUnselected,
                             padding: const EdgeInsets.symmetric(horizontal: 5))

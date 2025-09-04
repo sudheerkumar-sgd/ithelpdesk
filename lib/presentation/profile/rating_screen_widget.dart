@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/config/app_routes.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
@@ -76,178 +75,275 @@ class RatingScreenWidget extends StatelessWidget {
                       boxColor: resources.color.colorWhite,
                       radious: resources.dimen.dp10)
                   .roundedCornerBox,
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: resources.dimen.dp20,
-                  ),
-                  Text(
-                    resources.string.feedBackRatingTitle,
-                    textAlign: TextAlign.center,
-                    style: context.textFontWeight600
-                        .onFontSize(context.resources.fontSize.dp17)
-                        .onColor(resources.color.viewBgColor),
-                  ),
-                  SizedBox(
-                    height: context.resources.dimen.dp20,
-                  ),
-                  Text.rich(
-                    TextSpan(
-                        text: resources.string.feedBackRatingTitleDes.substring(
-                          0,
-                          resources.string.feedBackRatingTitleDes
-                              .indexOf('00000'),
-                        ),
-                        children: [
-                          TextSpan(
-                              text: ' $ticketID ',
-                              style: context.textFontWeight600
-                                  .onColor(resources.color.viewBgColor)
-                                  .onFontFamily(fontFamily: fontFamilyEN)),
-                          TextSpan(
-                              text: resources.string.feedBackRatingTitleDes
-                                  .substring(resources
-                                          .string.feedBackRatingTitleDes
-                                          .indexOf('00000') +
-                                      5),
-                              style: context.textFontWeight500),
-                        ]),
-                    textAlign: TextAlign.center,
-                    style: context.textFontWeight500,
-                  ),
-                  // Text(
-                  //   resources.string.feedBackRatingTitleDes
-                  //       .replaceAll('00000', ' ${data['ticketID'] ?? ''} '),
-                  //   textAlign: TextAlign.center,
-                  //   style: context.textFontWeight400
-                  //       .onFontSize(context.resources.fontSize.dp12),
-                  // ),
-                  SizedBox(
-                    height: context.resources.dimen.dp20,
-                  ),
-                  Text(
-                    resources.string.howWasYourExperience,
-                    textAlign: TextAlign.center,
-                    style: context.textFontWeight600
-                        .onFontSize(context.resources.fontSize.dp16),
-                  ),
-                  SizedBox(
-                    height: context.resources.dimen.dp20,
-                  ),
-                  ValueListenableBuilder(
-                      valueListenable: _rating,
-                      builder: (context, value, child) {
-                        return Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  _rating.value = 1;
-                                },
-                                child: ImageWidget(
-                                        path: DrawableAssets.icStar,
-                                        padding: const EdgeInsets.all(5),
-                                        backgroundTint: value > 0
-                                            ? resources.color.viewBgColor
-                                            : null)
-                                    .loadImageWithMoreTapArea,
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  _rating.value = 2;
-                                },
-                                child: ImageWidget(
-                                        path: DrawableAssets.icStar,
-                                        padding: const EdgeInsets.all(5),
-                                        backgroundTint: value > 1
-                                            ? resources.color.viewBgColor
-                                            : null)
-                                    .loadImageWithMoreTapArea,
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  _rating.value = 3;
-                                },
-                                child: ImageWidget(
-                                        path: DrawableAssets.icStar,
-                                        padding: const EdgeInsets.all(5),
-                                        backgroundTint: value > 2
-                                            ? resources.color.viewBgColor
-                                            : null)
-                                    .loadImageWithMoreTapArea,
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  _rating.value = 4;
-                                },
-                                child: ImageWidget(
-                                        path: DrawableAssets.icStar,
-                                        padding: const EdgeInsets.all(5),
-                                        backgroundTint: value > 3
-                                            ? resources.color.viewBgColor
-                                            : null)
-                                    .loadImageWithMoreTapArea,
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  _rating.value = 5;
-                                },
-                                child: ImageWidget(
-                                        path: DrawableAssets.icStar,
-                                        padding: const EdgeInsets.all(5),
-                                        backgroundTint: value > 4
-                                            ? resources.color.viewBgColor
-                                            : null)
-                                    .loadImageWithMoreTapArea,
-                              ),
-                            ]);
-                      }),
-                  SizedBox(
-                    height: context.resources.dimen.dp25,
-                  ),
-                  RightIconTextWidget(
-                    hintText: resources.string.tellUsMore,
-                    textController: tellUsMoreController,
-                    maxLines: 4,
-                  ),
-                  SizedBox(
-                    height: context.resources.dimen.dp25,
-                  ),
-                  InkWell(
-                    onTap: () {
-                      if (_rating.value != 0) {
-                        _servicesBloc.submitTicketFeedback(requestParams: {
-                          "rating": _rating.value,
-                          "comment": tellUsMoreController.text,
-                          "userID": UserCredentialsEntity.details().id,
-                          "feedbackFrom": 1,
-                          "ticketID": ticketID
-                        });
-                      }
-                    },
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: context.resources.dimen.dp20,
-                          vertical: context.resources.dimen.dp7),
-                      decoration: BackgroundBoxDecoration(
-                              boxColor:
-                                  context.resources.color.viewBgColorLight,
-                              radious: context.resources.dimen.dp15)
-                          .roundedCornerBox,
-                      child: Text(
-                        resources.string.submit,
-                        style: context.textFontWeight600
-                            .onFontSize(context.resources.fontSize.dp14)
-                            .onColor(context.resources.color.colorWhite),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: context.resources.dimen.dp25,
-                  ),
-                ],
-              ),
+              child: FutureBuilder(
+                  future: _servicesBloc.getUserTicketFeedback(requestParams: {
+                    "ticketID": ticketID,
+                  }),
+                  builder: (context, snapshot) {
+                    return snapshot.connectionState == ConnectionState.waiting
+                        ? const CircularProgressIndicator()
+                        : snapshot.connectionState == ConnectionState.done &&
+                                snapshot.data is OnApiResponse
+                            ? ((snapshot.data as OnApiResponse)
+                                        .response
+                                        .apiStatus ==
+                                    210
+                                ? Column(
+                                    children: [
+                                      SizedBox(
+                                        height: resources.dimen.dp20,
+                                      ),
+                                      Text(
+                                        resources.string.feedBackRatingTitle,
+                                        textAlign: TextAlign.center,
+                                        style: context.textFontWeight600
+                                            .onFontSize(
+                                                context.resources.fontSize.dp17)
+                                            .onColor(
+                                                resources.color.viewBgColor),
+                                      ),
+                                      SizedBox(
+                                        height: context.resources.dimen.dp20,
+                                      ),
+                                      Text.rich(
+                                        TextSpan(
+                                            text: resources
+                                                .string.feedBackRatingTitleDes
+                                                .substring(
+                                              0,
+                                              resources
+                                                  .string.feedBackRatingTitleDes
+                                                  .indexOf('00000'),
+                                            ),
+                                            children: [
+                                              TextSpan(
+                                                  text: ' $ticketID ',
+                                                  style: context
+                                                      .textFontWeight600
+                                                      .onColor(resources
+                                                          .color.viewBgColor)
+                                                      .onFontFamily(
+                                                          fontFamily:
+                                                              fontFamilyEN)),
+                                              TextSpan(
+                                                  text: resources.string
+                                                      .feedBackRatingTitleDes
+                                                      .substring(resources
+                                                              .string
+                                                              .feedBackRatingTitleDes
+                                                              .indexOf(
+                                                                  '00000') +
+                                                          5),
+                                                  style: context
+                                                      .textFontWeight500),
+                                            ]),
+                                        textAlign: TextAlign.center,
+                                        style: context.textFontWeight500,
+                                      ),
+                                      // Text(
+                                      //   resources.string.feedBackRatingTitleDes
+                                      //       .replaceAll('00000', ' ${data['ticketID'] ?? ''} '),
+                                      //   textAlign: TextAlign.center,
+                                      //   style: context.textFontWeight400
+                                      //       .onFontSize(context.resources.fontSize.dp12),
+                                      // ),
+                                      SizedBox(
+                                        height: context.resources.dimen.dp20,
+                                      ),
+                                      Text(
+                                        resources.string.howWasYourExperience,
+                                        textAlign: TextAlign.center,
+                                        style: context.textFontWeight600
+                                            .onFontSize(context
+                                                .resources.fontSize.dp16),
+                                      ),
+                                      SizedBox(
+                                        height: context.resources.dimen.dp20,
+                                      ),
+                                      ValueListenableBuilder(
+                                          valueListenable: _rating,
+                                          builder: (context, value, child) {
+                                            return Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  InkWell(
+                                                    onTap: () {
+                                                      _rating.value = 1;
+                                                    },
+                                                    child: ImageWidget(
+                                                            path: DrawableAssets
+                                                                .icStar,
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(5),
+                                                            backgroundTint: value >
+                                                                    0
+                                                                ? resources
+                                                                    .color
+                                                                    .viewBgColor
+                                                                : null)
+                                                        .loadImageWithMoreTapArea,
+                                                  ),
+                                                  InkWell(
+                                                    onTap: () {
+                                                      _rating.value = 2;
+                                                    },
+                                                    child: ImageWidget(
+                                                            path: DrawableAssets
+                                                                .icStar,
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(5),
+                                                            backgroundTint: value >
+                                                                    1
+                                                                ? resources
+                                                                    .color
+                                                                    .viewBgColor
+                                                                : null)
+                                                        .loadImageWithMoreTapArea,
+                                                  ),
+                                                  InkWell(
+                                                    onTap: () {
+                                                      _rating.value = 3;
+                                                    },
+                                                    child: ImageWidget(
+                                                            path: DrawableAssets
+                                                                .icStar,
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(5),
+                                                            backgroundTint: value >
+                                                                    2
+                                                                ? resources
+                                                                    .color
+                                                                    .viewBgColor
+                                                                : null)
+                                                        .loadImageWithMoreTapArea,
+                                                  ),
+                                                  InkWell(
+                                                    onTap: () {
+                                                      _rating.value = 4;
+                                                    },
+                                                    child: ImageWidget(
+                                                            path: DrawableAssets
+                                                                .icStar,
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(5),
+                                                            backgroundTint: value >
+                                                                    3
+                                                                ? resources
+                                                                    .color
+                                                                    .viewBgColor
+                                                                : null)
+                                                        .loadImageWithMoreTapArea,
+                                                  ),
+                                                  InkWell(
+                                                    onTap: () {
+                                                      _rating.value = 5;
+                                                    },
+                                                    child: ImageWidget(
+                                                            path: DrawableAssets
+                                                                .icStar,
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(5),
+                                                            backgroundTint: value >
+                                                                    4
+                                                                ? resources
+                                                                    .color
+                                                                    .viewBgColor
+                                                                : null)
+                                                        .loadImageWithMoreTapArea,
+                                                  ),
+                                                ]);
+                                          }),
+                                      SizedBox(
+                                        height: context.resources.dimen.dp25,
+                                      ),
+                                      RightIconTextWidget(
+                                        hintText: resources.string.tellUsMore,
+                                        textController: tellUsMoreController,
+                                        maxLines: 4,
+                                      ),
+                                      SizedBox(
+                                        height: context.resources.dimen.dp25,
+                                      ),
+                                      InkWell(
+                                        onTap: () {
+                                          if (_rating.value != 0) {
+                                            _servicesBloc.submitTicketFeedback(
+                                                requestParams: {
+                                                  "rating": _rating.value,
+                                                  "comment":
+                                                      tellUsMoreController.text,
+                                                  "userID":
+                                                      UserCredentialsEntity
+                                                              .details()
+                                                          .id,
+                                                  "feedbackFrom": 1,
+                                                  "ticketID": ticketID
+                                                });
+                                          }
+                                        },
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal:
+                                                  context.resources.dimen.dp20,
+                                              vertical:
+                                                  context.resources.dimen.dp7),
+                                          decoration: BackgroundBoxDecoration(
+                                                  boxColor: context.resources
+                                                      .color.viewBgColorLight,
+                                                  radious: context
+                                                      .resources.dimen.dp15)
+                                              .roundedCornerBox,
+                                          child: Text(
+                                            resources.string.submit,
+                                            style: context.textFontWeight600
+                                                .onFontSize(context
+                                                    .resources.fontSize.dp14)
+                                                .onColor(context.resources.color
+                                                    .colorWhite),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: context.resources.dimen.dp25,
+                                      ),
+                                    ],
+                                  )
+                                : (snapshot.data as OnApiResponse)
+                                            .response
+                                            .apiStatus ==
+                                        200
+                                    ? Text(
+                                        isSelectedLocalEn
+                                            ? 'Rating already submitted'
+                                            : 'تم إرسال التقييم بالفعل',
+                                        style: context.textFontWeight500
+                                            .onFontSize(context
+                                                .resources.fontSize.dp14),
+                                      )
+                                    : Text(
+                                        (snapshot.data as OnApiResponse)
+                                                .response
+                                                .description ??
+                                            '',
+                                        style: context.textFontWeight500
+                                            .onFontSize(context
+                                                .resources.fontSize.dp14),
+                                      ))
+                            : Text(
+                                isSelectedLocalEn
+                                    ? 'Something went wrong, Please try again'
+                                    : 'حدث خطأ ما، يرجى المحاولة مرة أخرى',
+                                style: context.textFontWeight500.onFontSize(
+                                    context.resources.fontSize.dp14),
+                              );
+                  }),
             ),
           ),
         ),

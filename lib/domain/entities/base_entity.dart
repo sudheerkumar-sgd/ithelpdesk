@@ -3,9 +3,10 @@
 import 'package:equatable/equatable.dart';
 
 class BaseEntity extends Equatable {
+  int? apiStatus;
   bool? isSuccess;
   String? description;
 
   @override
-  List<Object?> get props => [isSuccess, description];
+  List<Object?> get props => [apiStatus, isSuccess, description];
 }

@@ -316,7 +316,9 @@ class UserHomeScreen extends BaseScreenWidget {
     final resources = context.resources;
     Future.delayed(Duration.zero, () {
       _servicesBloc.getDashboardData(
-          requestParams: {"userId": UserCredentialsEntity.details().id});
+          requestParams: UserCredentialsEntity.details().id != null
+              ? {"userId": UserCredentialsEntity.details().id}
+              : {});
     });
     _selectedYear.value = DateTime.now().year;
     final requestTypesRows = isDesktop(context) ? 1 : 2;
@@ -538,7 +540,9 @@ class UserHomeScreen extends BaseScreenWidget {
                     height: resources.dimen.dp20,
                   ),
                   if (UserCredentialsEntity.details().userType ==
-                      UserType.superAdmin) ...[
+                          UserType.superAdmin ||
+                      UserCredentialsEntity.details().userType ==
+                          UserType.itAdmin) ...[
                     ValueListenableBuilder(
                         valueListenable: _onDataChange,
                         builder: (context, onDataChange, child) {
