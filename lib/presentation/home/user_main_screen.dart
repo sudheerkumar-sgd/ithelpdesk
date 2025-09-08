@@ -111,6 +111,10 @@ class _MainScreenState extends State<UserMainScreen> {
   @override
   void initState() {
     super.initState();
+    if (mounted) {
+      _selectedIndex.value = context.appSettingsDB
+          .get(AppSettingsDB.selectedSideBarIndex, defaultValue: 0);
+    }
     sideBar = SideBar(
       onItemSelected: (p0) {
         _onItemTapped(p0);
@@ -119,9 +123,6 @@ class _MainScreenState extends State<UserMainScreen> {
     );
     Future.delayed(Duration.zero, () {
       if (mounted) {
-        _selectedIndex.value = context.appSettingsDB
-            .get(AppSettingsDB.selectedSideBarIndex, defaultValue: 0);
-
         UserMainScreen.onUnAuthorizedResponse.addListener(
           () {
             if (UserMainScreen.onUnAuthorizedResponse.value) {
