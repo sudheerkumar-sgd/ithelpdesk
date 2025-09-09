@@ -90,11 +90,11 @@ class _MainScreenState extends State<UserMainScreen> {
                 : UserHomeNavigatorScreen();
       case 1:
         currentScreen = ReportsNavigatorScreen();
-      // case 2:
-      //   currentScreen = ISONavigatorScreen();
       case 2:
-        currentScreen = DirectoryNavigatorScreen();
+        currentScreen = ISONavigatorScreen();
       case 3:
+        currentScreen = DirectoryNavigatorScreen();
+      case 4:
         currentScreen = ProfileNavigatorScreen();
       default:
         currentScreen =
@@ -148,16 +148,16 @@ class _MainScreenState extends State<UserMainScreen> {
     });
   }
 
-  @override
-  void dispose() {
-    // if (currentScreen != null) {
-    //   currentScreen?.doDispose();
-    // }
+  // @override
+  // void dispose() {
+  //   // if (currentScreen != null) {
+  //   //   currentScreen?.doDispose();
+  //   // }
 
-    UserMainScreen.onUnAuthorizedResponse.dispose();
-    UserMainScreen.onNetworkConnectionError.dispose();
-    super.dispose();
-  }
+  //   UserMainScreen.onUnAuthorizedResponse.dispose();
+  //   UserMainScreen.onNetworkConnectionError.dispose();
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {

@@ -2,22 +2,22 @@
 
 import 'package:flutter/material.dart';
 import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
-import 'package:ithelpdesk/presentation/iso/iso_system_cr_screen.dart';
+import 'package:ithelpdesk/presentation/iso/iso_cr_home_screen.dart';
 
 class ISONavigatorScreen extends BaseScreenWidget {
   ISONavigatorScreen({Key? key}) : super(key: key);
   static late GlobalKey<NavigatorState> isoKey;
-  late IsoSystemCrScreen iosSystemCrScreen;
+  late IsoCrHomeScreen isoCrHomeScreen;
   @override
   Widget build(BuildContext context) {
     isoKey = GlobalKey<NavigatorState>();
-    iosSystemCrScreen = IsoSystemCrScreen();
+    isoCrHomeScreen = IsoCrHomeScreen();
     return Navigator(
       key: isoKey,
       initialRoute: '/',
       onGenerateRoute: (RouteSettings settings) {
         return MaterialPageRoute(
-            builder: (BuildContext _) => iosSystemCrScreen, settings: settings);
+            builder: (BuildContext _) => isoCrHomeScreen, settings: settings);
       },
       onPopPage: (route, result) {
         return true;

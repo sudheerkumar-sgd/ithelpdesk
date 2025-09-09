@@ -35,7 +35,7 @@ class MultiUploadAttachmentWidget extends StatelessWidget {
   final BorderSide borderSide;
   final Color? fillColor;
   final double? borderRadius;
-  final Function(UploadResponseEntity?)? onSelected;
+  final Function(List<Map>)? onSelected;
   final Function? suffixIconClick;
   final UploadOptions? fileType;
   final List<String> allowedExtensions;
@@ -71,8 +71,8 @@ class MultiUploadAttachmentWidget extends StatelessWidget {
       selectedFileData?.documentData =
           'data:image/png;base64,${value['fileNamebase64data']}';
       selectedFileData?.documentName = value['fileName'];
-      onSelected?.call(selectedFileData);
       _uploadFiles.add(value);
+      onSelected?.call(_uploadFiles);
       _isUploadChanged.value = !_isUploadChanged.value;
     }
   }
@@ -199,6 +199,8 @@ class MultiUploadAttachmentWidget extends StatelessWidget {
                                                     ['fileName'],
                                                 callBack: (value) {
                                                   _uploadFiles.removeAt(value);
+                                                  onSelected
+                                                      ?.call(_uploadFiles);
                                                   _isUploadChanged.value =
                                                       !_isUploadChanged.value;
                                                 },

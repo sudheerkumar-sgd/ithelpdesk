@@ -6,11 +6,10 @@ import 'package:ithelpdesk/presentation/profile/profile_screen.dart';
 
 class ProfileNavigatorScreen extends BaseScreenWidget {
   ProfileNavigatorScreen({Key? key}) : super(key: key);
-  static late GlobalKey<NavigatorState> profileKey;
+  static GlobalKey<NavigatorState> profileKey = GlobalKey<NavigatorState>();
   late ProfileScreen profileScreen;
   @override
   Widget build(BuildContext context) {
-    profileKey = GlobalKey<NavigatorState>();
     profileScreen = ProfileScreen();
     return Navigator(
       key: profileKey,

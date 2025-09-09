@@ -3,9 +3,9 @@ import 'package:flutter/foundation.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
 
 void printLog(Object log) {
-  if (kDebugMode) {
-    print(log);
-  }
+  // if (kDebugMode) {
+  //   print(log);
+  // }
 }
 
 void logFirbaseScreenView({

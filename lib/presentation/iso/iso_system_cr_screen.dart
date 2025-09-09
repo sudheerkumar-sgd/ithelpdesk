@@ -1,5 +1,10 @@
+import 'dart:math';
+
+import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
+import 'package:ithelpdesk/core/constants/data_constants.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/field_entity_extension.dart';
@@ -7,18 +12,36 @@ import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/data/model/master_data_models.dart';
 import 'package:ithelpdesk/data/remote/api_urls.dart';
 import 'package:ithelpdesk/domain/entities/form_entities.dart';
+import 'package:ithelpdesk/domain/entities/iso_system_entities.dart';
+import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
 import 'package:ithelpdesk/domain/entities/single_data_entity.dart';
+import 'package:ithelpdesk/domain/entities/user_entity.dart';
+import 'package:ithelpdesk/injection_container.dart';
+import 'package:ithelpdesk/presentation/bloc/iso/iso_bloc.dart';
+import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
 import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart';
+import 'package:ithelpdesk/presentation/common_widgets/alert_dialog_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
+import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 import 'package:ithelpdesk/res/drawables/background_box_decoration.dart';
+import 'package:page_transition/page_transition.dart';
 
 class IsoSystemCrScreen extends BaseScreenWidget {
+  static start(BuildContext context) {
+    Navigator.push(
+      context,
+      PageTransition(
+          type: PageTransitionType.rightToLeft, child: IsoSystemCrScreen()),
+    );
+  }
+
   IsoSystemCrScreen({super.key});
   final _formKey = GlobalKey<FormState>();
   final Map fieldsData = {};
   final newEmpFormFields = List<FormEntity>.empty(growable: true);
   final migrationFormFields = List<FormEntity>.empty(growable: true);
   final existingFormFields = List<FormEntity>.empty(growable: true);
+  final ValueNotifier<bool> doScreenRefresh = ValueNotifier(false);
 
   List<FormEntity> _getNewEmpFormFields(BuildContext context) {
     final resources = context.resources;
@@ -77,16 +100,9 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter designation'
             ..requiredAr = 'Please Enter designation')
-          ..inputFieldData = {
-            'items': [
-              NameIDEntity(1, resources.string.low),
-              NameIDEntity(2, resources.string.medium),
-              NameIDEntity(3, resources.string.high),
-              NameIDEntity(4, resources.string.critical)
-            ]
-          }
+          ..inputFieldData = {'items': designations}
           ..onDatachnage = (value) {
-            fieldsData['designation'] = value;
+            fieldsData['designation'] = value.name;
           },
         FormEntity()
           ..type = FormFieldType.collection
@@ -100,23 +116,25 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             ..requiredAr = 'Please Enter department')
           ..onDatachnage = (value) {
             fieldsData['department'] = value;
+
+            final field = newEmpFormFields
+                .where((e) => e.name == 'reportingManager')
+                .first;
+            field.fieldValue = null;
+            field.inputFieldData = null;
+            field.url =
+                '$getManagersByDptApiUrl?departmentName=${value.shortName}';
+            doScreenRefresh.value = !doScreenRefresh.value;
           },
         FormEntity()
           ..type = FormFieldType.collection
           ..name = 'reportingManager'
           ..label = 'Reporting Manager'
+          ..requestModel = ListModel.fromEmployeesJson
           ..validation = (FormValidationEntity()..required = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Reporting Manager'
             ..requiredAr = 'Please Enter Reporting Manager')
-          ..inputFieldData = {
-            'items': [
-              NameIDEntity(1, resources.string.low),
-              NameIDEntity(2, resources.string.medium),
-              NameIDEntity(3, resources.string.high),
-              NameIDEntity(4, resources.string.critical)
-            ]
-          }
           ..onDatachnage = (value) {
             fieldsData['reportingManager'] = value;
           },
@@ -435,7 +453,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
   @override
   Widget build(BuildContext context) {
     final resources = context.resources;
-    final ValueNotifier<int> employeeCategory = ValueNotifier(0);
+    int employeeCategory = 0;
     final categories = [
       'New Employee',
       'Migration Employee',
@@ -495,8 +513,8 @@ class IsoSystemCrScreen extends BaseScreenWidget {
                     horizontal: resources.dimen.dp20),
                 color: resources.color.colorWhite,
                 child: ValueListenableBuilder(
-                    valueListenable: employeeCategory,
-                    builder: (context, value, child) {
+                    valueListenable: doScreenRefresh,
+                    builder: (context, doRefresh, child) {
                       return Column(
                         children: [
                           for (int c = 0; c < noOfCategoryRows; c++) ...{
@@ -508,13 +526,15 @@ class IsoSystemCrScreen extends BaseScreenWidget {
                                   Expanded(
                                     child: InkWell(
                                       onTap: () {
-                                        employeeCategory.value =
+                                        employeeCategory =
                                             r + (c * noOfCategoryRowItems);
+                                        doScreenRefresh.value =
+                                            !doScreenRefresh.value;
                                       },
                                       child: ActionButtonWidget(
                                         text: categories[
                                             r + (c * noOfCategoryRowItems)],
-                                        decoration: value !=
+                                        decoration: employeeCategory !=
                                                 r + (c * noOfCategoryRowItems)
                                             ? BackgroundBoxDecoration(
                                                     boxColor: resources
@@ -526,7 +546,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
                                                     radious: 0)
                                                 .roundedCornerBox
                                             : null,
-                                        textColor: value !=
+                                        textColor: employeeCategory !=
                                                 r + (c * noOfCategoryRowItems)
                                             ? resources.color.textColor
                                             : null,
@@ -582,11 +602,11 @@ class IsoSystemCrScreen extends BaseScreenWidget {
                 height: resources.dimen.dp10,
               ),
               ValueListenableBuilder(
-                  valueListenable: employeeCategory,
-                  builder: (context, category, child) {
-                    final currentFields = category == 0
+                  valueListenable: doScreenRefresh,
+                  builder: (context, redresh, child) {
+                    final currentFields = employeeCategory == 0
                         ? _getNewEmpFormFields(context)
-                        : category == 1
+                        : employeeCategory == 1
                             ? _getMigrationEmpFormFields(context)
                             : _getExistingEmpFormFields(context);
                     return Container(
@@ -651,7 +671,9 @@ class IsoSystemCrScreen extends BaseScreenWidget {
                 child: (FormEntity()
                       ..type = FormFieldType.multifile
                       ..label = resources.string.uploadFile
-                      ..onDatachnage = (value) {})
+                      ..onDatachnage = (value) {
+                        fieldsData['files'] = value;
+                      })
                     .getWidget(context),
               ),
               SizedBox(
@@ -678,7 +700,49 @@ class IsoSystemCrScreen extends BaseScreenWidget {
                   ),
                   InkWell(
                     onTap: () async {
-                      if (_formKey.currentState?.validate() == true) {}
+                      if (_formKey.currentState?.validate() == true) {
+                        final request = RequestDetail();
+                        request.firstName = fieldsData['firstName'] ?? '';
+                        request.lastName = fieldsData['lastName'] ?? '';
+                        request.fullName = fieldsData['fullName'] ?? '';
+                        request.designation = fieldsData['designation'];
+                        request.departmentID =
+                            (fieldsData['department'] as DepartmentEntity?)?.id;
+                        request.reportingManagerID =
+                            (fieldsData['reportingManager'] as UserEntity?)?.id;
+                        request.employeeID = fieldsData['employeeID'] ?? '';
+                        request.emailID = fieldsData['emailID'] ?? '';
+                        request.dateOfJoining = DateTime.tryParse(
+                            fieldsData['dateofJoining'] ?? '');
+                        request.requestPriority =
+                            (fieldsData['priority'] as NameIDEntity?)?.name;
+                        request.comments = fieldsData['comments'] ?? '';
+                        final data = request.toJson();
+                        if (fieldsData['files'] is List) {
+                          data['files'] =
+                              (fieldsData['files'] as List).map((file) {
+                            return MultipartFile.fromBytes(file['fileBytes'],
+                                filename: file['fileName']);
+                          }).toList();
+                        }
+                        Dialogs.loader(context);
+                        final response = await sl<ISOBloc>().createISORequest(
+                            apiUrl: isoSubmitApiUrl, requestParams: data);
+                        if (!context.mounted) {
+                          return;
+                        }
+
+                        Dialogs.dismiss(context);
+                        if (response is OnISOApiResponse) {
+                          final success =
+                              cast<SingleDataEntity>(response.response.entity);
+                          Dialogs.showInfoDialog(context, PopupType.success,
+                              resources.string.successfullySubmitted);
+                        } else if (response is OnISOApiError) {
+                          Dialogs.showInfoDialog(
+                              context, PopupType.fail, response.message);
+                        }
+                      }
                     },
                     child: ActionButtonWidget(
                       text: resources.string.submit,

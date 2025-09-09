@@ -6,11 +6,10 @@ import 'package:ithelpdesk/presentation/directory/directory_screen.dart';
 
 class DirectoryNavigatorScreen extends BaseScreenWidget {
   DirectoryNavigatorScreen({Key? key}) : super(key: key);
-  static late GlobalKey<NavigatorState> directoryKey;
+  static GlobalKey<NavigatorState> directoryKey = GlobalKey<NavigatorState>();
   late DirectoryScreen directoryScreen;
   @override
   Widget build(BuildContext context) {
-    directoryKey = GlobalKey<NavigatorState>();
     directoryScreen = DirectoryScreen();
     return Navigator(
       key: directoryKey,

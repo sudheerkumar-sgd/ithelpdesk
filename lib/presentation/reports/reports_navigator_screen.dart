@@ -6,11 +6,10 @@ import 'package:ithelpdesk/presentation/reports/reports_screen.dart';
 
 class ReportsNavigatorScreen extends BaseScreenWidget {
   ReportsNavigatorScreen({Key? key}) : super(key: key);
-  static late GlobalKey<NavigatorState> reportKey;
+  static GlobalKey<NavigatorState> reportKey = GlobalKey<NavigatorState>();
   late ReportsScreen reportsScreen;
   @override
   Widget build(BuildContext context) {
-    reportKey = GlobalKey<NavigatorState>();
     reportsScreen = const ReportsScreen();
     return Navigator(
       key: reportKey,

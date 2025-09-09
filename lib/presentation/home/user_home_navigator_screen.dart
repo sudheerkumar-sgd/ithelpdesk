@@ -6,11 +6,10 @@ import 'package:ithelpdesk/presentation/home/user_home_screen.dart';
 
 class UserHomeNavigatorScreen extends BaseScreenWidget {
   UserHomeNavigatorScreen({Key? key}) : super(key: key);
-  static late GlobalKey<NavigatorState> homeKey;
+  static  GlobalKey<NavigatorState> homeKey = GlobalKey<NavigatorState>();
   late UserHomeScreen homScreen;
   @override
   Widget build(BuildContext context) {
-    homeKey = GlobalKey<NavigatorState>();
     homScreen = UserHomeScreen();
     return Navigator(
       key: homeKey,

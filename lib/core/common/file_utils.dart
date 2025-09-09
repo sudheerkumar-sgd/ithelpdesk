@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:file_saver/file_saver.dart';
 import 'package:path_provider/path_provider.dart';
 
 class FileUtiles {
@@ -42,13 +41,13 @@ class FileUtiles {
     return file.path;
   }
 
-  static Future<String> saveFileToFolder(Uint8List bytes,
-      {required String fileName, required String fileType}) async {
-    return await FileSaver().saveAs(
-            name: fileName.split('.').first,
-            bytes: bytes,
-            ext: 'pdf',
-            mimeType: MimeType.pdf) ??
-        '';
-  }
+  // static Future<String> saveFileToFolder(Uint8List bytes,
+  //     {required String fileName, required String fileType}) async {
+  //   return await FileSaver().saveAs(
+  //           name: fileName.split('.').first,
+  //           bytes: bytes,
+  //           ext: 'pdf',
+  //           mimeType: MimeType.pdf) ??
+  //       '';
+  // }
 }
