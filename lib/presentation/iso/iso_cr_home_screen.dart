@@ -1,4 +1,5 @@
 // ignore_for_file: must_be_immutable
+import 'package:dartz/dartz.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,14 +12,17 @@ import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/domain/entities/api_entity.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
+import 'package:ithelpdesk/domain/entities/iso_entity.dart';
 import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
 import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
 import 'package:ithelpdesk/injection_container.dart';
+import 'package:ithelpdesk/presentation/bloc/iso/iso_bloc.dart';
 import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
 import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/alert_dialog_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dropdown_widget.dart';
+import 'package:ithelpdesk/presentation/common_widgets/dynamic_report_list_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/report_list_widget.dart';
 import 'package:ithelpdesk/presentation/iso/iso_system_cr_screen.dart';
@@ -31,38 +35,31 @@ import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
 class IsoCrHomeScreen extends BaseScreenWidget {
   IsoCrHomeScreen({super.key});
   late FocusNode requestStatusFocusNode;
-  final ServicesBloc _servicesBloc = sl<ServicesBloc>();
+  final ISOBloc _isoBloc = sl<ISOBloc>();
 
-  DashboardEntity? _dashboardEntity;
   final ValueNotifier<bool> _onDataChange = ValueNotifier(false);
   List<Map<String, Object>> _requestTypes = [];
-  List<TicketEntity> ticketsData = [];
   int selectTicketCategory = 1;
   final ValueNotifier<int> _selectedYear = ValueNotifier(2024);
   final ValueNotifier<List<String>> _filteredDates = ValueNotifier([]);
   StatusType filteredStatus = StatusType.all;
 
-  Future<ApiEntity<ListEntity>> _getDashboradTickets() {
-    final tickets = ApiEntity<ListEntity>();
-    final listEntity = ListEntity();
-    listEntity.items = ticketsData;
-    tickets.entity = listEntity;
-    return Future.value(tickets);
-  }
-
   Future<ApiEntity<ListEntity>> _getCRTickets() async {
     var dateFormat = DateFormat('dd-MMM-yyyy HH:mm');
-    var startTime = DateFormat('yyyy/MM/dd').parse(_filteredDates.value[0]);
-    var endTime = DateFormat('yyyy/MM/dd').parse(_filteredDates.value[1]);
-    final alltickets = await _servicesBloc.getTticketsByUser(requestParams: {
-      'ticketType': selectTicketCategory,
-      'startDate': dateFormat.format(startTime),
-      'endDate': dateFormat.format(endTime),
+    //var startTime = DateFormat('yyyy/MM/dd').parse(_filteredDates.value[0]);
+    //var endTime = DateFormat('yyyy/MM/dd').parse(_filteredDates.value[1]);
+    final response = await _isoBloc.getRequests(requestParams: {
+      //'ticketType': selectTicketCategory,
+      //'startDate': dateFormat.format(startTime),
+      //'endDate': dateFormat.format(endTime),
     });
     final tickets = ApiEntity<ListEntity>();
-    final listEntity = ListEntity();
-    listEntity.items = alltickets.entity?.ticketsList ?? [];
-    tickets.entity = listEntity;
+    if (response is OnISOApiResponse) {
+      final listEntity = ListEntity();
+      listEntity.items =
+          cast<ListEntity?>(response.response.entity)?.items ?? [];
+      tickets.entity = listEntity;
+    }
     return Future.value(tickets);
   }
 
@@ -70,10 +67,7 @@ class IsoCrHomeScreen extends BaseScreenWidget {
   Widget build(BuildContext context) {
     final resources = context.resources;
     Future.delayed(Duration.zero, () {
-      _servicesBloc.getDashboardData(
-          requestParams: UserCredentialsEntity.details().id != null
-              ? {"userId": UserCredentialsEntity.details().id}
-              : {});
+      _getCRTickets();
     });
     _selectedYear.value = DateTime.now().year;
     final requestTypesRows = isDesktop(context) ? 1 : 2;
@@ -105,20 +99,9 @@ class IsoCrHomeScreen extends BaseScreenWidget {
       resizeToAvoidBottomInset: false,
       backgroundColor: context.resources.color.appScaffoldBg,
       body: BlocProvider(
-        create: (context) => _servicesBloc,
-        child: BlocListener<ServicesBloc, ServicesState>(
-          listener: (context, state) {
-            if (state is OnDashboardSuccess) {
-              _dashboardEntity = state.dashboardEntity.entity;
-              _requestTypes[0]['count'] =
-                  _dashboardEntity?.notAssignedRequests ?? 0;
-              _requestTypes[1]['count'] = _dashboardEntity?.openRequests ?? 0;
-              _requestTypes[2]['count'] = _dashboardEntity?.closedRequests ?? 0;
-              _requestTypes[3]['count'] = _dashboardEntity?.totalRequests ?? 0;
-              ticketsData = _dashboardEntity?.assignedTickets ?? [];
-              _onDataChange.value = !(_onDataChange.value);
-            }
-          },
+        create: (context) => _isoBloc,
+        child: BlocListener<ISOBloc, ISOApiState>(
+          listener: (context, state) {},
           child: Padding(
             padding: EdgeInsets.all(resources.dimen.dp20),
             child: SingleChildScrollView(
@@ -300,7 +283,7 @@ class IsoCrHomeScreen extends BaseScreenWidget {
                       Expanded(
                         child: Text.rich(
                           TextSpan(
-                            text: resources.string.latestTickets,
+                            text: 'Latest Requests',
                             style: context.textFontWeight600
                                 .onFontSize(resources.fontSize.dp12),
                             //children: [
@@ -473,26 +456,26 @@ class IsoCrHomeScreen extends BaseScreenWidget {
                       valueListenable: _onDataChange,
                       builder: (context, onDataChange, child) {
                         return FutureBuilder(
-                            future: (_filteredDates.value.length < 2 &&
-                                    filteredStatus == StatusType.all)
-                                ? _getDashboradTickets()
-                                : _getCRTickets(),
+                            future: _getCRTickets(),
                             builder: (context, snapShot) {
                               final filterTickets =
                                   List.from(snapShot.data?.entity?.items ?? []);
-
-                              // .where((ticket) =>
-                              //     ticket.status != StatusType.closed &&
-                              //     ticket.status != StatusType.reject)
-                              // .toList();
+                              final reportHeaderData =
+                                  CRRequestEntity().toJson().keys.toList();
+                              final reportTableColunwidths =
+                                  <int, FlexColumnWidth>{};
+                              reportHeaderData.asMap().forEach((index, value) {
+                                reportTableColunwidths[index] =
+                                    const FlexColumnWidth(4);
+                              });
                               return filterTickets.isNotEmpty
-                                  ? ReportListWidget(
-                                      ticketsData: filterTickets,
-                                      onTicketSelected: (ticket) {
-                                        ViewRequest.start(context, ticket,
-                                            isMyTicket:
-                                                selectTicketCategory == 2);
-                                      },
+                                  ? DynamicReportListWidget(
+                                      reportData: filterTickets,
+                                      ticketsTableColunwidths:
+                                          reportTableColunwidths,
+                                      totalPagecount: 1,
+                                      ticketsHeaderData: reportHeaderData,
+                                      onRowSelected: (item) {},
                                     )
                                   : Padding(
                                       padding: const EdgeInsets.only(top: 20.0),

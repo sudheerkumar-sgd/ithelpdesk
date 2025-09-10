@@ -129,3 +129,4 @@ const String forwordTicketApiUrl = '${apiFolderUrl}CreateTicket/ForwordTicket';
 const String getManagersByDptApiUrl =
     '${apiFolderUrl}User/GetManagersByDepartment';
 const String isoSubmitApiUrl = '${apiFolderUrl}ISOCR/SubmitSystemCR';
+const String getCRRequestsApiUrl = '${apiFolderUrl}ISOCR/GetCRRequests';
