@@ -26,6 +26,7 @@ import 'package:ithelpdesk/presentation/common_widgets/dynamic_report_list_widge
 import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/report_list_widget.dart';
 import 'package:ithelpdesk/presentation/iso/iso_system_cr_screen.dart';
+import 'package:ithelpdesk/presentation/iso/iso_view_request_screen.dart';
 import 'package:ithelpdesk/presentation/requests/create_new_request.dart';
 import 'package:ithelpdesk/presentation/requests/view_request.dart';
 import 'package:ithelpdesk/presentation/utils/dialogs.dart';
@@ -475,7 +476,15 @@ class IsoCrHomeScreen extends BaseScreenWidget {
                                           reportTableColunwidths,
                                       totalPagecount: 1,
                                       ticketsHeaderData: reportHeaderData,
-                                      onRowSelected: (item) {},
+                                      onRowSelected: (item) {
+                                        if (item is CRRequestEntity) {
+                                          ISOViewRequestScreen.start(
+                                            context,
+                                            item.requestId ?? 0,
+                                          );
+                                        }
+                                      },
+                                      onColumnClick: (key, item) {},
                                     )
                                   : Padding(
                                       padding: const EdgeInsets.only(top: 20.0),

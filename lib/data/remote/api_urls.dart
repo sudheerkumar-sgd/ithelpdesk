@@ -130,3 +130,5 @@ const String getManagersByDptApiUrl =
     '${apiFolderUrl}User/GetManagersByDepartment';
 const String isoSubmitApiUrl = '${apiFolderUrl}ISOCR/SubmitSystemCR';
 const String getCRRequestsApiUrl = '${apiFolderUrl}ISOCR/GetCRRequests';
+const String getCRRequestDetailsApiUrl =
+    '${apiFolderUrl}ISOCR/GetCRRequestDetails';

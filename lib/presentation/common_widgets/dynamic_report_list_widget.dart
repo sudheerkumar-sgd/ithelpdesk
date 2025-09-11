@@ -36,7 +36,7 @@ class DynamicReportListWidget extends StatelessWidget {
       list.add(
         InkWell(
           onTap: () {
-            onColumnClick?.call(key, rowEntity);
+            onRowSelected?.call(rowEntity);
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 10),

@@ -1,13 +1,16 @@
 // ignore_for_file: must_be_immutable
+import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/domain/entities/base_entity.dart';
 
 class CRRequestEntity extends BaseEntity {
   int? requestId;
   int? workflowId;
-  int? status;
+  int? currentStep;
+  RequestStatus? status;
   String? createdAt;
   String? completedAt;
   CRRequestDetailsEntity? details;
+  List<CRRequestStepEntity> steps = [];
 
   CRRequestEntity();
 
@@ -36,4 +39,31 @@ class CRRequestDetailsEntity extends BaseEntity {
   String? emailID;
 
   CRRequestDetailsEntity();
+}
+
+class CRRequestStepEntity extends BaseEntity {
+  int? requestStepId;
+  String? stepName;
+  int? assignedTo;
+  String? assigneDisplayName;
+  String? updatedAt;
+  RequestStepStatus? status;
+  List<CRRequestStepAssigneeEntity> assignees = [];
+
+  CRRequestStepEntity();
+}
+
+class CRRequestStepAssigneeEntity extends BaseEntity {
+  int? employeeId;
+  int? roleId;
+  List<CRRequestStepActionEntity> actions = [];
+
+  CRRequestStepAssigneeEntity();
+}
+
+class CRRequestStepActionEntity extends BaseEntity {
+  StatusType? actionId;
+  String? actionName;
+
+  CRRequestStepActionEntity();
 }

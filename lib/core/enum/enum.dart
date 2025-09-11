@@ -274,3 +274,107 @@ enum FormFieldType {
   label,
   labelheader;
 }
+
+enum RequestStatus {
+  pending(1),
+  completed(2),
+  inprogress(3),
+  rejected(4);
+
+  final int value;
+  const RequestStatus(this.value);
+
+  factory RequestStatus.fromId(int value) {
+    return values.firstWhere((e) => e.value == value);
+  }
+
+  factory RequestStatus.fromName(String value) {
+    return values.firstWhere((e) => e.name.contains(value.toLowerCase()));
+  }
+
+  Color getColor() {
+    switch (this) {
+      case completed:
+        return const Color(0xFF3ECA6E);
+      case rejected:
+        return const Color(0xFFFF0000);
+      case inprogress:
+        return const Color.fromARGB(255, 237, 105, 11);
+      case pending:
+        return const Color.fromARGB(255, 237, 105, 11);
+    }
+  }
+}
+
+enum RequestStepStatus {
+  submited(1),
+  returned(2),
+  approved(3),
+  rejected(4),
+  transfered(5),
+  closed(6),
+  hold(7),
+  inProgress(8);
+
+  final int value;
+  const RequestStepStatus(this.value);
+
+  factory RequestStepStatus.fromId(int value) {
+    return values.firstWhere((e) => e.value == value,
+        orElse: () =>
+            throw ArgumentError('Invalid RequestStepStatus id: $value'));
+  }
+
+  factory RequestStepStatus.fromName(String value) {
+    return values.firstWhere((e) => e.name.toLowerCase() == value.toLowerCase(),
+        orElse: () =>
+            throw ArgumentError('Invalid RequestStepStatus name: $value'));
+  }
+
+  @override
+  String toString() {
+    switch (this) {
+      case closed:
+        return isSelectedLocalEn ? 'Close' : 'اغلاق';
+      case rejected:
+        return isSelectedLocalEn ? 'Rejected' : 'رفض';
+      case hold:
+        return isSelectedLocalEn ? 'Hold' : 'تعليق';
+      case returned:
+        return isSelectedLocalEn ? 'Return' : 'إرجاع';
+      case inProgress:
+        return isSelectedLocalEn ? 'In Progress' : 'قيد التنفيذ';
+      case transfered:
+        return isSelectedLocalEn ? 'Transfered' : 'تم التحويل';
+      case approved:
+        return isSelectedLocalEn ? 'Approved' : 'موافق عليه';
+      case submited:
+        return isSelectedLocalEn ? 'Submited' : 'تم الإرسال';
+    }
+  }
+}
+
+enum RequestStepActions {
+  submited(1),
+  returned(2),
+  approved(3),
+  rejected(4),
+  transfered(5),
+  closed(6),
+  hold(7);
+
+  final int value;
+  const RequestStepActions(this.value);
+
+  factory RequestStepActions.fromId(int value) {
+    return values.firstWhere((e) => e.value == value,
+        orElse: () =>
+            throw ArgumentError('Invalid RequestStepActions id: $value'));
+  }
+
+  factory RequestStepActions.fromName(String value) {
+    return values.firstWhere((e) => e.name.toLowerCase() == value.toLowerCase(),
+        orElse: () =>
+            throw ArgumentError('Invalid RequestStepActions name: $value'));
+  }
+}
