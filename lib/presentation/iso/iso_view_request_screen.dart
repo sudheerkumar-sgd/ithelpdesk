@@ -355,8 +355,15 @@ class ISOViewRequestScreen extends BaseScreenWidget {
           children: [
             Container(
               color: resources.color.colorWhite,
-              child: Column(
-                children: [],
+              child: Table(
+                children: [
+                  for (var item in requestEntity.toJson().entries) ...[
+                    TableRow(children: [
+                      Text(item.key, style: context.textFontWeight400),
+                      Text(': ${item.value}', style: context.textFontWeight600),
+                    ])
+                  ]
+                ],
               ),
             ),
             SizedBox(
@@ -665,7 +672,8 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                                     element.employeeId ==
                                     UserCredentialsEntity.details().id)
                                 .actions
-                                .map((e) => e.actionId ?? StatusType.acquired)
+                                .map((e) =>
+                                    e.actionId ?? RequestStepStatus.inProgress)
                                 .toList();
                             final actionButtonsLength =
                                 isDesktop(context, size: screenDimentions)
@@ -679,7 +687,7 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                                             ticketActionButtons.length))
                                     : ticketActionButtons.sublist(0, 1);
                             var popupActionButtons =
-                                List<StatusType>.empty(growable: true);
+                                List<RequestStepStatus>.empty(growable: true);
                             if (actionButtonsLength + 1 ==
                                 ticketActionButtons.length) {
                               actionButtons.addAll(ticketActionButtons

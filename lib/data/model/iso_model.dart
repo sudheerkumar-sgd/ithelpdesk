@@ -6,6 +6,7 @@ import 'package:ithelpdesk/domain/entities/iso_entity.dart';
 
 class CRRequestModel extends BaseModel {
   int? requestId;
+  String? requestType;
   int? workflowId;
   int? currentStep;
   int? status;
@@ -19,6 +20,7 @@ class CRRequestModel extends BaseModel {
   CRRequestModel.fromJson(Map<String, dynamic> response) {
     final json = response['data'] ?? response;
     requestId = json['requestId'];
+    requestType = json['requestType'];
     workflowId = json['workflowId'];
     currentStep = json['currentStep'];
     status = json['status'];
@@ -39,6 +41,7 @@ class CRRequestModel extends BaseModel {
   CRRequestEntity toEntity() {
     return CRRequestEntity()
       ..requestId = requestId
+      ..requestType = requestType
       ..workflowId = workflowId
       ..currentStep = currentStep
       ..status = RequestStatus.fromId(status ?? 1)
@@ -58,6 +61,15 @@ class CRRequestDetailsModel extends BaseModel {
   int? departmentID;
   String? departmentName;
   String? emailID;
+  String? employeeID;
+  String? loginID;
+  String? accessTypeID;
+  int? reportingManagerID;
+  String? dateOfJoining;
+  String? requestPriority;
+  String? reasonOfAccess;
+  String? comments;
+  String? attachements;
 
   CRRequestDetailsModel();
 
@@ -70,6 +82,15 @@ class CRRequestDetailsModel extends BaseModel {
     departmentID = json['departmentID'];
     departmentName = json['departmentName'];
     emailID = json['emailID'];
+    employeeID = json['employeeID'];
+    loginID = json['loginID'];
+    accessTypeID = json['accessTypeID'];
+    reportingManagerID = json['reportingManagerID'];
+    dateOfJoining = json['dateOfJoining'];
+    requestPriority = json['requestPriority'];
+    reasonOfAccess = json['reasonOfAccess'];
+    comments = json['comments'];
+    attachements = json['attachements'];
   }
 
   @override
@@ -82,7 +103,16 @@ class CRRequestDetailsModel extends BaseModel {
       ..designation = designation
       ..departmentID = departmentID
       ..departmentName = departmentName
-      ..emailID = emailID;
+      ..emailID = emailID
+      ..employeeID = employeeID
+      ..loginID = loginID
+      ..accessTypeID = accessTypeID
+      ..reportingManagerID = reportingManagerID
+      ..dateOfJoining = dateOfJoining
+      ..requestPriority = requestPriority
+      ..reasonOfAccess = reasonOfAccess
+      ..comments = comments
+      ..attachements = attachements;
   }
 }
 
@@ -165,7 +195,7 @@ class CRRequestStepActionModel extends BaseModel {
   @override
   CRRequestStepActionEntity toEntity() {
     return CRRequestStepActionEntity()
-      ..actionId = StatusType.fromId(actionId ?? 1)
+      ..actionId = RequestStepStatus.fromId(actionId ?? 1)
       ..actionName = actionName;
   }
 }

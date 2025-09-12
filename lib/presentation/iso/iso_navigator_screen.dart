@@ -6,11 +6,10 @@ import 'package:ithelpdesk/presentation/iso/iso_cr_home_screen.dart';
 
 class ISONavigatorScreen extends BaseScreenWidget {
   ISONavigatorScreen({Key? key}) : super(key: key);
-  static late GlobalKey<NavigatorState> isoKey;
+  static GlobalKey<NavigatorState> isoKey = GlobalKey<NavigatorState>();
   late IsoCrHomeScreen isoCrHomeScreen;
   @override
   Widget build(BuildContext context) {
-    isoKey = GlobalKey<NavigatorState>();
     isoCrHomeScreen = IsoCrHomeScreen();
     return Navigator(
       key: isoKey,

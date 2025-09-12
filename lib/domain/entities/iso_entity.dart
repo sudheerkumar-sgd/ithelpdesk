@@ -4,6 +4,7 @@ import 'package:ithelpdesk/domain/entities/base_entity.dart';
 
 class CRRequestEntity extends BaseEntity {
   int? requestId;
+  String? requestType;
   int? workflowId;
   int? currentStep;
   RequestStatus? status;
@@ -17,12 +18,21 @@ class CRRequestEntity extends BaseEntity {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['requestId'] = requestId;
+    data['requestType'] = requestType;
     data['firstName'] = details?.firstName;
     data['lastName'] = details?.lastName;
     data['fullName'] = details?.fullName;
     data['designation'] = details?.designation;
     data['department'] = details?.departmentName;
     data['emailID'] = details?.emailID;
+    data['employeeID'] = details?.employeeID;
+    data['loginID'] = details?.loginID;
+    data['accessTypeID'] = details?.accessTypeID;
+    data['reportingManagerID'] = details?.reportingManagerID;
+    data['dateOfJoining'] = details?.dateOfJoining;
+    data['requestPriority'] = details?.requestPriority;
+    data['reasonOfAccess'] = details?.reasonOfAccess;
+    data['comments'] = details?.comments;
     data['createdAt'] = createdAt;
     return data;
   }
@@ -37,6 +47,15 @@ class CRRequestDetailsEntity extends BaseEntity {
   int? departmentID;
   String? departmentName;
   String? emailID;
+  String? employeeID;
+  String? loginID;
+  String? accessTypeID;
+  int? reportingManagerID;
+  String? dateOfJoining;
+  String? requestPriority;
+  String? reasonOfAccess;
+  String? comments;
+  String? attachements;
 
   CRRequestDetailsEntity();
 }
@@ -62,7 +81,7 @@ class CRRequestStepAssigneeEntity extends BaseEntity {
 }
 
 class CRRequestStepActionEntity extends BaseEntity {
-  StatusType? actionId;
+  RequestStepStatus? actionId;
   String? actionName;
 
   CRRequestStepActionEntity();

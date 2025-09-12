@@ -314,7 +314,8 @@ enum RequestStepStatus {
   transfered(5),
   closed(6),
   hold(7),
-  inProgress(8);
+  inProgress(8),
+  reSubmit(9);
 
   final int value;
   const RequestStepStatus(this.value);
@@ -350,6 +351,29 @@ enum RequestStepStatus {
         return isSelectedLocalEn ? 'Approved' : 'موافق عليه';
       case submited:
         return isSelectedLocalEn ? 'Submited' : 'تم الإرسال';
+      case reSubmit:
+        return isSelectedLocalEn ? 'Resubmit' : 'إعادة الإرسال';
+    }
+  }
+
+  Color getColor() {
+    switch (this) {
+      case closed:
+        return const Color(0xFF3ECA6E);
+      case rejected:
+        return const Color(0xFFFF0000);
+      case hold:
+        return const Color.fromARGB(255, 243, 219, 3);
+      case returned:
+        return const Color.fromARGB(255, 6, 101, 202);
+      case inProgress:
+        return const Color.fromARGB(255, 237, 105, 11);
+      case transfered:
+        return const Color.fromARGB(255, 237, 105, 11);
+      case approved:
+        return const Color(0xFF3ECA6E);
+      default:
+        return const Color.fromARGB(255, 156, 103, 242);
     }
   }
 }

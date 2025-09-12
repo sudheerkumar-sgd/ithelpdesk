@@ -98,7 +98,8 @@ class SideBar extends StatelessWidget {
                 ),
                 ListTile(
                   onTap: () {
-                    _onCRClick.value = !_onCRClick.value;
+                    _selectedIndex.value = 2;
+                    onItemSelected(2);
                   },
                   leading: SizedBox(
                     width: 40,
@@ -119,51 +120,51 @@ class SideBar extends StatelessWidget {
                         .onFontSize(resources.fontSize.dp12),
                   ),
                 ),
-                ValueListenableBuilder(
-                    valueListenable: _onCRClick,
-                    builder: (context, onCRClick, child) {
-                      return onCRClick
-                          ? ListTile(
-                              leading: const SizedBox(),
-                              title: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  InkWell(
-                                    onTap: () {
-                                      onItemSelected(2);
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 5.0),
-                                      child: Text(
-                                        'ISO - System',
-                                        style: context.textFontWeight600,
-                                      ),
-                                    ),
-                                  ),
-                                  InkWell(
-                                      onTap: () {},
-                                      child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 5.0),
-                                          child: Text(
-                                            'ISO - Network',
-                                            style: context.textFontWeight600,
-                                          ))),
-                                  InkWell(
-                                      onTap: () {},
-                                      child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 5.0),
-                                          child: Text(
-                                            'ISO - DBA',
-                                            style: context.textFontWeight600,
-                                          ))),
-                                ],
-                              ),
-                            )
-                          : const SizedBox.shrink();
-                    }),
+                // ValueListenableBuilder(
+                //     valueListenable: _onCRClick,
+                //     builder: (context, onCRClick, child) {
+                //       return onCRClick
+                //           ? ListTile(
+                //               leading: const SizedBox(),
+                //               title: Column(
+                //                 crossAxisAlignment: CrossAxisAlignment.start,
+                //                 children: [
+                //                   InkWell(
+                //                     onTap: () {
+                //                       onItemSelected(2);
+                //                     },
+                //                     child: Padding(
+                //                       padding: const EdgeInsets.symmetric(
+                //                           vertical: 5.0),
+                //                       child: Text(
+                //                         'ISO - System',
+                //                         style: context.textFontWeight600,
+                //                       ),
+                //                     ),
+                //                   ),
+                //                   InkWell(
+                //                       onTap: () {},
+                //                       child: Padding(
+                //                           padding: const EdgeInsets.symmetric(
+                //                               vertical: 5.0),
+                //                           child: Text(
+                //                             'ISO - Network',
+                //                             style: context.textFontWeight600,
+                //                           ))),
+                //                   InkWell(
+                //                       onTap: () {},
+                //                       child: Padding(
+                //                           padding: const EdgeInsets.symmetric(
+                //                               vertical: 5.0),
+                //                           child: Text(
+                //                             'ISO - DBA',
+                //                             style: context.textFontWeight600,
+                //                           ))),
+                //                 ],
+                //               ),
+                //             )
+                //           : const SizedBox.shrink();
+                //     }),
                 SizedBox(
                   height: resources.dimen.dp10,
                 ),
