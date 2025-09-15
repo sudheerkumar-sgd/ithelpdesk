@@ -659,9 +659,13 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                           valueListenable: _onDataChanged,
                           builder: (context, onDataChange, child) {
                             final currentStepDetails = requestEntity.steps
-                                .firstWhere((element) =>
+                                .where((element) =>
                                     element.requestStepId ==
-                                    requestEntity.currentStep);
+                                    requestEntity.currentStep)
+                                .firstOrNull;
+                            if (currentStepDetails == null) {
+                              return const SizedBox();
+                            }
                             if (currentStepDetails.status ==
                                 RequestStepStatus.closed) {
                               return const SizedBox();

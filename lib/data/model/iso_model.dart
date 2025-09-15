@@ -69,7 +69,7 @@ class CRRequestDetailsModel extends BaseModel {
   String? requestPriority;
   String? reasonOfAccess;
   String? comments;
-  String? attachements;
+  List<CRAttachmentEntity> attachements = [];
 
   CRRequestDetailsModel();
 
@@ -90,7 +90,12 @@ class CRRequestDetailsModel extends BaseModel {
     requestPriority = json['requestPriority'];
     reasonOfAccess = json['reasonOfAccess'];
     comments = json['comments'];
-    attachements = json['attachements'];
+    if (json['attachements'] != null) {
+      attachements = <CRAttachmentEntity>[];
+      json['attachements'].forEach((v) {
+        attachements.add(CRAttachmentModel.fromJson(v).toEntity());
+      });
+    }
   }
 
   @override
@@ -197,5 +202,35 @@ class CRRequestStepActionModel extends BaseModel {
     return CRRequestStepActionEntity()
       ..actionId = RequestStepStatus.fromId(actionId ?? 1)
       ..actionName = actionName;
+  }
+}
+
+class CRAttachmentModel extends BaseModel {
+  int? id;
+  String? name;
+  String? createdOn;
+  String? requestID;
+  int? workflowID;
+  int? commentID;
+
+  CRAttachmentModel();
+  CRAttachmentModel.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    createdOn = json['createdOn'];
+    requestID = json['requestID'];
+    workflowID = json['workflowID'];
+    commentID = json['commentID'];
+  }
+
+  @override
+  CRAttachmentEntity toEntity() {
+    return CRAttachmentEntity()
+      ..id = id
+      ..name = name
+      ..createdOn = createdOn
+      ..requestID = requestID
+      ..workflowID = workflowID
+      ..commentID = commentID;
   }
 }

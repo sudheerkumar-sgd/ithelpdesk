@@ -55,7 +55,7 @@ class CRRequestDetailsEntity extends BaseEntity {
   String? requestPriority;
   String? reasonOfAccess;
   String? comments;
-  String? attachements;
+  List<CRAttachmentEntity>? attachements;
 
   CRRequestDetailsEntity();
 }
@@ -85,4 +85,13 @@ class CRRequestStepActionEntity extends BaseEntity {
   String? actionName;
 
   CRRequestStepActionEntity();
+}
+
+class CRAttachmentEntity extends BaseEntity {
+  int? id;
+  String? name;
+  String? createdOn;
+  String? requestID;
+  int? workflowID;
+  int? commentID;
 }
