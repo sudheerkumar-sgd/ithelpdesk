@@ -55,7 +55,7 @@ class CRRequestDetailsEntity extends BaseEntity {
   String? requestPriority;
   String? reasonOfAccess;
   String? comments;
-  List<CRAttachmentEntity>? attachements;
+  List<CRAttachmentEntity>? attachments;
 
   CRRequestDetailsEntity();
 }

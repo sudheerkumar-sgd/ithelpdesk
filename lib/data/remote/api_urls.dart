@@ -132,3 +132,5 @@ const String isoSubmitApiUrl = '${apiFolderUrl}ISOCR/SubmitSystemCR';
 const String getCRRequestsApiUrl = '${apiFolderUrl}ISOCR/GetCRRequests';
 const String getCRRequestDetailsApiUrl =
     '${apiFolderUrl}ISOCR/GetCRRequestDetails';
+const String updateCRRequestApiUrl =
+    '${apiFolderUrl}ISOCR/UpdateCRRequestDetails';

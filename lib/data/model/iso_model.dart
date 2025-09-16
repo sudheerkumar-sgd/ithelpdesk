@@ -117,7 +117,7 @@ class CRRequestDetailsModel extends BaseModel {
       ..requestPriority = requestPriority
       ..reasonOfAccess = reasonOfAccess
       ..comments = comments
-      ..attachements = attachements;
+      ..attachments = attachements;
   }
 }
 

@@ -9,10 +9,12 @@ import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
+import 'package:ithelpdesk/core/extensions/field_entity_extension.dart';
 import 'package:ithelpdesk/core/extensions/string_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/data/remote/api_urls.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
+import 'package:ithelpdesk/domain/entities/form_entities.dart';
 import 'package:ithelpdesk/domain/entities/iso_entity.dart';
 import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
 import 'package:ithelpdesk/domain/entities/services_entity.dart';
@@ -65,9 +67,6 @@ class ISOViewRequestScreen extends BaseScreenWidget {
   late CRRequestEntity requestEntity;
   Size screenDimentions = screenSize;
   String apiResponseMessage = '';
-  final ValueNotifier _isChargeable = ValueNotifier(false);
-  final ValueNotifier<SubCategoryEntity?> _subCategoryValue =
-      ValueNotifier(null);
   final ISOBloc _isoBloc = sl<ISOBloc>();
   final MasterDataBloc _masterDataBloc = sl<MasterDataBloc>();
   final TextEditingController _commentsController = TextEditingController();
@@ -369,50 +368,60 @@ class ISOViewRequestScreen extends BaseScreenWidget {
             SizedBox(
               height: resources.dimen.dp20,
             ),
-            // if (requestEntity.attachments?.isNotEmpty == true) ...[
-            //   Text(
-            //     resources.string.attachments,
-            //     style: context.textFontWeight600,
-            //   ),
-            //   SizedBox(
-            //     height: resources.dimen.dp10,
-            //   ),
-            //   Column(
-            //     crossAxisAlignment: CrossAxisAlignment.start,
-            //     children:
-            //         List.generate(requestEntity.attachments?.length ?? 0, (index) {
-            //       return InkWell(
-            //         onTap: () {
-            //           Dialogs.showDialogWithClose(
-            //               context,
-            //               maxWidth: 400,
-            //               AttachmentPreviewWidget(
-            //                 fileName: requestEntity.attachments?[index] ?? "",
-            //               ));
-            //         },
-            //         child: Row(
-            //           children: [
-            //             ImageWidget(
-            //                     path: DrawableAssets.icAttachment,
-            //                     backgroundTint: resources.color.viewBgColor)
-            //                 .loadImage,
-            //             SizedBox(
-            //               width: resources.dimen.dp10,
-            //             ),
-            //             Text(
-            //               (requestEntity.attachments?[index] ?? ""),
-            //               style: context.textFontWeight500
-            //                   .copyWith(decoration: TextDecoration.underline),
-            //             ),
-            //           ],
-            //         ),
-            //       );
-            //     }),
-            //   ),
-            //   SizedBox(
-            //     height: resources.dimen.dp20,
-            //   ),
-            // ],
+            if (requestEntity.details?.attachments?.isNotEmpty == true) ...[
+              Text(
+                resources.string.attachments,
+                style: context.textFontWeight600,
+              ),
+              SizedBox(
+                height: resources.dimen.dp10,
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: List.generate(
+                    requestEntity.details?.attachments?.length ?? 0, (index) {
+                  return InkWell(
+                    onTap: () {
+                      Dialogs.showDialogWithClose(
+                          context,
+                          maxWidth: 400,
+                          AttachmentPreviewWidget(
+                            fileName: requestEntity
+                                    .details?.attachments?[index].name ??
+                                "",
+                          ));
+                    },
+                    child: Row(
+                      children: [
+                        ImageWidget(
+                                path: DrawableAssets.icAttachment,
+                                backgroundTint: resources.color.viewBgColor)
+                            .loadImage,
+                        SizedBox(
+                          width: resources.dimen.dp10,
+                        ),
+                        Text(
+                          (requestEntity.details?.attachments?[index].name ??
+                              ""),
+                          style: context.textFontWeight500
+                              .copyWith(decoration: TextDecoration.underline),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              ),
+              SizedBox(
+                height: resources.dimen.dp20,
+              ),
+            ],
+            (FormEntity()
+                  ..type = FormFieldType.textarea
+                  ..label = 'Comments'
+                  ..onDatachnage = (value) {
+                    _commentsController.text = value;
+                  })
+                .getWidget(context),
           ],
         ),
       ),
@@ -709,8 +718,12 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                                   Expanded(
                                     child: InkWell(
                                       onTap: () async {
-                                        // _onActionClicked(
-                                        //     context, actionButtons[r]);
+                                        _isoBloc
+                                            .createISORequest(requestParams: {
+                                          'requestID': requestEntity.requestId,
+                                          'requestStepStatus': actionButtons[r],
+                                          'comments': _commentsController.text
+                                        }, apiUrl: updateCRRequestApiUrl);
                                       },
                                       child: ActionButtonWidget(
                                         text: (actionButtons[r]).toString(),
