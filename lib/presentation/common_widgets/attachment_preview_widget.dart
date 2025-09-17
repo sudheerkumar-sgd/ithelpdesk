@@ -6,14 +6,16 @@ import 'image_widget.dart';
 
 class AttachmentPreviewWidget extends StatelessWidget {
   final String fileName;
-  const AttachmentPreviewWidget({required this.fileName, super.key});
+  final String? baseUrl;
+  const AttachmentPreviewWidget(
+      {required this.fileName, this.baseUrl, super.key});
 
   @override
   Widget build(BuildContext context) {
     Future.delayed(Duration.zero, () {
       //if (fileName.contains('.pdf')) {
       Navigator.pop(context);
-      openNewTab('$getImageBaseUrl$fileName');
+      openNewTab('${baseUrl ?? getImageBaseUrl}$fileName');
       //}
     });
     return Column(
@@ -21,7 +23,7 @@ class AttachmentPreviewWidget extends StatelessWidget {
       children: [
         fileName.contains('.pdf')
             ? SfPdfViewer.network(
-                '$getImageBaseUrl$fileName',
+                '${baseUrl ?? getImageBaseUrl}$fileName',
               )
             : ImageWidget(path: '$getImageBaseUrl$fileName').loadImage,
       ],

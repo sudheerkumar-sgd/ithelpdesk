@@ -529,7 +529,11 @@ reloadPage() {
 }
 
 openNewTab(String url) {
-  web.window.open(url, '_blank');
+  try {
+    web.window.open(url, '_blank');
+  } catch (e) {
+    printLog(e.toString());
+  }
 }
 
 String get getImageBaseUrl =>

@@ -12,6 +12,7 @@ class CRRequestModel extends BaseModel {
   int? status;
   String? createdAt;
   String? completedAt;
+  String? attachmentUrlPrefix;
   CRRequestDetailsEntity? details;
   List<CRRequestStepEntity> steps = [];
 
@@ -26,6 +27,7 @@ class CRRequestModel extends BaseModel {
     status = json['status'];
     createdAt = json['createdAt'];
     completedAt = json['completedAt'];
+    attachmentUrlPrefix = json['attachmentUrlPrefix'];
     if (json['details'] != null) {
       details = CRRequestDetailsModel.fromJson(json['details']).toEntity();
     }
@@ -47,6 +49,7 @@ class CRRequestModel extends BaseModel {
       ..status = RequestStatus.fromId(status ?? 1)
       ..createdAt = createdAt
       ..completedAt = completedAt
+      ..attachmentUrlPrefix = attachmentUrlPrefix
       ..details = details
       ..steps = steps;
   }

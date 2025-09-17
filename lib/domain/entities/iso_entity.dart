@@ -10,6 +10,7 @@ class CRRequestEntity extends BaseEntity {
   RequestStatus? status;
   String? createdAt;
   String? completedAt;
+  String? attachmentUrlPrefix;
   CRRequestDetailsEntity? details;
   List<CRRequestStepEntity> steps = [];
 

@@ -304,18 +304,33 @@ enum RequestStatus {
         return const Color.fromARGB(255, 237, 105, 11);
     }
   }
+
+  @override
+  String toString() {
+    switch (this) {
+      case completed:
+        return isSelectedLocalEn ? 'Completed' : 'مكتمل';
+      case rejected:
+        return isSelectedLocalEn ? 'Rejected' : 'مرفوض';
+      case inprogress:
+        return isSelectedLocalEn ? 'In Progress' : 'قيد التنفيذ';
+      case pending:
+        return isSelectedLocalEn ? 'Pending' : 'قيد الانتظار';
+    }
+  }
 }
 
 enum RequestStepStatus {
   submited(1),
   returned(2),
   approved(3),
-  rejected(4),
-  transfered(5),
-  closed(6),
-  hold(7),
-  inProgress(8),
-  reSubmit(9);
+  close(4),
+  aquire(5),
+  transfer(6),
+  reject(7),
+  hold(8),
+  reSubmit(9),
+  inProgress(10);
 
   final int value;
   const RequestStepStatus(this.value);
@@ -335,32 +350,34 @@ enum RequestStepStatus {
   @override
   String toString() {
     switch (this) {
-      case closed:
+      case close:
         return isSelectedLocalEn ? 'Close' : 'اغلاق';
-      case rejected:
-        return isSelectedLocalEn ? 'Rejected' : 'رفض';
+      case reject:
+        return isSelectedLocalEn ? 'Reject' : 'رفض';
       case hold:
         return isSelectedLocalEn ? 'Hold' : 'تعليق';
       case returned:
         return isSelectedLocalEn ? 'Return' : 'إرجاع';
       case inProgress:
         return isSelectedLocalEn ? 'In Progress' : 'قيد التنفيذ';
-      case transfered:
-        return isSelectedLocalEn ? 'Transfered' : 'تم التحويل';
+      case transfer:
+        return isSelectedLocalEn ? 'Transfer' : 'تم التحويل';
       case approved:
-        return isSelectedLocalEn ? 'Approved' : 'موافق عليه';
+        return isSelectedLocalEn ? 'Approve' : 'موافق عليه';
       case submited:
-        return isSelectedLocalEn ? 'Submited' : 'تم الإرسال';
+        return isSelectedLocalEn ? 'Submit' : 'تم الإرسال';
       case reSubmit:
         return isSelectedLocalEn ? 'Resubmit' : 'إعادة الإرسال';
+      case RequestStepStatus.aquire:
+        return isSelectedLocalEn ? 'Acquire' : 'يكتسب';
     }
   }
 
   Color getColor() {
     switch (this) {
-      case closed:
+      case close:
         return const Color(0xFF3ECA6E);
-      case rejected:
+      case reject:
         return const Color(0xFFFF0000);
       case hold:
         return const Color.fromARGB(255, 243, 219, 3);
@@ -368,7 +385,9 @@ enum RequestStepStatus {
         return const Color.fromARGB(255, 6, 101, 202);
       case inProgress:
         return const Color.fromARGB(255, 237, 105, 11);
-      case transfered:
+      case transfer:
+        return const Color.fromARGB(255, 237, 105, 11);
+      case aquire:
         return const Color.fromARGB(255, 237, 105, 11);
       case approved:
         return const Color(0xFF3ECA6E);

@@ -10,14 +10,11 @@ import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/field_entity_extension.dart';
-import 'package:ithelpdesk/core/extensions/string_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/data/remote/api_urls.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
 import 'package:ithelpdesk/domain/entities/form_entities.dart';
 import 'package:ithelpdesk/domain/entities/iso_entity.dart';
-import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
-import 'package:ithelpdesk/domain/entities/services_entity.dart';
 import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
 import 'package:ithelpdesk/injection_container.dart';
 import 'package:ithelpdesk/presentation/bloc/iso/iso_bloc.dart';
@@ -25,21 +22,15 @@ import 'package:ithelpdesk/presentation/bloc/master_data/master_data_bloc.dart';
 import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
 import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
-import 'package:ithelpdesk/presentation/common_widgets/confirm_dialog_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dropdown_menu_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/item_service_steps.dart';
 import 'package:ithelpdesk/presentation/common_widgets/ticket_action_widget.dart';
-import 'package:ithelpdesk/presentation/profile/customer_profile_screen_widget.dart';
-import 'package:ithelpdesk/presentation/profile/profile_screen_widget.dart';
-import 'package:ithelpdesk/presentation/requests/widgets/ticket_return_widget.dart';
-import 'package:ithelpdesk/presentation/requests/widgets/ticket_transfer_widget.dart';
 import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../common_widgets/alert_dialog_widget.dart';
-import '../common_widgets/attachment_preview_widget.dart';
 
 class ISOViewRequestScreen extends BaseScreenWidget {
   static start(BuildContext context, int requestId, {bool? isMyTicket}) {
@@ -70,6 +61,7 @@ class ISOViewRequestScreen extends BaseScreenWidget {
   final ISOBloc _isoBloc = sl<ISOBloc>();
   final MasterDataBloc _masterDataBloc = sl<MasterDataBloc>();
   final TextEditingController _commentsController = TextEditingController();
+  final Map<String, dynamic> fieldsData = {};
 
   final ValueNotifier<bool> _isExanded = ValueNotifier(false);
   final ValueNotifier<bool> _onDataChanged = ValueNotifier(false);
@@ -385,10 +377,8 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                       Dialogs.showDialogWithClose(
                           context,
                           maxWidth: 400,
-                          AttachmentPreviewWidget(
-                            fileName: requestEntity
-                                    .details?.attachments?[index].name ??
-                                "",
+                          openNewTab(
+                            '${requestEntity.attachmentUrlPrefix}${requestEntity.details?.attachments?[index].name ?? ""}',
                           ));
                     },
                     child: Row(
@@ -411,17 +401,34 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                   );
                 }),
               ),
+            ],
+            if (requestEntity
+                    .steps[(requestEntity.currentStep ?? 1) - 1].status !=
+                RequestStepStatus.close) ...[
               SizedBox(
                 height: resources.dimen.dp20,
               ),
+              SizedBox(
+                height: resources.dimen.dp20,
+              ),
+              (FormEntity()
+                    ..type = FormFieldType.textarea
+                    ..label = 'Comments'
+                    ..onDatachnage = (value) {
+                      _commentsController.text = value;
+                    })
+                  .getWidget(context),
+              SizedBox(
+                height: resources.dimen.dp10,
+              ),
+              (FormEntity()
+                    ..type = FormFieldType.multifile
+                    ..label = resources.string.uploadFile
+                    ..onDatachnage = (value) {
+                      fieldsData['files'] = value;
+                    })
+                  .getWidget(context),
             ],
-            (FormEntity()
-                  ..type = FormFieldType.textarea
-                  ..label = 'Comments'
-                  ..onDatachnage = (value) {
-                    _commentsController.text = value;
-                  })
-                .getWidget(context),
           ],
         ),
       ),
@@ -455,7 +462,8 @@ class ISOViewRequestScreen extends BaseScreenWidget {
           ),
           for (int i = 0; i < steps.length; i++) ...[
             ItemServiceSteps(
-              stepColor: (i < (requestEntity.currentStep ?? 1) - 1)
+              stepColor: (i < (requestEntity.currentStep ?? 1) - 1 ||
+                      requestEntity.status == RequestStatus.completed)
                   ? resources.color.colorGreen26B757
                   : requestEntity.status == RequestStatus.rejected
                       ? resources.color.rejected
@@ -599,7 +607,7 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                                   children: [
                                     TextSpan(
                                         text:
-                                            '${resources.string.createdBy} ${requestEntity.apiStatus} ${resources.string.on} ${requestEntity.createdAt}',
+                                            '${resources.string.createdBy} ${requestEntity.steps[0].assigneDisplayName} ${resources.string.on} ${requestEntity.createdAt}',
                                         style: context.textFontWeight400
                                             .onFontSize(resources.fontSize.dp10)
                                             .onColor(
@@ -628,8 +636,8 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                                         style: context.textFontWeight600,
                                         children: [
                                           TextSpan(
-                                            text: (requestEntity.status ??
-                                                    StatusType.open)
+                                            text: (requestEntity.status
+                                                    .toString())
                                                 .toString(),
                                             style: context.textFontWeight700
                                                 .onColor(
@@ -676,18 +684,21 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                               return const SizedBox();
                             }
                             if (currentStepDetails.status ==
-                                RequestStepStatus.closed) {
+                                RequestStepStatus.close) {
                               return const SizedBox();
                             }
                             final ticketActionButtons = currentStepDetails
-                                .assignees
-                                .firstWhere((element) =>
-                                    element.employeeId ==
-                                    UserCredentialsEntity.details().id)
-                                .actions
-                                .map((e) =>
-                                    e.actionId ?? RequestStepStatus.inProgress)
-                                .toList();
+                                    .assignees
+                                    .where((element) =>
+                                        element.employeeId ==
+                                        UserCredentialsEntity.details().id)
+                                    .firstOrNull
+                                    ?.actions
+                                    .map((e) =>
+                                        e.actionId ??
+                                        RequestStepStatus.inProgress)
+                                    .toList() ??
+                                [];
                             final actionButtonsLength =
                                 isDesktop(context, size: screenDimentions)
                                     ? 3
@@ -721,7 +732,8 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                                         _isoBloc
                                             .createISORequest(requestParams: {
                                           'requestID': requestEntity.requestId,
-                                          'requestStepStatus': actionButtons[r],
+                                          'requestStepStatus':
+                                              actionButtons[r].value,
                                           'comments': _commentsController.text
                                         }, apiUrl: updateCRRequestApiUrl);
                                       },
@@ -748,7 +760,23 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                                     items: popupActionButtons,
                                     titleText: resources.string.otherActions,
                                     onItemSelected: (p0) {
-                                      //_onActionClicked(context, p0);
+                                      final requestParams = {
+                                        'requestID': requestEntity.requestId,
+                                        'requestStepStatus': p0.value,
+                                        'comments': _commentsController.text,
+                                      };
+                                      if (fieldsData['files'] is List) {
+                                        requestParams['files'] =
+                                            (fieldsData['files'] as List)
+                                                .map((file) {
+                                          return MultipartFile.fromBytes(
+                                              file['fileBytes'],
+                                              filename: file['fileName']);
+                                        }).toList();
+                                      }
+                                      _isoBloc.createISORequest(
+                                          requestParams: requestParams,
+                                          apiUrl: updateCRRequestApiUrl);
                                     },
                                   )),
                               ],
