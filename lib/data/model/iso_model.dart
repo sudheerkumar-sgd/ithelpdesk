@@ -1,5 +1,7 @@
 // ignore_for_file: must_be_immutable
 
+import 'dart:convert';
+
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/data/model/base_model.dart';
 import 'package:ithelpdesk/domain/entities/iso_entity.dart';
@@ -9,12 +11,18 @@ class CRRequestModel extends BaseModel {
   String? requestType;
   int? workflowId;
   int? currentStep;
-  int? status;
+  int? requestStaus;
   String? createdAt;
   String? completedAt;
   String? attachmentUrlPrefix;
+  String? currentStepName;
+  String? assginedEmployee;
+  int? requestPriority;
+
   CRRequestDetailsEntity? details;
+  WorkflowFieldEntity? workflowFieldEntity;
   List<CRRequestStepEntity> steps = [];
+  List<CRRequestHistoryEntity> requestHistory = [];
 
   CRRequestModel();
 
@@ -24,17 +32,36 @@ class CRRequestModel extends BaseModel {
     requestType = json['requestType'];
     workflowId = json['workflowId'];
     currentStep = json['currentStep'];
-    status = json['status'];
+    requestStaus = json['requestStaus'];
     createdAt = json['createdAt'];
     completedAt = json['completedAt'];
     attachmentUrlPrefix = json['attachmentUrlPrefix'];
+    currentStepName = json['currentStepName'];
+    assginedEmployee = json['assginedEmploy'];
+    requestPriority = json['requestPriority'];
     if (json['details'] != null) {
       details = CRRequestDetailsModel.fromJson(json['details']).toEntity();
+    }
+    if (json['workflowField'] != null) {
+      workflowFieldEntity =
+          WorkflowFieldModel.fromJson(json['workflowField']).toEntity();
     }
     if (json['steps'] != null) {
       steps = <CRRequestStepEntity>[];
       json['steps'].forEach((v) {
         steps.add(CRRequestStepModel.fromJson(v).toEntity());
+      });
+    }
+    if (json['requestHistory'] != null) {
+      requestHistory = <CRRequestHistoryEntity>[];
+      json['requestHistory'].forEach((v) {
+        requestHistory.add(CRRequestHistoryModel.fromJson(v).toEntity());
+      });
+    }
+    if (json['requestHistory'] != null) {
+      requestHistory = <CRRequestHistoryEntity>[];
+      json['requestHistory'].forEach((v) {
+        requestHistory.add(CRRequestHistoryModel.fromJson(v).toEntity());
       });
     }
   }
@@ -46,12 +73,17 @@ class CRRequestModel extends BaseModel {
       ..requestType = requestType
       ..workflowId = workflowId
       ..currentStep = currentStep
-      ..status = RequestStatus.fromId(status ?? 1)
+      ..requestStaus = RequestStatus.fromId(requestStaus ?? 1)
       ..createdAt = createdAt
       ..completedAt = completedAt
       ..attachmentUrlPrefix = attachmentUrlPrefix
+      ..currentStepName = currentStepName
+      ..assginedEmployee = assginedEmployee
+      ..requestPriority = PriorityType.fromId(requestPriority ?? 1)
       ..details = details
-      ..steps = steps;
+      ..workflowFieldEntity = workflowFieldEntity
+      ..steps = steps
+      ..requestHistory = requestHistory;
   }
 }
 
@@ -68,6 +100,7 @@ class CRRequestDetailsModel extends BaseModel {
   String? loginID;
   String? accessTypeID;
   int? reportingManagerID;
+  String? reportingManager;
   String? dateOfJoining;
   String? requestPriority;
   String? reasonOfAccess;
@@ -89,6 +122,7 @@ class CRRequestDetailsModel extends BaseModel {
     loginID = json['loginID'];
     accessTypeID = json['accessTypeID'];
     reportingManagerID = json['reportingManagerID'];
+    reportingManager = json['reportingManager'];
     dateOfJoining = json['dateOfJoining'];
     requestPriority = json['requestPriority'];
     reasonOfAccess = json['reasonOfAccess'];
@@ -116,6 +150,7 @@ class CRRequestDetailsModel extends BaseModel {
       ..loginID = loginID
       ..accessTypeID = accessTypeID
       ..reportingManagerID = reportingManagerID
+      ..reportingManager = reportingManager
       ..dateOfJoining = dateOfJoining
       ..requestPriority = requestPriority
       ..reasonOfAccess = reasonOfAccess
@@ -235,5 +270,108 @@ class CRAttachmentModel extends BaseModel {
       ..requestID = requestID
       ..workflowID = workflowID
       ..commentID = commentID;
+  }
+}
+
+class CRRequestHistoryModel extends BaseModel {
+  int? id;
+  String? name;
+  String? createdOn;
+  String? requestID;
+  int? employeeID;
+  int? stepID;
+  RequestStepStatus? status;
+  List<CRCommentEntity> comments = [];
+  List<CRAttachmentEntity> attachments = [];
+
+  CRRequestHistoryModel();
+  CRRequestHistoryModel.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    createdOn = json['createdOn'];
+    requestID = json['requestID'];
+    employeeID = json['employeeID'];
+    stepID = json['stepID'];
+    status = RequestStepStatus.fromId(json['status'] ?? 1);
+    if (json['comments'] != null) {
+      comments = <CRCommentEntity>[];
+      json['comments'].forEach((v) {
+        comments.add(CRCommentModel.fromJson(v).toEntity());
+      });
+    }
+    if (json['attachments'] != null) {
+      attachments = <CRAttachmentEntity>[];
+      json['attachments'].forEach((v) {
+        attachments.add(CRAttachmentModel.fromJson(v).toEntity());
+      });
+    }
+  }
+  @override
+  CRRequestHistoryEntity toEntity() {
+    return CRRequestHistoryEntity()
+      ..id = id
+      ..name = name
+      ..createdOn = createdOn
+      ..requestID = requestID
+      ..employeeID = employeeID
+      ..stepID = stepID
+      ..status = status
+      ..comments = comments
+      ..attachments = attachments;
+  }
+}
+
+class CRCommentModel extends BaseModel {
+  int? id;
+  String? comment;
+  String? createdOn;
+  String? requestID;
+  int? employeeID;
+
+  CRCommentModel();
+  CRCommentModel.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    comment = json['comment'];
+    createdOn = json['createdOn'];
+    requestID = json['requestID'];
+    employeeID = json['employeeID'];
+  }
+  @override
+  CRCommentEntity toEntity() {
+    return CRCommentEntity()
+      ..id = id
+      ..comment = comment
+      ..createdOn = createdOn
+      ..requestID = requestID
+      ..employeeID = employeeID;
+  }
+}
+
+class WorkflowFieldModel extends BaseModel {
+  int? id;
+  List<Map<String, dynamic>> formFields = [];
+  List<Map<String, dynamic>> reportFields = [];
+  List<Map<String, dynamic>> detailsFields = [];
+  WorkflowFieldModel();
+
+  WorkflowFieldModel.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    formFields = List<Map<String, dynamic>>.from(
+      jsonDecode(json['formFields'] ?? '[]'),
+    );
+    reportFields = List<Map<String, dynamic>>.from(
+      jsonDecode(json['reportFields'] ?? '[]'),
+    );
+    detailsFields = List<Map<String, dynamic>>.from(
+      jsonDecode(json['detailsFields'] ?? '[]'),
+    );
+  }
+  @override
+  WorkflowFieldEntity toEntity() {
+    return WorkflowFieldEntity()
+      ..id = id
+      ..formFields = formFields
+      ..reportFields = reportFields
+      ..detailsFields = detailsFields;
   }
 }

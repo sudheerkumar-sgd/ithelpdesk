@@ -245,3 +245,55 @@ final List<NameIDEntity> designations = [
   NameIDEntity(223, "Urban Planning Consultant"),
   NameIDEntity(224, "Vice President of the General Department of Health"),
 ];
+
+final crRequestReport = [
+  {"key": "requestId", "Name": "Request Id"},
+  {"key": "requestType", "Name": "Request Type"},
+  {"key": "requestPriority", "Name": "Priority"},
+  {"key": "comments", "Name": "Comments"},
+  {"key": "currentStep", "Name": "Current Step"},
+  {"key": "assginedEmployee", "Name": "Assgined Employee"},
+  {"key": "requestStaus", "Name": "Request Status"},
+  {"key": "createdAt", "Name": "Created On"},
+  {"key": "updatedAt", "Name": "Updated On"},
+];
+
+final crRequestWorkflow1 = [
+  {"key": "firstName", "Name": "First Name"},
+  {"key": "lastName", "Name": "Last Name"},
+  {"key": "fullName", "Name": "Full Name"},
+  {"key": "Designation", "Name": "Designation"},
+  {"key": "departmentName", "Name": "Department"},
+  {"key": "reportingManager", "Name": "ReportingManager"},
+  {"key": "employeeID", "Name": "EmployeeID"},
+  {"key": "emailID", "Name": "Suggestive Email"},
+  {"key": "dateOfJoining", "Name": "Date Of Joining"},
+  {"key": "comments", "Name": "Comments"},
+  {"key": "createdAt", "Name": "Created On"},
+  {"key": "updatedAt", "Name": "Updated On"},
+];
+
+final crRequestWorkflow2 = [
+  {"key": "firstName", "Name": "First Name"},
+  {"key": "lastName", "Name": "Last Name"},
+  {"key": "fullName", "Name": "Full Name"},
+  {"key": "Designation", "Name": "Designation"},
+  {"key": "exstingDepartmentName", "Name": "Existing Department"},
+  {"key": "departmentName", "Name": "New Department"},
+  {"key": "employeeID", "Name": "Employee ID"},
+  {"key": "comments", "Name": "Comments"},
+  {"key": "createdAt", "Name": "Created On"},
+  {"key": "updatedAt", "Name": "Updated On"},
+];
+
+final crRequestWorkflow3 = [
+  {"key": "firstName", "Name": "First Name"},
+  {"key": "lastName", "Name": "Last Name"},
+  {"key": "fullName", "Name": "Full Name"},
+  {"key": "departmentName", "Name": "Department"},
+  {"key": "accessType", "Name": "Access Details"},
+  {"key": "reasonOfAccess", "Name": "Reason Of Access"},
+  {"key": "comments", "Name": "Comments"},
+  {"key": "createdAt", "Name": "Created On"},
+  {"key": "updatedAt", "Name": "Updated On"},
+];

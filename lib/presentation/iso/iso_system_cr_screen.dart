@@ -712,10 +712,10 @@ class IsoSystemCrScreen extends BaseScreenWidget {
                             (fieldsData['reportingManager'] as UserEntity?)?.id;
                         request.employeeID = fieldsData['employeeID'] ?? '';
                         request.emailID = fieldsData['emailID'] ?? '';
-                        request.dateOfJoining = DateTime.tryParse(
-                            fieldsData['dateofJoining'] ?? '');
+                        // request.dateOfJoining = DateTime.tryParse(
+                        //     fieldsData['dateofJoining'] ?? '');
                         request.requestPriority =
-                            (fieldsData['priority'] as NameIDEntity?)?.name;
+                            (fieldsData['priority'] as NameIDEntity?)?.id ?? 1;
                         request.comments = fieldsData['comments'] ?? '';
                         final data = request.toJson();
                         if (fieldsData['files'] is List) {

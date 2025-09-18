@@ -69,116 +69,88 @@ class ISOViewRequestScreen extends BaseScreenWidget {
   Widget _getComments(BuildContext context,
       {EdgeInsets? padding, bool? isExpand}) {
     _isExanded.value = isExpand ?? false;
-    return const SizedBox();
-    // return FutureBuilder(
-    //     future: _servicesBloc
-    //         .getTicketComments(requestParams: {'ticketID': ticket.id}),
-    //     builder: (context, snapShot) {
-    //       final items = snapShot.data?.items ?? [];
-    //       return items.isEmpty
-    //           ? const SizedBox()
-    //           : Container(
-    //               padding: padding ??
-    //                   EdgeInsets.symmetric(
-    //                       vertical: context.resources.dimen.dp15,
-    //                       horizontal: context.resources.dimen.dp20),
-    //               color: context.resources.color.colorWhite,
-    //               child: Column(
-    //                   crossAxisAlignment: CrossAxisAlignment.start,
-    //                   children: [
-    //                     InkWell(
-    //                       onTap: () {
-    //                         _isExanded.value = !_isExanded.value;
-    //                       },
-    //                       child: Row(
-    //                         children: [
-    //                           Text(
-    //                             context.resources.string.teamComments,
-    //                             style: context.textFontWeight600,
-    //                           ),
-    //                           const Spacer(),
-    //                           ImageWidget(path: DrawableAssets.icChevronDown)
-    //                               .loadImage,
-    //                         ],
-    //                       ),
-    //                     ),
-    //                     ValueListenableBuilder(
-    //                         valueListenable: _isExanded,
-    //                         builder: (context, value, child) {
-    //                           return Visibility(
-    //                             visible: value,
-    //                             child: Padding(
-    //                               padding: EdgeInsets.symmetric(
-    //                                   vertical: context.resources.dimen.dp10),
-    //                               child: Column(
-    //                                 crossAxisAlignment:
-    //                                     CrossAxisAlignment.start,
-    //                                 children:
-    //                                     List.generate(items.length, (index) {
-    //                                   final item =
-    //                                       items[index] as TicketHistoryEntity;
-    //                                   return Text.rich(
-    //                                     TextSpan(
-    //                                         text: item.comment ?? "",
-    //                                         style: context.textFontWeight500,
-    //                                         children: [
-    //                                           if (item.attachments
-    //                                                   ?.isNotEmpty ==
-    //                                               true) ...[
-    //                                             WidgetSpan(
-    //                                               child: PopupMenuButton(
-    //                                                 child: ImageWidget(
-    //                                                         path: DrawableAssets
-    //                                                             .icAttachment,
-    //                                                         padding: EdgeInsets
-    //                                                             .all(context
-    //                                                                 .resources
-    //                                                                 .dimen
-    //                                                                 .dp5))
-    //                                                     .loadImageWithMoreTapArea,
-    //                                                 onSelected: (value) {
-    //                                                   Dialogs.showDialogWithClose(
-    //                                                       context,
-    //                                                       maxWidth: 400,
-    //                                                       AttachmentPreviewWidget(
-    //                                                         fileName: value,
-    //                                                       ));
-    //                                                 },
-    //                                                 itemBuilder: (BuildContext
-    //                                                         context) =>
-    //                                                     (item.attachments ?? [])
-    //                                                         .map((item) =>
-    //                                                             PopupMenuItem(
-    //                                                               value: item,
-    //                                                               child: Text(
-    //                                                                 item.toString(),
-    //                                                                 style: context
-    //                                                                     .textFontWeight500,
-    //                                                               ),
-    //                                                             ))
-    //                                                         .toList(),
-    //                                               ),
-    //                                             )
-    //                                           ],
-    //                                           TextSpan(
-    //                                               text:
-    //                                                   '- ${item.userName ?? ""}',
-    //                                               style: context
-    //                                                   .textFontWeight400
-    //                                                   .onFontSize(context
-    //                                                       .resources
-    //                                                       .fontSize
-    //                                                       .dp12))
-    //                                         ]),
-    //                                   );
-    //                                 }),
-    //                               ),
-    //                             ),
-    //                           );
-    //                         }),
-    //                   ]),
-    //             );
-    //     });
+    return Container(
+      padding: padding ??
+          EdgeInsets.symmetric(
+              vertical: context.resources.dimen.dp15,
+              horizontal: context.resources.dimen.dp20),
+      color: context.resources.color.colorWhite,
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        InkWell(
+          onTap: () {
+            _isExanded.value = !_isExanded.value;
+          },
+          child: Row(
+            children: [
+              Text(
+                isSelectedLocalEn ? 'Request History' : 'تاریخچه درخواست ',
+                style: context.textFontWeight600,
+              ),
+              const Spacer(),
+              ImageWidget(path: DrawableAssets.icChevronDown).loadImage,
+            ],
+          ),
+        ),
+        ValueListenableBuilder(
+            valueListenable: _isExanded,
+            builder: (context, value, child) {
+              return Visibility(
+                visible: value,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                      vertical: context.resources.dimen.dp10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: List.generate(requestEntity.requestHistory.length,
+                        (index) {
+                      final item = requestEntity.requestHistory[index];
+                      return Text.rich(
+                        TextSpan(
+                            text: '${index + 1}. ${item.name ?? ""}\n',
+                            style: context.textFontWeight500,
+                            children: [
+                              if (item.comments.firstOrNull != null)
+                                TextSpan(
+                                  text:
+                                      '   Comment: ${item.comments.firstOrNull?.comment ?? ""}',
+                                  style: context.textFontWeight500,
+                                ),
+                              if (item.attachments.isNotEmpty == true) ...[
+                                WidgetSpan(
+                                  child: PopupMenuButton(
+                                    child: ImageWidget(
+                                            path: DrawableAssets.icAttachment,
+                                            padding: EdgeInsets.all(
+                                                context.resources.dimen.dp5))
+                                        .loadImageWithMoreTapArea,
+                                    onSelected: (value) {
+                                      openNewTab(
+                                        '${requestEntity.attachmentUrlPrefix}${item.attachments[index].name ?? ""}',
+                                      );
+                                    },
+                                    itemBuilder: (BuildContext context) =>
+                                        (item.attachments ?? [])
+                                            .map((item) => PopupMenuItem(
+                                                  value: item,
+                                                  child: Text(
+                                                    item.toString(),
+                                                    style: context
+                                                        .textFontWeight500,
+                                                  ),
+                                                ))
+                                            .toList(),
+                                  ),
+                                )
+                              ],
+                            ]),
+                      );
+                    }),
+                  ),
+                ),
+              );
+            }),
+      ]),
+    );
   }
 
   _updateTicket(BuildContext context, TicketEntity updateTicket, String message,
@@ -348,10 +320,11 @@ class ISOViewRequestScreen extends BaseScreenWidget {
               color: resources.color.colorWhite,
               child: Table(
                 children: [
-                  for (var item in requestEntity.toJson().entries) ...[
+                  for (var item in requestEntity.toDetailsJson().entries) ...[
                     TableRow(children: [
                       Text(item.key, style: context.textFontWeight400),
-                      Text(': ${item.value}', style: context.textFontWeight600),
+                      Text(': ${item.value ?? ''}',
+                          style: context.textFontWeight600),
                     ])
                   ]
                 ],
@@ -463,9 +436,9 @@ class ISOViewRequestScreen extends BaseScreenWidget {
           for (int i = 0; i < steps.length; i++) ...[
             ItemServiceSteps(
               stepColor: (i < (requestEntity.currentStep ?? 1) - 1 ||
-                      requestEntity.status == RequestStatus.completed)
+                      requestEntity.requestStaus == RequestStatus.completed)
                   ? resources.color.colorGreen26B757
-                  : requestEntity.status == RequestStatus.rejected
+                  : requestEntity.requestStaus == RequestStatus.rejected
                       ? resources.color.rejected
                       : resources.color.pending,
               stepText: steps[i].assigneDisplayName ?? "",
@@ -549,20 +522,13 @@ class ISOViewRequestScreen extends BaseScreenWidget {
         listener: (context, state) {
           if (state is OnISOApiLoading) {
             Dialogs.showInfoLoader(context, resources.string.updatingTicket);
-          } else if (state is OnUpdateTicket) {
-            // final updatedTicket = state.onUpdateTicketResult.entity;
-            // ticket.assignedUserID = updatedTicket?.assignedUserID;
-            // ticket.status = updatedTicket?.status;
-            // Dialogs.dismiss(context);
-            // Dialogs.showInfoDialog(context, PopupType.success,
-            //         '${resources.string.updatingTicket} UAQGOV-ITHD-${ticket.id}')
-            //     .then((value) {
-            //   if (ticket.status != StatusType.acquired) {
-            //     reloadPage();
-            //   } else {
-            //     _onDataChanged.value = !(_onDataChanged.value);
-            //   }
-            // });
+          } else if (state is OnISOApiResponse) {
+            Dialogs.dismiss(context);
+            Dialogs.showInfoDialog(context, PopupType.success,
+                    '${resources.string.updatingTicket} UAQGOV-CR-${requestEntity.requestId}')
+                .then((value) {
+              reloadPage();
+            });
           } else if (state is OnISOApiError) {
             Dialogs.dismiss(context);
             Dialogs.showInfoDialog(context, PopupType.fail, state.message);
@@ -636,15 +602,15 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                                         style: context.textFontWeight600,
                                         children: [
                                           TextSpan(
-                                            text: (requestEntity.status
+                                            text: (requestEntity.requestStaus
                                                     .toString())
                                                 .toString(),
                                             style: context.textFontWeight700
-                                                .onColor(
-                                                    (requestEntity.status ??
-                                                            RequestStatus
-                                                                .inprogress)
-                                                        .getColor()),
+                                                .onColor((requestEntity
+                                                            .requestStaus ??
+                                                        RequestStatus
+                                                            .inprogress)
+                                                    .getColor()),
                                           ),
                                         ]),
                                   ),
@@ -665,13 +631,13 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                       SizedBox(
                         height: resources.dimen.dp20,
                       ),
-                      if (requestEntity.status != RequestStatus.rejected &&
-                          requestEntity.status != RequestStatus.completed) ...[
-                        _getComments(context),
-                        SizedBox(
-                          height: resources.dimen.dp20,
-                        ),
-                      ],
+                      // if (requestEntity.status != RequestStatus.rejected &&
+                      //     requestEntity.status != RequestStatus.completed) ...[
+                      _getComments(context),
+                      SizedBox(
+                        height: resources.dimen.dp20,
+                      ),
+                      // ],
                       ValueListenableBuilder(
                           valueListenable: _onDataChanged,
                           builder: (context, onDataChange, child) {
@@ -729,13 +695,25 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                                   Expanded(
                                     child: InkWell(
                                       onTap: () async {
-                                        _isoBloc
-                                            .createISORequest(requestParams: {
+                                        final requestParams = {
                                           'requestID': requestEntity.requestId,
                                           'requestStepStatus':
                                               actionButtons[r].value,
-                                          'comments': _commentsController.text
-                                        }, apiUrl: updateCRRequestApiUrl);
+                                          'comments': _commentsController.text,
+                                        };
+                                        if (fieldsData['files'] is List) {
+                                          requestParams['files'] =
+                                              (fieldsData['files'] as List)
+                                                  .map((file) {
+                                            return MultipartFile.fromBytes(
+                                                file['fileBytes'],
+                                                filename: file['fileName']);
+                                          }).toList();
+                                        }
+                                        _isoBloc.createISORequest(
+                                            requestParams: requestParams,
+                                            apiUrl: updateCRRequestApiUrl,
+                                            emitResponse: true);
                                       },
                                       child: ActionButtonWidget(
                                         text: (actionButtons[r]).toString(),
@@ -776,7 +754,8 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                                       }
                                       _isoBloc.createISORequest(
                                           requestParams: requestParams,
-                                          apiUrl: updateCRRequestApiUrl);
+                                          apiUrl: updateCRRequestApiUrl,
+                                          emitResponse: true);
                                     },
                                   )),
                               ],

@@ -461,8 +461,17 @@ class IsoCrHomeScreen extends BaseScreenWidget {
                             builder: (context, snapShot) {
                               final filterTickets =
                                   List.from(snapShot.data?.entity?.items ?? []);
+                              if (filterTickets.isEmpty) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(top: 20.0),
+                                  child: Text(
+                                    resources.string.noTickets,
+                                    style: context.textFontWeight600,
+                                  ),
+                                );
+                              }
                               final reportHeaderData =
-                                  CRRequestEntity().toJson().keys.toList();
+                                  filterTickets.first.toJson().keys.toList();
                               final reportTableColunwidths =
                                   <int, FlexColumnWidth>{};
                               reportHeaderData.asMap().forEach((index, value) {

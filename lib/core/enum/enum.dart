@@ -279,7 +279,8 @@ enum RequestStatus {
   pending(1),
   completed(2),
   inprogress(3),
-  rejected(4);
+  rejected(4),
+  hold(5);
 
   final int value;
   const RequestStatus(this.value);
@@ -302,6 +303,8 @@ enum RequestStatus {
         return const Color.fromARGB(255, 237, 105, 11);
       case pending:
         return const Color.fromARGB(255, 237, 105, 11);
+      case hold:
+        return const Color.fromARGB(255, 237, 105, 11);
     }
   }
 
@@ -316,6 +319,8 @@ enum RequestStatus {
         return isSelectedLocalEn ? 'In Progress' : 'قيد التنفيذ';
       case pending:
         return isSelectedLocalEn ? 'Pending' : 'قيد الانتظار';
+      case hold:
+        return isSelectedLocalEn ? 'On Hold' : 'معلق';
     }
   }
 }

@@ -41,7 +41,7 @@ class DynamicReportListWidget extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 10),
             child: Text(
-              '$value',
+              '${value ?? ''}',
               maxLines: 2,
               textAlign: list.isEmpty ? TextAlign.left : TextAlign.center,
               style: key == 'action'

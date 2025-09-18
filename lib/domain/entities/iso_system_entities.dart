@@ -13,7 +13,7 @@ class RequestDetail {
   int? reportingManagerID; // long in C# -> int in Dart
   String? emailID;
   DateTime? dateOfJoining;
-  String? requestPriority;
+  int? requestPriority;
   String? reasonOfAccess;
   String? comments;
   String? attachments;

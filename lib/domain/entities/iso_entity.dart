@@ -7,35 +7,64 @@ class CRRequestEntity extends BaseEntity {
   String? requestType;
   int? workflowId;
   int? currentStep;
-  RequestStatus? status;
+  RequestStatus? requestStaus;
   String? createdAt;
   String? completedAt;
   String? attachmentUrlPrefix;
+  String? currentStepName;
+  String? assginedEmployee;
+  PriorityType? requestPriority;
+
   CRRequestDetailsEntity? details;
+  WorkflowFieldEntity? workflowFieldEntity;
   List<CRRequestStepEntity> steps = [];
+  List<CRRequestHistoryEntity> requestHistory = [];
 
   CRRequestEntity();
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toFullJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['requestId'] = requestId;
     data['requestType'] = requestType;
+    data['currentStepName'] = currentStepName;
+    data['requestStaus'] = requestStaus;
+    data['assginedEmployee'] = assginedEmployee;
+    data['requestPriority'] = requestPriority?.toString();
     data['firstName'] = details?.firstName;
     data['lastName'] = details?.lastName;
     data['fullName'] = details?.fullName;
     data['designation'] = details?.designation;
-    data['department'] = details?.departmentName;
+    data['departmentName'] = details?.departmentName;
     data['emailID'] = details?.emailID;
     data['employeeID'] = details?.employeeID;
     data['loginID'] = details?.loginID;
     data['accessTypeID'] = details?.accessTypeID;
     data['reportingManagerID'] = details?.reportingManagerID;
+    data['reportingManager'] = details?.reportingManager;
     data['dateOfJoining'] = details?.dateOfJoining;
-    data['requestPriority'] = details?.requestPriority;
+    data['requestPriority'] = requestPriority.toString();
     data['reasonOfAccess'] = details?.reasonOfAccess;
     data['comments'] = details?.comments;
     data['createdAt'] = createdAt;
     return data;
+  }
+
+  Map<String, dynamic> toJson() {
+    final data = toFullJson();
+    final Map<String, dynamic> reportData = <String, dynamic>{};
+    for (var field in workflowFieldEntity?.reportFields ?? []) {
+      reportData[field['Name']] = data[field['key']];
+    }
+    return reportData;
+  }
+
+  Map<String, dynamic> toDetailsJson() {
+    final data = toFullJson();
+    final Map<String, dynamic> reportData = <String, dynamic>{};
+    for (var field in workflowFieldEntity?.detailsFields ?? []) {
+      reportData[field['Name']] = data[field['key']];
+    }
+    return reportData;
   }
 }
 
@@ -52,6 +81,7 @@ class CRRequestDetailsEntity extends BaseEntity {
   String? loginID;
   String? accessTypeID;
   int? reportingManagerID;
+  String? reportingManager;
   String? dateOfJoining;
   String? requestPriority;
   String? reasonOfAccess;
@@ -95,4 +125,31 @@ class CRAttachmentEntity extends BaseEntity {
   String? requestID;
   int? workflowID;
   int? commentID;
+}
+
+class CRRequestHistoryEntity extends BaseEntity {
+  int? id;
+  String? name;
+  String? createdOn;
+  String? requestID;
+  int? employeeID;
+  int? stepID;
+  RequestStepStatus? status;
+  List<CRCommentEntity> comments = [];
+  List<CRAttachmentEntity> attachments = [];
+}
+
+class CRCommentEntity extends BaseEntity {
+  int? id;
+  String? comment;
+  String? createdOn;
+  String? requestID;
+  int? employeeID;
+}
+
+class WorkflowFieldEntity extends BaseEntity {
+  int? id;
+  List<Map<String, dynamic>> formFields = [];
+  List<Map<String, dynamic>> reportFields = [];
+  List<Map<String, dynamic>> detailsFields = [];
 }
