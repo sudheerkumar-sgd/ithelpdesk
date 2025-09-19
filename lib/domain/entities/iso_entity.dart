@@ -35,10 +35,11 @@ class CRRequestEntity extends BaseEntity {
     data['fullName'] = details?.fullName;
     data['designation'] = details?.designation;
     data['departmentName'] = details?.departmentName;
+    data['exstingDepartmentName'] = details?.exstingDepartment;
     data['emailID'] = details?.emailID;
     data['employeeID'] = details?.employeeID;
     data['loginID'] = details?.loginID;
-    data['accessTypeID'] = details?.accessTypeID;
+    data['accessDetails'] = details?.accessDetails;
     data['reportingManagerID'] = details?.reportingManagerID;
     data['reportingManager'] = details?.reportingManager;
     data['dateOfJoining'] = details?.dateOfJoining;
@@ -76,10 +77,11 @@ class CRRequestDetailsEntity extends BaseEntity {
   String? designation;
   int? departmentID;
   String? departmentName;
+  String? exstingDepartment;
   String? emailID;
   String? employeeID;
   String? loginID;
-  String? accessTypeID;
+  String? accessDetails;
   int? reportingManagerID;
   String? reportingManager;
   String? dateOfJoining;

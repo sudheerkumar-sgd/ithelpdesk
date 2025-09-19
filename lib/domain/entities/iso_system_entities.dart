@@ -1,4 +1,5 @@
 class RequestDetail {
+  int? workflowId;
   int? detailId;
   int? requestId;
   String? firstName;
@@ -6,7 +7,7 @@ class RequestDetail {
   String? fullName;
   String? designation;
   int? departmentID;
-  String? existingDepartmentID;
+  int? existingDepartmentID;
   String? employeeID;
   String? loginID;
   String? accessTypeID;
@@ -70,6 +71,7 @@ class RequestDetail {
   // Convert to JSON (for sending data)
   Map<String, dynamic> toJson() {
     return {
+      'workflowId': workflowId,
       'detailId': detailId,
       'requestId': requestId,
       'firstName': firstName,

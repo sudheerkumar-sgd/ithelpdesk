@@ -95,10 +95,11 @@ class CRRequestDetailsModel extends BaseModel {
   String? designation;
   int? departmentID;
   String? departmentName;
+  String? exstingDepartment;
   String? emailID;
   String? employeeID;
   String? loginID;
-  String? accessTypeID;
+  String? accessDetails;
   int? reportingManagerID;
   String? reportingManager;
   String? dateOfJoining;
@@ -117,10 +118,11 @@ class CRRequestDetailsModel extends BaseModel {
     designation = json['designation'];
     departmentID = json['departmentID'];
     departmentName = json['departmentName'];
+    exstingDepartment = json['exstingDepartment'];
     emailID = json['emailID'];
     employeeID = json['employeeID'];
     loginID = json['loginID'];
-    accessTypeID = json['accessTypeID'];
+    accessDetails = json['accessDetails'];
     reportingManagerID = json['reportingManagerID'];
     reportingManager = json['reportingManager'];
     dateOfJoining = json['dateOfJoining'];
@@ -145,10 +147,11 @@ class CRRequestDetailsModel extends BaseModel {
       ..designation = designation
       ..departmentID = departmentID
       ..departmentName = departmentName
+      ..exstingDepartment = exstingDepartment
       ..emailID = emailID
       ..employeeID = employeeID
       ..loginID = loginID
-      ..accessTypeID = accessTypeID
+      ..accessDetails = accessDetails
       ..reportingManagerID = reportingManagerID
       ..reportingManager = reportingManager
       ..dateOfJoining = dateOfJoining

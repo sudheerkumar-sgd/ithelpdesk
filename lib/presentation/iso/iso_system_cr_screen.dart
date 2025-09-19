@@ -83,7 +83,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'fullName'
           ..validation = (FormValidationEntity()
             ..required = true
-            ..regex = nameNumberRegex)
+            ..regex = nameRegExp)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Employee Full Name'
             ..requiredAr = 'Please Enter Employee Full Name'
@@ -250,7 +250,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'fullName'
           ..validation = (FormValidationEntity()
             ..required = true
-            ..regex = nameNumberRegex)
+            ..regex = nameRegExp)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Employee Full Name'
             ..requiredAr = 'Please Enter Employee Full Name'
@@ -265,18 +265,11 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..label = resources.string.designation
           ..validation = (FormValidationEntity()..required = true)
           ..messages = (FormMessageEntity()
-            ..requiredEn = 'Please Select designation'
-            ..requiredAr = 'Please Select designation')
-          ..inputFieldData = {
-            'items': [
-              NameIDEntity(1, resources.string.low),
-              NameIDEntity(2, resources.string.medium),
-              NameIDEntity(3, resources.string.high),
-              NameIDEntity(4, resources.string.critical)
-            ]
-          }
+            ..requiredEn = 'Please Enter designation'
+            ..requiredAr = 'Please Enter designation')
+          ..inputFieldData = {'items': designations}
           ..onDatachnage = (value) {
-            fieldsData['designation'] = value;
+            fieldsData['designation'] = value.name;
           },
         FormEntity()
           ..type = FormFieldType.collection
@@ -359,7 +352,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'fullName'
           ..validation = (FormValidationEntity()
             ..required = true
-            ..regex = nameNumberRegex)
+            ..regex = nameRegExp)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Employee Full Name'
             ..requiredAr = 'Please Enter Employee Full Name'
@@ -400,12 +393,19 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..type = FormFieldType.collection
           ..name = 'accessDetails'
           ..label = 'Access Details'
-          ..url = departmentsApiUrl
-          ..requestModel = ListModel.fromDepartmentsJson
           ..validation = (FormValidationEntity()..required = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Select Access Details'
             ..requiredAr = 'Please Select Access Details')
+          ..inputFieldData = {
+            'items': [
+              NameIDEntity(1, 'Email Access'),
+              NameIDEntity(2, 'Internet Access'),
+              NameIDEntity(3, 'Software Access'),
+              NameIDEntity(4, 'Database Access'),
+              NameIDEntity(5, 'Shared Folder Access'),
+            ]
+          }
           ..onDatachnage = (value) {
             fieldsData['accessDetails'] = value;
           },
@@ -455,9 +455,9 @@ class IsoSystemCrScreen extends BaseScreenWidget {
     final resources = context.resources;
     int employeeCategory = 0;
     final categories = [
-      'New Employee',
-      'Migration Employee',
-      'Existing Employee',
+      NameIDEntity(1, 'New Employee', nameAr: 'موظف جديد'),
+      NameIDEntity(2, 'Migration Employee', nameAr: 'موظف الهجرة'),
+      NameIDEntity(3, 'Existing Employee', nameAr: 'الموظف الحالي'),
     ];
     var noOfCategoryRows = 1;
     var noOfCategoryRowItems = categories.length;
@@ -533,7 +533,8 @@ class IsoSystemCrScreen extends BaseScreenWidget {
                                       },
                                       child: ActionButtonWidget(
                                         text: categories[
-                                            r + (c * noOfCategoryRowItems)],
+                                                r + (c * noOfCategoryRowItems)]
+                                            .toString(),
                                         decoration: employeeCategory !=
                                                 r + (c * noOfCategoryRowItems)
                                             ? BackgroundBoxDecoration(
@@ -702,6 +703,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
                     onTap: () async {
                       if (_formKey.currentState?.validate() == true) {
                         final request = RequestDetail();
+                        request.workflowId = categories[employeeCategory].id;
                         request.firstName = fieldsData['firstName'] ?? '';
                         request.lastName = fieldsData['lastName'] ?? '';
                         request.fullName = fieldsData['fullName'] ?? '';
@@ -717,6 +719,17 @@ class IsoSystemCrScreen extends BaseScreenWidget {
                         request.requestPriority =
                             (fieldsData['priority'] as NameIDEntity?)?.id ?? 1;
                         request.comments = fieldsData['comments'] ?? '';
+
+                        request.loginID = fieldsData['systemLoginID'] ?? '';
+                        request.reasonOfAccess =
+                            fieldsData['reasonofAccess'] ?? '';
+                        request.existingDepartmentID =
+                            (fieldsData['existingdepartment']
+                                    as DepartmentEntity?)
+                                ?.id;
+                        request.accessTypeID =
+                            (fieldsData['accessDetails'] as NameIDEntity?)
+                                ?.name;
                         final data = request.toJson();
                         if (fieldsData['files'] is List) {
                           data['files'] =
@@ -734,10 +747,13 @@ class IsoSystemCrScreen extends BaseScreenWidget {
 
                         Dialogs.dismiss(context);
                         if (response is OnISOApiResponse) {
-                          final success =
-                              cast<SingleDataEntity>(response.response.entity);
                           Dialogs.showInfoDialog(context, PopupType.success,
-                              resources.string.successfullySubmitted);
+                                  resources.string.successfullySubmitted)
+                              .then((value) {
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                            }
+                          });
                         } else if (response is OnISOApiError) {
                           Dialogs.showInfoDialog(
                               context, PopupType.fail, response.message);
