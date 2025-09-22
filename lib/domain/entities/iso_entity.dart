@@ -127,6 +127,11 @@ class CRAttachmentEntity extends BaseEntity {
   String? requestID;
   int? workflowID;
   int? commentID;
+
+  @override
+  String toString() {
+    return name ?? '';
+  }
 }
 
 class CRRequestHistoryEntity extends BaseEntity {

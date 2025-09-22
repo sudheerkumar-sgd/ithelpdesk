@@ -3,6 +3,7 @@
 import 'dart:math';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
@@ -26,6 +27,7 @@ import 'package:ithelpdesk/presentation/common_widgets/dropdown_menu_widget.dart
 import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/item_service_steps.dart';
 import 'package:ithelpdesk/presentation/common_widgets/ticket_action_widget.dart';
+import 'package:ithelpdesk/presentation/profile/profile_screen_widget.dart';
 import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
 import 'package:page_transition/page_transition.dart';
@@ -63,32 +65,43 @@ class ISOViewRequestScreen extends BaseScreenWidget {
   final TextEditingController _commentsController = TextEditingController();
   final Map<String, dynamic> fieldsData = {};
 
-  final ValueNotifier<bool> _isExanded = ValueNotifier(false);
+  final ValueNotifier<bool> _isExanded = ValueNotifier(true);
   final ValueNotifier<bool> _onDataChanged = ValueNotifier(false);
 
   Widget _getComments(BuildContext context,
       {EdgeInsets? padding, bool? isExpand}) {
-    _isExanded.value = isExpand ?? false;
+    _isExanded.value = isExpand ?? true;
     return Container(
       padding: padding ??
           EdgeInsets.symmetric(
-              vertical: context.resources.dimen.dp15,
-              horizontal: context.resources.dimen.dp20),
-      color: context.resources.color.colorWhite,
+            vertical: context.resources.dimen.dp10,
+          ),
+      // color: context.resources.color.viewBgColor,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         InkWell(
           onTap: () {
             _isExanded.value = !_isExanded.value;
           },
-          child: Row(
-            children: [
-              Text(
-                isSelectedLocalEn ? 'Request History' : 'تاریخچه درخواست ',
-                style: context.textFontWeight600,
-              ),
-              const Spacer(),
-              ImageWidget(path: DrawableAssets.icChevronDown).loadImage,
-            ],
+          child: Container(
+            padding: padding ??
+                EdgeInsets.symmetric(
+                    vertical: context.resources.dimen.dp10,
+                    horizontal: context.resources.dimen.dp10),
+            color: context.resources.color.viewBgColor,
+            child: Row(
+              children: [
+                Text(
+                  isSelectedLocalEn ? 'Request History' : 'تاریخچه درخواست ',
+                  style: context.textFontWeight600
+                      .onColor(context.resources.color.colorWhite),
+                ),
+                const Spacer(),
+                ImageWidget(
+                        path: DrawableAssets.icChevronDown,
+                        backgroundTint: context.resources.color.colorWhite)
+                    .loadImage,
+              ],
+            ),
           ),
         ),
         ValueListenableBuilder(
@@ -104,45 +117,96 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                     children: List.generate(requestEntity.requestHistory.length,
                         (index) {
                       final item = requestEntity.requestHistory[index];
-                      return Text.rich(
-                        TextSpan(
-                            text: '${index + 1}. ${item.name ?? ""}\n',
-                            style: context.textFontWeight500,
-                            children: [
-                              if (item.comments.firstOrNull != null)
+                      return Container(
+                        padding: EdgeInsets.symmetric(
+                            vertical: context.resources.dimen.dp5),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${index + 1}.',
+                              style: context.textFontWeight600,
+                            ),
+                            SizedBox(
+                              width: context.resources.dimen.dp5,
+                            ),
+                            Expanded(
+                              child: Text.rich(
                                 TextSpan(
-                                  text:
-                                      '   Comment: ${item.comments.firstOrNull?.comment ?? ""}',
-                                  style: context.textFontWeight500,
-                                ),
-                              if (item.attachments.isNotEmpty == true) ...[
-                                WidgetSpan(
-                                  child: PopupMenuButton(
-                                    child: ImageWidget(
-                                            path: DrawableAssets.icAttachment,
-                                            padding: EdgeInsets.all(
-                                                context.resources.dimen.dp5))
-                                        .loadImageWithMoreTapArea,
-                                    onSelected: (value) {
-                                      openNewTab(
-                                        '${requestEntity.attachmentUrlPrefix}${item.attachments[index].name ?? ""}',
-                                      );
-                                    },
-                                    itemBuilder: (BuildContext context) =>
-                                        (item.attachments ?? [])
-                                            .map((item) => PopupMenuItem(
-                                                  value: item,
-                                                  child: Text(
-                                                    item.toString(),
-                                                    style: context
-                                                        .textFontWeight500,
-                                                  ),
-                                                ))
-                                            .toList(),
-                                  ),
-                                )
-                              ],
-                            ]),
+                                    text: item.name ?? "",
+                                    style: context.textFontWeight600,
+                                    children: [
+                                      if (item.comments.firstOrNull != null)
+                                        TextSpan(
+                                          text:
+                                              '\n${isSelectedLocalEn ? 'Details' : ''}: ${item.comments.firstOrNull?.comment ?? ""}',
+                                          style: context.textFontWeight500,
+                                        ),
+                                      if (item.attachments.isNotEmpty ==
+                                          true) ...[
+                                        TextSpan(
+                                          text:
+                                              '\n${isSelectedLocalEn ? 'Attachements' : ''}: ',
+                                          style: context.textFontWeight500,
+                                        ),
+                                        for (var i = 0;
+                                            i < item.attachments.length;
+                                            i++) ...[
+                                          if (i != 0) ...[
+                                            TextSpan(
+                                                text: ', ',
+                                                style:
+                                                    context.textFontWeight500)
+                                          ],
+                                          TextSpan(
+                                            recognizer: TapGestureRecognizer()
+                                              ..onTap = () {
+                                                openNewTab(
+                                                  '${requestEntity.attachmentUrlPrefix}${item.attachments[i].name ?? ""}',
+                                                );
+                                              },
+                                            text: '${item.attachments[i].name}',
+                                            style: context.textFontWeight500
+                                                .onColor(context.resources.color
+                                                    .viewBgColor)
+                                                .copyWith(
+                                                    decoration: TextDecoration
+                                                        .underline),
+                                          ),
+                                        ],
+                                        // WidgetSpan(
+                                        //   child: PopupMenuButton(
+                                        //     child: ImageWidget(
+                                        //             path: DrawableAssets
+                                        //                 .icAttachment,
+                                        //             padding: EdgeInsets.all(
+                                        //                 context
+                                        //                     .resources.dimen.dp5))
+                                        //         .loadImageWithMoreTapArea,
+                                        //     onSelected: (value) {
+                                        //       openNewTab(
+                                        //         '${requestEntity.attachmentUrlPrefix}${item.attachments[index].name ?? ""}',
+                                        //       );
+                                        //     },
+                                        //     itemBuilder: (BuildContext context) =>
+                                        //         (item.attachments)
+                                        //             .map((item) => PopupMenuItem(
+                                        //                   value: item,
+                                        //                   child: Text(
+                                        //                     item.toString(),
+                                        //                     style: context
+                                        //                         .textFontWeight500,
+                                        //                   ),
+                                        //                 ))
+                                        //             .toList(),
+                                        //   ),
+                                        // )
+                                      ],
+                                    ]),
+                              ),
+                            ),
+                          ],
+                        ),
                       );
                     }),
                   ),
@@ -153,29 +217,57 @@ class ISOViewRequestScreen extends BaseScreenWidget {
     );
   }
 
-  _updateTicket(BuildContext context, TicketEntity updateTicket, String message,
-      {String apiUrl = updateTicketByStatusApiUrl}) {
+  _updateTicket(
+    BuildContext context,
+    RequestStepStatus status,
+  ) {
     //requestEntity.status = updateTicket.status;
-    if (updateTicket.status == StatusType.acquired) {
-      final data = updateTicket.toCreateJson();
-      //_servicesBloc.updateTicketByStatus(apiUrl: apiUrl, requestParams: data);
+    String message = '';
+    bool isCommentRequired = true;
+    switch (status) {
+      case RequestStepStatus.submited:
+        {}
+      case RequestStepStatus.returned:
+        {
+          message = 'Do you want to return?';
+        }
+      case RequestStepStatus.approved:
+        {
+          message = 'Approve';
+        }
+      case RequestStepStatus.close:
+        {
+          message = 'Do you want to close?';
+        }
+      case RequestStepStatus.aquire:
+      case RequestStepStatus.transfer:
+      case RequestStepStatus.reject:
+      case RequestStepStatus.hold:
+      case RequestStepStatus.reSubmit:
+      case RequestStepStatus.inProgress:
+    }
+    if (status == RequestStepStatus.aquire) {
     } else {
       Dialogs.showDialogWithClose(
         context,
         TicketActionWidget(
           message: message,
-          isCommentRequired: updateTicket.isCommentRequired,
-          showIssueType: updateTicket.showIssueType,
+          isCommentRequired: isCommentRequired,
+          showIssueType: false,
         ),
         maxWidth: isDesktop(context, size: screenDimentions) ? 450 : null,
       ).then((dialogResult) {
         if (dialogResult != null) {
-          updateTicket.finalComments = dialogResult['comments'];
-          updateTicket.issueType = dialogResult['issueType'];
-          final data = updateTicket.toCreateJson();
-          data['files'] = dialogResult['files'];
-          // _servicesBloc.updateTicketByStatus(
-          //     apiUrl: apiUrl, requestParams: data);
+          final requestParams = {
+            'requestID': requestEntity.requestId,
+            'requestStepStatus': status.value,
+            'comments': dialogResult['comments'],
+            'files': dialogResult['files']
+          };
+          _isoBloc.createISORequest(
+              requestParams: requestParams,
+              apiUrl: updateCRRequestApiUrl,
+              emitResponse: true);
         }
       });
     }
@@ -375,33 +467,37 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                 }),
               ),
             ],
-            if (requestEntity
-                    .steps[(requestEntity.currentStep ?? 1) - 1].status !=
-                RequestStepStatus.close) ...[
-              SizedBox(
-                height: resources.dimen.dp20,
-              ),
-              SizedBox(
-                height: resources.dimen.dp20,
-              ),
-              (FormEntity()
-                    ..type = FormFieldType.textarea
-                    ..label = 'Comments'
-                    ..onDatachnage = (value) {
-                      _commentsController.text = value;
-                    })
-                  .getWidget(context),
-              SizedBox(
-                height: resources.dimen.dp10,
-              ),
-              (FormEntity()
-                    ..type = FormFieldType.multifile
-                    ..label = resources.string.uploadFile
-                    ..onDatachnage = (value) {
-                      fieldsData['files'] = value;
-                    })
-                  .getWidget(context),
-            ],
+            // if (requestEntity
+            //         .steps[(requestEntity.currentStep ?? 1) - 1].status !=
+            //     RequestStepStatus.close) ...[
+            //   SizedBox(
+            //     height: resources.dimen.dp20,
+            //   ),
+            //   SizedBox(
+            //     height: resources.dimen.dp20,
+            //   ),
+            //   (FormEntity()
+            //         ..type = FormFieldType.textarea
+            //         ..label = 'Comments'
+            //         ..onDatachnage = (value) {
+            //           _commentsController.text = value;
+            //         })
+            //       .getWidget(context),
+            //   SizedBox(
+            //     height: resources.dimen.dp10,
+            //   ),
+            //   (FormEntity()
+            //         ..type = FormFieldType.multifile
+            //         ..label = resources.string.uploadFile
+            //         ..onDatachnage = (value) {
+            //           fieldsData['files'] = value;
+            //         })
+            //       .getWidget(context),
+            // ],
+            SizedBox(
+              height: resources.dimen.dp20,
+            ),
+            _getComments(context)
           ],
         ),
       ),
@@ -435,31 +531,28 @@ class ISOViewRequestScreen extends BaseScreenWidget {
           ),
           for (int i = 0; i < steps.length; i++) ...[
             ItemServiceSteps(
-              stepColor: (i < (requestEntity.currentStep ?? 1) - 1 ||
-                      requestEntity.requestStaus == RequestStatus.completed)
-                  ? resources.color.colorGreen26B757
-                  : requestEntity.requestStaus == RequestStatus.rejected
-                      ? resources.color.rejected
-                      : resources.color.pending,
+              stepColor:
+                  (requestEntity.steps[i].status == RequestStepStatus.close ||
+                          requestEntity.requestStaus == RequestStatus.completed)
+                      ? resources.color.colorGreen26B757
+                      : requestEntity.requestStaus == RequestStatus.rejected
+                          ? resources.color.rejected
+                          : resources.color.pending,
               stepText: steps[i].assigneDisplayName ?? "",
               stepSubText:
                   '${steps[i].status.toString()}\n${steps[i].updatedAt}',
               isLastStep: i == steps.length - 1,
               userProfileCallback: () {
-                // Dialogs.showDialogWithClose(
-                //   context,
-                //   ((steps[i].userDisplayName ?? "") == 'Customer')
-                //       ? CustomerProfileScreenWidget(
-                //           userName: requestEntity.creator,
-                //           userNumber: requestEntity.mobileNumber,
-                //           userEmail: requestEntity.email,
-                //         )
-                //       : ProfileScreenWidget(
-                //           userName: steps[i].userName ?? "",
-                //         ),
-                //   maxWidth:
-                //       isDesktop(context, size: screenDimentions) ? 400 : null,
-                // );
+                if (steps[i].assignedTo != null) {
+                  Dialogs.showDialogWithClose(
+                    context,
+                    ProfileScreenWidget(
+                      userName: '${steps[i].assignedTo ?? ""}',
+                    ),
+                    maxWidth:
+                        isDesktop(context, size: screenDimentions) ? 400 : null,
+                  );
+                }
               },
             )
           ]
@@ -633,10 +726,10 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                       ),
                       // if (requestEntity.status != RequestStatus.rejected &&
                       //     requestEntity.status != RequestStatus.completed) ...[
-                      _getComments(context),
-                      SizedBox(
-                        height: resources.dimen.dp20,
-                      ),
+                      // _getComments(context),
+                      // SizedBox(
+                      //   height: resources.dimen.dp20,
+                      // ),
                       // ],
                       ValueListenableBuilder(
                           valueListenable: _onDataChanged,
@@ -695,25 +788,8 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                                   Expanded(
                                     child: InkWell(
                                       onTap: () async {
-                                        final requestParams = {
-                                          'requestID': requestEntity.requestId,
-                                          'requestStepStatus':
-                                              actionButtons[r].value,
-                                          'comments': _commentsController.text,
-                                        };
-                                        if (fieldsData['files'] is List) {
-                                          requestParams['files'] =
-                                              (fieldsData['files'] as List)
-                                                  .map((file) {
-                                            return MultipartFile.fromBytes(
-                                                file['fileBytes'],
-                                                filename: file['fileName']);
-                                          }).toList();
-                                        }
-                                        _isoBloc.createISORequest(
-                                            requestParams: requestParams,
-                                            apiUrl: updateCRRequestApiUrl,
-                                            emitResponse: true);
+                                        _updateTicket(
+                                            context, actionButtons[r]);
                                       },
                                       child: ActionButtonWidget(
                                         text: (actionButtons[r]).toString(),
@@ -738,24 +814,7 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                                     items: popupActionButtons,
                                     titleText: resources.string.otherActions,
                                     onItemSelected: (p0) {
-                                      final requestParams = {
-                                        'requestID': requestEntity.requestId,
-                                        'requestStepStatus': p0.value,
-                                        'comments': _commentsController.text,
-                                      };
-                                      if (fieldsData['files'] is List) {
-                                        requestParams['files'] =
-                                            (fieldsData['files'] as List)
-                                                .map((file) {
-                                          return MultipartFile.fromBytes(
-                                              file['fileBytes'],
-                                              filename: file['fileName']);
-                                        }).toList();
-                                      }
-                                      _isoBloc.createISORequest(
-                                          requestParams: requestParams,
-                                          apiUrl: updateCRRequestApiUrl,
-                                          emitResponse: true);
+                                      _updateTicket(context, p0);
                                     },
                                   )),
                               ],

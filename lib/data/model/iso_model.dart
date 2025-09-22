@@ -37,7 +37,7 @@ class CRRequestModel extends BaseModel {
     completedAt = json['completedAt'];
     attachmentUrlPrefix = json['attachmentUrlPrefix'];
     currentStepName = json['currentStepName'];
-    assginedEmployee = json['assginedEmploy'];
+    assginedEmployee = json['assginedEmployee'];
     requestPriority = json['requestPriority'];
     if (json['details'] != null) {
       details = CRRequestDetailsModel.fromJson(json['details']).toEntity();
