@@ -335,7 +335,8 @@ enum RequestStepStatus {
   reject(7),
   hold(8),
   reSubmit(9),
-  inProgress(10);
+  inProgress(10),
+  open(11);
 
   final int value;
   const RequestStepStatus(this.value);
@@ -375,6 +376,8 @@ enum RequestStepStatus {
         return isSelectedLocalEn ? 'Resubmit' : 'إعادة الإرسال';
       case RequestStepStatus.aquire:
         return isSelectedLocalEn ? 'Acquire' : 'يكتسب';
+      case open:
+        return isSelectedLocalEn ? 'Open' : 'مفتوح';
     }
   }
 

@@ -2,6 +2,7 @@
 
 import 'dart:math';
 
+import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -12,11 +13,14 @@ import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/field_entity_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
+import 'package:ithelpdesk/data/model/api_response_model.dart';
 import 'package:ithelpdesk/data/remote/api_urls.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
 import 'package:ithelpdesk/domain/entities/form_entities.dart';
 import 'package:ithelpdesk/domain/entities/iso_entity.dart';
+import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
 import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
+import 'package:ithelpdesk/domain/entities/user_entity.dart';
 import 'package:ithelpdesk/injection_container.dart';
 import 'package:ithelpdesk/presentation/bloc/iso/iso_bloc.dart';
 import 'package:ithelpdesk/presentation/bloc/master_data/master_data_bloc.dart';
@@ -27,7 +31,9 @@ import 'package:ithelpdesk/presentation/common_widgets/dropdown_menu_widget.dart
 import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/item_service_steps.dart';
 import 'package:ithelpdesk/presentation/common_widgets/ticket_action_widget.dart';
+import 'package:ithelpdesk/presentation/iso/widgets/select_employee_widget.dart';
 import 'package:ithelpdesk/presentation/profile/profile_screen_widget.dart';
+import 'package:ithelpdesk/presentation/requests/widgets/ticket_return_widget.dart';
 import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
 import 'package:page_transition/page_transition.dart';
@@ -220,16 +226,21 @@ class ISOViewRequestScreen extends BaseScreenWidget {
   _updateTicket(
     BuildContext context,
     RequestStepStatus status,
-  ) {
+  ) async {
     //requestEntity.status = updateTicket.status;
     String message = '';
     bool isCommentRequired = true;
     switch (status) {
+      case RequestStepStatus.open:
+        {}
       case RequestStepStatus.submited:
         {}
       case RequestStepStatus.returned:
         {
           message = 'Do you want to return?';
+          _showSelectEmployeeDialog(
+              context, status, message, isCommentRequired);
+          return;
         }
       case RequestStepStatus.approved:
         {
@@ -240,7 +251,22 @@ class ISOViewRequestScreen extends BaseScreenWidget {
           message = 'Do you want to close?';
         }
       case RequestStepStatus.aquire:
+        {
+          final requestParams = {
+            'requestID': requestEntity.requestId,
+            'requestStepStatus': status.value,
+          };
+          _isoBloc.createISORequest(
+              requestParams: requestParams,
+              apiUrl: updateCRRequestApiUrl,
+              emitResponse: true);
+        }
       case RequestStepStatus.transfer:
+        {
+          _showSelectEmployeeDialog(
+              context, status, message, isCommentRequired);
+          return;
+        }
       case RequestStepStatus.reject:
       case RequestStepStatus.hold:
       case RequestStepStatus.reSubmit:
@@ -248,29 +274,68 @@ class ISOViewRequestScreen extends BaseScreenWidget {
     }
     if (status == RequestStepStatus.aquire) {
     } else {
+      _updateDialog(context, status, message, isCommentRequired);
+    }
+  }
+
+  _showSelectEmployeeDialog(
+    BuildContext context,
+    RequestStepStatus status,
+    String message,
+    bool isCommentRequired,
+  ) async {
+    Dialogs.loader(context);
+    final employees = await _isoBloc.getCRTransferEmployees(requestParams: {
+      'requestId': requestEntity.requestId,
+      'action': status.value
+    });
+    if (!context.mounted) {
+      return;
+    }
+    Dialogs.dismiss(context);
+    if (employees is OnISOApiResponse) {
+      final items = cast<ListEntity?>(employees.response.entity)?.items ?? [];
       Dialogs.showDialogWithClose(
         context,
-        TicketActionWidget(
-          message: message,
-          isCommentRequired: isCommentRequired,
-          showIssueType: false,
-        ),
+        SelectEmployeeWidget(employees: items.cast<UserEntity>()),
         maxWidth: isDesktop(context, size: screenDimentions) ? 450 : null,
-      ).then((dialogResult) {
-        if (dialogResult != null) {
-          final requestParams = {
-            'requestID': requestEntity.requestId,
-            'requestStepStatus': status.value,
-            'comments': dialogResult['comments'],
-            'files': dialogResult['files']
-          };
-          _isoBloc.createISORequest(
-              requestParams: requestParams,
-              apiUrl: updateCRRequestApiUrl,
-              emitResponse: true);
+      ).then((value) {
+        if (value != null) {
+          if (context.mounted) {
+            _updateDialog(context, status, message, isCommentRequired,
+                transferedTo: value['employeeId']);
+          }
         }
       });
-    }
+    } else if (employees is OnISOApiError) {}
+  }
+
+  _updateDialog(BuildContext context, RequestStepStatus status, String message,
+      bool isCommentRequired,
+      {int? transferedTo}) {
+    Dialogs.showDialogWithClose(
+      context,
+      TicketActionWidget(
+        message: message,
+        isCommentRequired: isCommentRequired,
+        showIssueType: false,
+      ),
+      maxWidth: isDesktop(context, size: screenDimentions) ? 450 : null,
+    ).then((dialogResult) {
+      if (dialogResult != null) {
+        final requestParams = {
+          'requestID': requestEntity.requestId,
+          'requestStepStatus': status.value,
+          'comments': dialogResult['comments'],
+          'files': dialogResult['files']
+        };
+        requestParams['transferedTo'] = transferedTo;
+        _isoBloc.createISORequest(
+            requestParams: requestParams,
+            apiUrl: updateCRRequestApiUrl,
+            emitResponse: true);
+      }
+    });
   }
 
   // _onActionClicked(
@@ -762,13 +827,10 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                                 isDesktop(context, size: screenDimentions)
                                     ? 3
                                     : 1;
-                            final actionButtons =
-                                isDesktop(context, size: screenDimentions)
-                                    ? ticketActionButtons.sublist(
-                                        0,
-                                        min(actionButtonsLength,
-                                            ticketActionButtons.length))
-                                    : ticketActionButtons.sublist(0, 1);
+                            final actionButtons = ticketActionButtons.sublist(
+                                0,
+                                min(actionButtonsLength,
+                                    ticketActionButtons.length));
                             var popupActionButtons =
                                 List<RequestStepStatus>.empty(growable: true);
                             if (actionButtonsLength + 1 ==
@@ -782,6 +844,11 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                             }
                             return Row(
                               children: [
+                                for (int i = 0;
+                                    i <
+                                        (actionButtonsLength + 1) -
+                                            ticketActionButtons.length;
+                                    i++) ...[const Expanded(child: SizedBox())],
                                 for (int r = 0;
                                     r < actionButtons.length;
                                     r++) ...[

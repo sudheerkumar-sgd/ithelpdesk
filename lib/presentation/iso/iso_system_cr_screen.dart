@@ -176,6 +176,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Date of Joining'
             ..requiredAr = 'Please Enter Date of Joining')
+          ..inputFieldData = {'format': 'yyyy-MM-dd'}
           ..onDatachnage = (value) {
             fieldsData['dateofJoining'] = value;
           },
@@ -714,8 +715,8 @@ class IsoSystemCrScreen extends BaseScreenWidget {
                             (fieldsData['reportingManager'] as UserEntity?)?.id;
                         request.employeeID = fieldsData['employeeID'] ?? '';
                         request.emailID = fieldsData['emailID'] ?? '';
-                        // request.dateOfJoining = DateTime.tryParse(
-                        //     fieldsData['dateofJoining'] ?? '');
+                        request.dateOfJoining = DateTime.tryParse(
+                            fieldsData['dateofJoining'] ?? '');
                         request.requestPriority =
                             (fieldsData['priority'] as NameIDEntity?)?.id ?? 1;
                         request.comments = fieldsData['comments'] ?? '';

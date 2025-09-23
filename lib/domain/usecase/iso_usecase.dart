@@ -67,4 +67,19 @@ class ISOUseCase extends BaseUseCase {
       return Right(apiResponseEntity);
     });
   }
+  
+  Future<Either<Failure, ApiEntity<ListEntity>>> getCRTransferEmployees(
+      {required Map<String, dynamic> requestParams}) async {
+    var apiResponse = await apisRepository.get<ListModel>(
+      apiUrl: crTransferEmployeesApiUrl,
+      requestParams: requestParams,
+      responseModel: ListModel.fromEmployeesJson,
+    );
+    return apiResponse.fold((l) {
+      return Left(l);
+    }, (r) {
+      var apiResponseEntity = r.toEntity<ListEntity>();
+      return Right(apiResponseEntity);
+    });
+  }
 }

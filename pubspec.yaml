@@ -119,9 +119,10 @@ flutter:
      - assets/images/ic_directory.svg
      - assets/images/ic_user.svg
      - assets/images/ic_notification.svg
-     - assets/images/ic_user_circle.svg
      - assets/images/ic_search.svg
      - assets/images/ic_not_assigned_requests.svg
+     - assets/images/ic_user_circle.svg
+     - assets/images/ic_checkmark_circle.svg
      - assets/images/ic_open_requests.svg
      - assets/images/ic_closed_requests.svg
      - assets/images/ic_no._of_requests.svg

@@ -252,6 +252,7 @@ extension FieldEntityExtension on FormEntity {
       case FormFieldType.date || FormFieldType.dateFrom || FormFieldType.dateTo:
         final textEditingController = TextEditingController();
         textEditingController.text = fieldValue ?? '';
+        final dateFormat = inputFieldData?['format'] ?? 'yyyy-MM-dd';
         return Visibility(
           visible: isVisible,
           child: Padding(
@@ -279,13 +280,13 @@ extension FieldEntityExtension on FormEntity {
                     firstDate: firstDate,
                     initialDate: fieldValue != null
                         ? getDateTimeByString(
-                            'dd/MM/yyyy',
+                            dateFormat,
                             fieldValue ?? '',
                           )
                         : firstDate,
                     callBack: (dateTime) {
                       textEditingController.text = getDateByformat(
-                        hasTime == true ? "dd/MM/yyyy HH:mm:ss" : "dd/MM/yyyy",
+                        hasTime == true ? "$dateFormat HH:mm:ss" : dateFormat,
                         dateTime,
                       );
                       fieldValue = textEditingController.text;
