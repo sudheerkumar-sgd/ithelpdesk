@@ -231,10 +231,6 @@ class ISOViewRequestScreen extends BaseScreenWidget {
     String message = '';
     bool isCommentRequired = true;
     switch (status) {
-      case RequestStepStatus.open:
-        {}
-      case RequestStepStatus.submited:
-        {}
       case RequestStepStatus.returned:
         {
           message = 'Do you want to return?';
@@ -263,14 +259,27 @@ class ISOViewRequestScreen extends BaseScreenWidget {
         }
       case RequestStepStatus.transfer:
         {
+          message = 'Do you want to transfer?';
           _showSelectEmployeeDialog(
               context, status, message, isCommentRequired);
           return;
         }
       case RequestStepStatus.reject:
+        {
+          message = 'Do you want to transfer?';
+        }
       case RequestStepStatus.hold:
+        {
+          message = 'Do you want to hold?';
+        }
       case RequestStepStatus.reSubmit:
-      case RequestStepStatus.inProgress:
+        {
+          message = 'Do you want to submit?';
+        }
+      default:
+        {
+          return;
+        }
     }
     if (status == RequestStepStatus.aquire) {
     } else {
@@ -297,7 +306,9 @@ class ISOViewRequestScreen extends BaseScreenWidget {
       final items = cast<ListEntity?>(employees.response.entity)?.items ?? [];
       Dialogs.showDialogWithClose(
         context,
-        SelectEmployeeWidget(employees: items.cast<UserEntity>()),
+        SelectEmployeeWidget(
+            title: '${status.toString()} To:',
+            employees: items.cast<UserEntity>()),
         maxWidth: isDesktop(context, size: screenDimentions) ? 450 : null,
       ).then((value) {
         if (value != null) {
@@ -844,11 +855,11 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                             }
                             return Row(
                               children: [
-                                for (int i = 0;
-                                    i <
-                                        (actionButtonsLength + 1) -
-                                            ticketActionButtons.length;
-                                    i++) ...[const Expanded(child: SizedBox())],
+                                // for (int i = 0;
+                                //     i <
+                                //         (actionButtonsLength + 1) -
+                                //             ticketActionButtons.length;
+                                //     i++) ...[const Expanded(child: SizedBox())],
                                 for (int r = 0;
                                     r < actionButtons.length;
                                     r++) ...[

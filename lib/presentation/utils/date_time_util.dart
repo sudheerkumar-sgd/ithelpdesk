@@ -17,10 +17,10 @@ Future<void> selectDate(BuildContext context,
   DateTime selectedDate = initialDate ?? firstDate ?? currentDate;
   if (kIsWeb) {
     showDatePicker(
-            context: context,
-            firstDate: DateTime.now().add(const Duration(days: -365)),
-            lastDate: DateTime.now())
-        .then((dateTime) {
+      context: context,
+      firstDate: DateTime.now().add(const Duration(days: -365)),
+      lastDate: lastDate ?? DateTime.now(),
+    ).then((dateTime) {
       if (dateTime != null) {
         callBack(dateTime);
       }
@@ -75,8 +75,17 @@ Future<void> selectDate(BuildContext context,
 Future<void> selectTime(BuildContext context,
     {DateTime? startTime, required Function(DateTime) callBack}) async {
   DateTime selectedTime = startTime ?? DateTime.now();
-
-  if (Platform.isAndroid) {
+  if (kIsWeb) {
+    showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(startTime ?? DateTime.now()),
+    ).then((picked) {
+      if (picked != null) {
+        callBack(DateTime(selectedTime.year, selectedTime.month,
+            selectedTime.day, picked.hour, picked.minute));
+      }
+    });
+  } else if (Platform.isAndroid) {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.fromDateTime(startTime ?? DateTime.now()),

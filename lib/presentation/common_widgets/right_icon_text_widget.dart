@@ -165,7 +165,8 @@ class RightIconTextWidget extends StatelessWidget {
                   : null,
               fillColor: isEnabled
                   ? (fillColor ?? context.resources.color.textFieldFillColor)
-                  : context.resources.color.dividerColorB3B8BF,
+                  : (disableColor ??
+                      context.resources.color.dividerColorB3B8BF),
               border: OutlineInputBorder(
                 borderSide: borderSide,
                 borderRadius: BorderRadius.all(

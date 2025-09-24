@@ -57,7 +57,7 @@ extension FieldEntityExtension on FormEntity {
         return FutureBuilder<List<BaseEntity>?>(
           future: _getAccountTypes(),
           builder: (context, snapshot) {
-            if (inputFieldData?['doSort'] ?? true) {
+            if (inputFieldData?['doSort'] ?? false) {
               (snapshot.data ?? []).sort(
                 (a, b) => (a.toString()).compareTo(b.toString()),
               );
@@ -284,13 +284,34 @@ extension FieldEntityExtension on FormEntity {
                             fieldValue ?? '',
                           )
                         : firstDate,
+                    lastDate: inputFieldData?['lastDate'],
                     callBack: (dateTime) {
-                      textEditingController.text = getDateByformat(
-                        hasTime == true ? "$dateFormat HH:mm:ss" : dateFormat,
-                        dateTime,
-                      );
-                      fieldValue = textEditingController.text;
-                      onDatachnage?.call(textEditingController.text);
+                      if (hasTime == true) {
+                        selectTime(context, callBack: (time) {
+                          final combined = DateTime(
+                              dateTime.year,
+                              dateTime.month,
+                              dateTime.day,
+                              time.hour,
+                              time.minute,
+                              time.second);
+                          textEditingController.text = getDateByformat(
+                            hasTime == true
+                                ? "$dateFormat HH:mm:ss"
+                                : dateFormat,
+                            combined,
+                          );
+                          fieldValue = textEditingController.text;
+                          onDatachnage?.call(textEditingController.text);
+                        });
+                      } else {
+                        textEditingController.text = getDateByformat(
+                          dateFormat,
+                          dateTime,
+                        );
+                        fieldValue = textEditingController.text;
+                        onDatachnage?.call(textEditingController.text);
+                      }
                     },
                   );
                 }

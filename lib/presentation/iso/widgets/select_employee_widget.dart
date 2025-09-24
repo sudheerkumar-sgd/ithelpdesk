@@ -1,19 +1,16 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/domain/entities/user_entity.dart';
-import 'package:ithelpdesk/presentation/bloc/master_data/master_data_bloc.dart';
 import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dropdown_widget.dart';
 
-import '../../../injection_container.dart';
-
 class SelectEmployeeWidget extends StatelessWidget {
+  String? title;
   List<UserEntity> employees;
-  SelectEmployeeWidget({required this.employees, super.key});
+  SelectEmployeeWidget({this.title, required this.employees, super.key});
   UserEntity? _selectedEmployee;
 
   @override
@@ -24,7 +21,7 @@ class SelectEmployeeWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          resources.string.returnText,
+          title ?? resources.string.returnText,
           style: context.textFontWeight600,
         ),
         SizedBox(
