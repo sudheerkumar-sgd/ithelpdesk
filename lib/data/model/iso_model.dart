@@ -18,6 +18,7 @@ class CRRequestModel extends BaseModel {
   String? currentStepName;
   String? assginedEmployee;
   int? requestPriority;
+  Map? requestDetail;
 
   CRRequestDetailsEntity? details;
   WorkflowFieldEntity? workflowFieldEntity;
@@ -39,8 +40,8 @@ class CRRequestModel extends BaseModel {
     currentStepName = json['currentStepName'];
     assginedEmployee = json['assginedEmployee'];
     requestPriority = json['requestPriority'];
-    if (json['details'] != null) {
-      details = CRRequestDetailsModel.fromJson(json['details']).toEntity();
+    if (json['requestDetail'] != null) {
+      requestDetail = jsonDecode(json['requestDetail']);
     }
     if (json['workflowField'] != null) {
       workflowFieldEntity =
@@ -80,6 +81,7 @@ class CRRequestModel extends BaseModel {
       ..currentStepName = currentStepName
       ..assginedEmployee = assginedEmployee
       ..requestPriority = PriorityType.fromId(requestPriority ?? 1)
+      ..requestDetail = requestDetail
       ..details = details
       ..workflowFieldEntity = workflowFieldEntity
       ..steps = steps

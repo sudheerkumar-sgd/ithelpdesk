@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/constants/data_constants.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
@@ -9,10 +12,7 @@ import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/data/model/master_data_models.dart';
 import 'package:ithelpdesk/data/remote/api_urls.dart';
 import 'package:ithelpdesk/domain/entities/form_entities.dart';
-import 'package:ithelpdesk/domain/entities/iso_system_entities.dart';
-import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
 import 'package:ithelpdesk/domain/entities/single_data_entity.dart';
-import 'package:ithelpdesk/domain/entities/user_entity.dart';
 import 'package:ithelpdesk/injection_container.dart';
 import 'package:ithelpdesk/presentation/bloc/iso/iso_bloc.dart';
 import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart';
@@ -63,7 +63,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             ]
           }
           ..onDatachnage = (value) {
-            fieldsData['priority'] = value;
+            fieldsData['priority'] = value.name;
           },
         FormEntity()
           ..type = FormFieldType.text
@@ -237,7 +237,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             ]
           }
           ..onDatachnage = (value) {
-            fieldsData['priority'] = value;
+            fieldsData['priority'] = value.name;
           },
         FormEntity()
           ..type = FormFieldType.text
@@ -358,6 +358,25 @@ class IsoSystemCrScreen extends BaseScreenWidget {
     if (existingFormFields.isEmpty) {
       existingFormFields.addAll([
         FormEntity()
+          ..type = FormFieldType.collection
+          ..name = 'priority'
+          ..label = resources.string.priority
+          ..validation = (FormValidationEntity()..required = true)
+          ..messages = (FormMessageEntity()
+            ..requiredEn = 'Please Select priority'
+            ..requiredAr = 'الرجاء تحديد الأولوية')
+          ..inputFieldData = {
+            'items': [
+              NameIDEntity(1, resources.string.low),
+              NameIDEntity(2, resources.string.medium),
+              NameIDEntity(3, resources.string.high),
+              NameIDEntity(4, resources.string.critical)
+            ]
+          }
+          ..onDatachnage = (value) {
+            fieldsData['priority'] = value.name;
+          },
+        FormEntity()
           ..type = FormFieldType.text
           ..label = resources.string.fullName
           ..name = 'fullname'
@@ -420,7 +439,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             ]
           }
           ..onDatachnage = (value) {
-            fieldsData['accessdetails'] = value;
+            fieldsData['accessdetails'] = value.name;
           },
         FormEntity()
           ..type = FormFieldType.text
@@ -1193,8 +1212,8 @@ class IsoSystemCrScreen extends BaseScreenWidget {
     var noOfCategoryRowItems = 4; //categories.length;
     final currrentFieds = [
       _getNewEmpFormFields(context),
-      _getExistingEmpFormFields(context),
       _getMigrationEmpFormFields(context),
+      _getExistingEmpFormFields(context),
       _getSystemCRFormFields(context),
       _getNetworkCRFormFields(context),
       _getDatabaseFormFields(context),
@@ -1439,35 +1458,46 @@ class IsoSystemCrScreen extends BaseScreenWidget {
                   InkWell(
                     onTap: () async {
                       if (_formKey.currentState?.validate() == true) {
-                        final request = RequestDetail();
-                        request.workflowId = categories[employeeCategory].id;
-                        request.firstName = fieldsData['firstname'] ?? '';
-                        request.lastName = fieldsData['lastname'] ?? '';
-                        request.fullName = fieldsData['fullname'] ?? '';
-                        request.designation = fieldsData['designation'];
-                        request.departmentID =
-                            (fieldsData['department'] as DepartmentEntity?)?.id;
-                        request.reportingManagerID =
-                            (fieldsData['reportingmanager'] as UserEntity?)?.id;
-                        request.employeeID = fieldsData['employeeid'] ?? '';
-                        request.emailID = fieldsData['emailid'] ?? '';
-                        request.dateOfJoining = DateTime.tryParse(
-                            fieldsData['dateofjoining'] ?? '');
-                        request.requestPriority =
-                            (fieldsData['priority'] as NameIDEntity?)?.id ?? 1;
-                        request.comments = fieldsData['comments'] ?? '';
+                        // final request = RequestDetail();
+                        // request.workflowId = categories[employeeCategory].id;
+                        // request.firstName = fieldsData['firstname'] ?? '';
+                        // request.lastName = fieldsData['lastname'] ?? '';
+                        // request.fullName = fieldsData['fullname'] ?? '';
+                        // request.designation = fieldsData['designation'];
+                        // request.departmentID =
+                        //     (fieldsData['department'] as DepartmentEntity?)?.id;
+                        // request.reportingManagerID =
+                        //     (fieldsData['reportingmanager'] as UserEntity?)?.id;
+                        // request.employeeID = fieldsData['employeeid'] ?? '';
+                        // request.emailID = fieldsData['emailid'] ?? '';
+                        // request.dateOfJoining = DateTime.tryParse(
+                        //     fieldsData['dateofjoining'] ?? '');
+                        // request.requestPriority =
+                        //     (fieldsData['priority'] as NameIDEntity?)?.id ?? 1;
+                        // request.comments = fieldsData['comments'] ?? '';
 
-                        request.loginID = fieldsData['systemloginid'] ?? '';
-                        request.reasonOfAccess =
-                            fieldsData['reasonofaccess'] ?? '';
-                        request.existingDepartmentID =
-                            (fieldsData['existingdepartment']
-                                    as DepartmentEntity?)
-                                ?.id;
-                        request.accessTypeID =
-                            (fieldsData['accessdetails'] as NameIDEntity?)
-                                ?.name;
-                        final data = request.toJson();
+                        // request.loginID = fieldsData['systemloginid'] ?? '';
+                        // request.reasonOfAccess =
+                        //     fieldsData['reasonofaccess'] ?? '';
+                        // request.existingDepartmentID =
+                        //     (fieldsData['existingdepartment']
+                        //             as DepartmentEntity?)
+                        //         ?.id;
+                        // request.accessTypeID =
+                        //     (fieldsData['accessdetails'] as NameIDEntity?)
+                        //         ?.name;
+                        final data = <String, dynamic>{};
+                        data['workflowId'] = categories[employeeCategory].id;
+                        //data['requestDetails'] = jsonEncode(data);
+                        final details = <String, dynamic>{};
+                        for (var field in fieldsData.entries) {
+                          if (!field.key.contains('files')) {
+                            details[field.key] = field.value;
+                          }
+                        }
+                        details['createdon'] =
+                            getDateByformat('dd/MM/yyyy', DateTime.now());
+                        data['requestDetails'] = jsonEncode(details);
                         if (fieldsData['files'] is List) {
                           data['files'] =
                               (fieldsData['files'] as List).map((file) {

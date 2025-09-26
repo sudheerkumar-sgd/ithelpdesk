@@ -1,6 +1,7 @@
 // ignore_for_file: must_be_immutable
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/domain/entities/base_entity.dart';
+import 'package:ithelpdesk/domain/entities/single_data_entity.dart';
 
 class CRRequestEntity extends BaseEntity {
   int? requestId;
@@ -14,6 +15,7 @@ class CRRequestEntity extends BaseEntity {
   String? currentStepName;
   String? assginedEmployee;
   PriorityType? requestPriority;
+  Map? requestDetail;
 
   CRRequestDetailsEntity? details;
   WorkflowFieldEntity? workflowFieldEntity;
@@ -60,10 +62,16 @@ class CRRequestEntity extends BaseEntity {
   }
 
   Map<String, dynamic> toDetailsJson() {
-    final data = toFullJson();
+    final data = requestDetail;
     final Map<String, dynamic> reportData = <String, dynamic>{};
     for (var field in workflowFieldEntity?.detailsFields ?? []) {
-      reportData[field['Name']] = data[field['key']];
+      if (data?[field['key'].toString().toLowerCase()] is Map) {
+        reportData[field['Name']] =
+            data?[field['key'].toString().toLowerCase()]?['name'];
+      } else {
+        reportData[field['Name']] =
+            data?[field['key'].toString().toLowerCase()];
+      }
     }
     return reportData;
   }

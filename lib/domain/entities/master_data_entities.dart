@@ -123,6 +123,12 @@ class DepartmentEntity extends BaseEntity {
 
   @override
   List<Object?> get props => [id];
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'shortName': shortName,
+      };
 }
 
 class UploadResponseEntity extends BaseEntity {

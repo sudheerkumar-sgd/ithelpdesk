@@ -42,6 +42,11 @@ class UserEntity extends BaseEntity {
   String toString() {
     return name ?? '';
   }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+      };
 }
 
 class EstablishmentEntity extends BaseEntity {
