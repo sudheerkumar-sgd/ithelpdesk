@@ -3,7 +3,6 @@
 import 'dart:math';
 
 import 'package:dartz/dartz.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,12 +10,9 @@ import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
-import 'package:ithelpdesk/core/extensions/field_entity_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
-import 'package:ithelpdesk/data/model/api_response_model.dart';
 import 'package:ithelpdesk/data/remote/api_urls.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
-import 'package:ithelpdesk/domain/entities/form_entities.dart';
 import 'package:ithelpdesk/domain/entities/iso_entity.dart';
 import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
 import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
@@ -24,7 +20,6 @@ import 'package:ithelpdesk/domain/entities/user_entity.dart';
 import 'package:ithelpdesk/injection_container.dart';
 import 'package:ithelpdesk/presentation/bloc/iso/iso_bloc.dart';
 import 'package:ithelpdesk/presentation/bloc/master_data/master_data_bloc.dart';
-import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
 import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dropdown_menu_widget.dart';
@@ -33,7 +28,6 @@ import 'package:ithelpdesk/presentation/common_widgets/item_service_steps.dart';
 import 'package:ithelpdesk/presentation/common_widgets/ticket_action_widget.dart';
 import 'package:ithelpdesk/presentation/iso/widgets/select_employee_widget.dart';
 import 'package:ithelpdesk/presentation/profile/profile_screen_widget.dart';
-import 'package:ithelpdesk/presentation/requests/widgets/ticket_return_widget.dart';
 import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
 import 'package:page_transition/page_transition.dart';
@@ -68,7 +62,6 @@ class ISOViewRequestScreen extends BaseScreenWidget {
   String apiResponseMessage = '';
   final ISOBloc _isoBloc = sl<ISOBloc>();
   final MasterDataBloc _masterDataBloc = sl<MasterDataBloc>();
-  final TextEditingController _commentsController = TextEditingController();
   final Map<String, dynamic> fieldsData = {};
 
   final ValueNotifier<bool> _isExanded = ValueNotifier(true);
@@ -501,7 +494,7 @@ class ISOViewRequestScreen extends BaseScreenWidget {
             SizedBox(
               height: resources.dimen.dp20,
             ),
-            if (requestEntity.details?.attachments?.isNotEmpty == true) ...[
+            if (requestEntity.attachments?.isNotEmpty == true) ...[
               Text(
                 resources.string.attachments,
                 style: context.textFontWeight600,
@@ -511,15 +504,15 @@ class ISOViewRequestScreen extends BaseScreenWidget {
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: List.generate(
-                    requestEntity.details?.attachments?.length ?? 0, (index) {
+                children: List.generate(requestEntity.attachments?.length ?? 0,
+                    (index) {
                   return InkWell(
                     onTap: () {
                       Dialogs.showDialogWithClose(
                           context,
                           maxWidth: 400,
                           openNewTab(
-                            '${requestEntity.attachmentUrlPrefix}${requestEntity.details?.attachments?[index].name ?? ""}',
+                            '${requestEntity.attachmentUrlPrefix}${requestEntity.attachments?[index].name ?? ""}',
                           ));
                     },
                     child: Row(
@@ -532,8 +525,7 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                           width: resources.dimen.dp10,
                         ),
                         Text(
-                          (requestEntity.details?.attachments?[index].name ??
-                              ""),
+                          (requestEntity.attachments?[index].name ?? ""),
                           style: context.textFontWeight500
                               .copyWith(decoration: TextDecoration.underline),
                         ),

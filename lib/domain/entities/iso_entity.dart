@@ -10,17 +10,18 @@ class CRRequestEntity extends BaseEntity {
   int? currentStep;
   RequestStatus? requestStaus;
   String? createdAt;
-  String? completedAt;
+  String? updatedAt;
   String? attachmentUrlPrefix;
   String? currentStepName;
   String? assginedEmployee;
   PriorityType? requestPriority;
   Map? requestDetail;
 
-  CRRequestDetailsEntity? details;
+  //CRRequestDetailsEntity? details;
   WorkflowFieldEntity? workflowFieldEntity;
   List<CRRequestStepEntity> steps = [];
   List<CRRequestHistoryEntity> requestHistory = [];
+  List<CRAttachmentEntity>? attachments;
 
   CRRequestEntity();
 
@@ -32,23 +33,9 @@ class CRRequestEntity extends BaseEntity {
     data['requestStaus'] = requestStaus;
     data['assginedEmployee'] = assginedEmployee;
     data['requestPriority'] = requestPriority?.toString();
-    data['firstName'] = details?.firstName;
-    data['lastName'] = details?.lastName;
-    data['fullName'] = details?.fullName;
-    data['designation'] = details?.designation;
-    data['departmentName'] = details?.departmentName;
-    data['exstingDepartmentName'] = details?.exstingDepartment;
-    data['emailID'] = details?.emailID;
-    data['employeeID'] = details?.employeeID;
-    data['loginID'] = details?.loginID;
-    data['accessDetails'] = details?.accessDetails;
-    data['reportingManagerID'] = details?.reportingManagerID;
-    data['reportingManager'] = details?.reportingManager;
-    data['dateOfJoining'] = details?.dateOfJoining;
     data['requestPriority'] = requestPriority.toString();
-    data['reasonOfAccess'] = details?.reasonOfAccess;
-    data['comments'] = details?.comments;
     data['createdAt'] = createdAt;
+    data['updatedAt'] = updatedAt;
     return data;
   }
 
@@ -62,15 +49,14 @@ class CRRequestEntity extends BaseEntity {
   }
 
   Map<String, dynamic> toDetailsJson() {
-    final data = requestDetail;
     final Map<String, dynamic> reportData = <String, dynamic>{};
     for (var field in workflowFieldEntity?.detailsFields ?? []) {
-      if (data?[field['key'].toString().toLowerCase()] is Map) {
+      if (requestDetail?[field['key'].toString().toLowerCase()] is Map) {
         reportData[field['Name']] =
-            data?[field['key'].toString().toLowerCase()]?['name'];
+            requestDetail?[field['key'].toString().toLowerCase()]?['name'];
       } else {
         reportData[field['Name']] =
-            data?[field['key'].toString().toLowerCase()];
+            requestDetail?[field['key'].toString().toLowerCase()];
       }
     }
     return reportData;

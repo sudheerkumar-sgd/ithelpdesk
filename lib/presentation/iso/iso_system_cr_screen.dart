@@ -485,7 +485,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             ]
           }
           ..onDatachnage = (value) {
-            fieldsData['priority'] = value;
+            fieldsData['priority'] = value.name;
           },
         FormEntity()
           ..type = FormFieldType.text
@@ -497,7 +497,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             ..requiredEn = 'Please Enter Change Description'
             ..requiredAr = 'الرجاء إدخال وصف التغيير')
           ..onDatachnage = (value) {
-            fieldsData['changeDescription'] = value;
+            fieldsData['changedescription'] = value;
           },
         FormEntity()
           ..type = FormFieldType.collection
@@ -528,7 +528,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             ..requiredEn = 'Please Enter Application Version'
             ..requiredAr = 'الرجاء إدخال إصدار التطبيق')
           ..onDatachnage = (value) {
-            fieldsData['applicationVersion'] = value;
+            fieldsData['applicationversion'] = value;
           },
         FormEntity()
           ..type = FormFieldType.collection
@@ -636,7 +636,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             'lastDate': DateTime.now().add(const Duration(days: 365))
           }
           ..onDatachnage = (value) {
-            fieldsData['startDateAndTime'] = value;
+            fieldsData['startdateandtime'] = value;
           },
         FormEntity()
           ..type = FormFieldType.text
@@ -688,7 +688,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             ..requiredEn = 'Please Enter Change Description'
             ..requiredAr = 'الرجاء إدخال وصف التغيير')
           ..onDatachnage = (value) {
-            fieldsData['changeDescription'] = value;
+            fieldsData['changedescription'] = value;
           },
         FormEntity()
           ..type = FormFieldType.text
@@ -824,7 +824,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             'lastDate': DateTime.now().add(const Duration(days: 365))
           }
           ..onDatachnage = (value) {
-            fieldsData['startDateAndTime'] = value;
+            fieldsData['startdateandtime'] = value;
           },
         FormEntity()
           ..type = FormFieldType.date
@@ -841,7 +841,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             'lastDate': DateTime.now().add(const Duration(days: 365))
           }
           ..onDatachnage = (value) {
-            fieldsData['endDateAndTime'] = value;
+            fieldsData['enddateandtime'] = value;
           },
         FormEntity()
           ..type = FormFieldType.textarea
@@ -887,7 +887,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             ..requiredEn = 'Please Enter Change Description'
             ..requiredAr = 'الرجاء إدخال وصف التغيير')
           ..onDatachnage = (value) {
-            fieldsData['changeDescription'] = value;
+            fieldsData['changedescription'] = value;
           },
         FormEntity()
           ..type = FormFieldType.collection
@@ -925,7 +925,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             ]
           }
           ..onDatachnage = (value) {
-            fieldsData['operatingSystem'] = value;
+            fieldsData['operatingsystem'] = value;
           },
         FormEntity()
           ..type = FormFieldType.text
@@ -1203,9 +1203,9 @@ class IsoSystemCrScreen extends BaseScreenWidget {
       NameIDEntity(1, 'New Employee', nameAr: 'موظف جديد'),
       NameIDEntity(2, 'Migration Employee', nameAr: 'موظف الهجرة'),
       NameIDEntity(3, 'Existing Employee', nameAr: 'الموظف الحالي'),
-      NameIDEntity(3, 'System CR', nameAr: 'نظام CR'),
-      NameIDEntity(3, 'Network CR', nameAr: 'شبكة CR'),
-      NameIDEntity(3, 'Database and Applications',
+      NameIDEntity(4, 'System CR', nameAr: 'نظام CR'),
+      NameIDEntity(5, 'Network CR', nameAr: 'شبكة CR'),
+      NameIDEntity(6, 'Database and Applications',
           nameAr: 'قاعدة البيانات والتطبيقات'),
     ];
     var noOfCategoryRows = 2;

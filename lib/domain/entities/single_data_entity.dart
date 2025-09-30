@@ -20,6 +20,10 @@ class NameIDEntity extends BaseEntity {
     return (isSelectedLocalEn ? name : nameAr ?? name) ?? '';
   }
 
+  Map<String, dynamic> toJson() {
+    return {'id': id, 'name': name, 'nameAr': nameAr};
+  }
+
   @override
   List<Object?> get props => [
         id,

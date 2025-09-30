@@ -13,7 +13,7 @@ class CRRequestModel extends BaseModel {
   int? currentStep;
   int? requestStaus;
   String? createdAt;
-  String? completedAt;
+  String? updatedAt;
   String? attachmentUrlPrefix;
   String? currentStepName;
   String? assginedEmployee;
@@ -24,6 +24,7 @@ class CRRequestModel extends BaseModel {
   WorkflowFieldEntity? workflowFieldEntity;
   List<CRRequestStepEntity> steps = [];
   List<CRRequestHistoryEntity> requestHistory = [];
+  List<CRAttachmentEntity> attachements = [];
 
   CRRequestModel();
 
@@ -35,7 +36,7 @@ class CRRequestModel extends BaseModel {
     currentStep = json['currentStep'];
     requestStaus = json['requestStaus'];
     createdAt = json['createdAt'];
-    completedAt = json['completedAt'];
+    updatedAt = json['completedAt'];
     attachmentUrlPrefix = json['attachmentUrlPrefix'];
     currentStepName = json['currentStepName'];
     assginedEmployee = json['assginedEmployee'];
@@ -65,6 +66,13 @@ class CRRequestModel extends BaseModel {
         requestHistory.add(CRRequestHistoryModel.fromJson(v).toEntity());
       });
     }
+
+    if (json['attachements'] != null) {
+      attachements = <CRAttachmentEntity>[];
+      json['attachements'].forEach((v) {
+        attachements.add(CRAttachmentModel.fromJson(v).toEntity());
+      });
+    }
   }
 
   @override
@@ -76,15 +84,15 @@ class CRRequestModel extends BaseModel {
       ..currentStep = currentStep
       ..requestStaus = RequestStatus.fromId(requestStaus ?? 1)
       ..createdAt = createdAt
-      ..completedAt = completedAt
+      ..updatedAt = updatedAt
       ..attachmentUrlPrefix = attachmentUrlPrefix
       ..currentStepName = currentStepName
       ..assginedEmployee = assginedEmployee
       ..requestPriority = PriorityType.fromId(requestPriority ?? 1)
       ..requestDetail = requestDetail
-      ..details = details
       ..workflowFieldEntity = workflowFieldEntity
       ..steps = steps
+      ..attachments = attachements
       ..requestHistory = requestHistory;
   }
 }
@@ -361,15 +369,21 @@ class WorkflowFieldModel extends BaseModel {
 
   WorkflowFieldModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    formFields = List<Map<String, dynamic>>.from(
-      jsonDecode(json['formFields'] ?? '[]'),
-    );
-    reportFields = List<Map<String, dynamic>>.from(
-      jsonDecode(json['reportFields'] ?? '[]'),
-    );
-    detailsFields = List<Map<String, dynamic>>.from(
-      jsonDecode(json['detailsFields'] ?? '[]'),
-    );
+    if (json['formFields'] != null) {
+      formFields = List<Map<String, dynamic>>.from(
+        jsonDecode(json['formFields'] ?? '[]'),
+      );
+    }
+    if (json['reportFields'] != null) {
+      reportFields = List<Map<String, dynamic>>.from(
+        jsonDecode(json['reportFields'] ?? '[]'),
+      );
+    }
+    if (json['detailsFields'] != null) {
+      detailsFields = List<Map<String, dynamic>>.from(
+        jsonDecode(json['detailsFields'] ?? '[]'),
+      );
+    }
   }
   @override
   WorkflowFieldEntity toEntity() {
