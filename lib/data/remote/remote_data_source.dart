@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:dio/browser.dart';
 import 'package:dio/dio.dart';
 import 'package:ithelpdesk/core/common/log.dart';
-import 'package:ithelpdesk/core/error/exceptions.dart';
 import 'package:ithelpdesk/data/remote/dio_logging_interceptor.dart';
 
 abstract class RemoteDataSource {
@@ -40,19 +39,19 @@ class RemoteDataSourceImpl implements RemoteDataSource {
 
   RemoteDataSourceImpl({required this.dio});
 
-  ServerException _getExceptionType(Response<dynamic> response) {
-    switch (response.statusCode) {
-      case 400:
-        return throw ServerException(message: response.data);
-      case 401:
-        return throw const ServerException(message: 'Unauthorized');
-      case 500:
-        return throw const ServerException(message: 'Internal Server Error');
-      default:
-        throw ServerException(
-            message: response.data.isNull ? 'Unknown Error' : response.data);
-    }
-  }
+  // ServerException _getExceptionType(Response<dynamic> response) {
+  //   switch (response.statusCode) {
+  //     case 400:
+  //       return throw ServerException(message: response.data);
+  //     case 401:
+  //       return throw const ServerException(message: 'Unauthorized');
+  //     case 500:
+  //       return throw const ServerException(message: 'Internal Server Error');
+  //     default:
+  //       throw ServerException(
+  //           message: response.data.isNull ? 'Unknown Error' : response.data);
+  //   }
+  // }
 
   @override
   Future get(

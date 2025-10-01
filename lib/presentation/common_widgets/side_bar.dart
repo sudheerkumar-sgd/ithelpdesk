@@ -93,33 +93,33 @@ class SideBar extends StatelessWidget {
                         .onFontSize(resources.fontSize.dp12),
                   ),
                 ),
-                SizedBox(
-                  height: resources.dimen.dp10,
-                ),
-                ListTile(
-                  onTap: () {
-                    _selectedIndex.value = 2;
-                    onItemSelected(2);
-                  },
-                  leading: SizedBox(
-                    width: 40,
-                    height: 40,
-                    child: ImageWidget(
-                            path: DrawableAssets.icReport,
-                            backgroundTint: index == 2
-                                ? resources.color.sideBarItemSelected
-                                : resources.color.sideBarItemUnselected,
-                            padding: const EdgeInsets.symmetric(horizontal: 5))
-                        .loadImageWithMoreTapArea,
-                  ),
-                  title: Text(
-                    'CR',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: context.textFontWeight600
-                        .onFontSize(resources.fontSize.dp12),
-                  ),
-                ),
+                // SizedBox(
+                //   height: resources.dimen.dp10,
+                // ),
+                // ListTile(
+                //   onTap: () {
+                //     _selectedIndex.value = 2;
+                //     onItemSelected(2);
+                //   },
+                //   leading: SizedBox(
+                //     width: 40,
+                //     height: 40,
+                //     child: ImageWidget(
+                //             path: DrawableAssets.icReport,
+                //             backgroundTint: index == 2
+                //                 ? resources.color.sideBarItemSelected
+                //                 : resources.color.sideBarItemUnselected,
+                //             padding: const EdgeInsets.symmetric(horizontal: 5))
+                //         .loadImageWithMoreTapArea,
+                //   ),
+                //   title: Text(
+                //     'IT ISO Requests',
+                //     maxLines: 1,
+                //     overflow: TextOverflow.ellipsis,
+                //     style: context.textFontWeight600
+                //         .onFontSize(resources.fontSize.dp12),
+                //   ),
+                // ),
                 // ValueListenableBuilder(
                 //     valueListenable: _onCRClick,
                 //     builder: (context, onCRClick, child) {
@@ -170,15 +170,15 @@ class SideBar extends StatelessWidget {
                 ),
                 ListTile(
                   onTap: () {
-                    _selectedIndex.value = 3;
-                    onItemSelected(3);
+                    _selectedIndex.value = 2;
+                    onItemSelected(2);
                   },
                   leading: SizedBox(
                     width: 40,
                     height: 40,
                     child: ImageWidget(
                             path: DrawableAssets.icDirectory,
-                            backgroundTint: index == 3
+                            backgroundTint: index == 2
                                 ? resources.color.sideBarItemSelected
                                 : resources.color.sideBarItemUnselected,
                             padding: const EdgeInsets.symmetric(horizontal: 5))
@@ -197,15 +197,15 @@ class SideBar extends StatelessWidget {
                 ),
                 ListTile(
                   onTap: () {
-                    _selectedIndex.value = 4;
-                    onItemSelected(4);
+                    _selectedIndex.value = 3;
+                    onItemSelected(3);
                   },
                   leading: SizedBox(
                     width: 40,
                     height: 40,
                     child: ImageWidget(
                             path: DrawableAssets.icUser,
-                            backgroundTint: index == 4
+                            backgroundTint: index == 3
                                 ? resources.color.sideBarItemSelected
                                 : resources.color.sideBarItemUnselected,
                             padding: const EdgeInsets.symmetric(horizontal: 5))

@@ -1,7 +1,6 @@
 // ignore_for_file: must_be_immutable
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/domain/entities/base_entity.dart';
-import 'package:ithelpdesk/domain/entities/single_data_entity.dart';
 
 class CRRequestEntity extends BaseEntity {
   int? requestId;

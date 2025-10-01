@@ -6,6 +6,7 @@ import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/string_extension.dart';
 import 'package:ithelpdesk/domain/entities/base_entity.dart';
+import 'package:ithelpdesk/domain/entities/user_entity.dart';
 
 import 'user_credentials_entity.dart';
 
@@ -35,6 +36,7 @@ class TicketsByCategoryEntity extends BaseEntity {
 
 class TicketPageEntity extends BaseEntity {
   List<TicketEntity> ticketsList = [];
+  List<UserEntity> assigniedEmployees = [];
   int? totalCount;
   int? pageCount;
 }

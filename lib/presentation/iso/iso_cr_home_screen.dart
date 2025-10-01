@@ -1,37 +1,21 @@
 // ignore_for_file: must_be_immutable
 import 'package:dartz/dartz.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
-import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/common/log.dart';
-import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/domain/entities/api_entity.dart';
-import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
 import 'package:ithelpdesk/domain/entities/iso_entity.dart';
 import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
-import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
 import 'package:ithelpdesk/injection_container.dart';
 import 'package:ithelpdesk/presentation/bloc/iso/iso_bloc.dart';
-import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
 import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart';
-import 'package:ithelpdesk/presentation/common_widgets/alert_dialog_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
-import 'package:ithelpdesk/presentation/common_widgets/dropdown_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dynamic_report_list_widget.dart';
-import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
-import 'package:ithelpdesk/presentation/common_widgets/report_list_widget.dart';
 import 'package:ithelpdesk/presentation/iso/iso_system_cr_screen.dart';
 import 'package:ithelpdesk/presentation/iso/iso_view_request_screen.dart';
-import 'package:ithelpdesk/presentation/requests/create_new_request.dart';
-import 'package:ithelpdesk/presentation/requests/view_request.dart';
-import 'package:ithelpdesk/presentation/utils/dialogs.dart';
-import 'package:ithelpdesk/res/drawables/background_box_decoration.dart';
-import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
 
 class IsoCrHomeScreen extends BaseScreenWidget {
   IsoCrHomeScreen({super.key});
@@ -42,11 +26,11 @@ class IsoCrHomeScreen extends BaseScreenWidget {
   //List<Map<String, Object>> _requestTypes = [];
   int selectTicketCategory = 1;
   final ValueNotifier<int> _selectedYear = ValueNotifier(2024);
-  final ValueNotifier<List<String>> _filteredDates = ValueNotifier([]);
+  //final ValueNotifier<List<String>> _filteredDates = ValueNotifier([]);
   StatusType filteredStatus = StatusType.all;
 
   Future<ApiEntity<ListEntity>> _getCRTickets() async {
-    var dateFormat = DateFormat('dd-MMM-yyyy HH:mm');
+    //var dateFormat = DateFormat('dd-MMM-yyyy HH:mm');
     //var startTime = DateFormat('yyyy/MM/dd').parse(_filteredDates.value[0]);
     //var endTime = DateFormat('yyyy/MM/dd').parse(_filteredDates.value[1]);
     final response = await _isoBloc.getRequests(requestParams: {
@@ -67,12 +51,12 @@ class IsoCrHomeScreen extends BaseScreenWidget {
   @override
   Widget build(BuildContext context) {
     final resources = context.resources;
-    Future.delayed(Duration.zero, () {
-      _getCRTickets();
-    });
+    // Future.delayed(Duration.zero, () {
+    //   _getCRTickets();
+    // });
     _selectedYear.value = DateTime.now().year;
-    final requestTypesRows = isDesktop(context) ? 1 : 2;
-    final requestTypesColumns = isDesktop(context) ? 4 : 2;
+    //final requestTypesRows = isDesktop(context) ? 1 : 2;
+    //final requestTypesColumns = isDesktop(context) ? 4 : 2;
     // _requestTypes = [
     //   {
     //     'name': resources.string.notAssignedRequests,

@@ -9,12 +9,11 @@ import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/string_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
+import 'package:ithelpdesk/domain/entities/user_entity.dart';
 import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
 import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart';
-import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dropdown_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/report_list_widget.dart';
-import 'package:ithelpdesk/presentation/reports/widgets/report_filter_widget.dart';
 import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 
 import '../../core/constants/constants.dart';
@@ -38,6 +37,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
 
   // final _masterDataBloc = sl<MasterDataBloc>();
   List<TicketEntity> tickets = List.empty(growable: true);
+  List<UserEntity> assigniedEmployees = List.empty(growable: true);
 
   int? index;
 
@@ -695,6 +695,8 @@ class _ReportsScreenState extends State<ReportsScreen> {
     if (context.mounted) {
       Dialogs.dismiss(context);
       tickets.addAll(newTickets.entity?.ticketsList ?? []);
+      assigniedEmployees.clear();
+      assigniedEmployees.addAll(newTickets.entity?.assigniedEmployees ?? []);
       totalPagecount = newTickets.entity?.totalCount;
       _onFilterChange.value = !_onFilterChange.value;
     }
@@ -725,6 +727,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
       'issueType': (filteredData?['issueType'] is List)
           ? (filteredData?['issueType'].join(', '))
           : null,
+      'employees': (filteredData?['employees'] is List)
+          ? (filteredData?['employees'].join(', '))
+          : null,
       'chargeable': filteredData?['chargeable'] ?? false,
       'startDate': startDate,
       'endDate': endDate,
@@ -738,11 +743,23 @@ class _ReportsScreenState extends State<ReportsScreen> {
   void initState() {
     super.initState();
     _resizeTimer?.cancel();
-    _resizeTimer = Timer(const Duration(milliseconds: 400), () {
-      if (tickets.isEmpty && mounted) {
+    // _resizeTimer = Timer(const Duration(milliseconds: 400), () {
+    //   if (tickets.isEmpty && mounted) {
+    //     _updateTickets(context);
+    //   }
+    // });
+    Future.delayed(Duration.zero, () {
+      if (mounted) {
         _updateTickets(context);
       }
+      startTimer(
+          duration: const Duration(minutes: 15),
+          callback: () {
+            _updateTickets(context);
+          });
     });
+
+    Future.delayed(Duration.zero, () {});
   }
 
   @override
@@ -785,10 +802,12 @@ class _ReportsScreenState extends State<ReportsScreen> {
                           builder: (context, value, child) {
                             return ReportListWidget(
                               ticketsData: tickets,
+                              assigniedEmployees: assigniedEmployees,
                               showActionButtons: true,
                               pageIndex: (index ?? 0) + 1,
                               totalPagecount: totalPagecount ?? 0,
                               filters: filteredData,
+                              ticketsCategory: (_selectedCategory ?? 0) + 1,
                               onTicketSelected: (ticket) {
                                 ViewRequest.start(context, ticket);
                               },

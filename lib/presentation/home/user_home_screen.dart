@@ -319,6 +319,12 @@ class UserHomeScreen extends BaseScreenWidget {
           requestParams: UserCredentialsEntity.details().id != null
               ? {"userId": UserCredentialsEntity.details().id}
               : {});
+
+      startTimer(
+          duration: const Duration(minutes: 15),
+          callback: () {
+            _onDataChange.value = (!_onDataChange.value);
+          });
     });
     _selectedYear.value = DateTime.now().year;
     final requestTypesRows = isDesktop(context) ? 1 : 2;

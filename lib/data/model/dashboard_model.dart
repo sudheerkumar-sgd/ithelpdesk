@@ -2,7 +2,9 @@
 
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/data/model/base_model.dart';
+import 'package:ithelpdesk/data/model/login_model.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
+import 'package:ithelpdesk/domain/entities/user_entity.dart';
 
 class DashboardModel extends BaseModel {
   int? id;
@@ -130,6 +132,7 @@ class TicketsByCategoryModel extends BaseModel {
 
 class TicketsPageModel extends BaseModel {
   List<TicketEntity> ticketsList = [];
+  List<UserEntity> assigniedEmployees = [];
   int? totalCount;
   int? pageCount;
   TicketsPageModel.fromJson(Map<String, dynamic> json) {
@@ -137,6 +140,11 @@ class TicketsPageModel extends BaseModel {
       json['data']?['tickets'].forEach((v) {
         ticketsList.add(TicketsModel.fromJson(v).toEntity());
       });
+    }
+    if (json['data']?['assigniedEmployees'] is List) {
+      for (var json in (json['data']?['assigniedEmployees'] as List)) {
+        assigniedEmployees.add(UserModel.fromJson(json).toEntity());
+      }
     }
     totalCount = json['data']?['totalCount'];
     pageCount = json['data']?['pageCount'];
@@ -146,6 +154,7 @@ class TicketsPageModel extends BaseModel {
   TicketPageEntity toEntity() {
     final ticketPageEntity = TicketPageEntity();
     ticketPageEntity.ticketsList = ticketsList;
+    ticketPageEntity.assigniedEmployees = assigniedEmployees;
     ticketPageEntity.totalCount = totalCount;
     ticketPageEntity.pageCount = pageCount;
     return ticketPageEntity;

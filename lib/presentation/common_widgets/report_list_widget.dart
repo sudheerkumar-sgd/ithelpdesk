@@ -13,7 +13,7 @@ import 'package:ithelpdesk/data/remote/api_urls.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
 import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
 import 'package:ithelpdesk/domain/entities/single_data_entity.dart';
-import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
+import 'package:ithelpdesk/domain/entities/user_entity.dart';
 import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 import 'package:ithelpdesk/res/drawables/background_box_decoration.dart';
 import '../../injection_container.dart';
@@ -22,18 +22,22 @@ import 'multi_select_dialog_widget.dart';
 
 class ReportListWidget extends StatelessWidget {
   final List<dynamic> ticketsData;
+  final List<UserEntity>? assigniedEmployees;
   final bool showActionButtons;
   final int pageIndex;
   final int? totalPagecount;
+  final int? ticketsCategory;
   final Map<String, dynamic>? filters;
   final Function(TicketEntity)? onTicketSelected;
   final Function(int)? onPageChange;
   final Function(Map<String, dynamic>)? onFilterChange;
   ReportListWidget(
       {required this.ticketsData,
+      this.assigniedEmployees,
       this.showActionButtons = false,
       this.pageIndex = 1,
       this.totalPagecount,
+      this.ticketsCategory = 1,
       this.onTicketSelected,
       this.filters,
       this.onPageChange,
@@ -61,7 +65,8 @@ class ReportListWidget extends StatelessWidget {
       return Future.value(_employees);
     }
     final result = await _masterDataBloc.getAssignedEmployees(
-        requestParams: {}, apiUrl: assignedEmployeesByUserApiUrl);
+        requestParams: {'ticketsCategory': ticketsCategory},
+        apiUrl: assignedEmployeesByUserApiUrl);
     _employees = result.items;
     return Future.value(_employees);
   }
@@ -155,7 +160,13 @@ class ReportListWidget extends StatelessWidget {
   }
 
   bool isClickableColumn(int id) {
-    return [9, 6, 5, 7, 3, 8, 10, 11].contains(id);
+    return (onFilterChange != null
+            ? [9, 6, 5, 7, 3, 8, 10, 11]
+            : [
+                9,
+                6,
+              ])
+        .contains(id);
   }
 
   @override
@@ -385,8 +396,20 @@ class ReportListWidget extends StatelessWidget {
                                                   _selectedEmployees
                                                       .addAll(ids);
                                                   page = 1;
-                                                  _onSortChange.value =
-                                                      !_onSortChange.value;
+                                                  // _onSortChange.value =
+                                                  //     !_onSortChange.value;
+                                                  onFilterChange?.call({
+                                                    'categories':
+                                                        _selectedCategories,
+                                                    'status': _filteredStatus,
+                                                    'issueType':
+                                                        _filteredIssueType,
+                                                    'employees':
+                                                        _selectedEmployees,
+                                                    'departments':
+                                                        _selectedDepartments,
+                                                    'chargeable': _chargeable
+                                                  });
                                                 }
                                               });
                                             }
@@ -432,6 +455,8 @@ class ReportListWidget extends StatelessWidget {
                                                         _filteredIssueType,
                                                     'departments':
                                                         _selectedDepartments,
+                                                    'employees':
+                                                        _selectedEmployees,
                                                     'chargeable': _chargeable
                                                   });
                                                   // _onSortChange.value =
@@ -490,6 +515,8 @@ class ReportListWidget extends StatelessWidget {
                                                         _filteredIssueType,
                                                     'departments':
                                                         _selectedDepartments,
+                                                    'employees':
+                                                        _selectedEmployees,
                                                     'chargeable': _chargeable
                                                   });
                                                   // _onSortChange.value =
@@ -577,6 +604,8 @@ class ReportListWidget extends StatelessWidget {
                                                     'status': _filteredStatus,
                                                     'issueType':
                                                         _filteredIssueType,
+                                                    'employees':
+                                                        _selectedEmployees,
                                                     'departments':
                                                         _selectedDepartments,
                                                     'chargeable': ids.isNotEmpty

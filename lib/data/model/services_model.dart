@@ -418,14 +418,14 @@ class UserFeedbackModel extends BaseModel {
 
   UserFeedbackModel.fromJson(Map<String, dynamic> response) {
     final json = response['data'];
-    id = json['id'];
-    rating = json['rating'];
-    comment = json['comment'];
-    createdOn = json['createdOn'];
-    userID = json['userID'];
-    closedBy = json['closedBy'];
-    ticketID = json['ticketID'];
-    feedbackFrom = json['feedbackFrom'];
+    id = json?['id'];
+    rating = json?['rating'];
+    comment = json?['comment'];
+    createdOn = json?['createdOn'];
+    userID = json?['userID'];
+    closedBy = json?['closedBy'];
+    ticketID = json?['ticketID'];
+    feedbackFrom = json?['feedbackFrom'];
   }
 
   @override

@@ -1,9 +1,7 @@
 import 'package:dartz/dartz.dart';
-import 'package:flutter/widgets.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/common/log.dart';
 import 'package:ithelpdesk/core/error/failures.dart';
-import 'package:ithelpdesk/core/extensions/string_extension.dart';
 import 'package:ithelpdesk/data/model/api_response_model.dart';
 import 'package:ithelpdesk/data/model/dashboard_model.dart';
 import 'package:ithelpdesk/data/model/master_data_models.dart';
