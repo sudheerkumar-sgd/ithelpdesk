@@ -90,11 +90,11 @@ class _MainScreenState extends State<UserMainScreen> {
                 : UserHomeNavigatorScreen();
       case 1:
         currentScreen = ReportsNavigatorScreen();
-      // case 2:
-      //   currentScreen = ISONavigatorScreen();
       case 2:
-        currentScreen = DirectoryNavigatorScreen();
+        currentScreen = ISONavigatorScreen();
       case 3:
+        currentScreen = DirectoryNavigatorScreen();
+      case 4:
         currentScreen = ProfileNavigatorScreen();
       default:
         currentScreen =
