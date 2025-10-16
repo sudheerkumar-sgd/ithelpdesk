@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
+import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
 import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
 import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
 
@@ -93,33 +94,36 @@ class SideBar extends StatelessWidget {
                         .onFontSize(resources.fontSize.dp12),
                   ),
                 ),
-                SizedBox(
-                  height: resources.dimen.dp10,
-                ),
-                ListTile(
-                  onTap: () {
-                    _selectedIndex.value = 2;
-                    onItemSelected(2);
-                  },
-                  leading: SizedBox(
-                    width: 40,
-                    height: 40,
-                    child: ImageWidget(
-                            path: DrawableAssets.icReport,
-                            backgroundTint: index == 2
-                                ? resources.color.sideBarItemSelected
-                                : resources.color.sideBarItemUnselected,
-                            padding: const EdgeInsets.symmetric(horizontal: 5))
-                        .loadImageWithMoreTapArea,
+                if (UserCredentialsEntity.details().isoUser == true) ...[
+                  SizedBox(
+                    height: resources.dimen.dp10,
                   ),
-                  title: Text(
-                    'IT ISO Requests',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: context.textFontWeight600
-                        .onFontSize(resources.fontSize.dp12),
-                  ),
-                ),
+                  ListTile(
+                    onTap: () {
+                      _selectedIndex.value = 2;
+                      onItemSelected(2);
+                    },
+                    leading: SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: ImageWidget(
+                              path: DrawableAssets.icReport,
+                              backgroundTint: index == 2
+                                  ? resources.color.sideBarItemSelected
+                                  : resources.color.sideBarItemUnselected,
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 5))
+                          .loadImageWithMoreTapArea,
+                    ),
+                    title: Text(
+                      'IT ISO Requests',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.textFontWeight600
+                          .onFontSize(resources.fontSize.dp12),
+                    ),
+                  )
+                ],
                 // ValueListenableBuilder(
                 //     valueListenable: _onCRClick,
                 //     builder: (context, onCRClick, child) {

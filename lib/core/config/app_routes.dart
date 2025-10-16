@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ithelpdesk/presentation/base/page_widget_provider.dart';
 import 'package:ithelpdesk/presentation/home/user_main_screen.dart';
+import 'package:ithelpdesk/presentation/iso/iso_view_request_screen.dart';
 import 'package:ithelpdesk/presentation/profile/profile_screen.dart';
 import 'package:ithelpdesk/presentation/profile/profile_screen_widget.dart';
 import 'package:ithelpdesk/presentation/profile/rating_screen_widget.dart';
@@ -18,6 +19,7 @@ class AppRoutes {
   static String profileRoute = '/profile';
   static String ticketRoute = '/ticket/:id';
   static String ratingRoute = '/rating/:id';
+  static String crRequestRoute = '/crRequest/:id';
 
   /// The map used to define our routes, needs to be supplied to [MaterialApp]
   static Map<String, WidgetBuilder> getRoutes() {
@@ -85,6 +87,18 @@ class AppRoutes {
                 child: child,
               );
             },
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.crRequestRoute,
+        name: 'crRequest',
+        builder: (context, state) {
+          final requestId = state.pathParameters['id'];
+          return PageWidgetProvider(
+            ISOViewRequestScreen(
+              requestId: int.tryParse(requestId ?? '0') ?? 0,
+            ),
           );
         },
       ),

@@ -35,28 +35,22 @@ import 'package:page_transition/page_transition.dart';
 import '../common_widgets/alert_dialog_widget.dart';
 
 class ISOViewRequestScreen extends BaseScreenWidget {
-  static start(BuildContext context, int requestId, {bool? isMyTicket}) {
-    Navigator.push(
+  static Future<dynamic> start(BuildContext context, int requestId,
+      {bool? isFromRoute}) {
+    return Navigator.push(
       context,
       PageTransition(
           type: PageTransitionType.rightToLeft,
           child: ISOViewRequestScreen(
             requestId: requestId,
-            isMyTicket: isMyTicket,
+            isFromRoute: false,
           )),
     );
   }
 
   final int requestId;
-  final TicketEntity? ticketDetails;
-  final String? ticketId;
-  final bool? isMyTicket;
-  ISOViewRequestScreen(
-      {required this.requestId,
-      this.ticketDetails,
-      this.ticketId,
-      this.isMyTicket,
-      super.key});
+  final bool? isFromRoute;
+  ISOViewRequestScreen({required this.requestId, this.isFromRoute, super.key});
   late CRRequestEntity requestEntity;
   Size screenDimentions = screenSize;
   String apiResponseMessage = '';
@@ -508,12 +502,9 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                     (index) {
                   return InkWell(
                     onTap: () {
-                      Dialogs.showDialogWithClose(
-                          context,
-                          maxWidth: 400,
-                          openNewTab(
-                            '${requestEntity.attachmentUrlPrefix}${requestEntity.attachments?[index].name ?? ""}',
-                          ));
+                      openNewTab(
+                        '${requestEntity.attachmentUrlPrefix}${requestEntity.attachments?[index].name ?? ""}',
+                      );
                     },
                     child: Row(
                       children: [
@@ -784,11 +775,10 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                       SizedBox(
                         height: resources.dimen.dp10,
                       ),
-                      ticketId != null
+                      (isFromRoute ?? true)
                           ? _getScrollwidget(context, requestEntity)
                           : Expanded(
-                              child: _getScrollwidget(context, requestEntity),
-                            ),
+                              child: _getScrollwidget(context, requestEntity)),
                       SizedBox(
                         height: resources.dimen.dp20,
                       ),

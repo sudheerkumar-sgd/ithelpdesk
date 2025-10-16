@@ -3,6 +3,7 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ithelpdesk/core/common/log.dart';
+import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
@@ -119,7 +120,11 @@ class IsoCrHomeScreen extends BaseScreenWidget {
                           printLog(size.maxWidth);
                           return InkWell(
                             onTap: () {
-                              IsoSystemCrScreen.start(context);
+                              IsoSystemCrScreen.start(context).then((value) {
+                                if (value == true) {
+                                  _onDataChange.value = !_onDataChange.value;
+                                }
+                              });
                             },
                             child: ActionButtonWidget(
                               width: size.maxWidth < 210 ? 100 : null,
@@ -446,10 +451,13 @@ class IsoCrHomeScreen extends BaseScreenWidget {
                                   List.from(snapShot.data?.entity?.items ?? []);
                               if (filterTickets.isEmpty) {
                                 return Padding(
-                                  padding: const EdgeInsets.only(top: 20.0),
+                                  padding: const EdgeInsets.only(top: 40.0),
                                   child: Text(
-                                    resources.string.noTickets,
-                                    style: context.textFontWeight600,
+                                    isSelectedLocalEn
+                                        ? 'No Requests'
+                                        : 'لا توجد طلبات',
+                                    style: context.textFontWeight600
+                                        .onFontSize(resources.fontSize.dp16),
                                   ),
                                 );
                               }

@@ -23,8 +23,8 @@ import 'package:ithelpdesk/res/drawables/background_box_decoration.dart';
 import 'package:page_transition/page_transition.dart';
 
 class IsoSystemCrScreen extends BaseScreenWidget {
-  static start(BuildContext context) {
-    Navigator.push(
+  static Future<dynamic> start(BuildContext context) {
+    return Navigator.push(
       context,
       PageTransition(
           type: PageTransitionType.rightToLeft, child: IsoSystemCrScreen()),
@@ -113,7 +113,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             fieldsData['fullname'] = value;
           },
         FormEntity()
-          ..type = FormFieldType.collection
+          ..type = FormFieldType.text
           ..name = 'designation'
           ..label = resources.string.designation
           ..validation = (FormValidationEntity()..required = true)
@@ -122,7 +122,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             ..requiredAr = 'الرجاء إدخال التعيين')
           ..inputFieldData = {'items': designations}
           ..onDatachnage = (value) {
-            fieldsData['designation'] = value.name;
+            fieldsData['designation'] = value;
           },
         FormEntity()
           ..type = FormFieldType.collection
@@ -152,7 +152,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..labelEn = 'Reporting Manager'
           ..labelAr = 'مدير التقارير'
           ..requestModel = ListModel.fromEmployeesJson
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..required = false)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Reporting Manager'
             ..requiredAr = 'الرجاء إدخال مدير التقارير')
@@ -200,7 +200,10 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Date of Joining'
             ..requiredAr = 'الرجاء إدخال تاريخ الانضمام')
-          ..inputFieldData = {'format': 'yyyy-MM-dd'}
+          ..inputFieldData = {
+            'format': 'yyyy-MM-dd',
+            'lastDate': DateTime.now().add(const Duration(days: 365))
+          }
           ..onDatachnage = (value) {
             fieldsData['dateofjoining'] = value;
           },
@@ -287,7 +290,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             fieldsData['fullname'] = value;
           },
         FormEntity()
-          ..type = FormFieldType.collection
+          ..type = FormFieldType.text
           ..name = 'designation'
           ..label = resources.string.designation
           ..validation = (FormValidationEntity()..required = true)
@@ -296,7 +299,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             ..requiredAr = 'الرجاء إدخال التعيين')
           ..inputFieldData = {'items': designations}
           ..onDatachnage = (value) {
-            fieldsData['designation'] = value.name;
+            fieldsData['designation'] = value;
           },
         FormEntity()
           ..type = FormFieldType.collection
@@ -1518,7 +1521,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
                                   resources.string.successfullySubmitted)
                               .then((value) {
                             if (context.mounted) {
-                              Navigator.pop(context);
+                              Navigator.pop(context, true);
                             }
                           });
                         } else if (response is OnISOApiError) {
