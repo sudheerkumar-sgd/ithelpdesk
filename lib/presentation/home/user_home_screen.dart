@@ -548,7 +548,11 @@ class UserHomeScreen extends BaseScreenWidget {
                   if (UserCredentialsEntity.details().userType ==
                           UserType.superAdmin ||
                       UserCredentialsEntity.details().userType ==
-                          UserType.itAdmin) ...[
+                          UserType.itAdmin ||
+                      UserCredentialsEntity.details().userType ==
+                          UserType.sgdIT ||
+                      UserCredentialsEntity.details().userType ==
+                          UserType.localIT) ...[
                     ValueListenableBuilder(
                         valueListenable: _onDataChange,
                         builder: (context, onDataChange, child) {
@@ -564,13 +568,19 @@ class UserHomeScreen extends BaseScreenWidget {
                                     SizedBox(
                                       width: resources.dimen.dp20,
                                     ),
-                                    Flexible(
-                                        flex: 2,
-                                        child: getPieChart(
-                                            context,
-                                            _dashboardEntity
-                                                    ?.ticketsByCategory ??
-                                                []))
+                                    if (UserCredentialsEntity.details()
+                                                .userType ==
+                                            UserType.superAdmin ||
+                                        UserCredentialsEntity.details()
+                                                .userType ==
+                                            UserType.itAdmin)
+                                      Flexible(
+                                          flex: 2,
+                                          child: getPieChart(
+                                              context,
+                                              _dashboardEntity
+                                                      ?.ticketsByCategory ??
+                                                  []))
                                   ],
                                 )
                               : Column(
@@ -580,10 +590,16 @@ class UserHomeScreen extends BaseScreenWidget {
                                     SizedBox(
                                       height: resources.dimen.dp20,
                                     ),
-                                    getPieChart(
-                                        context,
-                                        _dashboardEntity?.ticketsByCategory ??
-                                            [])
+                                    if (UserCredentialsEntity.details()
+                                                .userType ==
+                                            UserType.superAdmin ||
+                                        UserCredentialsEntity.details()
+                                                .userType ==
+                                            UserType.itAdmin)
+                                      getPieChart(
+                                          context,
+                                          _dashboardEntity?.ticketsByCategory ??
+                                              [])
                                   ],
                                 );
                         }),

@@ -57,7 +57,7 @@ class LKPchildrenEntity extends BaseEntity {
 }
 
 class FormValidationEntity extends BaseEntity {
-  bool? required;
+  bool? isrequired;
   int? maxLength;
   int? maxSize;
   String? extensions;
@@ -68,7 +68,7 @@ class FormValidationEntity extends BaseEntity {
   dynamic max;
 
   @override
-  List<Object?> get props => [required, maxLength];
+  List<Object?> get props => [isrequired, maxLength];
 }
 
 class FormMessageEntity extends BaseEntity {

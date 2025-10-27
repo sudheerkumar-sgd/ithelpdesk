@@ -273,6 +273,10 @@ enum FormFieldType {
   button,
   label,
   labelheader;
+
+  factory FormFieldType.fromName(String value) {
+    return values.firstWhere((e) => e.name.contains(value.toLowerCase()));
+  }
 }
 
 enum RequestStatus {
@@ -358,23 +362,23 @@ enum RequestStepStatus {
   String toString() {
     switch (this) {
       case close:
-        return isSelectedLocalEn ? 'Close' : 'اغلاق';
+        return isSelectedLocalEn ? 'Completed' : 'مكتمل';
       case reject:
-        return isSelectedLocalEn ? 'Reject' : 'رفض';
+        return isSelectedLocalEn ? 'Rejected' : 'مرفوض';
       case hold:
         return isSelectedLocalEn ? 'Hold' : 'تعليق';
       case returned:
-        return isSelectedLocalEn ? 'Return' : 'إرجاع';
+        return isSelectedLocalEn ? 'Returned' : 'إرجاع';
       case inProgress:
         return isSelectedLocalEn ? 'In Progress' : 'قيد التنفيذ';
       case transfer:
-        return isSelectedLocalEn ? 'Transfer' : 'تم التحويل';
+        return isSelectedLocalEn ? 'Transfered' : 'تم التحويل';
       case approved:
-        return isSelectedLocalEn ? 'Approve' : 'موافق عليه';
+        return isSelectedLocalEn ? 'Approved' : 'موافق عليه';
       case submited:
-        return isSelectedLocalEn ? 'Submit' : 'تم الإرسال';
+        return isSelectedLocalEn ? 'Submited' : 'تم الإرسال';
       case reSubmit:
-        return isSelectedLocalEn ? 'Resubmit' : 'إعادة الإرسال';
+        return isSelectedLocalEn ? 'Resubmited' : 'إعادة الإرسال';
       case RequestStepStatus.aquire:
         return isSelectedLocalEn ? 'Acquire' : 'يكتسب';
       case open:

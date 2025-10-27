@@ -4,6 +4,8 @@ import 'dart:convert';
 
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/data/model/base_model.dart';
+import 'package:ithelpdesk/data/model/form_model.dart';
+import 'package:ithelpdesk/domain/entities/form_entities.dart';
 import 'package:ithelpdesk/domain/entities/iso_entity.dart';
 
 class CRRequestModel extends BaseModel {
@@ -36,7 +38,7 @@ class CRRequestModel extends BaseModel {
     currentStep = json['currentStep'];
     requestStaus = json['requestStaus'];
     createdAt = json['createdAt'];
-    updatedAt = json['completedAt'];
+    updatedAt = json['updatedAt'];
     attachmentUrlPrefix = json['attachmentUrlPrefix'];
     currentStepName = json['currentStepName'];
     assginedEmployee = json['assginedEmployee'];
@@ -175,6 +177,7 @@ class CRRequestDetailsModel extends BaseModel {
 class CRRequestStepModel extends BaseModel {
   int? requestStepId;
   String? stepName;
+  List<FormEntity> inputFields = [];
   int? assignedTo;
   String? assigneDisplayName;
   String? updatedAt;
@@ -196,6 +199,11 @@ class CRRequestStepModel extends BaseModel {
         assignees.add(CRRequestStepAssigneeModel.fromJson(v).toEntity());
       });
     }
+    if (json['inputFields'] != null) {
+      inputFields = List<Map<String, dynamic>>.from(
+        jsonDecode(json['inputFields'] ?? '[]'),
+      ).map((e) => FormModel.fromJson(e).toEntity()).toList();
+    }
   }
 
   @override
@@ -203,6 +211,7 @@ class CRRequestStepModel extends BaseModel {
     return CRRequestStepEntity()
       ..requestStepId = requestStepId
       ..stepName = stepName
+      ..inputFields = inputFields
       ..assignedTo = assignedTo
       ..assigneDisplayName = assigneDisplayName
       ..updatedAt = updatedAt

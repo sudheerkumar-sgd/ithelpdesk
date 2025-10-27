@@ -50,7 +50,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..type = FormFieldType.collection
           ..name = 'priority'
           ..label = resources.string.priority
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Select priority'
             ..requiredAr = 'الرجاء تحديد الأولوية')
@@ -71,7 +71,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..labelEn = 'Employee First Name'
           ..labelAr = 'الاسم الأول للموظف'
           ..validation = (FormValidationEntity()
-            ..required = true
+            ..isrequired = true
             ..regex = nameNumberRegex)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Employee First Name'
@@ -87,7 +87,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..labelEn = 'Employee Last Name'
           ..labelAr = 'الاسم الأخير للموظف'
           ..validation = (FormValidationEntity()
-            ..required = true
+            ..isrequired = true
             ..regex = nameNumberRegex)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Employee Last Name'
@@ -102,7 +102,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..label = resources.string.fullName
           ..name = 'fullname'
           ..validation = (FormValidationEntity()
-            ..required = true
+            ..isrequired = true
             ..regex = nameRegExp)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Employee Full Name'
@@ -116,7 +116,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..type = FormFieldType.text
           ..name = 'designation'
           ..label = resources.string.designation
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter designation'
             ..requiredAr = 'الرجاء إدخال التعيين')
@@ -130,7 +130,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..label = resources.string.department
           ..url = departmentsApiUrl
           ..requestModel = ListModel.fromDepartmentsJson
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter department'
             ..requiredAr = 'من فضلك ادخل القسم')
@@ -152,7 +152,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..labelEn = 'Reporting Manager'
           ..labelAr = 'مدير التقارير'
           ..requestModel = ListModel.fromEmployeesJson
-          ..validation = (FormValidationEntity()..required = false)
+          ..validation = (FormValidationEntity()..isrequired = false)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Reporting Manager'
             ..requiredAr = 'الرجاء إدخال مدير التقارير')
@@ -165,7 +165,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..labelEn = 'Employee ID'
           ..labelAr = 'معرف الموظف'
           ..validation = (FormValidationEntity()
-            ..required = true
+            ..isrequired = true
             ..regex = nameNumberRegex)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Employee ID'
@@ -181,7 +181,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..labelEn = 'Suggestive Email ID'
           ..labelAr = 'معرف البريد الإلكتروني المقترح'
           ..validation = (FormValidationEntity()
-            ..required = true
+            ..isrequired = true
             ..regex = emailRegx)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Email ID'
@@ -196,7 +196,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'dateofjoining'
           ..labelEn = 'Date of Joining'
           ..labelAr = 'تاريخ الإنضمام'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Date of Joining'
             ..requiredAr = 'الرجاء إدخال تاريخ الانضمام')
@@ -227,7 +227,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..type = FormFieldType.collection
           ..name = 'priority'
           ..label = resources.string.priority
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Select priority'
             ..requiredAr = 'الرجاء تحديد الأولوية')
@@ -248,7 +248,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..labelEn = 'Employee First Name'
           ..labelAr = 'الاسم الأول للموظف'
           ..validation = (FormValidationEntity()
-            ..required = true
+            ..isrequired = true
             ..regex = nameNumberRegex)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Employee First Name'
@@ -264,7 +264,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..labelEn = 'Employee Last Name'
           ..labelAr = 'الاسم الأخير للموظف'
           ..validation = (FormValidationEntity()
-            ..required = true
+            ..isrequired = true
             ..regex = nameNumberRegex)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Employee Last Name'
@@ -279,7 +279,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..label = resources.string.fullName
           ..name = 'fullname'
           ..validation = (FormValidationEntity()
-            ..required = true
+            ..isrequired = true
             ..regex = nameRegExp)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Employee Full Name'
@@ -293,7 +293,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..type = FormFieldType.text
           ..name = 'designation'
           ..label = resources.string.designation
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter designation'
             ..requiredAr = 'الرجاء إدخال التعيين')
@@ -308,7 +308,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..labelAr = 'القسم الحالي'
           ..url = departmentsApiUrl
           ..requestModel = ListModel.fromDepartmentsJson
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Select Existing department'
             ..requiredAr = 'الرجاء تحديد القسم الحالي')
@@ -322,7 +322,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..labelAr = 'قسم جديد'
           ..url = departmentsApiUrl
           ..requestModel = ListModel.fromDepartmentsJson
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Select New department'
             ..requiredAr = 'الرجاء اختيار قسم جديد')
@@ -335,7 +335,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..labelEn = 'Employee ID'
           ..labelAr = 'معرف الموظف'
           ..validation = (FormValidationEntity()
-            ..required = true
+            ..isrequired = true
             ..regex = nameNumberRegex)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Employee ID'
@@ -364,7 +364,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..type = FormFieldType.collection
           ..name = 'priority'
           ..label = resources.string.priority
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Select priority'
             ..requiredAr = 'الرجاء تحديد الأولوية')
@@ -384,7 +384,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..label = resources.string.fullName
           ..name = 'fullname'
           ..validation = (FormValidationEntity()
-            ..required = true
+            ..isrequired = true
             ..regex = nameRegExp)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Employee Full Name'
@@ -400,7 +400,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..labelEn = 'System Login ID'
           ..labelAr = 'معرف تسجيل الدخول للنظام'
           ..validation = (FormValidationEntity()
-            ..required = true
+            ..isrequired = true
             ..regex = nameNumberRegex)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter System Login ID'
@@ -416,7 +416,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..label = resources.string.department
           ..url = departmentsApiUrl
           ..requestModel = ListModel.fromDepartmentsJson
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Select department'
             ..requiredAr = 'الرجاء اختيار القسم')
@@ -428,7 +428,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'accessdetails'
           ..labelEn = 'Access Details'
           ..labelAr = 'تفاصيل الوصول'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Select Access Details'
             ..requiredAr = 'الرجاء تحديد تفاصيل الوصول')
@@ -449,7 +449,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'reasonofaccess'
           ..labelEn = 'Reason of Access'
           ..labelAr = 'سبب الوصول'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Reason of Access'
             ..requiredAr = 'الرجاء إدخال سبب الوصول')
@@ -475,7 +475,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..type = FormFieldType.collection
           ..name = 'priority'
           ..label = resources.string.priority
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Select priority'
             ..requiredAr = 'الرجاء تحديد الأولوية')
@@ -495,7 +495,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..labelEn = 'Change Description'
           ..labelAr = 'تغيير الوصف'
           ..name = 'changeDescription'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Change Description'
             ..requiredAr = 'الرجاء إدخال وصف التغيير')
@@ -507,7 +507,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'operatingSystem'
           ..labelEn = 'Operating System'
           ..labelAr = 'نظام التشغيل'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Select Operating System'
             ..requiredAr = 'الرجاء تحديد نظام التشغيل')
@@ -526,7 +526,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'applicationVersion'
           ..labelEn = 'Application Version'
           ..labelAr = 'نسخة التطبيق'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Application Version'
             ..requiredAr = 'الرجاء إدخال إصدار التطبيق')
@@ -538,7 +538,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'changetested'
           ..labelEn = 'Change Tested'
           ..labelAr = 'تم اختبار التغيير'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Select Change Tested'
             ..requiredAr = 'الرجاء تحديد التغيير الذي تم اختباره')
@@ -556,7 +556,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'rolebackoption'
           ..labelEn = 'Role-back option'
           ..labelAr = 'خيار إرجاع الدور'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Select Role-back option'
             ..requiredAr = 'الرجاء تحديد خيار العودة للدور')
@@ -574,7 +574,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'impact'
           ..labelEn = 'Impact'
           ..labelAr = 'تأثير'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Select Impact'
             ..requiredAr = 'الرجاء تحديد التأثير')
@@ -593,7 +593,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'downtimerequirement'
           ..labelEn = 'Down time Requirement'
           ..labelAr = 'متطلبات وقت التوقف'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Down time Requirement'
             ..requiredAr = 'الرجاء إدخال متطلبات وقت التوقف')
@@ -605,7 +605,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'businessimpactanalysis'
           ..labelEn = 'Business Impact Analysis'
           ..labelAr = 'تحليل تأثير الأعمال'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Business Impact Analysis'
             ..requiredAr = 'الرجاء إدخال تحليل تأثير الأعمال')
@@ -617,7 +617,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'systeminvolved'
           ..labelEn = 'System Involved'
           ..labelAr = 'النظام متورط'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter System Involved'
             ..requiredAr = 'الرجاء إدخال النظام المعني')
@@ -630,7 +630,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'startDateAndTime'
           ..labelEn = 'Requester Target Start Date and Time'
           ..labelAr = 'تاريخ ووقت البدء المستهدف للمتقدم بالطلب'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Requester Target Start Date and Time'
             ..requiredAr = 'الرجاء إدخال تاريخ ووقت البدء المستهدف للمتقدم')
@@ -646,7 +646,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'downtimewindow'
           ..labelEn = 'Down Time Window'
           ..labelAr = 'نافذة وقت التوقف'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Down Time Window'
             ..requiredAr = 'الرجاء إدخال نافذة وقت التوقف')
@@ -666,7 +666,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..type = FormFieldType.collection
           ..name = 'priority'
           ..label = resources.string.priority
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Select priority'
             ..requiredAr = 'الرجاء تحديد الأولوية')
@@ -686,7 +686,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..labelEn = 'Change Description'
           ..labelAr = 'تغيير الوصف'
           ..name = 'changeDescription'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Change Description'
             ..requiredAr = 'الرجاء إدخال وصف التغيير')
@@ -698,7 +698,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..labelEn = 'Network Devices'
           ..labelAr = 'أجهزة الشبكة'
           ..name = 'networkdevices'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Network Devices'
             ..requiredAr = 'الرجاء إدخال أجهزة الشبكة')
@@ -710,7 +710,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'changetested'
           ..labelEn = 'Change Tested'
           ..labelAr = 'تم اختبار التغيير'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Select Change Tested'
             ..requiredAr = 'الرجاء تحديد التغيير الذي تم اختباره')
@@ -728,7 +728,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'rolebackoption'
           ..labelEn = 'Role-back option'
           ..labelAr = 'خيار إرجاع الدور'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Select Role-back option'
             ..requiredAr = 'الرجاء تحديد خيار العودة للدور')
@@ -746,7 +746,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'impact'
           ..labelEn = 'Impact'
           ..labelAr = 'تأثير'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Select Impact'
             ..requiredAr = 'الرجاء تحديد التأثير')
@@ -765,7 +765,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'businessimpactanalysis'
           ..labelEn = 'Business Impact Analysis'
           ..labelAr = 'تحليل تأثير الأعمال'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Business Impact Analysis'
             ..requiredAr = 'الرجاء إدخال تحليل تأثير الأعمال')
@@ -777,7 +777,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'downtimerequirement'
           ..labelEn = 'Down time Requirement'
           ..labelAr = 'متطلبات وقت التوقف'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Down time Requirement'
             ..requiredAr = 'الرجاء إدخال متطلبات وقت التوقف')
@@ -789,7 +789,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'requestertargetinstalldate'
           ..labelEn = 'Requester Target Install Date'
           ..labelAr = 'تاريخ ووقت البدء المستهدف للمتقدم بالطلب'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Requester Target Install Date'
             ..requiredAr = 'الرجاء إدخال تاريخ التثبيت المستهدف للمتقدم')
@@ -805,7 +805,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'systeminvolved'
           ..labelEn = 'System Involved'
           ..labelAr = 'النظام متورط'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter System Involved'
             ..requiredAr = 'الرجاء إدخال النظام المعني')
@@ -818,7 +818,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'startDateAndTime'
           ..labelEn = 'Requester Start Date'
           ..labelAr = 'تاريخ بدء مقدم الطلب'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Requester Start Date'
             ..requiredAr = 'الرجاء إدخال تاريخ بدء مقدم الطلب')
@@ -835,7 +835,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'endDateAndTime'
           ..labelEn = 'Requester End Date'
           ..labelAr = 'تاريخ انتهاء الطالب'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Requester End Date'
             ..requiredAr = 'الرجاء إدخال تاريخ انتهاء الطلب')
@@ -865,7 +865,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..type = FormFieldType.collection
           ..name = 'priority'
           ..label = resources.string.priority
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Select priority'
             ..requiredAr = 'الرجاء تحديد الأولوية')
@@ -885,7 +885,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..labelEn = 'Change Description'
           ..labelAr = 'تغيير الوصف'
           ..name = 'changeDescription'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Change Description'
             ..requiredAr = 'الرجاء إدخال وصف التغيير')
@@ -897,7 +897,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'environment'
           ..labelEn = 'Environment'
           ..labelAr = 'بيئة'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Select Environment'
             ..requiredAr = 'الرجاء تحديد البيئة')
@@ -916,7 +916,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'operatingSystem'
           ..labelEn = 'Operating System'
           ..labelAr = 'نظام التشغيل'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Select Operating System'
             ..requiredAr = 'الرجاء تحديد نظام التشغيل')
@@ -935,7 +935,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..labelEn = 'Database Server'
           ..labelAr = 'خادم قاعدة البيانات'
           ..name = 'databaseserver'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Database Server'
             ..requiredAr = 'الرجاء إدخال خادم قاعدة البيانات')
@@ -947,7 +947,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'databaseversion'
           ..labelEn = 'Database Version'
           ..labelAr = 'نسخة قاعدة البيانات'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Database Version'
             ..requiredAr = 'الرجاء إدخال إصدار قاعدة البيانات')
@@ -959,7 +959,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..labelEn = 'Application Server'
           ..labelAr = 'خادم التطبيقات'
           ..name = 'applicationserver'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Application Server'
             ..requiredAr = 'الرجاء إدخال خادم التطبيق')
@@ -971,7 +971,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'applicationversion'
           ..labelEn = 'Application Version'
           ..labelAr = 'نسخة التطبيق'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Application Version'
             ..requiredAr = 'الرجاء إدخال إصدار التطبيق')
@@ -983,7 +983,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'changetype'
           ..labelEn = 'Change Type'
           ..labelAr = 'تغيير النوع'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Select Change Type'
             ..requiredAr = 'الرجاء تحديد نوع التغيير')
@@ -1001,7 +1001,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..labelEn = 'Duration'
           ..labelAr = 'مدة'
           ..name = 'duration'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Duration'
             ..requiredAr = 'الرجاء إدخال المدة')
@@ -1013,7 +1013,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'startdate'
           ..labelEn = 'Start Date'
           ..labelAr = 'تاريخ البدء'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Start Date'
             ..requiredAr = 'الرجاء إدخال تاريخ البدء')
@@ -1029,7 +1029,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'enddate'
           ..labelEn = 'End Date'
           ..labelAr = 'تاريخ الانتهاء'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter End Date'
             ..requiredAr = 'الرجاء إدخال تاريخ الانتهاء')
@@ -1045,7 +1045,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'changetested'
           ..labelEn = 'Change Tested'
           ..labelAr = 'تم اختبار التغيير'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Select Change Tested'
             ..requiredAr = 'الرجاء تحديد التغيير الذي تم اختباره')
@@ -1063,7 +1063,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'rolebackoption'
           ..labelEn = 'Role-back option'
           ..labelAr = 'خيار إرجاع الدور'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Select Role-back option'
             ..requiredAr = 'الرجاء تحديد خيار العودة للدور')
@@ -1081,7 +1081,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'impact'
           ..labelEn = 'Impact'
           ..labelAr = 'تأثير'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Select Impact'
             ..requiredAr = 'الرجاء تحديد التأثير')
@@ -1100,7 +1100,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'downtimerequirement'
           ..labelEn = 'Down time Requirement'
           ..labelAr = 'متطلبات وقت التوقف'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Down time Requirement'
             ..requiredAr = 'الرجاء إدخال متطلبات وقت التوقف')
@@ -1112,7 +1112,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'businessimpactanalysis'
           ..labelEn = 'Business Impact Analysis'
           ..labelAr = 'تحليل تأثير الأعمال'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Business Impact Analysis'
             ..requiredAr = 'الرجاء إدخال تحليل تأثير الأعمال')
@@ -1124,7 +1124,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'requestertargetinstalldate'
           ..labelEn = 'Requester Target Install Date'
           ..labelAr = 'تاريخ ووقت البدء المستهدف للمتقدم بالطلب'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Requester Target Install Date'
             ..requiredAr = 'الرجاء إدخال تاريخ التثبيت المستهدف للمتقدم')
@@ -1141,7 +1141,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'starttime'
           ..labelEn = 'Requester Start Time'
           ..labelAr = 'وقت بدء الطالب'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Requester Start time'
             ..requiredAr = 'الرجاء إدخال وقت بدء مقدم الطلب')
@@ -1158,7 +1158,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'endtime'
           ..labelEn = 'Requester End Time'
           ..labelAr = 'وقت انتهاء الطالب'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Requester End time'
             ..requiredAr = 'الرجاء إدخال وقت انتهاء الطلب')
@@ -1174,7 +1174,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'actionplan'
           ..labelEn = 'Action Plan'
           ..labelAr = 'خطة العمل'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Action Plan'
             ..requiredAr = 'الرجاء إدخال خطة العمل')
@@ -1186,7 +1186,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'rollbackplan'
           ..labelEn = 'Rollback Plan'
           ..labelAr = 'خطة التراجع'
-          ..validation = (FormValidationEntity()..required = true)
+          ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Rollback Plan'
             ..requiredAr = 'الرجاء إدخال خطة التراجع')

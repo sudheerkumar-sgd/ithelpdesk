@@ -10,9 +10,10 @@ import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
+import 'package:ithelpdesk/core/extensions/field_entity_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/data/remote/api_urls.dart';
-import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
+import 'package:ithelpdesk/domain/entities/form_entities.dart';
 import 'package:ithelpdesk/domain/entities/iso_entity.dart';
 import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
 import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
@@ -463,6 +464,9 @@ class ISOViewRequestScreen extends BaseScreenWidget {
 
   Widget _getDataForm(BuildContext context) {
     final resources = context.resources;
+    final currentStep = requestEntity.steps
+        .where((e) => e.requestStepId == requestEntity.currentStep)
+        .firstOrNull;
     return Container(
       padding: EdgeInsets.symmetric(
           vertical: resources.dimen.dp15, horizontal: resources.dimen.dp20),
@@ -526,6 +530,9 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                 }),
               ),
             ],
+            for (FormEntity field in currentStep?.inputFields ?? []) ...{
+              field.getWidget(context)
+            },
             // if (requestEntity
             //         .steps[(requestEntity.currentStep ?? 1) - 1].status !=
             //     RequestStepStatus.close) ...[

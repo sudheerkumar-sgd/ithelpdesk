@@ -1,6 +1,7 @@
 // ignore_for_file: must_be_immutable
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/domain/entities/base_entity.dart';
+import 'package:ithelpdesk/domain/entities/form_entities.dart';
 
 class CRRequestEntity extends BaseEntity {
   int? requestId;
@@ -58,6 +59,9 @@ class CRRequestEntity extends BaseEntity {
             requestDetail?[field['key'].toString().toLowerCase()];
       }
     }
+    if (reportData['Updated On'] == null) {
+      reportData['Updated On'] = updatedAt;
+    }
     return reportData;
   }
 }
@@ -89,6 +93,7 @@ class CRRequestDetailsEntity extends BaseEntity {
 class CRRequestStepEntity extends BaseEntity {
   int? requestStepId;
   String? stepName;
+  List<FormEntity> inputFields = [];
   int? assignedTo;
   String? assigneDisplayName;
   String? updatedAt;

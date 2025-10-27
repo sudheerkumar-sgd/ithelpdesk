@@ -51,7 +51,7 @@ extension FieldEntityExtension on FormEntity {
   Widget getWidget(BuildContext context) {
     final resources = context.resources;
     bool isVisible = !(isHidden ?? false);
-    bool isMandetory = (isVisible && (validation?.required ?? false));
+    bool isMandetory = (isVisible && (validation?.isrequired ?? false));
     switch (type) {
       case FormFieldType.collection:
         return FutureBuilder<List<BaseEntity>?>(
