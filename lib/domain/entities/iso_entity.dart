@@ -48,20 +48,54 @@ class CRRequestEntity extends BaseEntity {
     return reportData;
   }
 
-  Map<String, dynamic> toDetailsJson() {
+  Map<String, dynamic> toDetailsJson(Map step1Details) {
     final Map<String, dynamic> reportData = <String, dynamic>{};
     for (var field in workflowFieldEntity?.detailsFields ?? []) {
-      if (requestDetail?[field['key'].toString().toLowerCase()] is Map) {
+      if (step1Details[field['key'].toString().toLowerCase()] is Map) {
         reportData[field['Name']] =
-            requestDetail?[field['key'].toString().toLowerCase()]?['name'];
+            step1Details[field['key'].toString().toLowerCase()]?['name'];
       } else {
         reportData[field['Name']] =
-            requestDetail?[field['key'].toString().toLowerCase()];
+            step1Details[field['key'].toString().toLowerCase()];
       }
     }
-    if (reportData['Updated On'] == null) {
-      reportData['Updated On'] = updatedAt;
+    ;
+    // for (var field in workflowFieldEntity?.detailsFields ?? []) {
+    //   if (fields?[field['key'].toString().toLowerCase()] is Map) {
+    //     reportData[field['Name']] =
+    //         fields?[field['key'].toString().toLowerCase()]?['name'];
+    //   } else {
+    //     reportData[field['Name']] =
+    //         fields?[field['key'].toString().toLowerCase()];
+    //   }
+    // }
+    // if (reportData['Updated On'] == null) {
+    //   reportData['Updated On'] = updatedAt;
+    // }
+    return reportData;
+  }
+
+  Map<String, dynamic> toUiJson(List<FormEntity> fromFelds, Map details) {
+    final Map<String, dynamic> reportData = <String, dynamic>{};
+    for (var field in fromFelds) {
+      if (details[field.name] is Map) {
+        reportData[field.getLabel] = details[field.name]?['name'];
+      } else {
+        reportData[field.getLabel] = details[field.name];
+      }
     }
+    // for (var field in workflowFieldEntity?.detailsFields ?? []) {
+    //   if (fields?[field['key'].toString().toLowerCase()] is Map) {
+    //     reportData[field['Name']] =
+    //         fields?[field['key'].toString().toLowerCase()]?['name'];
+    //   } else {
+    //     reportData[field['Name']] =
+    //         fields?[field['key'].toString().toLowerCase()];
+    //   }
+    // }
+    // if (reportData['Updated On'] == null) {
+    //   reportData['Updated On'] = updatedAt;
+    // }
     return reportData;
   }
 }
@@ -98,6 +132,7 @@ class CRRequestStepEntity extends BaseEntity {
   String? assigneDisplayName;
   String? updatedAt;
   RequestStepStatus? status;
+  Map? stepFormData;
   List<CRRequestStepAssigneeEntity> assignees = [];
 
   CRRequestStepEntity();

@@ -362,6 +362,35 @@ enum RequestStepStatus {
   String toString() {
     switch (this) {
       case close:
+        return isSelectedLocalEn ? 'Close' : 'اغلاق';
+      case reject:
+        return isSelectedLocalEn ? 'Reject' : 'رفض';
+      case hold:
+        return isSelectedLocalEn ? 'Hold' : 'تعليق';
+      case returned:
+        return isSelectedLocalEn ? 'Return' : 'إرجاع';
+      case inProgress:
+        return isSelectedLocalEn ? 'In Progress' : 'قيد التنفيذ';
+      case transfer:
+        return isSelectedLocalEn ? 'Transfer' : 'تم التحويل';
+      case approved:
+        return isSelectedLocalEn ? 'Approve' : 'موافق عليه';
+      case submited:
+        return isSelectedLocalEn ? 'Submit' : 'تم الإرسال';
+      case reSubmit:
+        return isSelectedLocalEn ? 'Resubmit' : 'إعادة الإرسال';
+      case RequestStepStatus.aquire:
+        return isSelectedLocalEn ? 'Acquire' : 'يكتسب';
+      case open:
+        return isSelectedLocalEn ? 'Open' : 'مفتوح';
+      case pending:
+        return isSelectedLocalEn ? 'Pending' : 'قيد الانتظار';
+    }
+  }
+
+  String toStatusString() {
+    switch (this) {
+      case close:
         return isSelectedLocalEn ? 'Completed' : 'مكتمل';
       case reject:
         return isSelectedLocalEn ? 'Rejected' : 'مرفوض';

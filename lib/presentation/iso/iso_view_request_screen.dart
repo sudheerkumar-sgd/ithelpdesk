@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable
 
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:dartz/dartz.dart';
@@ -23,6 +24,7 @@ import 'package:ithelpdesk/presentation/bloc/iso/iso_bloc.dart';
 import 'package:ithelpdesk/presentation/bloc/master_data/master_data_bloc.dart';
 import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
+import 'package:ithelpdesk/presentation/common_widgets/confirm_data_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dropdown_menu_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/item_service_steps.dart';
@@ -49,6 +51,7 @@ class ISOViewRequestScreen extends BaseScreenWidget {
     );
   }
 
+  final _formKey = GlobalKey<FormState>();
   final int requestId;
   final bool? isFromRoute;
   ISOViewRequestScreen({required this.requestId, this.isFromRoute, super.key});
@@ -226,14 +229,58 @@ class ISOViewRequestScreen extends BaseScreenWidget {
               context, status, message, isCommentRequired);
           return;
         }
-      case RequestStepStatus.approved:
+      case RequestStepStatus.approved || RequestStepStatus.close:
         {
-          message = 'Approve';
+          if (_formKey.currentState?.validate() != true) {
+            return;
+          }
+          message = status == RequestStepStatus.close
+              ? 'Do you want to close?'
+              : 'Do you want to Approve?';
+          final requestStepDetails = {};
+          final currentStep = requestEntity.steps
+              .where((e) => e.requestStepId == requestEntity.currentStep)
+              .firstOrNull;
+          currentStep?.inputFields.forEach((e) {
+            requestStepDetails[e.name] = e.fieldValue;
+          });
+          Dialogs.showDialogWithClose(
+            context,
+            ConfirmDataWidget(
+              requestStepDetails,
+              title: message,
+              confirmbtn: status.toString(),
+            ),
+            maxWidth: getScrrenSize(context).width * .3,
+          ).then((dialogResult) {
+            if (dialogResult != null) {
+              final requestStepDetails = {};
+              final currentStep = requestEntity.steps
+                  .where((e) => e.requestStepId == requestEntity.currentStep)
+                  .firstOrNull;
+              currentStep?.inputFields.forEach((e) {
+                requestStepDetails[e.name] = e.fieldValue;
+              });
+              final requestParams = {
+                'requestID': requestEntity.requestId,
+                'requestStepStatus': status.value,
+                'stepDetails': jsonEncode(requestStepDetails),
+              };
+              _isoBloc.createISORequest(
+                  requestParams: requestParams,
+                  apiUrl: updateCRRequestApiUrl,
+                  emitResponse: true);
+            }
+          });
+          return;
         }
-      case RequestStepStatus.close:
-        {
-          message = 'Do you want to close?';
-        }
+      // case RequestStepStatus.close:
+      //   {
+      //     if (_formKey.currentState?.validate() != true) {
+      //       return;
+      //     }
+      //     message = 'Do you want to close?';
+      //   }
       case RequestStepStatus.aquire:
         {
           final requestParams = {
@@ -479,13 +526,51 @@ class ISOViewRequestScreen extends BaseScreenWidget {
               color: resources.color.colorWhite,
               child: Table(
                 children: [
-                  for (var item in requestEntity.toDetailsJson().entries) ...[
-                    TableRow(children: [
-                      Text(item.key, style: context.textFontWeight400),
-                      Text(': ${item.value ?? ''}',
-                          style: context.textFontWeight600),
-                    ])
-                  ]
+                  for (int i = 0; i < requestEntity.steps.length; i++) ...{
+                    if (i == 0) ...{
+                      TableRow(children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 10.0),
+                          child: Text(requestEntity.steps[i].stepName ?? '',
+                              style: context.textFontWeight600
+                                  .onColor(resources.color.viewBgColor)),
+                        ),
+                        Text('', style: context.textFontWeight600),
+                      ]),
+                      for (var item in requestEntity
+                          .toDetailsJson(
+                              requestEntity.steps[i].stepFormData ?? {})
+                          .entries) ...[
+                        TableRow(children: [
+                          Text(item.key, style: context.textFontWeight400),
+                          Text(': ${item.value ?? ''}',
+                              style: context.textFontWeight600),
+                        ])
+                      ]
+                    },
+                    if (i != 0 &&
+                        requestEntity.steps[i].stepFormData != null) ...{
+                      TableRow(children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10.0),
+                          child: Text(requestEntity.steps[i].stepName ?? '',
+                              style: context.textFontWeight600
+                                  .onColor(resources.color.viewBgColor)),
+                        ),
+                        Text('', style: context.textFontWeight600),
+                      ]),
+                      for (var item in requestEntity
+                          .toUiJson(requestEntity.steps[i].inputFields,
+                              requestEntity.steps[i].stepFormData ?? {})
+                          .entries) ...[
+                        TableRow(children: [
+                          Text(item.key, style: context.textFontWeight400),
+                          Text(': ${item.value ?? ''}',
+                              style: context.textFontWeight600),
+                        ])
+                      ]
+                    }
+                  }
                 ],
               ),
             ),
@@ -530,9 +615,15 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                 }),
               ),
             ],
-            for (FormEntity field in currentStep?.inputFields ?? []) ...{
-              field.getWidget(context)
-            },
+            if (requestEntity.requestStaus != RequestStatus.completed)
+              Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      for (FormEntity field in currentStep?.inputFields ??
+                          []) ...{field.getWidget(context)},
+                    ],
+                  )),
             // if (requestEntity
             //         .steps[(requestEntity.currentStep ?? 1) - 1].status !=
             //     RequestStepStatus.close) ...[
@@ -604,9 +695,9 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                       : requestEntity.requestStaus == RequestStatus.rejected
                           ? resources.color.rejected
                           : resources.color.pending,
-              stepText: steps[i].assigneDisplayName ?? "",
+              stepText: steps[i].stepName ?? "",
               stepSubText:
-                  '${steps[i].status.toString()}\n${steps[i].updatedAt}',
+                  '${steps[i].status.toStatusString()} - ${steps[i].assigneDisplayName ?? ''} \n${steps[i].updatedAt}',
               isLastStep: i == steps.length - 1,
               userProfileCallback: () {
                 if (steps[i].assignedTo != null) {
@@ -686,7 +777,9 @@ class ISOViewRequestScreen extends BaseScreenWidget {
             Dialogs.showInfoDialog(context, PopupType.success,
                     '${resources.string.updatingTicket} UAQGOV-CR-${requestEntity.requestId}')
                 .then((value) {
-              reloadPage();
+              if (context.mounted) {
+                Navigator.pop(context, true);
+              }
             });
           } else if (state is OnISOApiError) {
             Dialogs.dismiss(context);
@@ -726,7 +819,7 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                             child: Text.rich(
                               TextSpan(
                                   text:
-                                      'UAQGOV-CR-${requestEntity.requestId}\n',
+                                      '${requestEntity.requestType} : UAQGOV-CR-${requestEntity.requestId}\n',
                                   style: context.textFontWeight600
                                       .onFontFamily(fontFamily: fontFamilyEN),
                                   children: [

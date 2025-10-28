@@ -182,6 +182,7 @@ class CRRequestStepModel extends BaseModel {
   String? assigneDisplayName;
   String? updatedAt;
   int? status;
+  Map? stepFormData;
   List<CRRequestStepAssigneeEntity> assignees = [];
 
   CRRequestStepModel();
@@ -204,6 +205,9 @@ class CRRequestStepModel extends BaseModel {
         jsonDecode(json['inputFields'] ?? '[]'),
       ).map((e) => FormModel.fromJson(e).toEntity()).toList();
     }
+    if (json['stepFormData'] != null) {
+      stepFormData = jsonDecode(json['stepFormData']);
+    }
   }
 
   @override
@@ -212,6 +216,7 @@ class CRRequestStepModel extends BaseModel {
       ..requestStepId = requestStepId
       ..stepName = stepName
       ..inputFields = inputFields
+      ..stepFormData = stepFormData
       ..assignedTo = assignedTo
       ..assigneDisplayName = assigneDisplayName
       ..updatedAt = updatedAt

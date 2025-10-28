@@ -36,7 +36,7 @@ class UserEntity extends BaseEntity {
   String? contactNumber;
 
   @override
-  List<Object?> get props => [id];
+  List<Object?> get props => [id, name];
 
   @override
   String toString() {

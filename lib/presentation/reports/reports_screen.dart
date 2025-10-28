@@ -755,7 +755,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
       startTimer(
           duration: const Duration(minutes: 15),
           callback: () {
-            _updateTickets(context);
+            if (context.mounted) {
+              _updateTickets(context);
+            }
           });
     });
 
