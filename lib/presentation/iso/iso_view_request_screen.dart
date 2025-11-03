@@ -17,6 +17,7 @@ import 'package:ithelpdesk/data/remote/api_urls.dart';
 import 'package:ithelpdesk/domain/entities/form_entities.dart';
 import 'package:ithelpdesk/domain/entities/iso_entity.dart';
 import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
+import 'package:ithelpdesk/domain/entities/single_data_entity.dart';
 import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
 import 'package:ithelpdesk/domain/entities/user_entity.dart';
 import 'package:ithelpdesk/injection_container.dart';
@@ -64,6 +65,378 @@ class ISOViewRequestScreen extends BaseScreenWidget {
 
   final ValueNotifier<bool> _isExanded = ValueNotifier(true);
   final ValueNotifier<bool> _onDataChanged = ValueNotifier(false);
+  final systemCRFormFields = List<FormEntity>.empty(growable: true);
+  final networkCRFormFields = List<FormEntity>.empty(growable: true);
+  List<FormEntity> _getSystemCRFormFields(BuildContext context) {
+    final resources = context.resources;
+    if (systemCRFormFields.isEmpty) {
+      systemCRFormFields.addAll([
+        FormEntity()
+          ..type = FormFieldType.collection
+          ..name = 'operatingSystem'
+          ..isHidden = false
+          ..labelEn = 'Operating System'
+          ..labelAr = 'نظام التشغيل'
+          ..validation = (FormValidationEntity()..isrequired = true)
+          ..messages = (FormMessageEntity()
+            ..requiredEn = 'Please Select Operating System'
+            ..requiredAr = 'الرجاء تحديد نظام التشغيل')
+          ..inputFieldData = {
+            'items': [
+              NameIDEntity(1, 'Windows', nameAr: 'ويندوز'),
+              NameIDEntity(2, 'Linux', nameAr: 'لينكس'),
+              NameIDEntity(3, 'Other', nameAr: 'آخر'),
+            ]
+          }
+          ..onDatachnage = (value) {
+            fieldsData['operatingSystem'] = value;
+          },
+        // FormEntity()
+        //   ..type = FormFieldType.text
+        //   ..name = 'applicationVersion'
+        //   ..labelEn = 'Application Version'
+        //   ..labelAr = 'نسخة التطبيق'
+        //   ..validation = (FormValidationEntity()..isrequired = true)
+        //   ..messages = (FormMessageEntity()
+        //     ..requiredEn = 'Please Enter Application Version'
+        //     ..requiredAr = 'الرجاء إدخال إصدار التطبيق')
+        //   ..onDatachnage = (value) {
+        //     fieldsData['applicationversion'] = value;
+        //   },
+        FormEntity()
+          ..type = FormFieldType.collection
+          ..name = 'changetested'
+          ..isHidden = false
+          ..labelEn = 'Change Tested'
+          ..labelAr = 'تم اختبار التغيير'
+          ..validation = (FormValidationEntity()..isrequired = true)
+          ..messages = (FormMessageEntity()
+            ..requiredEn = 'Please Select Change Tested'
+            ..requiredAr = 'الرجاء تحديد التغيير الذي تم اختباره')
+          ..inputFieldData = {
+            'items': [
+              NameIDEntity(1, 'May Be', nameAr: 'ربما'),
+              NameIDEntity(2, 'Yes', nameAr: 'نعم'),
+              NameIDEntity(3, 'No', nameAr: 'لا'),
+            ]
+          }
+          ..onDatachnage = (value) {
+            fieldsData['changetested'] = value;
+          },
+        FormEntity()
+          ..type = FormFieldType.collection
+          ..isHidden = false
+          ..name = 'rolebackoption'
+          ..labelEn = 'Role-back option'
+          ..labelAr = 'خيار إرجاع الدور'
+          ..validation = (FormValidationEntity()..isrequired = true)
+          ..messages = (FormMessageEntity()
+            ..requiredEn = 'Please Select Role-back option'
+            ..requiredAr = 'الرجاء تحديد خيار العودة للدور')
+          ..inputFieldData = {
+            'items': [
+              NameIDEntity(1, 'Yes', nameAr: 'نعم'),
+              NameIDEntity(2, 'No', nameAr: 'لا'),
+            ]
+          }
+          ..onDatachnage = (value) {
+            fieldsData['rolebackoption'] = value;
+          },
+        FormEntity()
+          ..type = FormFieldType.collection
+          ..isHidden = false
+          ..name = 'impact'
+          ..labelEn = 'Impact'
+          ..labelAr = 'تأثير'
+          ..validation = (FormValidationEntity()..isrequired = true)
+          ..messages = (FormMessageEntity()
+            ..requiredEn = 'Please Select Impact'
+            ..requiredAr = 'الرجاء تحديد التأثير')
+          ..inputFieldData = {
+            'items': [
+              NameIDEntity(1, resources.string.low),
+              NameIDEntity(2, resources.string.medium),
+              NameIDEntity(3, resources.string.high),
+              NameIDEntity(4, resources.string.critical)
+            ]
+          }
+          ..onDatachnage = (value) {
+            fieldsData['impact'] = value;
+          },
+        FormEntity()
+          ..type = FormFieldType.collection
+          ..isHidden = false
+          ..name = 'downtimerequirement'
+          ..labelEn = 'Down time Requirement'
+          ..labelAr = 'متطلبات وقت التوقف'
+          ..validation = (FormValidationEntity()..isrequired = true)
+          ..messages = (FormMessageEntity()
+            ..requiredEn = 'Please Enter Down time Requirement'
+            ..requiredAr = 'الرجاء إدخال متطلبات وقت التوقف')
+          ..inputFieldData = {
+            'items': [
+              NameIDEntity(1, 'Yes', nameAr: 'نعم'),
+              NameIDEntity(2, 'No', nameAr: 'لا'),
+            ]
+          }
+          ..onDatachnage = (value) {
+            fieldsData['downtimerequirement'] = value;
+          },
+        FormEntity()
+          ..type = FormFieldType.textarea
+          ..isHidden = false
+          ..name = 'businessimpactanalysis'
+          ..labelEn = 'Business Impact Analysis'
+          ..labelAr = 'تحليل تأثير الأعمال'
+          ..validation = (FormValidationEntity()..isrequired = true)
+          ..messages = (FormMessageEntity()
+            ..requiredEn = 'Please Enter Business Impact Analysis'
+            ..requiredAr = 'الرجاء إدخال تحليل تأثير الأعمال')
+          ..onDatachnage = (value) {
+            fieldsData['businessimpactanalysis'] = value;
+          },
+        FormEntity()
+          ..type = FormFieldType.text
+          ..isHidden = false
+          ..name = 'systeminvolved'
+          ..labelEn = 'System Involved'
+          ..labelAr = 'النظام متورط'
+          ..validation = (FormValidationEntity()..isrequired = true)
+          ..messages = (FormMessageEntity()
+            ..requiredEn = 'Please Enter System Involved'
+            ..requiredAr = 'الرجاء إدخال النظام المعني')
+          ..onDatachnage = (value) {
+            fieldsData['systeminvolved'] = value;
+          },
+        FormEntity()
+          ..type = FormFieldType.date
+          ..isHidden = false
+          ..hasTime = true
+          ..name = 'startDateAndTime'
+          ..labelEn = 'Requester Target Start Date and Time'
+          ..labelAr = 'تاريخ ووقت البدء المستهدف للمتقدم بالطلب'
+          ..validation = (FormValidationEntity()..isrequired = true)
+          ..messages = (FormMessageEntity()
+            ..requiredEn = 'Please Enter Requester Target Start Date and Time'
+            ..requiredAr = 'الرجاء إدخال تاريخ ووقت البدء المستهدف للمتقدم')
+          ..inputFieldData = {
+            'format': 'yyyy-MM-dd',
+            'lastDate': DateTime.now().add(const Duration(days: 365))
+          }
+          ..onDatachnage = (value) {
+            fieldsData['startdateandtime'] = value;
+          },
+        FormEntity()
+          ..type = FormFieldType.text
+          ..isHidden = false
+          ..name = 'downtimewindow'
+          ..labelEn = 'Down Time Window'
+          ..labelAr = 'نافذة وقت التوقف'
+          ..validation = (FormValidationEntity()..isrequired = true)
+          ..messages = (FormMessageEntity()
+            ..requiredEn = 'Please Enter Down Time Window'
+            ..requiredAr = 'الرجاء إدخال نافذة وقت التوقف')
+          ..onDatachnage = (value) {
+            fieldsData['downtimewindow'] = value;
+          },
+      ]);
+    }
+    return systemCRFormFields;
+  }
+
+  List<FormEntity> _getNetworkCRFormFields(BuildContext context) {
+    final resources = context.resources;
+    if (networkCRFormFields.isEmpty) {
+      networkCRFormFields.addAll([
+        FormEntity()
+          ..type = FormFieldType.collection
+          ..name = 'priority'
+          ..label = resources.string.priority
+          ..validation = (FormValidationEntity()..isrequired = true)
+          ..messages = (FormMessageEntity()
+            ..requiredEn = 'Please Select priority'
+            ..requiredAr = 'الرجاء تحديد الأولوية')
+          ..inputFieldData = {
+            'items': [
+              NameIDEntity(1, resources.string.low),
+              NameIDEntity(2, resources.string.medium),
+              NameIDEntity(3, resources.string.high),
+              NameIDEntity(4, resources.string.critical)
+            ]
+          }
+          ..onDatachnage = (value) {
+            fieldsData['priority'] = value;
+          },
+        FormEntity()
+          ..type = FormFieldType.text
+          ..labelEn = 'Change Description'
+          ..labelAr = 'تغيير الوصف'
+          ..name = 'changeDescription'
+          ..validation = (FormValidationEntity()..isrequired = true)
+          ..messages = (FormMessageEntity()
+            ..requiredEn = 'Please Enter Change Description'
+            ..requiredAr = 'الرجاء إدخال وصف التغيير')
+          ..onDatachnage = (value) {
+            fieldsData['changedescription'] = value;
+          },
+        FormEntity()
+          ..type = FormFieldType.collection
+          ..labelEn = 'Network Devices'
+          ..labelAr = 'أجهزة الشبكة'
+          ..name = 'networkdevices'
+          ..validation = (FormValidationEntity()..isrequired = true)
+          ..messages = (FormMessageEntity()
+            ..requiredEn = 'Please Enter Network Devices'
+            ..requiredAr = 'الرجاء إدخال أجهزة الشبكة')
+          ..inputFieldData = {
+            'items': [
+              NameIDEntity(1, 'Router', nameAr: 'الموجه'),
+              NameIDEntity(2, 'Switch', nameAr: 'المحول'),
+              NameIDEntity(3, 'Firewall', nameAr: 'جدار الحماية'),
+              NameIDEntity(4, 'IDS'),
+              NameIDEntity(4, 'IPS'),
+              NameIDEntity(4, 'Others', nameAr: 'أخرى'),
+            ]
+          }
+          ..onDatachnage = (value) {
+            fieldsData['networkdevices'] = value;
+          },
+        FormEntity()
+          ..type = FormFieldType.collection
+          ..name = 'changetested'
+          ..labelEn = 'Change Tested'
+          ..labelAr = 'تم اختبار التغيير'
+          ..validation = (FormValidationEntity()..isrequired = true)
+          ..messages = (FormMessageEntity()
+            ..requiredEn = 'Please Select Change Tested'
+            ..requiredAr = 'الرجاء تحديد التغيير الذي تم اختباره')
+          ..inputFieldData = {
+            'items': [
+              NameIDEntity(1, 'May Be', nameAr: 'ربما'),
+              NameIDEntity(2, 'Yes', nameAr: 'نعم'),
+              NameIDEntity(3, 'No', nameAr: 'لا'),
+            ]
+          }
+          ..onDatachnage = (value) {
+            fieldsData['changetested'] = value;
+          },
+        FormEntity()
+          ..type = FormFieldType.collection
+          ..name = 'rolebackoption'
+          ..labelEn = 'Role-back option'
+          ..labelAr = 'خيار إرجاع الدور'
+          ..validation = (FormValidationEntity()..isrequired = true)
+          ..messages = (FormMessageEntity()
+            ..requiredEn = 'Please Select Role-back option'
+            ..requiredAr = 'الرجاء تحديد خيار العودة للدور')
+          ..inputFieldData = {
+            'items': [
+              NameIDEntity(1, 'Yes', nameAr: 'نعم'),
+              NameIDEntity(2, 'No', nameAr: 'لا'),
+            ]
+          }
+          ..onDatachnage = (value) {
+            fieldsData['rolebackoption'] = value;
+          },
+        FormEntity()
+          ..type = FormFieldType.collection
+          ..name = 'impact'
+          ..labelEn = 'Impact'
+          ..labelAr = 'تأثير'
+          ..validation = (FormValidationEntity()..isrequired = true)
+          ..messages = (FormMessageEntity()
+            ..requiredEn = 'Please Select Impact'
+            ..requiredAr = 'الرجاء تحديد التأثير')
+          ..inputFieldData = {
+            'items': [
+              NameIDEntity(1, resources.string.low),
+              NameIDEntity(2, resources.string.medium),
+              NameIDEntity(3, resources.string.high),
+              NameIDEntity(4, resources.string.critical)
+            ]
+          }
+          ..onDatachnage = (value) {
+            fieldsData['impact'] = value;
+          },
+        FormEntity()
+          ..type = FormFieldType.textarea
+          ..name = 'businessimpactanalysis'
+          ..labelEn = 'Business Impact Analysis'
+          ..labelAr = 'تحليل تأثير الأعمال'
+          ..validation = (FormValidationEntity()..isrequired = true)
+          ..messages = (FormMessageEntity()
+            ..requiredEn = 'Please Enter Business Impact Analysis'
+            ..requiredAr = 'الرجاء إدخال تحليل تأثير الأعمال')
+          ..onDatachnage = (value) {
+            fieldsData['businessimpactanalysis'] = value;
+          },
+        FormEntity()
+          ..type = FormFieldType.collection
+          ..name = 'downtimerequirement'
+          ..labelEn = 'Down time Requirement'
+          ..labelAr = 'متطلبات وقت التوقف'
+          ..validation = (FormValidationEntity()..isrequired = true)
+          ..messages = (FormMessageEntity()
+            ..requiredEn = 'Please Enter Down time Requirement'
+            ..requiredAr = 'الرجاء إدخال متطلبات وقت التوقف')
+          ..inputFieldData = {
+            'items': [
+              NameIDEntity(1, 'Yes', nameAr: 'نعم'),
+              NameIDEntity(2, 'No', nameAr: 'لا'),
+            ]
+          }
+          ..onDatachnage = (value) {
+            fieldsData['downtimerequirement'] = value;
+          },
+        FormEntity()
+          ..type = FormFieldType.date
+          ..name = 'requestertargetinstalldate'
+          ..labelEn = 'Requester Target Install Date'
+          ..labelAr = 'تاريخ ووقت البدء المستهدف للمتقدم بالطلب'
+          ..validation = (FormValidationEntity()..isrequired = true)
+          ..messages = (FormMessageEntity()
+            ..requiredEn = 'Please Enter Requester Target Install Date'
+            ..requiredAr = 'الرجاء إدخال تاريخ التثبيت المستهدف للمتقدم')
+          ..inputFieldData = {
+            'format': 'yyyy-MM-dd',
+            'lastDate': DateTime.now().add(const Duration(days: 365))
+          }
+          ..onDatachnage = (value) {
+            fieldsData['requestertargetinstalldate'] = value;
+          },
+        FormEntity()
+          ..type = FormFieldType.text
+          ..name = 'systeminvolved'
+          ..labelEn = 'System Involved'
+          ..labelAr = 'النظام متورط'
+          ..validation = (FormValidationEntity()..isrequired = true)
+          ..messages = (FormMessageEntity()
+            ..requiredEn = 'Please Enter System Involved'
+            ..requiredAr = 'الرجاء إدخال النظام المعني')
+          ..onDatachnage = (value) {
+            fieldsData['systeminvolved'] = value;
+          },
+        FormEntity()
+          ..type = FormFieldType.date
+          ..hasTime = true
+          ..name = 'startDateAndTime'
+          ..labelEn = 'Requester Start Date'
+          ..labelAr = 'تاريخ بدء مقدم الطلب'
+          ..validation = (FormValidationEntity()..isrequired = true)
+          ..messages = (FormMessageEntity()
+            ..requiredEn = 'Please Enter Requester Start Date'
+            ..requiredAr = 'الرجاء إدخال تاريخ بدء مقدم الطلب')
+          ..inputFieldData = {
+            'format': 'yyyy-MM-dd',
+            'lastDate': DateTime.now().add(const Duration(days: 365))
+          }
+          ..onDatachnage = (value) {
+            fieldsData['startdateandtime'] = value;
+          },
+      ]);
+    }
+    return networkCRFormFields;
+  }
 
   Widget _getComments(BuildContext context,
       {EdgeInsets? padding, bool? isExpand}) {
@@ -237,34 +610,41 @@ class ISOViewRequestScreen extends BaseScreenWidget {
           message = status == RequestStepStatus.close
               ? 'Do you want to close?'
               : 'Do you want to Approve?';
-          final requestStepDetails = {};
+          final requestStepDetails = <String, dynamic>{};
           final currentStep = requestEntity.steps
               .where((e) => e.requestStepId == requestEntity.currentStep)
               .firstOrNull;
           currentStep?.inputFields.forEach((e) {
-            requestStepDetails[e.name] = e.fieldValue;
+            requestStepDetails[e.name ?? ''] = e.fieldValue;
           });
+          final details = <String, dynamic>{};
+          for (var field in fieldsData.entries) {
+            details[field.key] = field.value;
+          }
+          details.addAll(requestStepDetails);
+          details['createdon'] = getDateByformat('dd/MM/yyyy', DateTime.now());
+
           Dialogs.showDialogWithClose(
             context,
             ConfirmDataWidget(
-              requestStepDetails,
+              details,
               title: message,
               confirmbtn: status.toString(),
             ),
             maxWidth: getScrrenSize(context).width * .3,
           ).then((dialogResult) {
             if (dialogResult != null) {
-              final requestStepDetails = {};
-              final currentStep = requestEntity.steps
-                  .where((e) => e.requestStepId == requestEntity.currentStep)
-                  .firstOrNull;
-              currentStep?.inputFields.forEach((e) {
-                requestStepDetails[e.name] = e.fieldValue;
-              });
+              // final requestStepDetails = {};
+              // final currentStep = requestEntity.steps
+              //     .where((e) => e.requestStepId == requestEntity.currentStep)
+              //     .firstOrNull;
+              // currentStep?.inputFields.forEach((e) {
+              //   requestStepDetails[e.name] = e.fieldValue;
+              // });
               final requestParams = {
                 'requestID': requestEntity.requestId,
                 'requestStepStatus': status.value,
-                'stepDetails': jsonEncode(requestStepDetails),
+                'stepDetails': jsonEncode(details),
               };
               _isoBloc.createISORequest(
                   requestParams: requestParams,
@@ -537,16 +917,30 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                         ),
                         Text('', style: context.textFontWeight600),
                       ]),
-                      for (var item in requestEntity
-                          .toDetailsJson(
-                              requestEntity.steps[i].stepFormData ?? {})
-                          .entries) ...[
-                        TableRow(children: [
-                          Text(item.key, style: context.textFontWeight400),
-                          Text(': ${item.value ?? ''}',
-                              style: context.textFontWeight600),
-                        ])
-                      ]
+                      if (requestEntity.workflowId == 4 ||
+                          requestEntity.workflowId == 5) ...{
+                        for (var item in requestEntity
+                            .toSubmittedJson(
+                                requestEntity.steps[i].stepFormData ?? {})
+                            .entries) ...[
+                          TableRow(children: [
+                            Text(item.key, style: context.textFontWeight400),
+                            Text(': ${item.value ?? ''}',
+                                style: context.textFontWeight600),
+                          ])
+                        ]
+                      } else ...{
+                        for (var item in requestEntity
+                            .toDetailsJson(
+                                requestEntity.steps[i].stepFormData ?? {})
+                            .entries) ...[
+                          TableRow(children: [
+                            Text(item.key, style: context.textFontWeight400),
+                            Text(': ${item.value ?? ''}',
+                                style: context.textFontWeight600),
+                          ])
+                        ]
+                      }
                     },
                     if (i != 0 &&
                         requestEntity.steps[i].stepFormData != null) ...{
@@ -570,6 +964,13 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                         ])
                       ]
                     }
+                  },
+                  if (requestEntity.updatedAt?.isNotEmpty == true) ...{
+                    TableRow(children: [
+                      Text('Updated On', style: context.textFontWeight400),
+                      Text(': ${requestEntity.updatedAt ?? ''}',
+                          style: context.textFontWeight600),
+                    ])
                   }
                 ],
               ),
@@ -620,6 +1021,23 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                   key: _formKey,
                   child: Column(
                     children: [
+                      if ((requestEntity.workflowId == 4 ||
+                              requestEntity.workflowId == 5) &&
+                          requestEntity.steps[0].stepFormData?['showmore'] !=
+                              true &&
+                          requestEntity.currentStep ==
+                              requestEntity.steps.last.requestStepId) ...{
+                        if (requestEntity.workflowId == 4) ...{
+                          for (FormEntity field in systemCRFormFields) ...{
+                            field.getWidget(context)
+                          }
+                        },
+                        if (requestEntity.workflowId == 5) ...{
+                          for (FormEntity field in networkCRFormFields) ...{
+                            field.getWidget(context)
+                          }
+                        },
+                      },
                       for (FormEntity field in currentStep?.inputFields ??
                           []) ...{field.getWidget(context)},
                     ],
@@ -763,6 +1181,12 @@ class ISOViewRequestScreen extends BaseScreenWidget {
   Widget build(BuildContext context) {
     final resources = context.resources;
     screenDimentions = getScrrenSize(context);
+    if (systemCRFormFields.isEmpty) {
+      _getSystemCRFormFields(context);
+    }
+    if (networkCRFormFields.isEmpty) {
+      _getNetworkCRFormFields(context);
+    }
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => _isoBloc),

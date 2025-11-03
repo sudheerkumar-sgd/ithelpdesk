@@ -181,6 +181,7 @@ extension FieldEntityExtension on FormEntity {
               controlAffinity: ListTileControlAffinity.leading,
               value: fieldValue ?? false,
               onChanged: (isChecked) {
+                fieldValue = isChecked;
                 onDatachnage?.call(isChecked);
               },
             ),

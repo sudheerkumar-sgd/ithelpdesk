@@ -59,7 +59,6 @@ class CRRequestEntity extends BaseEntity {
             step1Details[field['key'].toString().toLowerCase()];
       }
     }
-    ;
     // for (var field in workflowFieldEntity?.detailsFields ?? []) {
     //   if (fields?[field['key'].toString().toLowerCase()] is Map) {
     //     reportData[field['Name']] =
@@ -69,19 +68,49 @@ class CRRequestEntity extends BaseEntity {
     //         fields?[field['key'].toString().toLowerCase()];
     //   }
     // }
-    // if (reportData['Updated On'] == null) {
-    //   reportData['Updated On'] = updatedAt;
+    if (reportData['Updated On'] == null) {
+      reportData.remove('Updated On');
+    }
+    return reportData;
+  }
+
+  Map<String, dynamic> toSubmittedJson(Map step1Details) {
+    final Map<String, dynamic> reportData = <String, dynamic>{};
+    for (var field in workflowFieldEntity?.detailsFields ?? []) {
+      if (step1Details[field['key'].toString().toLowerCase()] == null ||
+          step1Details[field['key'].toString().toLowerCase()] == "") {
+        continue;
+      }
+      if (step1Details[field['key'].toString().toLowerCase()] is Map) {
+        reportData[field['Name']] =
+            step1Details[field['key'].toString().toLowerCase()]?['name'];
+      } else {
+        reportData[field['Name']] =
+            step1Details[field['key'].toString().toLowerCase()];
+      }
+    }
+    // for (var field in workflowFieldEntity?.detailsFields ?? []) {
+    //   if (fields?[field['key'].toString().toLowerCase()] is Map) {
+    //     reportData[field['Name']] =
+    //         fields?[field['key'].toString().toLowerCase()]?['name'];
+    //   } else {
+    //     reportData[field['Name']] =
+    //         fields?[field['key'].toString().toLowerCase()];
+    //   }
     // }
+    if (reportData['Updated On'] == null) {
+      reportData.remove('Updated On');
+    }
     return reportData;
   }
 
   Map<String, dynamic> toUiJson(List<FormEntity> fromFelds, Map details) {
     final Map<String, dynamic> reportData = <String, dynamic>{};
-    for (var field in fromFelds) {
-      if (details[field.name] is Map) {
-        reportData[field.getLabel] = details[field.name]?['name'];
+    for (var field in details.entries) {
+      if (details[field.key] is Map) {
+        reportData[field.key] = field.value['name'];
       } else {
-        reportData[field.getLabel] = details[field.name];
+        reportData[field.key] = field.value;
       }
     }
     // for (var field in workflowFieldEntity?.detailsFields ?? []) {

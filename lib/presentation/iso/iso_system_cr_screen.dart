@@ -503,8 +503,24 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             fieldsData['changedescription'] = value;
           },
         FormEntity()
+          ..type = FormFieldType.checkbox
+          ..name = 'showmore'
+          ..labelEn = 'Show More'
+          ..labelAr = 'أظهر المزيد'
+          ..fieldValue = fieldsData['showmore']
+          ..onDatachnage = (value) {
+            fieldsData['showmore'] = value;
+            final fields =
+                systemCRFormFields.sublist(3, systemCRFormFields.length);
+            for (var element in fields) {
+              element.isHidden = value != true;
+            }
+            doScreenRefresh.value = !doScreenRefresh.value;
+          },
+        FormEntity()
           ..type = FormFieldType.collection
           ..name = 'operatingSystem'
+          ..isHidden = true
           ..labelEn = 'Operating System'
           ..labelAr = 'نظام التشغيل'
           ..validation = (FormValidationEntity()..isrequired = true)
@@ -513,29 +529,30 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             ..requiredAr = 'الرجاء تحديد نظام التشغيل')
           ..inputFieldData = {
             'items': [
-              NameIDEntity(1, 'Windows'),
-              NameIDEntity(2, 'Linx'),
-              NameIDEntity(3, 'Mac'),
+              NameIDEntity(1, 'Windows', nameAr: 'ويندوز'),
+              NameIDEntity(2, 'Linux', nameAr: 'لينكس'),
+              NameIDEntity(3, 'Other', nameAr: 'آخر'),
             ]
           }
           ..onDatachnage = (value) {
             fieldsData['operatingSystem'] = value;
           },
-        FormEntity()
-          ..type = FormFieldType.text
-          ..name = 'applicationVersion'
-          ..labelEn = 'Application Version'
-          ..labelAr = 'نسخة التطبيق'
-          ..validation = (FormValidationEntity()..isrequired = true)
-          ..messages = (FormMessageEntity()
-            ..requiredEn = 'Please Enter Application Version'
-            ..requiredAr = 'الرجاء إدخال إصدار التطبيق')
-          ..onDatachnage = (value) {
-            fieldsData['applicationversion'] = value;
-          },
+        // FormEntity()
+        //   ..type = FormFieldType.text
+        //   ..name = 'applicationVersion'
+        //   ..labelEn = 'Application Version'
+        //   ..labelAr = 'نسخة التطبيق'
+        //   ..validation = (FormValidationEntity()..isrequired = true)
+        //   ..messages = (FormMessageEntity()
+        //     ..requiredEn = 'Please Enter Application Version'
+        //     ..requiredAr = 'الرجاء إدخال إصدار التطبيق')
+        //   ..onDatachnage = (value) {
+        //     fieldsData['applicationversion'] = value;
+        //   },
         FormEntity()
           ..type = FormFieldType.collection
           ..name = 'changetested'
+          ..isHidden = true
           ..labelEn = 'Change Tested'
           ..labelAr = 'تم اختبار التغيير'
           ..validation = (FormValidationEntity()..isrequired = true)
@@ -544,8 +561,9 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             ..requiredAr = 'الرجاء تحديد التغيير الذي تم اختباره')
           ..inputFieldData = {
             'items': [
-              NameIDEntity(1, 'Yes'),
-              NameIDEntity(2, 'No'),
+              NameIDEntity(1, 'May Be', nameAr: 'ربما'),
+              NameIDEntity(2, 'Yes', nameAr: 'نعم'),
+              NameIDEntity(3, 'No', nameAr: 'لا'),
             ]
           }
           ..onDatachnage = (value) {
@@ -553,6 +571,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           },
         FormEntity()
           ..type = FormFieldType.collection
+          ..isHidden = true
           ..name = 'rolebackoption'
           ..labelEn = 'Role-back option'
           ..labelAr = 'خيار إرجاع الدور'
@@ -562,8 +581,8 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             ..requiredAr = 'الرجاء تحديد خيار العودة للدور')
           ..inputFieldData = {
             'items': [
-              NameIDEntity(1, 'Yes'),
-              NameIDEntity(2, 'No'),
+              NameIDEntity(1, 'Yes', nameAr: 'نعم'),
+              NameIDEntity(2, 'No', nameAr: 'لا'),
             ]
           }
           ..onDatachnage = (value) {
@@ -571,6 +590,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           },
         FormEntity()
           ..type = FormFieldType.collection
+          ..isHidden = true
           ..name = 'impact'
           ..labelEn = 'Impact'
           ..labelAr = 'تأثير'
@@ -580,16 +600,18 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             ..requiredAr = 'الرجاء تحديد التأثير')
           ..inputFieldData = {
             'items': [
-              NameIDEntity(1, 'High'),
-              NameIDEntity(2, 'Medium'),
-              NameIDEntity(3, 'Low'),
+              NameIDEntity(1, resources.string.low),
+              NameIDEntity(2, resources.string.medium),
+              NameIDEntity(3, resources.string.high),
+              NameIDEntity(4, resources.string.critical)
             ]
           }
           ..onDatachnage = (value) {
             fieldsData['impact'] = value;
           },
         FormEntity()
-          ..type = FormFieldType.text
+          ..type = FormFieldType.collection
+          ..isHidden = true
           ..name = 'downtimerequirement'
           ..labelEn = 'Down time Requirement'
           ..labelAr = 'متطلبات وقت التوقف'
@@ -597,11 +619,18 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Down time Requirement'
             ..requiredAr = 'الرجاء إدخال متطلبات وقت التوقف')
+          ..inputFieldData = {
+            'items': [
+              NameIDEntity(1, 'Yes', nameAr: 'نعم'),
+              NameIDEntity(2, 'No', nameAr: 'لا'),
+            ]
+          }
           ..onDatachnage = (value) {
             fieldsData['downtimerequirement'] = value;
           },
         FormEntity()
           ..type = FormFieldType.textarea
+          ..isHidden = true
           ..name = 'businessimpactanalysis'
           ..labelEn = 'Business Impact Analysis'
           ..labelAr = 'تحليل تأثير الأعمال'
@@ -614,6 +643,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           },
         FormEntity()
           ..type = FormFieldType.text
+          ..isHidden = true
           ..name = 'systeminvolved'
           ..labelEn = 'System Involved'
           ..labelAr = 'النظام متورط'
@@ -626,6 +656,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           },
         FormEntity()
           ..type = FormFieldType.date
+          ..isHidden = true
           ..hasTime = true
           ..name = 'startDateAndTime'
           ..labelEn = 'Requester Target Start Date and Time'
@@ -643,6 +674,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           },
         FormEntity()
           ..type = FormFieldType.text
+          ..isHidden = true
           ..name = 'downtimewindow'
           ..labelEn = 'Down Time Window'
           ..labelAr = 'نافذة وقت التوقف'
@@ -694,7 +726,23 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             fieldsData['changedescription'] = value;
           },
         FormEntity()
-          ..type = FormFieldType.text
+          ..type = FormFieldType.checkbox
+          ..name = 'showmore'
+          ..labelEn = 'Show More'
+          ..labelAr = 'أظهر المزيد'
+          ..fieldValue = fieldsData['showmore']
+          ..onDatachnage = (value) {
+            fieldsData['showmore'] = value;
+            final fields =
+                networkCRFormFields.sublist(3, networkCRFormFields.length);
+            for (var element in fields) {
+              element.isHidden = value != true;
+            }
+            doScreenRefresh.value = !doScreenRefresh.value;
+          },
+        FormEntity()
+          ..type = FormFieldType.collection
+          ..isHidden = true
           ..labelEn = 'Network Devices'
           ..labelAr = 'أجهزة الشبكة'
           ..name = 'networkdevices'
@@ -702,11 +750,22 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Network Devices'
             ..requiredAr = 'الرجاء إدخال أجهزة الشبكة')
+          ..inputFieldData = {
+            'items': [
+              NameIDEntity(1, 'Router', nameAr: 'الموجه'),
+              NameIDEntity(2, 'Switch', nameAr: 'المحول'),
+              NameIDEntity(3, 'Firewall', nameAr: 'جدار الحماية'),
+              NameIDEntity(4, 'IDS'),
+              NameIDEntity(4, 'IPS'),
+              NameIDEntity(4, 'Others', nameAr: 'أخرى'),
+            ]
+          }
           ..onDatachnage = (value) {
             fieldsData['networkdevices'] = value;
           },
         FormEntity()
           ..type = FormFieldType.collection
+          ..isHidden = true
           ..name = 'changetested'
           ..labelEn = 'Change Tested'
           ..labelAr = 'تم اختبار التغيير'
@@ -716,8 +775,9 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             ..requiredAr = 'الرجاء تحديد التغيير الذي تم اختباره')
           ..inputFieldData = {
             'items': [
-              NameIDEntity(1, 'Yes'),
-              NameIDEntity(2, 'No'),
+              NameIDEntity(1, 'May Be', nameAr: 'ربما'),
+              NameIDEntity(2, 'Yes', nameAr: 'نعم'),
+              NameIDEntity(3, 'No', nameAr: 'لا'),
             ]
           }
           ..onDatachnage = (value) {
@@ -725,6 +785,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           },
         FormEntity()
           ..type = FormFieldType.collection
+          ..isHidden = true
           ..name = 'rolebackoption'
           ..labelEn = 'Role-back option'
           ..labelAr = 'خيار إرجاع الدور'
@@ -734,8 +795,8 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             ..requiredAr = 'الرجاء تحديد خيار العودة للدور')
           ..inputFieldData = {
             'items': [
-              NameIDEntity(1, 'Yes'),
-              NameIDEntity(2, 'No'),
+              NameIDEntity(1, 'Yes', nameAr: 'نعم'),
+              NameIDEntity(2, 'No', nameAr: 'لا'),
             ]
           }
           ..onDatachnage = (value) {
@@ -743,6 +804,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           },
         FormEntity()
           ..type = FormFieldType.collection
+          ..isHidden = true
           ..name = 'impact'
           ..labelEn = 'Impact'
           ..labelAr = 'تأثير'
@@ -752,9 +814,10 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             ..requiredAr = 'الرجاء تحديد التأثير')
           ..inputFieldData = {
             'items': [
-              NameIDEntity(1, 'High'),
-              NameIDEntity(2, 'Medium'),
-              NameIDEntity(3, 'Low'),
+              NameIDEntity(1, resources.string.low),
+              NameIDEntity(2, resources.string.medium),
+              NameIDEntity(3, resources.string.high),
+              NameIDEntity(4, resources.string.critical)
             ]
           }
           ..onDatachnage = (value) {
@@ -762,6 +825,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           },
         FormEntity()
           ..type = FormFieldType.textarea
+          ..isHidden = true
           ..name = 'businessimpactanalysis'
           ..labelEn = 'Business Impact Analysis'
           ..labelAr = 'تحليل تأثير الأعمال'
@@ -773,7 +837,8 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             fieldsData['businessimpactanalysis'] = value;
           },
         FormEntity()
-          ..type = FormFieldType.text
+          ..type = FormFieldType.collection
+          ..isHidden = true
           ..name = 'downtimerequirement'
           ..labelEn = 'Down time Requirement'
           ..labelAr = 'متطلبات وقت التوقف'
@@ -781,11 +846,18 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Down time Requirement'
             ..requiredAr = 'الرجاء إدخال متطلبات وقت التوقف')
+          ..inputFieldData = {
+            'items': [
+              NameIDEntity(1, 'Yes', nameAr: 'نعم'),
+              NameIDEntity(2, 'No', nameAr: 'لا'),
+            ]
+          }
           ..onDatachnage = (value) {
             fieldsData['downtimerequirement'] = value;
           },
         FormEntity()
           ..type = FormFieldType.date
+          ..isHidden = true
           ..name = 'requestertargetinstalldate'
           ..labelEn = 'Requester Target Install Date'
           ..labelAr = 'تاريخ ووقت البدء المستهدف للمتقدم بالطلب'
@@ -802,6 +874,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           },
         FormEntity()
           ..type = FormFieldType.text
+          ..isHidden = true
           ..name = 'systeminvolved'
           ..labelEn = 'System Involved'
           ..labelAr = 'النظام متورط'
@@ -814,6 +887,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           },
         FormEntity()
           ..type = FormFieldType.date
+          ..isHidden = true
           ..hasTime = true
           ..name = 'startDateAndTime'
           ..labelEn = 'Requester Start Date'
@@ -829,25 +903,26 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..onDatachnage = (value) {
             fieldsData['startdateandtime'] = value;
           },
-        FormEntity()
-          ..type = FormFieldType.date
-          ..hasTime = true
-          ..name = 'endDateAndTime'
-          ..labelEn = 'Requester End Date'
-          ..labelAr = 'تاريخ انتهاء الطالب'
-          ..validation = (FormValidationEntity()..isrequired = true)
-          ..messages = (FormMessageEntity()
-            ..requiredEn = 'Please Enter Requester End Date'
-            ..requiredAr = 'الرجاء إدخال تاريخ انتهاء الطلب')
-          ..inputFieldData = {
-            'format': 'yyyy-MM-dd',
-            'lastDate': DateTime.now().add(const Duration(days: 365))
-          }
-          ..onDatachnage = (value) {
-            fieldsData['enddateandtime'] = value;
-          },
+        // FormEntity()
+        //   ..type = FormFieldType.date
+        //   ..hasTime = true
+        //   ..name = 'endDateAndTime'
+        //   ..labelEn = 'Requester End Date'
+        //   ..labelAr = 'تاريخ انتهاء الطالب'
+        //   ..validation = (FormValidationEntity()..isrequired = true)
+        //   ..messages = (FormMessageEntity()
+        //     ..requiredEn = 'Please Enter Requester End Date'
+        //     ..requiredAr = 'الرجاء إدخال تاريخ انتهاء الطلب')
+        //   ..inputFieldData = {
+        //     'format': 'yyyy-MM-dd',
+        //     'lastDate': DateTime.now().add(const Duration(days: 365))
+        //   }
+        //   ..onDatachnage = (value) {
+        //     fieldsData['enddateandtime'] = value;
+        //   },
         FormEntity()
           ..type = FormFieldType.textarea
+          ..isHidden = true
           ..label = 'Comments'
           ..onDatachnage = (value) {
             fieldsData['comments'] = value;
@@ -903,9 +978,9 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             ..requiredAr = 'الرجاء تحديد البيئة')
           ..inputFieldData = {
             'items': [
-              NameIDEntity(1, 'Windows'),
-              NameIDEntity(2, 'Linx'),
-              NameIDEntity(3, 'Mac'),
+              NameIDEntity(1, 'Windows', nameAr: 'ويندوز'),
+              NameIDEntity(2, 'Linux', nameAr: 'لينكس'),
+              NameIDEntity(3, 'Other', nameAr: 'آخر'),
             ]
           }
           ..onDatachnage = (value) {
@@ -922,9 +997,9 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             ..requiredAr = 'الرجاء تحديد نظام التشغيل')
           ..inputFieldData = {
             'items': [
-              NameIDEntity(1, 'Windows'),
-              NameIDEntity(2, 'Linx'),
-              NameIDEntity(3, 'Mac'),
+              NameIDEntity(1, 'Windows', nameAr: 'ويندوز'),
+              NameIDEntity(2, 'Linux', nameAr: 'لينكس'),
+              NameIDEntity(3, 'Other', nameAr: 'آخر'),
             ]
           }
           ..onDatachnage = (value) {
@@ -1051,8 +1126,9 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             ..requiredAr = 'الرجاء تحديد التغيير الذي تم اختباره')
           ..inputFieldData = {
             'items': [
-              NameIDEntity(1, 'Yes'),
-              NameIDEntity(2, 'No'),
+              NameIDEntity(1, 'May Be', nameAr: 'ربما'),
+              NameIDEntity(2, 'Yes', nameAr: 'نعم'),
+              NameIDEntity(3, 'No', nameAr: 'لا'),
             ]
           }
           ..onDatachnage = (value) {
@@ -1069,8 +1145,8 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             ..requiredAr = 'الرجاء تحديد خيار العودة للدور')
           ..inputFieldData = {
             'items': [
-              NameIDEntity(1, 'Yes'),
-              NameIDEntity(2, 'No'),
+              NameIDEntity(1, 'Yes', nameAr: 'نعم'),
+              NameIDEntity(2, 'No', nameAr: 'لا'),
             ]
           }
           ..onDatachnage = (value) {
@@ -1494,12 +1570,17 @@ class IsoSystemCrScreen extends BaseScreenWidget {
                         //data['requestDetails'] = jsonEncode(data);
                         final details = <String, dynamic>{};
                         for (var field in fieldsData.entries) {
-                          if (!field.key.contains('files')) {
+                          if (!field.key.contains('files') &&
+                              !field.key.contains('showmore')) {
                             details[field.key] = field.value;
                           }
                         }
                         details['createdon'] =
                             getDateByformat('dd/MM/yyyy', DateTime.now());
+                        if (categories[employeeCategory].id == 4 ||
+                            categories[employeeCategory].id == 5) {
+                          details['showmore'] = fieldsData['showmore'] ?? false;
+                        }
                         data['requestDetails'] = jsonEncode(details);
                         if (fieldsData['files'] is List) {
                           data['files'] =
