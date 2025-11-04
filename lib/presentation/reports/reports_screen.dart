@@ -741,7 +741,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
   Timer? _resizeTimer;
   @override
   void initState() {
-    super.initState();
     _resizeTimer?.cancel();
     // _resizeTimer = Timer(const Duration(milliseconds: 400), () {
     //   if (tickets.isEmpty && mounted) {
@@ -752,21 +751,20 @@ class _ReportsScreenState extends State<ReportsScreen> {
       if (mounted) {
         _updateTickets(context);
       }
-      startTimer(
-          duration: const Duration(minutes: 15),
-          callback: () {
-            if (context.mounted) {
-              _updateTickets(context);
-            }
-          });
     });
 
-    Future.delayed(Duration.zero, () {});
+    _resizeTimer = Timer(const Duration(minutes: 15), () {
+      if (!mounted) return;
+      _updateTickets(context);
+    });
+
+    super.initState();
   }
 
   @override
   void dispose() {
     _resizeTimer?.cancel();
+    _resizeTimer = null;
     super.dispose();
   }
 

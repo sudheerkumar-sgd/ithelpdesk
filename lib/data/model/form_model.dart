@@ -9,6 +9,7 @@ class FormModel extends BaseModel {
   String? lableEn;
   String? lableAr;
   String? type;
+  String? url;
   FormValidationEntity? validation;
   FormMessageEntity? validationMessage;
 
@@ -19,6 +20,7 @@ class FormModel extends BaseModel {
     lableEn = json['lableEn'];
     lableAr = json['lableAr'];
     type = json['type'];
+    url = json['url'];
     validation = json['validation'] != null
         ? FormValidationModel.fromJson(json['validation']).toEntity()
         : null;
@@ -34,6 +36,7 @@ class FormModel extends BaseModel {
       ..name = name
       ..labelEn = lableEn
       ..labelAr = lableAr
+      ..url = url
       ..validation = validation
       ..messages = validationMessage;
   }

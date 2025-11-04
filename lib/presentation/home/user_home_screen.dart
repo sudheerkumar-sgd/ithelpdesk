@@ -1,4 +1,6 @@
 // ignore_for_file: must_be_immutable
+import 'dart:async';
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,18 +29,32 @@ import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 import 'package:ithelpdesk/res/drawables/background_box_decoration.dart';
 import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
 
-class UserHomeScreen extends BaseScreenWidget {
-  UserHomeScreen({super.key});
+class UserHomeScreen extends StatefulWidget {
+  const UserHomeScreen({super.key});
+
+  @override
+  State<UserHomeScreen> createState() => _UserHomeScreenState();
+}
+
+class _UserHomeScreenState extends State<UserHomeScreen> {
   late FocusNode requestStatusFocusNode;
+
   final ServicesBloc _servicesBloc = sl<ServicesBloc>();
 
   DashboardEntity? _dashboardEntity;
+
   final ValueNotifier<bool> _onDataChange = ValueNotifier(false);
+
   List<Map<String, Object>> _requestTypes = [];
+
   List<TicketEntity> ticketsData = [];
+
   int selectTicketCategory = 1;
+
   final ValueNotifier<int> _selectedYear = ValueNotifier(2024);
+
   final ValueNotifier<List<String>> _filteredDates = ValueNotifier([]);
+
   StatusType filteredStatus = StatusType.all;
 
   Future<ApiEntity<ListEntity>> _getDashboradTickets() {
@@ -311,21 +327,32 @@ class UserHomeScreen extends BaseScreenWidget {
     );
   }
 
+  Timer? _resizeTimer;
   @override
-  Widget build(BuildContext context) {
-    final resources = context.resources;
+  void initState() {
     Future.delayed(Duration.zero, () {
       _servicesBloc.getDashboardData(
           requestParams: UserCredentialsEntity.details().id != null
               ? {"userId": UserCredentialsEntity.details().id}
               : {});
-
-      startTimer(
-          duration: const Duration(minutes: 15),
-          callback: () {
-            _onDataChange.value = (!_onDataChange.value);
-          });
     });
+    _resizeTimer = Timer(const Duration(minutes: 15), () {
+      if (!mounted) return;
+      _onDataChange.value = (!_onDataChange.value);
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _resizeTimer?.cancel();
+    _resizeTimer = null;
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final resources = context.resources;
     _selectedYear.value = DateTime.now().year;
     final requestTypesRows = isDesktop(context) ? 1 : 2;
     final requestTypesColumns = isDesktop(context) ? 4 : 2;

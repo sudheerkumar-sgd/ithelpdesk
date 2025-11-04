@@ -1,11 +1,13 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:flutter/material.dart';
+import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/item_attachment.dart';
 import 'package:ithelpdesk/presentation/common_widgets/multi_select_dialog_widget.dart';
+import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 import 'package:ithelpdesk/res/drawables/background_box_decoration.dart';
 import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
 
@@ -69,14 +71,15 @@ class MultiSelectDropDownWidget<T> extends StatelessWidget {
         InkWell(
           onTap: () {
             if (list.isNotEmpty) {
-              showDialog(
-                  context: context,
-                  builder: (context) {
-                    return MultiSelectDialogWidget(
-                      list: list,
-                      selectedItems: selectedItems,
-                    );
-                  }).then((value) {
+              Dialogs.showDialogWithClose(
+                      context,
+                      MultiSelectDialogWidget(
+                        list: list,
+                        selectedItems: selectedItems,
+                      ),
+                      maxWidth: isDesktop(context) ? 300 : null,
+                      showClose: false)
+                  .then((value) {
                 selectedItems.clear();
                 selectedItems.addAll(value);
                 _onItemChanged.value = !_onItemChanged.value;
@@ -87,12 +90,14 @@ class MultiSelectDropDownWidget<T> extends StatelessWidget {
           child: Container(
             padding: EdgeInsets.only(
                 left: context.resources.dimen.dp10,
-                top: context.resources.dimen.dp5,
+                top: context.resources.dimen.dp2,
                 right: context.resources.dimen.dp15,
-                bottom: context.resources.dimen.dp5),
+                bottom: context.resources.dimen.dp2),
             decoration: BackgroundBoxDecoration(
-                    boxColor: fillColor ?? const Color(0xFFF7F6F6),
-                    radious: context.resources.dimen.dp10)
+                    boxColor: fillColor ?? const Color(0xFFFFFFFF),
+                    boarderColor: context.resources.color.sideBarItemUnselected,
+                    boarderWidth: 1,
+                    radious: 0)
                 .roundedCornerBox,
             child: Row(
               children: [
@@ -102,9 +107,9 @@ class MultiSelectDropDownWidget<T> extends StatelessWidget {
                       return Expanded(
                         child: Padding(
                           padding: EdgeInsets.only(
-                              top: context.resources.dimen.dp5,
+                              top: context.resources.dimen.dp3,
                               right: context.resources.dimen.dp15,
-                              bottom: context.resources.dimen.dp5),
+                              bottom: context.resources.dimen.dp3),
                           child: selectedItems.isNotEmpty
                               ? Wrap(
                                   runSpacing: resources.dimen.dp10,
@@ -137,13 +142,9 @@ class MultiSelectDropDownWidget<T> extends StatelessWidget {
                 SizedBox(
                   width: context.resources.dimen.dp15,
                 ),
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: resources.dimen.dp8),
-                  child: ImageWidget(
-                          path: DrawableAssets.icChevronDown,
-                          backgroundTint: resources.color.viewBgColor)
-                      .loadImage,
-                ),
+                ImageWidget(
+                  path: DrawableAssets.icChevronDown,
+                ).loadImage,
               ],
             ),
           ),

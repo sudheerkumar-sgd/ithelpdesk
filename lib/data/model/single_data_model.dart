@@ -19,3 +19,24 @@ class SingleDataModel extends BaseModel {
     return SingleDataEntity(value);
   }
 }
+
+class NameIDModel extends BaseModel {
+  int? id;
+  String? name;
+  String? nameAr;
+
+  NameIDModel();
+
+  factory NameIDModel.fromJson(Map<String, dynamic> json) {
+    var nameIDModel = NameIDModel();
+    nameIDModel.id = json['id'];
+    nameIDModel.name = json['name'];
+    nameIDModel.nameAr = json['nameAr'];
+    return nameIDModel;
+  }
+
+  @override
+  NameIDEntity toEntity() {
+    return NameIDEntity(id, name, nameAr: nameAr);
+  }
+}

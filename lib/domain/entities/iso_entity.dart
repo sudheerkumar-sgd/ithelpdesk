@@ -51,7 +51,13 @@ class CRRequestEntity extends BaseEntity {
   Map<String, dynamic> toDetailsJson(Map step1Details) {
     final Map<String, dynamic> reportData = <String, dynamic>{};
     for (var field in workflowFieldEntity?.detailsFields ?? []) {
-      if (step1Details[field['key'].toString().toLowerCase()] is Map) {
+      if (step1Details[field['key'].toString().toLowerCase()] is List) {
+        for (var e
+            in (step1Details[field['key'].toString().toLowerCase()] as List)) {
+          reportData[field['Name']] = (reportData[field['Name']] ?? '') +
+              '${(e is Map) ? e['name'] : e}, ';
+        }
+      } else if (step1Details[field['key'].toString().toLowerCase()] is Map) {
         reportData[field['Name']] =
             step1Details[field['key'].toString().toLowerCase()]?['name'];
       } else {
@@ -156,6 +162,7 @@ class CRRequestDetailsEntity extends BaseEntity {
 class CRRequestStepEntity extends BaseEntity {
   int? requestStepId;
   String? stepName;
+  int? stepOrder;
   List<FormEntity> inputFields = [];
   int? assignedTo;
   String? assigneDisplayName;

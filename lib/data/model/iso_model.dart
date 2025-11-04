@@ -177,6 +177,7 @@ class CRRequestDetailsModel extends BaseModel {
 class CRRequestStepModel extends BaseModel {
   int? requestStepId;
   String? stepName;
+  int? stepOrder;
   List<FormEntity> inputFields = [];
   int? assignedTo;
   String? assigneDisplayName;
@@ -190,6 +191,7 @@ class CRRequestStepModel extends BaseModel {
   CRRequestStepModel.fromJson(Map<String, dynamic> json) {
     requestStepId = json['requestStepId'];
     stepName = json['stepName'];
+    stepOrder = json['stepOrder'];
     assignedTo = json['assignedTo'];
     assigneDisplayName = json['assigneDisplayName'];
     updatedAt = json['updatedAt'];
@@ -215,6 +217,7 @@ class CRRequestStepModel extends BaseModel {
     return CRRequestStepEntity()
       ..requestStepId = requestStepId
       ..stepName = stepName
+      ..stepOrder = stepOrder
       ..inputFields = inputFields
       ..stepFormData = stepFormData
       ..assignedTo = assignedTo

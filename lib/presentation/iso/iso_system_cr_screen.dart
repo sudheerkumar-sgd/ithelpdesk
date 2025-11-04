@@ -151,7 +151,6 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'reportingmanager'
           ..labelEn = 'Reporting Manager'
           ..labelAr = 'مدير التقارير'
-          ..requestModel = ListModel.fromEmployeesJson
           ..validation = (FormValidationEntity()..isrequired = false)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Reporting Manager'
@@ -206,6 +205,35 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           }
           ..onDatachnage = (value) {
             fieldsData['dateofjoining'] = value;
+          },
+        FormEntity()
+          ..type = FormFieldType.collection
+          ..multi = true
+          ..name = 'requiredaccessfields'
+          ..labelEn = 'Required Access Fields'
+          ..labelAr = 'حقول الوصول المطلوبة'
+          ..validation = (FormValidationEntity()..isrequired = true)
+          ..messages = (FormMessageEntity()
+            ..requiredEn = 'Please Select Required Access Fields'
+            ..requiredAr = 'الرجاء تحديد حقول الوصول المطلوبة')
+          ..inputFieldData = {
+            'items': [
+              NameIDEntity(1, 'Shared floder', nameAr: 'مجلد مشترك'),
+              NameIDEntity(2, 'Microsoft Teams', nameAr: 'مايكروسوفت تيمز'),
+              NameIDEntity(3, 'ERP', nameAr: 'ERP'),
+              NameIDEntity(4, 'Time Attendance', nameAr: 'وقت الحضور'),
+            ]
+          }
+          ..onDatachnage = (value) {
+            fieldsData['requiredaccessfields'] = value;
+          },
+        FormEntity()
+          ..type = FormFieldType.textarea
+          ..name = 'accessdescription'
+          ..labelEn = 'Access Description'
+          ..labelAr = 'وصف الوصول'
+          ..onDatachnage = (value) {
+            fieldsData['accessdescription'] = value;
           },
         FormEntity()
           ..type = FormFieldType.textarea

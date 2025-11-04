@@ -32,7 +32,7 @@ extension FieldEntityExtension on FormEntity {
       final response = await sl<MasterDataBloc>().getFieldInputData(
         apiUrl: url ?? '',
         requestParams: urlInputData ?? {},
-        requestModel: requestModel ?? ListModel.fromDepartmentsJson,
+        requestModel: requestModel ?? ListModel.fromNameIDJson,
       );
       if (response is OnMasterDataSuccess) {
         return Future<List<BaseEntity>>.value(

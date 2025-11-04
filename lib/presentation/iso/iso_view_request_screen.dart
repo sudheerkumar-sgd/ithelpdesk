@@ -894,6 +894,15 @@ class ISOViewRequestScreen extends BaseScreenWidget {
     final currentStep = requestEntity.steps
         .where((e) => e.requestStepId == requestEntity.currentStep)
         .firstOrNull;
+    if (requestEntity.workflowId == 2 && currentStep?.stepOrder == 2) {
+      final reportingManager = currentStep?.inputFields
+          .where((element) => element.name == 'reportingmanager')
+          .firstOrNull;
+      reportingManager?.urlInputData = {
+        'departmentName': requestEntity.steps[0].stepFormData?['newdepartment']
+            ?['shortName']
+      };
+    }
     return Container(
       padding: EdgeInsets.symmetric(
           vertical: resources.dimen.dp15, horizontal: resources.dimen.dp20),
