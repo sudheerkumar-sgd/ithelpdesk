@@ -38,17 +38,17 @@ class ISOUseCase extends BaseUseCase {
     });
   }
 
-  Future<Either<Failure, ApiEntity<ListEntity>>> getCRRequests(
+  Future<Either<Failure, ApiEntity<CRRequestDataEntity>>> getCRRequests(
       {required Map<String, dynamic> requestParams}) async {
-    var apiResponse = await apisRepository.get<ListModel>(
+    var apiResponse = await apisRepository.get<CRRequestDataModel>(
       apiUrl: getCRRequestsApiUrl,
       requestParams: requestParams,
-      responseModel: ListModel.fromCRRequestsJson,
+      responseModel: CRRequestDataModel.fromJson,
     );
     return apiResponse.fold((l) {
       return Left(l);
     }, (r) {
-      var apiResponseEntity = r.toEntity<ListEntity>();
+      var apiResponseEntity = r.toEntity<CRRequestDataEntity>();
       return Right(apiResponseEntity);
     });
   }
@@ -67,7 +67,7 @@ class ISOUseCase extends BaseUseCase {
       return Right(apiResponseEntity);
     });
   }
-  
+
   Future<Either<Failure, ApiEntity<ListEntity>>> getCRTransferEmployees(
       {required Map<String, dynamic> requestParams}) async {
     var apiResponse = await apisRepository.get<ListModel>(

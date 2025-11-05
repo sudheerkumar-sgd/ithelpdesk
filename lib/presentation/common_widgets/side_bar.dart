@@ -94,36 +94,36 @@ class SideBar extends StatelessWidget {
                         .onFontSize(resources.fontSize.dp12),
                   ),
                 ),
-                if (UserCredentialsEntity.details().isoUser == true) ...[
-                  SizedBox(
-                    height: resources.dimen.dp10,
-                  ),
-                  ListTile(
-                    onTap: () {
-                      _selectedIndex.value = 2;
-                      onItemSelected(2);
-                    },
-                    leading: SizedBox(
-                      width: 40,
-                      height: 40,
-                      child: ImageWidget(
-                              path: DrawableAssets.icReport,
-                              backgroundTint: index == 2
-                                  ? resources.color.sideBarItemSelected
-                                  : resources.color.sideBarItemUnselected,
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 5))
-                          .loadImageWithMoreTapArea,
-                    ),
-                    title: Text(
-                      'IT ISO Requests',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: context.textFontWeight600
-                          .onFontSize(resources.fontSize.dp12),
-                    ),
-                  )
-                ],
+                // if (UserCredentialsEntity.details().isoUser == true) ...[
+                //   SizedBox(
+                //     height: resources.dimen.dp10,
+                //   ),
+                //   ListTile(
+                //     onTap: () {
+                //       _selectedIndex.value = 2;
+                //       onItemSelected(2);
+                //     },
+                //     leading: SizedBox(
+                //       width: 40,
+                //       height: 40,
+                //       child: ImageWidget(
+                //               path: DrawableAssets.icReport,
+                //               backgroundTint: index == 2
+                //                   ? resources.color.sideBarItemSelected
+                //                   : resources.color.sideBarItemUnselected,
+                //               padding:
+                //                   const EdgeInsets.symmetric(horizontal: 5))
+                //           .loadImageWithMoreTapArea,
+                //     ),
+                //     title: Text(
+                //       'IT ISO Requests',
+                //       maxLines: 1,
+                //       overflow: TextOverflow.ellipsis,
+                //       style: context.textFontWeight600
+                //           .onFontSize(resources.fontSize.dp12),
+                //     ),
+                //   )
+                // ],
                 // ValueListenableBuilder(
                 //     valueListenable: _onCRClick,
                 //     builder: (context, onCRClick, child) {

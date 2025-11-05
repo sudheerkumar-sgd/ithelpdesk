@@ -3,6 +3,11 @@ import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/domain/entities/base_entity.dart';
 import 'package:ithelpdesk/domain/entities/form_entities.dart';
 
+class CRRequestDataEntity extends BaseEntity {
+  int? totalPage;
+  List<CRRequestEntity>? requests;
+}
+
 class CRRequestEntity extends BaseEntity {
   int? requestId;
   String? requestType;
@@ -52,11 +57,12 @@ class CRRequestEntity extends BaseEntity {
     final Map<String, dynamic> reportData = <String, dynamic>{};
     for (var field in workflowFieldEntity?.detailsFields ?? []) {
       if (step1Details[field['key'].toString().toLowerCase()] is List) {
-        for (var e
-            in (step1Details[field['key'].toString().toLowerCase()] as List)) {
-          reportData[field['Name']] = (reportData[field['Name']] ?? '') +
-              '${(e is Map) ? e['name'] : e}, ';
-        }
+        final values =
+            (step1Details[field['key'].toString().toLowerCase()] as List)
+                .map((e) => (e is Map) ? e['name'] : e.toString())
+                .where((e) => e != null && e.toString().isNotEmpty)
+                .join(', ');
+        reportData[field['Name']] = values;
       } else if (step1Details[field['key'].toString().toLowerCase()] is Map) {
         reportData[field['Name']] =
             step1Details[field['key'].toString().toLowerCase()]?['name'];

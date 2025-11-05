@@ -729,7 +729,7 @@ class ReportListWidget extends StatelessWidget {
                             if (page * pageCount <
                                 _getPageCount(filteredData.length)) {
                               page++;
-                              if (page <= (filteredData.length / 20).toInt()) {
+                              if (page <= (filteredData.length / 20).ceil()) {
                                 _onSortChange.value = !(_onSortChange.value);
                               }
                               if (ticketsData.length == filteredData.length) {

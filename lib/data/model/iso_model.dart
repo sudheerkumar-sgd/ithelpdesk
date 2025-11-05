@@ -8,6 +8,28 @@ import 'package:ithelpdesk/data/model/form_model.dart';
 import 'package:ithelpdesk/domain/entities/form_entities.dart';
 import 'package:ithelpdesk/domain/entities/iso_entity.dart';
 
+class CRRequestDataModel extends BaseModel {
+  int? totalPage;
+  List<CRRequestEntity> requests = [];
+
+  CRRequestDataModel.fromJson(Map<String, dynamic> response) {
+    final json = response['data'] ?? response;
+    totalPage = json['totalPage'];
+    if (json['requests'] is List) {
+      requests = <CRRequestEntity>[];
+      for (var json in (json['requests'] as List)) {
+        requests.add(CRRequestModel.fromJson(json).toEntity());
+      }
+    }
+  }
+  @override
+  CRRequestDataEntity toEntity() {
+    return CRRequestDataEntity()
+      ..totalPage = totalPage
+      ..requests = requests;
+  }
+}
+
 class CRRequestModel extends BaseModel {
   int? requestId;
   String? requestType;

@@ -819,7 +819,8 @@ class _ReportsScreenState extends State<ReportsScreen> {
                               onPageChange: (page) {
                                 index = (index ?? 0) + page;
                                 if (page == 1 &&
-                                    (index ?? 0) >= tickets.length / 20) {
+                                    (index ?? 0) >=
+                                        (tickets.length / 20).ceil()) {
                                   _updateTickets(context);
                                 }
                               },

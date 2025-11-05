@@ -456,21 +456,32 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'accessdetails'
           ..labelEn = 'Access Details'
           ..labelAr = 'تفاصيل الوصول'
+          ..multi = true
           ..validation = (FormValidationEntity()..isrequired = true)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Select Access Details'
             ..requiredAr = 'الرجاء تحديد تفاصيل الوصول')
           ..inputFieldData = {
             'items': [
-              NameIDEntity(1, 'Email Access'),
-              NameIDEntity(2, 'Internet Access'),
-              NameIDEntity(3, 'Software Access'),
-              NameIDEntity(4, 'Database Access'),
-              NameIDEntity(5, 'Shared Folder Access'),
+              NameIDEntity(1, 'ERP'),
+              NameIDEntity(2, 'USB'),
+              NameIDEntity(3, 'Tarasol'),
+              NameIDEntity(4, 'System Login'),
+              NameIDEntity(5, 'IT (Local Admin Access)'),
+              NameIDEntity(6, 'AD Service Account'),
+              NameIDEntity(7, 'AD Security Group'),
             ]
           }
           ..onDatachnage = (value) {
-            fieldsData['accessdetails'] = value.name;
+            fieldsData['accessdetails'] = value;
+          },
+        FormEntity()
+          ..type = FormFieldType.textarea
+          ..name = 'accessdescription'
+          ..labelEn = 'Access Description'
+          ..labelAr = 'وصف الوصول'
+          ..onDatachnage = (value) {
+            fieldsData['accessdescription'] = value;
           },
         FormEntity()
           ..type = FormFieldType.text

@@ -9,7 +9,6 @@ import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/domain/entities/api_entity.dart';
 import 'package:ithelpdesk/domain/entities/iso_entity.dart';
-import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
 import 'package:ithelpdesk/injection_container.dart';
 import 'package:ithelpdesk/presentation/bloc/iso/iso_bloc.dart';
 import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart';
@@ -29,8 +28,9 @@ class IsoCrHomeScreen extends BaseScreenWidget {
   final ValueNotifier<int> _selectedYear = ValueNotifier(2024);
   //final ValueNotifier<List<String>> _filteredDates = ValueNotifier([]);
   StatusType filteredStatus = StatusType.all;
+  int index = 0;
 
-  Future<ApiEntity<ListEntity>> _getCRTickets() async {
+  Future<ApiEntity<CRRequestDataEntity>> _getCRTickets() async {
     //var dateFormat = DateFormat('dd-MMM-yyyy HH:mm');
     //var startTime = DateFormat('yyyy/MM/dd').parse(_filteredDates.value[0]);
     //var endTime = DateFormat('yyyy/MM/dd').parse(_filteredDates.value[1]);
@@ -38,15 +38,15 @@ class IsoCrHomeScreen extends BaseScreenWidget {
       //'ticketType': selectTicketCategory,
       //'startDate': dateFormat.format(startTime),
       //'endDate': dateFormat.format(endTime),
+      'index': index,
     });
-    final tickets = ApiEntity<ListEntity>();
+    final requestData = ApiEntity<CRRequestDataEntity>();
     if (response is OnISOApiResponse) {
-      final listEntity = ListEntity();
-      listEntity.items =
-          cast<ListEntity?>(response.response.entity)?.items ?? [];
-      tickets.entity = listEntity;
+      final crRequestDataEntity =
+          cast<CRRequestDataEntity>(response.response.entity);
+      requestData.entity = crRequestDataEntity;
     }
-    return Future.value(tickets);
+    return Future.value(requestData);
   }
 
   @override
@@ -447,8 +447,8 @@ class IsoCrHomeScreen extends BaseScreenWidget {
                         return FutureBuilder(
                             future: _getCRTickets(),
                             builder: (context, snapShot) {
-                              final filterTickets =
-                                  List.from(snapShot.data?.entity?.items ?? []);
+                              final filterTickets = List.from(
+                                  snapShot.data?.entity?.requests ?? []);
                               if (filterTickets.isEmpty) {
                                 return Padding(
                                   padding: const EdgeInsets.only(top: 40.0),
@@ -474,7 +474,9 @@ class IsoCrHomeScreen extends BaseScreenWidget {
                                       reportData: filterTickets,
                                       ticketsTableColunwidths:
                                           reportTableColunwidths,
-                                      totalPagecount: 1,
+                                      page: index ~/ 10 + 1,
+                                      totalPagecount:
+                                          snapShot.data?.entity?.totalPage ?? 1,
                                       ticketsHeaderData: reportHeaderData,
                                       onRowSelected: (item) {
                                         if (item is CRRequestEntity) {
@@ -485,6 +487,11 @@ class IsoCrHomeScreen extends BaseScreenWidget {
                                         }
                                       },
                                       onColumnClick: (key, item) {},
+                                      onPageChange: (page) {
+                                        index = (page - 1) * 10;
+                                        _onDataChange.value =
+                                            !_onDataChange.value;
+                                      },
                                     )
                                   : Padding(
                                       padding: const EdgeInsets.only(top: 20.0),
