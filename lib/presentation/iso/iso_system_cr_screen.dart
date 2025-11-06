@@ -231,6 +231,10 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..type = FormFieldType.textarea
           ..name = 'accessdescription'
           ..labelEn = 'Access Description'
+          ..placeholderEn =
+              'Specify Share floder name, ERP module name, AD group name etc.'
+          ..placeholderAr =
+              'حدد اسم المجلد المشترك ، اسم وحدة ERP ، اسم مجموعة AD ، إلخ.'
           ..labelAr = 'وصف الوصول'
           ..onDatachnage = (value) {
             fieldsData['accessdescription'] = value;
@@ -429,7 +433,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..labelAr = 'معرف تسجيل الدخول للنظام'
           ..validation = (FormValidationEntity()
             ..isrequired = true
-            ..regex = nameNumberRegex)
+            ..regex = nameNumberDotRegex)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter System Login ID'
             ..requiredAr = 'الرجاء إدخال معرف تسجيل الدخول للنظام'
@@ -479,6 +483,10 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..type = FormFieldType.textarea
           ..name = 'accessdescription'
           ..labelEn = 'Access Description'
+          ..placeholderEn =
+              'Specify Share floder name, ERP module name, AD group name etc.'
+          ..placeholderAr =
+              'حدد اسم المجلد المشترك ، اسم وحدة ERP ، اسم مجموعة AD ، إلخ.'
           ..labelAr = 'وصف الوصول'
           ..onDatachnage = (value) {
             fieldsData['accessdescription'] = value;
@@ -530,7 +538,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             fieldsData['priority'] = value.name;
           },
         FormEntity()
-          ..type = FormFieldType.text
+          ..type = FormFieldType.textarea
           ..labelEn = 'Change Description'
           ..labelAr = 'تغيير الوصف'
           ..name = 'changeDescription'
@@ -753,7 +761,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             fieldsData['priority'] = value;
           },
         FormEntity()
-          ..type = FormFieldType.text
+          ..type = FormFieldType.textarea
           ..labelEn = 'Change Description'
           ..labelAr = 'تغيير الوصف'
           ..name = 'changeDescription'
@@ -995,7 +1003,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             fieldsData['priority'] = value;
           },
         FormEntity()
-          ..type = FormFieldType.text
+          ..type = FormFieldType.textarea
           ..labelEn = 'Change Description'
           ..labelAr = 'تغيير الوصف'
           ..name = 'changeDescription'

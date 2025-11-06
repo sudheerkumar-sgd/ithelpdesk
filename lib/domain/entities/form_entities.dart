@@ -17,7 +17,7 @@ class FormEntity extends BaseEntity {
   String? labelEn;
   String? placeholder;
   String? placeholderEn;
-  String? placeholderTe;
+  String? placeholderAr;
   String? suffixIcon;
   bool? repeated;
   bool? multi;
@@ -44,7 +44,7 @@ class FormEntity extends BaseEntity {
 
   String get getLabel => (isSelectedLocalEn ? labelEn : labelAr) ?? label ?? '';
   String get getPlaceholder =>
-      (isSelectedLocalEn ? placeholderEn : placeholderTe) ?? placeholder ?? '';
+      (isSelectedLocalEn ? placeholderEn : placeholderAr) ?? placeholder ?? '';
 }
 
 class LKPchildrenEntity extends BaseEntity {

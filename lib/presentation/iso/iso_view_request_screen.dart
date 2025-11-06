@@ -1208,7 +1208,7 @@ class ISOViewRequestScreen extends BaseScreenWidget {
           } else if (state is OnISOApiResponse) {
             Dialogs.dismiss(context);
             Dialogs.showInfoDialog(context, PopupType.success,
-                    '${resources.string.updatingTicket} UAQGOV-CR-${requestEntity.requestId}')
+                    '${isSelectedLocalEn ? 'Request Updated' : 'تم تحديث الطلب'} ${requestEntity.requestCode}')
                 .then((value) {
               if (context.mounted) {
                 Navigator.pop(context, true);
@@ -1252,7 +1252,7 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                             child: Text.rich(
                               TextSpan(
                                   text:
-                                      '${requestEntity.requestType} : UAQGOV-CR-${requestEntity.requestId}\n',
+                                      '${requestEntity.requestType} : ${requestEntity.requestCode ?? requestEntity.requestId}\n',
                                   style: context.textFontWeight600
                                       .onFontFamily(fontFamily: fontFamilyEN),
                                   children: [

@@ -32,6 +32,7 @@ class CRRequestDataModel extends BaseModel {
 
 class CRRequestModel extends BaseModel {
   int? requestId;
+  String? requestCode;
   String? requestType;
   int? workflowId;
   int? currentStep;
@@ -55,6 +56,7 @@ class CRRequestModel extends BaseModel {
   CRRequestModel.fromJson(Map<String, dynamic> response) {
     final json = response['data'] ?? response;
     requestId = json['requestId'];
+    requestCode = json['requestCode'];
     requestType = json['requestType'];
     workflowId = json['workflowId'];
     currentStep = json['currentStep'];
@@ -103,6 +105,7 @@ class CRRequestModel extends BaseModel {
   CRRequestEntity toEntity() {
     return CRRequestEntity()
       ..requestId = requestId
+      ..requestCode = requestCode
       ..requestType = requestType
       ..workflowId = workflowId
       ..currentStep = currentStep

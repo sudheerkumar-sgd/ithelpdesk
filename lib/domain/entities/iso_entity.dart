@@ -10,6 +10,7 @@ class CRRequestDataEntity extends BaseEntity {
 
 class CRRequestEntity extends BaseEntity {
   int? requestId;
+  String? requestCode;
   String? requestType;
   int? workflowId;
   int? currentStep;
