@@ -755,7 +755,7 @@ class ISOViewRequestScreen extends BaseScreenWidget {
           'comments': dialogResult['comments'],
           'files': dialogResult['files']
         };
-        requestParams['transferedTo'] = transferedTo;
+        requestParams['transferTo'] = transferedTo;
         _isoBloc.createISORequest(
             requestParams: requestParams,
             apiUrl: updateCRRequestApiUrl,
@@ -894,6 +894,14 @@ class ISOViewRequestScreen extends BaseScreenWidget {
     final currentStep = requestEntity.steps
         .where((e) => e.requestStepId == requestEntity.currentStep)
         .firstOrNull;
+    final ticketActionButtons = currentStep?.assignees
+            .where((element) =>
+                element.employeeId == UserCredentialsEntity.details().id)
+            .firstOrNull
+            ?.actions
+            .map((e) => e.actionId ?? RequestStepStatus.inProgress)
+            .toList() ??
+        [];
     if (requestEntity.workflowId == 2 && currentStep?.stepOrder == 2) {
       final reportingManager = currentStep?.inputFields
           .where((element) => element.name == 'reportingmanager')
@@ -1025,7 +1033,9 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                 }),
               ),
             ],
-            if (requestEntity.requestStaus != RequestStatus.completed)
+            if (requestEntity.requestStaus != RequestStatus.completed &&
+                requestEntity.requestStaus != RequestStatus.rejected &&
+                ticketActionButtons.length > 1)
               Form(
                   key: _formKey,
                   child: Column(
@@ -1322,97 +1332,100 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                       //   height: resources.dimen.dp20,
                       // ),
                       // ],
-                      ValueListenableBuilder(
-                          valueListenable: _onDataChanged,
-                          builder: (context, onDataChange, child) {
-                            final currentStepDetails = requestEntity.steps
-                                .where((element) =>
-                                    element.requestStepId ==
-                                    requestEntity.currentStep)
-                                .firstOrNull;
-                            if (currentStepDetails == null) {
-                              return const SizedBox();
-                            }
-                            if (currentStepDetails.status ==
-                                RequestStepStatus.close) {
-                              return const SizedBox();
-                            }
-                            final ticketActionButtons = currentStepDetails
-                                    .assignees
-                                    .where((element) =>
-                                        element.employeeId ==
-                                        UserCredentialsEntity.details().id)
-                                    .firstOrNull
-                                    ?.actions
-                                    .map((e) =>
-                                        e.actionId ??
-                                        RequestStepStatus.inProgress)
-                                    .toList() ??
-                                [];
-                            final actionButtonsLength =
-                                isDesktop(context, size: screenDimentions)
-                                    ? 3
-                                    : 1;
-                            final actionButtons = ticketActionButtons.sublist(
-                                0,
-                                min(actionButtonsLength,
-                                    ticketActionButtons.length));
-                            var popupActionButtons =
-                                List<RequestStepStatus>.empty(growable: true);
-                            if (actionButtonsLength + 1 ==
-                                ticketActionButtons.length) {
-                              actionButtons.addAll(ticketActionButtons
-                                  .sublist(actionButtonsLength));
-                            } else if (actionButtonsLength <
-                                ticketActionButtons.length) {
-                              popupActionButtons = ticketActionButtons
-                                  .sublist(actionButtonsLength);
-                            }
-                            return Row(
-                              children: [
-                                // for (int i = 0;
-                                //     i <
-                                //         (actionButtonsLength + 1) -
-                                //             ticketActionButtons.length;
-                                //     i++) ...[const Expanded(child: SizedBox())],
-                                for (int r = 0;
-                                    r < actionButtons.length;
-                                    r++) ...[
-                                  Expanded(
-                                    child: InkWell(
-                                      onTap: () async {
-                                        _updateTicket(
-                                            context, actionButtons[r]);
-                                      },
-                                      child: ActionButtonWidget(
-                                        text: (actionButtons[r]).toString(),
-                                        color: actionButtons[r].getColor(),
-                                        radious: 0,
-                                        textSize: resources.fontSize.dp12,
-                                        padding: EdgeInsets.symmetric(
-                                            vertical: resources.dimen.dp7,
-                                            horizontal: resources.dimen.dp10),
+                      if (requestEntity.requestStaus !=
+                              RequestStatus.completed &&
+                          requestEntity.requestStaus != RequestStatus.rejected)
+                        ValueListenableBuilder(
+                            valueListenable: _onDataChanged,
+                            builder: (context, onDataChange, child) {
+                              final currentStepDetails = requestEntity.steps
+                                  .where((element) =>
+                                      element.requestStepId ==
+                                      requestEntity.currentStep)
+                                  .firstOrNull;
+                              if (currentStepDetails == null) {
+                                return const SizedBox();
+                              }
+                              if (currentStepDetails.status ==
+                                  RequestStepStatus.close) {
+                                return const SizedBox();
+                              }
+                              final ticketActionButtons = currentStepDetails
+                                      .assignees
+                                      .where((element) =>
+                                          element.employeeId ==
+                                          UserCredentialsEntity.details().id)
+                                      .firstOrNull
+                                      ?.actions
+                                      .map((e) =>
+                                          e.actionId ??
+                                          RequestStepStatus.inProgress)
+                                      .toList() ??
+                                  [];
+                              final actionButtonsLength =
+                                  isDesktop(context, size: screenDimentions)
+                                      ? 3
+                                      : 1;
+                              final actionButtons = ticketActionButtons.sublist(
+                                  0,
+                                  min(actionButtonsLength,
+                                      ticketActionButtons.length));
+                              var popupActionButtons =
+                                  List<RequestStepStatus>.empty(growable: true);
+                              if (actionButtonsLength + 1 ==
+                                  ticketActionButtons.length) {
+                                actionButtons.addAll(ticketActionButtons
+                                    .sublist(actionButtonsLength));
+                              } else if (actionButtonsLength <
+                                  ticketActionButtons.length) {
+                                popupActionButtons = ticketActionButtons
+                                    .sublist(actionButtonsLength);
+                              }
+                              return Row(
+                                children: [
+                                  // for (int i = 0;
+                                  //     i <
+                                  //         (actionButtonsLength + 1) -
+                                  //             ticketActionButtons.length;
+                                  //     i++) ...[const Expanded(child: SizedBox())],
+                                  for (int r = 0;
+                                      r < actionButtons.length;
+                                      r++) ...[
+                                    Expanded(
+                                      child: InkWell(
+                                        onTap: () async {
+                                          _updateTicket(
+                                              context, actionButtons[r]);
+                                        },
+                                        child: ActionButtonWidget(
+                                          text: (actionButtons[r]).toString(),
+                                          color: actionButtons[r].getColor(),
+                                          radious: 0,
+                                          textSize: resources.fontSize.dp12,
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: resources.dimen.dp7,
+                                              horizontal: resources.dimen.dp10),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  if (r < actionButtons.length) ...[
-                                    SizedBox(
-                                      width: resources.dimen.dp10,
-                                    ),
-                                  ]
+                                    if (r < actionButtons.length) ...[
+                                      SizedBox(
+                                        width: resources.dimen.dp10,
+                                      ),
+                                    ]
+                                  ],
+                                  if (popupActionButtons.isNotEmpty)
+                                    Expanded(
+                                        child: DropdownMenuWidget(
+                                      items: popupActionButtons,
+                                      titleText: resources.string.otherActions,
+                                      onItemSelected: (p0) {
+                                        _updateTicket(context, p0);
+                                      },
+                                    )),
                                 ],
-                                if (popupActionButtons.isNotEmpty)
-                                  Expanded(
-                                      child: DropdownMenuWidget(
-                                    items: popupActionButtons,
-                                    titleText: resources.string.otherActions,
-                                    onItemSelected: (p0) {
-                                      _updateTicket(context, p0);
-                                    },
-                                  )),
-                              ],
-                            );
-                          }),
+                              );
+                            }),
                     ],
                   );
                 }),

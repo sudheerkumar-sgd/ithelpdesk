@@ -799,11 +799,10 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             ..requiredAr = 'الرجاء إدخال أجهزة الشبكة')
           ..inputFieldData = {
             'items': [
-              NameIDEntity(1, 'Router', nameAr: 'الموجه'),
-              NameIDEntity(2, 'Switch', nameAr: 'المحول'),
-              NameIDEntity(3, 'Firewall', nameAr: 'جدار الحماية'),
-              NameIDEntity(4, 'IDS'),
-              NameIDEntity(4, 'IPS'),
+              NameIDEntity(1, 'Switch', nameAr: 'المحول'),
+              NameIDEntity(2, 'Firewall', nameAr: 'جدار الحماية'),
+              NameIDEntity(3, 'Netscaler (Load balancer)',
+                  nameAr: 'نتسكالر (موازن التحميل)'),
               NameIDEntity(4, 'Others', nameAr: 'أخرى'),
             ]
           }
