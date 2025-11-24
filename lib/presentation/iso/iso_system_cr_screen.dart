@@ -63,7 +63,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             ]
           }
           ..onDatachnage = (value) {
-            fieldsData['priority'] = value.name;
+            fieldsData['priority'] = value;
           },
         FormEntity()
           ..type = FormFieldType.text
@@ -103,7 +103,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'fullname'
           ..validation = (FormValidationEntity()
             ..isrequired = true
-            ..regex = nameRegExp)
+            ..regex = nameSpaceRegExp)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Employee Full Name'
             ..requiredAr = 'الرجاء إدخال الاسم الكامل للموظف'
@@ -272,7 +272,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             ]
           }
           ..onDatachnage = (value) {
-            fieldsData['priority'] = value.name;
+            fieldsData['priority'] = value;
           },
         FormEntity()
           ..type = FormFieldType.text
@@ -312,7 +312,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'fullname'
           ..validation = (FormValidationEntity()
             ..isrequired = true
-            ..regex = nameRegExp)
+            ..regex = nameSpaceRegExp)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Employee Full Name'
             ..requiredAr = 'الرجاء إدخال الاسم الكامل للموظف'
@@ -409,7 +409,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             ]
           }
           ..onDatachnage = (value) {
-            fieldsData['priority'] = value.name;
+            fieldsData['priority'] = value;
           },
         FormEntity()
           ..type = FormFieldType.text
@@ -417,7 +417,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..name = 'fullname'
           ..validation = (FormValidationEntity()
             ..isrequired = true
-            ..regex = nameRegExp)
+            ..regex = nameSpaceRegExp)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Employee Full Name'
             ..requiredAr = 'الرجاء إدخال الاسم الكامل للموظف'
@@ -467,13 +467,18 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             ..requiredAr = 'الرجاء تحديد تفاصيل الوصول')
           ..inputFieldData = {
             'items': [
-              NameIDEntity(1, 'ERP'),
-              NameIDEntity(2, 'USB'),
-              NameIDEntity(3, 'Tarasol'),
-              NameIDEntity(4, 'System Login'),
-              NameIDEntity(5, 'IT (Local Admin Access)'),
-              NameIDEntity(6, 'AD Service Account'),
-              NameIDEntity(7, 'AD Security Group'),
+              NameIDEntity(1, 'Microsoft Teams', nameAr: 'مايكروسوفت تيمز'),
+              NameIDEntity(2, 'Shared Folder', nameAr: 'مجلد مشترك'),
+              NameIDEntity(3, 'Service Email', nameAr: 'بريد إلكتروني للخدمة'),
+              NameIDEntity(4, 'Distribution Group Email',
+                  nameAr: 'توزيع مجموعة البريد الإلكتروني'),
+              NameIDEntity(5, 'ERP'),
+              NameIDEntity(6, 'USB'),
+              NameIDEntity(7, 'Tarasol'),
+              NameIDEntity(8, 'System Login'),
+              NameIDEntity(9, 'IT (Local Admin Access)'),
+              NameIDEntity(10, 'AD Service Account'),
+              NameIDEntity(11, 'AD Security Group'),
             ]
           }
           ..onDatachnage = (value) {
@@ -535,7 +540,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             ]
           }
           ..onDatachnage = (value) {
-            fieldsData['priority'] = value.name;
+            fieldsData['priority'] = value;
           },
         FormEntity()
           ..type = FormFieldType.textarea
@@ -1614,6 +1619,8 @@ class IsoSystemCrScreen extends BaseScreenWidget {
                         final data = <String, dynamic>{};
                         data['workflowId'] = categories[employeeCategory].id;
                         //data['requestDetails'] = jsonEncode(data);
+                        data['requestPriority'] =
+                            (fieldsData['priority'] as NameIDEntity?)?.id ?? 1;
                         final details = <String, dynamic>{};
                         for (var field in fieldsData.entries) {
                           if (!field.key.contains('files') &&

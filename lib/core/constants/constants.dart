@@ -16,7 +16,7 @@ const numberRegExp = r'^[0-9]*$';
 const nameNumberDotRegex = r'^[a-zA-Z0-9.]+$';
 const emailRegx =
     r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
-
+const nameSpaceRegExp = r"^[a-zA-Z]+( [a-zA-Z]+)*$";
 const String userID = '118';
 // const String username = 'sudheer.akula';
 //const String username = 'mooza.binyeem';

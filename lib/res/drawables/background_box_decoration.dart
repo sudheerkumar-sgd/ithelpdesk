@@ -9,6 +9,7 @@ class BackgroundBoxDecoration {
   double? shadowBlurRadius;
   Offset? shadowOffset;
   BoxBorder? boxBorder;
+  List<Color> gradientColors;
   BackgroundBoxDecoration(
       {this.boxColor,
       this.boarderColor,
@@ -17,7 +18,8 @@ class BackgroundBoxDecoration {
       this.shadowColor,
       this.shadowBlurRadius,
       this.shadowOffset,
-      this.boxBorder});
+      this.boxBorder,
+      this.gradientColors = const []});
   BoxDecoration get roundedCornerBox {
     return BoxDecoration(
         color: boxColor,
@@ -105,5 +107,16 @@ class BackgroundBoxDecoration {
             color: boarderColor ?? const Color(0x00000000),
             width: boarderWidth ?? 0),
         shape: BoxShape.circle);
+  }
+
+  BoxDecoration get linearGradient {
+    return BoxDecoration(
+      borderRadius: BorderRadius.circular(radious ?? 0),
+      gradient: LinearGradient(
+        begin: Alignment.centerLeft,
+        end: Alignment.centerRight,
+        colors: gradientColors,
+      ),
+    );
   }
 }

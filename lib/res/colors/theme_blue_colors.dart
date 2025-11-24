@@ -120,4 +120,13 @@ class ThemeBlueColors extends BaseColors {
 
   @override
   Color get sideBarItemUnselected => const Color(0xffD1DAE2);
+
+  @override
+  Color get dashboardPrimary => const Color(0xFF102559);
+
+  @override
+  Color get dashboardSecondary => const Color(0xFF3E76EE);
+
+  @override
+  Color get dashboardLight => const Color(0xFF7685FB);
 }

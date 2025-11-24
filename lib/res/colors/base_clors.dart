@@ -82,4 +82,10 @@ abstract class BaseColors {
   Color get pending => const Color(0xFFFF8832);
 
   Color get hintColor => const Color(0xFF737791);
+
+  Color get dashboardPrimary => const Color(0xFF102559);
+
+  Color get dashboardSecondary => const Color(0xFF3E76EE);
+
+  Color get dashboardLight => const Color(0xFF7685FB);
 }
