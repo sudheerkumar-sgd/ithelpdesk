@@ -220,11 +220,7 @@ class _MainScreenState extends State<UserMainScreen> {
                                   UserCredentialsEntity.create(
                                       snapShot.data?.token ?? '');
                                 }
-                                return UserCredentialsEntity.details()
-                                            .userType ==
-                                        UserType.superAdmin
-                                    ? const SizedBox.shrink()
-                                    : getUserAppBar(context);
+                                return getUserAppBar(context);
                               }),
                           ValueListenableBuilder(
                               valueListenable: _selectedIndex,
