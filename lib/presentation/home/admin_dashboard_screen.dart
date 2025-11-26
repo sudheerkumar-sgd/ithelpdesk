@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
-import 'package:ithelpdesk/core/common/log.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
@@ -17,15 +16,11 @@ import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
 import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
 import 'package:ithelpdesk/injection_container.dart';
 import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
-import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart';
-import 'package:ithelpdesk/presentation/common_widgets/alert_dialog_widget.dart';
+import 'package:ithelpdesk/presentation/common_widgets/barchart_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dropdown_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
-import 'package:ithelpdesk/presentation/common_widgets/report_list_widget.dart';
+import 'package:ithelpdesk/presentation/common_widgets/my_custom_scrollbehavior.dart';
 import 'package:ithelpdesk/presentation/common_widgets/tooltip_widget.dart';
-import 'package:ithelpdesk/presentation/requests/create_new_request.dart';
-import 'package:ithelpdesk/presentation/requests/view_request.dart';
-import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 import 'package:ithelpdesk/res/drawables/background_box_decoration.dart';
 import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
 
@@ -167,7 +162,28 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           Expanded(
             child: LineChart(
               LineChartData(
+                gridData: const FlGridData(show: false),
                 backgroundColor: resources.color.colorWhite,
+                lineTouchData: LineTouchData(
+                  enabled: true,
+                  touchTooltipData: LineTouchTooltipData(
+                    tooltipPadding: const EdgeInsets.all(8),
+                    tooltipMargin: 10,
+                    getTooltipColor: (touchedSpot) {
+                      return context.resources.color.dashboardSecondary;
+                    },
+                    getTooltipItems: (touchedSpots) {
+                      return touchedSpots.map((LineBarSpot touchedSpot) {
+                        return LineTooltipItem(
+                          touchedSpot.y.ceil().toString(),
+                          context.textFontWeight600
+                              .onColor(Colors.white)
+                              .onFontSize(12),
+                        );
+                      }).toList();
+                    },
+                  ),
+                ),
                 titlesData: FlTitlesData(
                     topTitles: const AxisTitles(),
                     rightTitles: const AxisTitles(),
@@ -189,6 +205,19 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       preventCurveOvershootingThreshold: 12,
                       isCurved: true,
                       preventCurveOverShooting: true,
+                      belowBarData: BarAreaData(
+                        show: true,
+                        gradient: LinearGradient(
+                          colors: [
+                            resources.color.dashboardSecondary
+                                .withAlpha((0.3 * 255).toInt()),
+                            resources.color.dashboardSecondary
+                                .withAlpha((0.05 * 255).toInt()),
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
+                      ),
                       barWidth: 2),
                 ],
               ), // Optional
@@ -249,7 +278,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       }
     }
     return Container(
-      height: 250,
+      height: 275,
       width: double.infinity,
       decoration: BackgroundBoxDecoration(
               boxColor: resources.color.colorWhite,
@@ -259,19 +288,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text.rich(
-            TextSpan(
-                text: '${resources.string.category}\n',
-                style: context.textFontWeight600
-                    .onFontSize(resources.fontSize.dp12),
-                children: [
-                  TextSpan(
-                      text: '${resources.string.itHelpdeskSupportTickets}\n',
-                      style: context.textFontWeight400
-                          .onFontSize(resources.fontSize.dp10)
-                          .onColor(resources.color.textColorLight)
-                          .onHeight(1))
-                ]),
+          Text(
+            'By Category',
+            style:
+                context.textFontWeight600.onFontSize(resources.fontSize.dp12),
+          ),
+          SizedBox(
+            height: resources.dimen.dp10,
           ),
           Expanded(
             child: PieChart(
@@ -286,7 +309,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 sections: List.generate(
                     categoryData.length,
                     (index) => PieChartSectionData(
-                        radius: 20,
+                        radius: 25,
                         value: (categoryData[index]['count'] ?? 0) as double,
                         color: (categoryData[index]['color'] ?? Colors.yellow)
                             as Color,
@@ -368,7 +391,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     final maxValue =
         data.map((e) => e["count"] as int).reduce((a, b) => a > b ? a : b);
     return Container(
-      height: 250,
+      height: 275,
       width: double.infinity,
       padding: EdgeInsets.symmetric(
           horizontal: resources.dimen.dp20, vertical: resources.dimen.dp15),
@@ -380,54 +403,61 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '${resources.string.category}\n',
+            'By Priority',
+            maxLines: 1,
             style: context.textFontWeight600.onFontSize(
               resources.fontSize.dp12,
             ),
+          ),
+          SizedBox(
+            height: resources.dimen.dp10,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               for (int i = 0; i < data.length; i++)
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Count bubble
-                    TooltipWidget(text: data[i]['count'].toString()),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Count bubble
+                      TooltipWidget(text: '${data[i]['count']}'),
 
-                    const SizedBox(height: 6),
+                      const SizedBox(height: 6),
 
-                    // Animated Bar
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 600),
-                      curve: Curves.easeOut,
-                      height:
-                          ((data[i]['count'] as int) / maxValue) * (250 * 0.5),
-                      width: 24,
-                      decoration: BoxDecoration(
-                        borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(18)),
-                        gradient: LinearGradient(
-                          begin: Alignment.bottomCenter,
-                          end: Alignment.topCenter,
-                          colors: [
-                            (data[i]['color'] as Color).withAlpha(50),
-                            (data[i]['color'] as Color).withAlpha(255),
-                          ],
+                      // Animated Bar
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 600),
+                        curve: Curves.easeOut,
+                        height: ((data[i]['count'] as int) / maxValue) *
+                            (275 * 0.55),
+                        width: 24,
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(18)),
+                          gradient: LinearGradient(
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.topCenter,
+                            colors: [
+                              (data[i]['color'] as Color).withAlpha(50),
+                              (data[i]['color'] as Color).withAlpha(255),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
 
-                    const SizedBox(height: 10),
+                      const SizedBox(height: 10),
 
-                    // Label
-                    Text(
-                      data[i]['label'].toString(),
-                      style: context.textFontWeight600.onFontSize(10),
-                    ),
-                  ],
+                      // Label
+                      Text(
+                        data[i]['label'].toString(),
+                        maxLines: 1,
+                        style: context.textFontWeight600.onFontSize(10),
+                      ),
+                    ],
+                  ),
                 ),
             ],
           ),
@@ -461,7 +491,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       },
     ];
     return Container(
-        height: 250,
+        height: 275,
         width: double.infinity,
         padding: EdgeInsets.symmetric(
             horizontal: resources.dimen.dp20, vertical: resources.dimen.dp15),
@@ -473,10 +503,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '${resources.string.category}\n',
+              'By Issue Type',
               style: context.textFontWeight700.onFontSize(
                 resources.fontSize.dp12,
               ),
+            ),
+            SizedBox(
+              height: resources.dimen.dp10,
             ),
             for (int i = 0; i < data.length; i++)
               Expanded(
@@ -495,11 +528,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   child: Row(children: [
                     Expanded(
                       child: Text(data[i]['issue_type'].toString(),
+                          maxLines: 1,
                           style: context.textFontWeight700
                               .onFontSize(resources.fontSize.dp10)
                               .onColor(const Color(0xFF14213D))),
                     ),
-                    Text(data[i]['count'].toString(),
+                    Text('${data[i]['count']}',
+                        maxLines: 1,
                         style: context.textFontWeight700
                             .onFontSize(resources.fontSize.dp12)
                             .onColor(resources.color.dashboardSecondary)),
@@ -512,35 +547,302 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
   Widget _getByOpenDayWidget() {
     final resources = context.resources;
+    final data = [
+      {
+        "label": "1-4",
+        "count": 123,
+        "color": resources.color.dashboardSecondary
+      },
+      {
+        "label": "5-9",
+        "count": 34,
+        "color": resources.color.dashboardSecondary
+      },
+      {
+        "label": "10-15",
+        "count": 45,
+        "color": resources.color.dashboardSecondary
+      },
+      {
+        "label": "16-20",
+        "count": 23,
+        "color": resources.color.dashboardSecondary
+      },
+      {
+        "label": "<20",
+        "count": 65,
+        "color": resources.color.dashboardSecondary
+      },
+    ];
+    final lables = data.map((e) => e["label"].toString()).toList();
+    final values = data.map((e) => e["count"] as double).toList();
     return Container(
-        height: 250,
-        width: double.infinity,
-        decoration: BackgroundBoxDecoration(
-          boxColor: resources.color.colorWhite,
-          radious: resources.dimen.dp10,
-        ).roundedBoxWithShadow);
+      height: 275,
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(
+          horizontal: resources.dimen.dp20, vertical: resources.dimen.dp15),
+      decoration: BackgroundBoxDecoration(
+        boxColor: resources.color.colorWhite,
+        radious: resources.dimen.dp10,
+      ).roundedBoxWithShadow,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'By Open Day',
+            style: context.textFontWeight600.onFontSize(
+              resources.fontSize.dp12,
+            ),
+          ),
+          SizedBox(
+            height: resources.dimen.dp20,
+          ),
+          Expanded(
+            child: BarchartWidget(
+              bottomLables: lables,
+              values: values,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _getDelayedCasesWidget() {
     final resources = context.resources;
+    final data = [
+      {
+        "name": "Request No.",
+        "value": '12345',
+      },
+      {
+        "name": "Subject",
+        "value": 'Unable to submit request',
+      },
+      {
+        "name": "Category",
+        "value": 'Eservice',
+      },
+      {
+        "name": "Priority",
+        "value": 'Open',
+      },
+      {
+        "name": "Assignee",
+        "value": 'Ahmed Abdullah',
+      },
+      {
+        "name": "Overdue",
+        "value": '24 Days',
+      },
+    ];
+    final pageController = PageController(initialPage: 0);
+    ValueNotifier pageIndex = ValueNotifier(0);
     return Container(
-        height: 150,
+        height: 200,
         width: double.infinity,
+        padding: EdgeInsets.symmetric(
+            horizontal: resources.dimen.dp20, vertical: resources.dimen.dp15),
         decoration: BackgroundBoxDecoration(
           boxColor: resources.color.colorWhite,
           radious: resources.dimen.dp10,
-        ).roundedBoxWithShadow);
+        ).roundedBoxWithShadow,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Delayed Cases',
+              style: context.textFontWeight700
+                  .onFontSize(
+                    resources.fontSize.dp12,
+                  )
+                  .onHeight(1),
+            ),
+            SizedBox(
+              height: resources.dimen.dp10,
+            ),
+            Expanded(
+              child: ScrollConfiguration(
+                behavior: MyCustomScrollBehavior(),
+                child: PageView(
+                  controller: pageController,
+                  children: [
+                    for (int i = 0; i < 4; i++)
+                      Row(
+                        children: [
+                          for (int i = 0; i < 2; i++)
+                            Expanded(
+                              child: Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 7),
+                                margin: EdgeInsets.only(
+                                    bottom: resources.dimen.dp5,
+                                    right: i == 0 ? resources.dimen.dp10 : 0),
+                                decoration: BackgroundBoxDecoration(
+                                        boxColor: resources.color.colorF7F8FF,
+                                        radious: 8)
+                                    .roundedCornerBox,
+                                child: Column(
+                                  children: List.generate(
+                                      6,
+                                      (index) => Row(children: [
+                                            Expanded(
+                                              child: Text(
+                                                  data[index]['name']
+                                                      .toString(),
+                                                  maxLines: 1,
+                                                  style: context
+                                                      .textFontWeight400
+                                                      .onFontSize(resources
+                                                          .fontSize.dp10)
+                                                      .onColor(const Color(
+                                                          0xFF14213D))),
+                                            ),
+                                            Expanded(
+                                              child: Text(
+                                                  '${data[index]['value']}',
+                                                  maxLines: 1,
+                                                  style: context
+                                                      .textFontWeight600
+                                                      .onFontSize(resources
+                                                          .fontSize.dp12)),
+                                            ),
+                                          ])),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                  ],
+                  onPageChanged: (value) {
+                    pageIndex.value = value;
+                  },
+                ),
+              ),
+            ),
+            SizedBox(
+              height: resources.dimen.dp10,
+            ),
+            ValueListenableBuilder(
+                valueListenable: pageIndex,
+                builder: (context, value, child) {
+                  return Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        for (int i = 0; i < 4; i++)
+                          Container(
+                            width: 8,
+                            height: 8,
+                            margin: EdgeInsets.only(right: resources.dimen.dp5),
+                            decoration: BackgroundBoxDecoration(
+                                    boxColor: i == value
+                                        ? const Color(0xFF9EA4CC)
+                                        : const Color(0xFFE3E5F3))
+                                .circularBox,
+                          ),
+                      ]);
+                })
+          ],
+        ));
   }
 
   Widget _getTopResolversWidget() {
     final resources = context.resources;
+    final data = [
+      {
+        "name": "Ujjuwal",
+        "department": 'System & Smart Services Department',
+        "count": 123,
+      },
+      {
+        "name": "Syed Ibrahim",
+        "department": 'Infrastructure Department',
+        "count": 34,
+      },
+      {
+        "name": "Anu",
+        "department": 'System & Smart Services Department',
+        "count": 34,
+      },
+    ];
     return Container(
-        height: 150,
+        height: 200,
         width: double.infinity,
+        padding: EdgeInsets.symmetric(
+            horizontal: resources.dimen.dp20, vertical: resources.dimen.dp15),
         decoration: BackgroundBoxDecoration(
           boxColor: resources.color.colorWhite,
           radious: resources.dimen.dp10,
-        ).roundedBoxWithShadow);
+        ).roundedBoxWithShadow,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Top Resolvers',
+              style: context.textFontWeight700
+                  .onFontSize(
+                    resources.fontSize.dp12,
+                  )
+                  .onHeight(1),
+            ),
+            SizedBox(
+              height: resources.dimen.dp10,
+            ),
+            Expanded(
+                child: SingleChildScrollView(
+                    child: Column(children: [
+              for (int i = 0; i < data.length; i++)
+                Container(
+                  width: double.infinity,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                  margin: EdgeInsets.only(bottom: resources.dimen.dp5),
+                  decoration: BackgroundBoxDecoration(
+                          boxColor: Colors.white,
+                          radious: 8,
+                          shadowColor: Colors.black.withAlpha(15),
+                          shadowBlurRadius: 8,
+                          shadowOffset: const Offset(0, 2))
+                      .roundedCornerBoxWithShadow,
+                  child: Row(children: [
+                    Container(
+                      width: 24,
+                      height: 24,
+                      decoration: BackgroundBoxDecoration(
+                              boxColor: const Color(0xFFA3AED0))
+                          .circularBox,
+                    ),
+                    SizedBox(
+                      width: resources.dimen.dp10,
+                    ),
+                    Expanded(
+                      child: Text.rich(
+                          maxLines: 2,
+                          TextSpan(
+                              text: data[i]['name'].toString(),
+                              style: context.textFontWeight700
+                                  .onFontSize(resources.fontSize.dp10)
+                                  .onColor(const Color(0xFF14213D)),
+                              children: [
+                                TextSpan(
+                                    text:
+                                        '\n${data[i]['department'].toString()}',
+                                    style: context.textFontWeight400
+                                        .onFontSize(resources.dimen.dp10)
+                                        .onColor(
+                                            resources.color.textColorLight))
+                              ])),
+                    ),
+                    Text('${data[i]['count']}',
+                        style: context.textFontWeight700
+                            .onFontSize(resources.fontSize.dp12)
+                            .onColor(resources.color.dashboardSecondary)),
+                  ]),
+                )
+            ]))),
+          ],
+        ));
   }
 
   Timer? _resizeTimer;
@@ -601,245 +903,200 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     ];
     double topBannerHeight = screenSize.height * 0.25;
     return SelectionArea(
-        child: Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: context.resources.color.appScaffoldBg,
-      body: BlocProvider(
-        create: (context) => _servicesBloc,
-        child: BlocListener<ServicesBloc, ServicesState>(
-          listener: (context, state) {
-            if (state is OnDashboardSuccess) {
-              _dashboardEntity = state.dashboardEntity.entity;
-              _requestTypes[0]['count'] =
-                  _dashboardEntity?.notAssignedRequests ?? 0;
-              _requestTypes[1]['count'] = _dashboardEntity?.openRequests ?? 0;
-              _requestTypes[2]['count'] = _dashboardEntity?.closedRequests ?? 0;
-              _requestTypes[3]['count'] = _dashboardEntity?.totalRequests ?? 0;
-              ticketsData = _dashboardEntity?.assignedTickets ?? [];
-              _onDataChange.value = !(_onDataChange.value);
-            }
-          },
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      height: topBannerHeight,
-                      clipBehavior: Clip.antiAlias,
-                      decoration:
-                          BackgroundBoxDecoration(gradientColors: const [
-                        Color(0xFF0B0620),
-                        Color(0xFF241A6D),
-                        Color(0xFF3A45E8),
-                        Color(0xFF9A8CFF),
-                      ]).linearGradient,
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                            left: resources.dimen.dp20,
-                            top: topBannerHeight * .3,
-                            right: resources.dimen.dp20,
-                            bottom: resources.dimen.dp20),
-                        child: Text.rich(
-                          TextSpan(
-                              text: '${resources.string.supportSummary}\n',
-                              style: context.textFontWeight600
-                                  .onColor(resources.color.colorWhite),
-                              children: [
-                                TextSpan(
-                                    text:
-                                        '${resources.string.supportSummaryDes}\n',
-                                    style: context.textFontWeight400
-                                        .onFontSize(resources.fontSize.dp12)
-                                        .onColor(resources.color.colorWhite)
-                                        .onHeight(1))
-                              ]),
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        backgroundColor: context.resources.color.appScaffoldBg,
+        body: BlocProvider(
+          create: (context) => _servicesBloc,
+          child: BlocListener<ServicesBloc, ServicesState>(
+            listener: (context, state) {
+              if (state is OnDashboardSuccess) {
+                _dashboardEntity = state.dashboardEntity.entity;
+                _requestTypes[0]['count'] =
+                    _dashboardEntity?.notAssignedRequests ?? 0;
+                _requestTypes[1]['count'] = _dashboardEntity?.openRequests ?? 0;
+                _requestTypes[2]['count'] =
+                    _dashboardEntity?.closedRequests ?? 0;
+                _requestTypes[3]['count'] =
+                    _dashboardEntity?.totalRequests ?? 0;
+                ticketsData = _dashboardEntity?.assignedTickets ?? [];
+                _onDataChange.value = !(_onDataChange.value);
+              }
+            },
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        height: topBannerHeight,
+                        clipBehavior: Clip.antiAlias,
+                        decoration:
+                            BackgroundBoxDecoration(gradientColors: const [
+                          Color(0xFF0B0620),
+                          Color(0xFF241A6D),
+                          Color(0xFF3A45E8),
+                          Color(0xFF9A8CFF),
+                        ]).linearGradient,
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                              left: resources.dimen.dp20,
+                              top: topBannerHeight * .3,
+                              right: resources.dimen.dp20,
+                              bottom: resources.dimen.dp20),
+                          child: Text.rich(
+                            TextSpan(
+                                text: '${resources.string.supportSummary}\n',
+                                style: context.textFontWeight600
+                                    .onColor(resources.color.colorWhite),
+                                children: [
+                                  TextSpan(
+                                      text:
+                                          '${resources.string.supportSummaryDes}\n',
+                                      style: context.textFontWeight400
+                                          .onFontSize(resources.fontSize.dp12)
+                                          .onColor(resources.color.colorWhite)
+                                          .onHeight(1))
+                                ]),
+                          ),
                         ),
                       ),
-                    ),
-                    Positioned(
-                      left: 16,
-                      right: 16,
-                      bottom: -40,
-                      child: ValueListenableBuilder(
-                          valueListenable: _onDataChange,
-                          builder: (context, onDataChange, child) {
-                            return Column(
-                              children: [
-                                for (var i = 0; i < requestTypesRows; i++) ...[
-                                  Row(
-                                    children: List.generate(requestTypesColumns,
-                                        (index) {
-                                      final newIndex =
-                                          index + (i * requestTypesColumns);
-                                      return Expanded(
-                                        child: InkWell(
-                                          child: Container(
-                                            decoration: BackgroundBoxDecoration(
-                                                    boxColor: resources
-                                                        .color.colorWhite,
-                                                    radious:
-                                                        resources.dimen.dp10)
-                                                .roundedCornerBox,
-                                            margin: isSelectedLocalEn
-                                                ? EdgeInsets.only(
-                                                    right: index <
-                                                            requestTypesColumns -
-                                                                1
-                                                        ? resources.dimen.dp15
-                                                        : 0,
-                                                  )
-                                                : EdgeInsets.only(
-                                                    left: index <
-                                                            requestTypesColumns -
-                                                                1
-                                                        ? resources.dimen.dp15
-                                                        : 0,
-                                                  ),
-                                            padding: EdgeInsets.all(
-                                                resources.dimen.dp20),
-                                            child: Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Expanded(
-                                                  child: Text.rich(
-                                                    textAlign: TextAlign.start,
-                                                    TextSpan(
-                                                        text:
-                                                            '${_requestTypes[newIndex]['count'].toString()}\n',
-                                                        style: context
-                                                            .textFontWeight700
-                                                            .onFontSize(
-                                                                resources
-                                                                    .fontSize
-                                                                    .dp25)
-                                                            .onFontFamily(
-                                                                fontFamily:
-                                                                    fontFamilyEN),
-                                                        children: [
-                                                          TextSpan(
-                                                            text: _requestTypes[
-                                                                        newIndex]
-                                                                    ['name']
-                                                                .toString(),
-                                                            style: context
-                                                                .textFontWeight600
-                                                                .onFontSize(
-                                                                    resources
-                                                                        .fontSize
-                                                                        .dp12)
-                                                                .onHeight(1.1),
-                                                          )
-                                                        ]),
-                                                  ),
-                                                ),
-                                                ImageWidget(
-                                                        path: _requestTypes[
-                                                                    newIndex]
-                                                                ['icon_path']
-                                                            .toString(),
-                                                        width: 20,
-                                                        height: 20)
-                                                    .loadImage,
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    }),
-                                  ),
-                                ],
-                              ],
-                            );
-                          }),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: resources.dimen.dp60,
-                ),
-                if (true) ...[
-                  ValueListenableBuilder(
-                      valueListenable: _onDataChange,
-                      builder: (context, onDataChange, child) {
-                        return isDesktop(context)
-                            ? Padding(
-                                padding: EdgeInsets.all(resources.dimen.dp20),
-                                child: IntrinsicHeight(
-                                  child: Row(
-                                    children: [
-                                      Flexible(
-                                          flex: 6,
-                                          child: Column(
-                                            children: [
-                                              getLineChart(
-                                                  context,
-                                                  _dashboardEntity
-                                                          ?.ticketsByMonth ??
-                                                      []),
-                                              SizedBox(
-                                                height: resources.dimen.dp20,
-                                              ),
-                                              Row(
+                      Positioned(
+                        left: 16,
+                        right: 16,
+                        bottom: -40,
+                        child: ValueListenableBuilder(
+                            valueListenable: _onDataChange,
+                            builder: (context, onDataChange, child) {
+                              return Column(
+                                children: [
+                                  for (var i = 0;
+                                      i < requestTypesRows;
+                                      i++) ...[
+                                    Row(
+                                      children: List.generate(
+                                          requestTypesColumns, (index) {
+                                        final newIndex =
+                                            index + (i * requestTypesColumns);
+                                        return Expanded(
+                                          child: InkWell(
+                                            child: Container(
+                                              decoration:
+                                                  BackgroundBoxDecoration(
+                                                          boxColor: resources
+                                                              .color.colorWhite,
+                                                          radious: resources
+                                                              .dimen.dp10)
+                                                      .roundedCornerBox,
+                                              margin: isSelectedLocalEn
+                                                  ? EdgeInsets.only(
+                                                      right: index <
+                                                              requestTypesColumns -
+                                                                  1
+                                                          ? resources.dimen.dp15
+                                                          : 0,
+                                                    )
+                                                  : EdgeInsets.only(
+                                                      left: index <
+                                                              requestTypesColumns -
+                                                                  1
+                                                          ? resources.dimen.dp15
+                                                          : 0,
+                                                    ),
+                                              padding: EdgeInsets.all(
+                                                  resources.dimen.dp20),
+                                              child: Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
                                                 children: [
                                                   Expanded(
-                                                    child:
-                                                        _getDelayedCasesWidget(),
+                                                    child: Text.rich(
+                                                      textAlign:
+                                                          TextAlign.start,
+                                                      TextSpan(
+                                                          text:
+                                                              '${_requestTypes[newIndex]['count'].toString()}\n',
+                                                          style: context
+                                                              .textFontWeight700
+                                                              .onFontSize(
+                                                                  resources
+                                                                      .fontSize
+                                                                      .dp25)
+                                                              .onFontFamily(
+                                                                  fontFamily:
+                                                                      fontFamilyEN),
+                                                          children: [
+                                                            TextSpan(
+                                                              text: _requestTypes[
+                                                                          newIndex]
+                                                                      ['name']
+                                                                  .toString(),
+                                                              style: context
+                                                                  .textFontWeight600
+                                                                  .onFontSize(
+                                                                      resources
+                                                                          .fontSize
+                                                                          .dp12)
+                                                                  .onHeight(
+                                                                      1.1),
+                                                            )
+                                                          ]),
+                                                    ),
                                                   ),
-                                                  SizedBox(
-                                                    width: resources.dimen.dp20,
-                                                  ),
-                                                  Expanded(
-                                                    child:
-                                                        _getTopResolversWidget(),
-                                                  )
+                                                  ImageWidget(
+                                                          path: _requestTypes[
+                                                                      newIndex]
+                                                                  ['icon_path']
+                                                              .toString(),
+                                                          width: 20,
+                                                          height: 20)
+                                                      .loadImage,
                                                 ],
-                                              )
-                                            ],
-                                          )),
-                                      SizedBox(
-                                        width: resources.dimen.dp20,
-                                      ),
-                                      if (UserCredentialsEntity.details()
-                                                  .userType ==
-                                              UserType.superAdmin ||
-                                          UserCredentialsEntity.details()
-                                                  .userType ==
-                                              UserType.itAdmin)
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      }),
+                                    ),
+                                  ],
+                                ],
+                              );
+                            }),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: resources.dimen.dp60,
+                  ),
+                  if (true) ...[
+                    ValueListenableBuilder(
+                        valueListenable: _onDataChange,
+                        builder: (context, onDataChange, child) {
+                          return isDesktop(context)
+                              ? Padding(
+                                  padding: EdgeInsets.all(resources.dimen.dp20),
+                                  child: IntrinsicHeight(
+                                    child: Row(
+                                      children: [
                                         Flexible(
-                                            flex: 4,
+                                            flex: 6,
                                             child: Column(
                                               children: [
-                                                Row(
-                                                  children: [
-                                                    Expanded(
-                                                      child:
-                                                          _getByPriorityWidget(),
-                                                    ),
-                                                    SizedBox(
-                                                      width:
-                                                          resources.dimen.dp20,
-                                                    ),
-                                                    Expanded(
-                                                      child:
-                                                          _getByIssutypeWidget(),
-                                                    ),
-                                                  ],
-                                                ),
+                                                getLineChart(
+                                                    context,
+                                                    _dashboardEntity
+                                                            ?.ticketsByMonth ??
+                                                        []),
                                                 SizedBox(
                                                   height: resources.dimen.dp20,
                                                 ),
                                                 Row(
                                                   children: [
                                                     Expanded(
-                                                      child: getPieChart(
-                                                          context,
-                                                          _dashboardEntity
-                                                                  ?.ticketsByCategory ??
-                                                              []),
+                                                      child:
+                                                          _getDelayedCasesWidget(),
                                                     ),
                                                     SizedBox(
                                                       width:
@@ -847,386 +1104,100 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                                     ),
                                                     Expanded(
                                                       child:
-                                                          _getByOpenDayWidget(),
-                                                    ),
+                                                          _getTopResolversWidget(),
+                                                    )
                                                   ],
-                                                ),
+                                                )
                                               ],
-                                            ))
-                                    ],
-                                  ),
-                                ),
-                              )
-                            : Column(
-                                children: [
-                                  getLineChart(context,
-                                      _dashboardEntity?.ticketsByMonth ?? []),
-                                  SizedBox(
-                                    height: resources.dimen.dp20,
-                                  ),
-                                  if (UserCredentialsEntity.details()
-                                              .userType ==
-                                          UserType.superAdmin ||
-                                      UserCredentialsEntity.details()
-                                              .userType ==
-                                          UserType.itAdmin)
-                                    getPieChart(
-                                        context,
-                                        _dashboardEntity?.ticketsByCategory ??
-                                            [])
-                                ],
-                              );
-                      }),
-                ],
-                SizedBox(
-                  height: resources.dimen.dp20,
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Text.rich(
-                        TextSpan(
-                          text: resources.string.latestTickets,
-                          style: context.textFontWeight600
-                              .onFontSize(resources.fontSize.dp12),
-                          //children: [
-                          // TextSpan(
-                          //     text: '',
-                          //     style: context.textFontWeight400
-                          //         .onFontSize(resources.fontSize.dp10)
-                          //         .onColor(resources.color.textColorLight)
-                          //         .onHeight(1))
-                          //]
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: resources.dimen.dp20,
-                    ),
-                    Text(
-                      '${resources.string.filterByDate}: ',
-                      style: context.textFontWeight600
-                          .onFontSize(resources.fontSize.dp10),
-                    ),
-                    SizedBox(
-                      width: resources.dimen.dp10,
-                    ),
-                    ValueListenableBuilder(
-                        valueListenable: _filteredDates,
-                        builder: (context, value, child) {
-                          return Container(
-                            decoration: BackgroundBoxDecoration(
-                                    radious: resources.dimen.dp15,
-                                    boarderColor:
-                                        resources.color.sideBarItemUnselected)
-                                .roundedCornerBox,
-                            padding: EdgeInsets.symmetric(
-                              vertical: resources.dimen.dp5,
-                            ),
-                            child: Row(
-                              children: [
-                                SizedBox(
-                                  width: resources.dimen.dp10,
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    showDatePicker(
-                                            context: context,
-                                            firstDate: DateTime.now().add(
-                                                const Duration(days: -365)),
-                                            lastDate: DateTime.now())
-                                        .then((dateTime) {
-                                      if (dateTime != null) {
-                                        _filteredDates.value =
-                                            List<String>.empty(growable: true)
-                                              ..add(getDateByformat(
-                                                  'yyyy/MM/dd', dateTime));
-                                      }
-                                    });
-                                  },
-                                  child: Text.rich(
-                                    TextSpan(
-                                        text: value.isNotEmpty
-                                            ? value[0]
-                                            : resources.string.startDate,
-                                        children: [
-                                          WidgetSpan(
-                                            child: Padding(
-                                              padding: isSelectedLocalEn
-                                                  ? const EdgeInsets.only(
-                                                      left: 5.0)
-                                                  : const EdgeInsets.only(
-                                                      right: 5.0),
-                                              child: const Icon(
-                                                Icons.calendar_month_sharp,
-                                                size: 16,
-                                              ),
-                                            ),
-                                          )
-                                        ]),
-                                    style: context.textFontWeight400
-                                        .onFontSize(resources.fontSize.dp10),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: resources.dimen.dp10,
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    if (value.isNotEmpty) {
-                                      showDatePicker(
-                                              context: context,
-                                              firstDate: getDateTimeByString(
-                                                  'yyyy/MM/dd', value[0]),
-                                              lastDate: DateTime.now())
-                                          .then((dateTime) {
-                                        if (dateTime != null) {
-                                          _filteredDates.value =
-                                              List<String>.empty(growable: true)
-                                                ..add(value[0])
-                                                ..add(getDateByformat(
-                                                    'yyyy/MM/dd', dateTime));
-                                          _onDataChange.value =
-                                              !_onDataChange.value;
-                                        }
-                                      });
-                                    } else {
-                                      Dialogs.showInfoDialog(
-                                          context,
-                                          PopupType.fail,
-                                          resources.string.pleaseSelect +
-                                              resources.string.startDate);
-                                    }
-                                  },
-                                  child: Text.rich(
-                                    TextSpan(
-                                        text: value.length > 1
-                                            ? value[1]
-                                            : resources.string.endDate,
-                                        children: [
-                                          WidgetSpan(
-                                            child: Padding(
-                                              padding: isSelectedLocalEn
-                                                  ? const EdgeInsets.only(
-                                                      left: 5.0)
-                                                  : const EdgeInsets.only(
-                                                      right: 5.0),
-                                              child: const Icon(
-                                                Icons.calendar_month_sharp,
-                                                size: 16,
-                                              ),
-                                            ),
-                                          )
-                                        ]),
-                                    style: context.textFontWeight400
-                                        .onFontSize(resources.fontSize.dp10),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: resources.dimen.dp5,
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    if (_filteredDates.value.isNotEmpty) {
-                                      _filteredDates.value = List.empty();
-                                      _onDataChange.value =
-                                          !(_onDataChange.value);
-                                    }
-                                  },
-                                  child: const Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 5),
-                                    child: Icon(
-                                      Icons.clear,
-                                      size: 16,
+                                            )),
+                                        SizedBox(
+                                          width: resources.dimen.dp20,
+                                        ),
+                                        if (UserCredentialsEntity.details()
+                                                    .userType ==
+                                                UserType.superAdmin ||
+                                            UserCredentialsEntity.details()
+                                                    .userType ==
+                                                UserType.itAdmin)
+                                          Flexible(
+                                              flex: 4,
+                                              child: Column(
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      Expanded(
+                                                        child:
+                                                            _getByPriorityWidget(),
+                                                      ),
+                                                      SizedBox(
+                                                        width: resources
+                                                            .dimen.dp20,
+                                                      ),
+                                                      Expanded(
+                                                        child:
+                                                            _getByIssutypeWidget(),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  SizedBox(
+                                                    height:
+                                                        resources.dimen.dp20,
+                                                  ),
+                                                  Row(
+                                                    children: [
+                                                      Expanded(
+                                                        child: getPieChart(
+                                                            context,
+                                                            _dashboardEntity
+                                                                    ?.ticketsByCategory ??
+                                                                []),
+                                                      ),
+                                                      SizedBox(
+                                                        width: resources
+                                                            .dimen.dp20,
+                                                      ),
+                                                      Expanded(
+                                                        child:
+                                                            _getByOpenDayWidget(),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ))
+                                      ],
                                     ),
                                   ),
-                                ),
-                                SizedBox(
-                                  width: resources.dimen.dp5,
-                                ),
-                              ],
-                            ),
-                          );
+                                )
+                              : Column(
+                                  children: [
+                                    getLineChart(context,
+                                        _dashboardEntity?.ticketsByMonth ?? []),
+                                    SizedBox(
+                                      height: resources.dimen.dp20,
+                                    ),
+                                    if (UserCredentialsEntity.details()
+                                                .userType ==
+                                            UserType.superAdmin ||
+                                        UserCredentialsEntity.details()
+                                                .userType ==
+                                            UserType.itAdmin)
+                                      getPieChart(
+                                          context,
+                                          _dashboardEntity?.ticketsByCategory ??
+                                              [])
+                                  ],
+                                );
                         }),
                   ],
-                ),
-                SizedBox(
-                  height: resources.dimen.dp20,
-                ),
-                ValueListenableBuilder(
-                    valueListenable: _onDataChange,
-                    builder: (context, value, child) {
-                      return Row(children: [
-                        Expanded(
-                            child: InkWell(
-                          onTap: () {
-                            if (selectTicketCategory != 1) {
-                              ticketsData =
-                                  _dashboardEntity?.assignedTickets ?? [];
-                              selectTicketCategory = 1;
-                              _onDataChange.value = !_onDataChange.value;
-                            }
-                          },
-                          child: ActionButtonWidget(
-                            text: resources.string.assignedTickets,
-                            padding: EdgeInsets.symmetric(
-                                vertical: resources.dimen.dp7,
-                                horizontal: resources.dimen.dp20),
-                            decoration: BackgroundBoxDecoration(
-                                    boxColor: selectTicketCategory == 1
-                                        ? resources.color.viewBgColor
-                                        : resources.color.colorWhite,
-                                    radious: 0,
-                                    boarderWidth: resources.dimen.dp1,
-                                    boarderColor: selectTicketCategory != 1
-                                        ? resources.color.colorGray9E9E9E
-                                        : resources.color.viewBgColor)
-                                .roundedCornerBox,
-                            textColor: selectTicketCategory == 1
-                                ? resources.color.colorWhite
-                                : resources.color.textColor,
-                          ),
-                        )),
-                        Expanded(
-                          child: InkWell(
-                            onTap: () {
-                              if (selectTicketCategory != 2) {
-                                ticketsData = _dashboardEntity?.myTickets ?? [];
-                                selectTicketCategory = 2;
-                                _onDataChange.value = !_onDataChange.value;
-                              }
-                            },
-                            child: ActionButtonWidget(
-                              text: resources.string.myTickets,
-                              padding: EdgeInsets.symmetric(
-                                  vertical: resources.dimen.dp7,
-                                  horizontal: resources.dimen.dp20),
-                              decoration: BackgroundBoxDecoration(
-                                boxColor: selectTicketCategory == 2
-                                    ? resources.color.viewBgColor
-                                    : resources.color.colorWhite,
-                                radious: 0,
-                                boarderWidth: resources.dimen.dp1,
-                                boarderColor: selectTicketCategory == 2
-                                    ? resources.color.viewBgColor
-                                    : resources.color.colorGray9E9E9E,
-                              ).roundedCornerBox,
-                              textColor: selectTicketCategory == 2
-                                  ? resources.color.colorWhite
-                                  : resources.color.textColor,
-                            ),
-                          ),
-                        ),
-                        if (_dashboardEntity?.teamTickets.isNotEmpty == true)
-                          Expanded(
-                            child: InkWell(
-                              onTap: () {
-                                if (selectTicketCategory != 3) {
-                                  ticketsData =
-                                      _dashboardEntity?.teamTickets ?? [];
-                                  selectTicketCategory = 3;
-                                  _onDataChange.value = !_onDataChange.value;
-                                }
-                              },
-                              child: ActionButtonWidget(
-                                text: 'Team Tickets',
-                                padding: EdgeInsets.symmetric(
-                                    vertical: resources.dimen.dp7,
-                                    horizontal: resources.dimen.dp20),
-                                decoration: BackgroundBoxDecoration(
-                                  boxColor: selectTicketCategory == 3
-                                      ? resources.color.viewBgColor
-                                      : resources.color.colorWhite,
-                                  radious: 0,
-                                  boarderWidth: resources.dimen.dp1,
-                                  boarderColor: selectTicketCategory == 3
-                                      ? resources.color.viewBgColor
-                                      : resources.color.colorGray9E9E9E,
-                                ).roundedCornerBox,
-                                textColor: selectTicketCategory == 3
-                                    ? resources.color.colorWhite
-                                    : resources.color.textColor,
-                              ),
-                            ),
-                          ),
-                        if (_dashboardEntity?.historyTickets.isNotEmpty == true)
-                          Expanded(
-                            child: InkWell(
-                              onTap: () {
-                                if (selectTicketCategory != 4) {
-                                  ticketsData =
-                                      _dashboardEntity?.historyTickets ?? [];
-                                  selectTicketCategory = 4;
-                                  _onDataChange.value = !_onDataChange.value;
-                                }
-                              },
-                              child: ActionButtonWidget(
-                                text: 'Ticket History',
-                                padding: EdgeInsets.symmetric(
-                                    vertical: resources.dimen.dp7,
-                                    horizontal: resources.dimen.dp20),
-                                decoration: BackgroundBoxDecoration(
-                                  boxColor: selectTicketCategory == 4
-                                      ? resources.color.viewBgColor
-                                      : resources.color.colorWhite,
-                                  radious: 0,
-                                  boarderWidth: resources.dimen.dp1,
-                                  boarderColor: selectTicketCategory == 4
-                                      ? resources.color.viewBgColor
-                                      : resources.color.colorGray9E9E9E,
-                                ).roundedCornerBox,
-                                textColor: selectTicketCategory == 4
-                                    ? resources.color.colorWhite
-                                    : resources.color.textColor,
-                              ),
-                            ),
-                          )
-                      ]);
-                    }),
-                ValueListenableBuilder(
-                    valueListenable: _onDataChange,
-                    builder: (context, onDataChange, child) {
-                      return FutureBuilder(
-                          future: (_filteredDates.value.length < 2 &&
-                                  filteredStatus == StatusType.all)
-                              ? _getDashboradTickets()
-                              : _getAllTickets(),
-                          builder: (context, snapShot) {
-                            final filterTickets =
-                                List.from(snapShot.data?.entity?.items ?? []);
-
-                            // .where((ticket) =>
-                            //     ticket.status != StatusType.closed &&
-                            //     ticket.status != StatusType.reject)
-                            // .toList();
-                            return filterTickets.isNotEmpty
-                                ? ReportListWidget(
-                                    ticketsData: filterTickets,
-                                    onTicketSelected: (ticket) {
-                                      ViewRequest.start(context, ticket,
-                                          isMyTicket:
-                                              selectTicketCategory == 2);
-                                    },
-                                  )
-                                : Padding(
-                                    padding: const EdgeInsets.only(top: 20.0),
-                                    child: Text(
-                                      resources.string.noTickets,
-                                      style: context.textFontWeight600,
-                                    ),
-                                  );
-                          });
-                    })
-              ],
+                  SizedBox(
+                    height: resources.dimen.dp20,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
       ),
-    ));
+    );
   }
-
-  @override
-  doDispose() {}
 }

@@ -11,7 +11,9 @@ import 'package:hive_flutter/hive_flutter.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
-  await Hive.openBox(AppSettingsDB.name);
+  if (!Hive.isBoxOpen(AppSettingsDB.name)) {
+    await Hive.openBox(AppSettingsDB.name);
+  }
   FlavorConfig(
     flavor: Flavor.DEVELOPMENT,
     values: FlavorValues(

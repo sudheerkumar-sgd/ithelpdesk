@@ -17,24 +17,28 @@ class UserCredentialsEntity {
   bool? userOnvaction;
   UserCredentialsEntity();
   factory UserCredentialsEntity.details({isDataChanged = false}) {
-    if (userToken.isEmpty) {
-      userToken = UserDataDB().get(UserDataDB.userToken, defaultValue: '');
-    }
-    if ((userData == null || isDataChanged) && userToken.isNotEmpty) {
-      userData = UserCredentialsEntity();
-      String normalizedSource = base64Url.normalize(userToken.split(".")[1]);
-      final data = jsonDecode(utf8.decode(base64Url.decode(normalizedSource)));
-      userData?.id = int.tryParse(data['ID']);
-      userData?.departmentID = int.tryParse(data['DepartmentID']);
-      userData?.username = data['UserName'];
-      userData?.name = data['Name'];
-      userData?.userType = UserType
-          .superAdmin; // UserType.fromId(int.tryParse(data['Role']) ?? 7);
-      userData?.isoUser = bool.tryParse((data['isoUser'] ?? "false")) ?? false;
-      userData?.isoUserCategories = data['isoUserCategories'];
-      userData?.contactNumber = data['contactNumber'];
-      userData?.userOnvaction =
-          bool.tryParse('${data['onVacation'] ?? false}'.toLowerCase());
+    if (userData == null || isDataChanged) {
+      if (userToken.isEmpty) {
+        userToken = UserDataDB().get(UserDataDB.userToken, defaultValue: '');
+      }
+      if ((userData == null || isDataChanged) && userToken.isNotEmpty) {
+        userData = UserCredentialsEntity();
+        String normalizedSource = base64Url.normalize(userToken.split(".")[1]);
+        final data =
+            jsonDecode(utf8.decode(base64Url.decode(normalizedSource)));
+        userData?.id = int.tryParse(data['ID']);
+        userData?.departmentID = int.tryParse(data['DepartmentID']);
+        userData?.username = data['UserName'];
+        userData?.name = data['Name'];
+        userData?.userType = UserType
+            .superAdmin; // UserType.fromId(int.tryParse(data['Role']) ?? 7);
+        userData?.isoUser =
+            bool.tryParse((data['isoUser'] ?? "false")) ?? false;
+        userData?.isoUserCategories = data['isoUserCategories'];
+        userData?.contactNumber = data['contactNumber'];
+        userData?.userOnvaction =
+            bool.tryParse('${data['onVacation'] ?? false}'.toLowerCase());
+      }
     }
     return userData ?? UserCredentialsEntity();
   }

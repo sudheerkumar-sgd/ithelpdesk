@@ -28,7 +28,9 @@ class UserDataDB {
   }
 
   dynamic get(String name, {dynamic defaultValue}) {
-    return settingDB.get(name, defaultValue: defaultValue);
+    dynamic value = settingDB.get(name);
+    value ??= defaultValue ?? '';
+    return value;
   }
 
   dynamic delete(String name) {

@@ -87,5 +87,7 @@ abstract class BaseColors {
 
   Color get dashboardSecondary => const Color(0xFF3E76EE);
 
+  Color get colorF7F8FF => const Color(0xFFF7F8FF);
+
   Color get dashboardLight => const Color(0xFF7685FB);
 }

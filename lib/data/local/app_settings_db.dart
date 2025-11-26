@@ -19,7 +19,8 @@ class AppSettingsDB {
   }
 
   dynamic get(String name, {dynamic defaultValue}) {
-    final ss = settingDB.get(name, defaultValue: defaultValue);
-    return ss;
+    dynamic value = settingDB.get(name);
+    value ??= defaultValue ?? '';
+    return value;
   }
 }
