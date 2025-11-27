@@ -11,6 +11,7 @@ import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
+import 'package:ithelpdesk/data/remote/api_urls.dart';
 import 'package:ithelpdesk/domain/entities/api_entity.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
 import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
@@ -150,10 +151,12 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                     .onFontSize(resources.fontSize.dp10),
                 callback: (p0) {
                   _selectedYear.value = p0 ?? 2025;
-                  _servicesBloc.getDashboardData(requestParams: {
-                    "userId": UserCredentialsEntity.details().id,
-                    'year': p0 ?? 0
-                  });
+                  _servicesBloc.getDashboardData(
+                      apiUrl: dashboardApiUrl,
+                      requestParams: {
+                        "userId": UserCredentialsEntity.details().id,
+                        'year': p0 ?? 0
+                      });
                 },
               )
             ],
@@ -332,6 +335,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
   void initState() {
     Future.delayed(Duration.zero, () {
       _servicesBloc.getDashboardData(
+          apiUrl: dashboardApiUrl,
           requestParams: UserCredentialsEntity.details().id != null
               ? {"userId": UserCredentialsEntity.details().id}
               : {});

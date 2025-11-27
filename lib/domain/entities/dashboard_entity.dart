@@ -16,8 +16,14 @@ class DashboardEntity extends BaseEntity {
   int? openRequests;
   int? closedRequests;
   int? totalRequests;
+  int? averageDayOpenRequests;
+  int? damekSatisfaction;
   List<TicketsByMonthEntity>? ticketsByMonth;
   List<TicketsByCategoryEntity>? ticketsByCategory;
+  List<TicketsByCategoryEntity> ticketsByPriority = [];
+  List<TicketsByCategoryEntity> ticketsByIssueType = [];
+  List<TicketsByCategoryEntity> ticketsByOpenDay = [];
+  List<TopResolversEntity> topResolvers = [];
   List<TicketEntity> assignedTickets = [];
   List<TicketEntity> myTickets = [];
   List<TicketEntity> teamTickets = [];
@@ -32,6 +38,21 @@ class TicketsByMonthEntity extends BaseEntity {
 class TicketsByCategoryEntity extends BaseEntity {
   int? category;
   int? count;
+
+  String getOpendayDisplayName() {
+    switch (category) {
+      case 1:
+        return '1-4';
+      case 2:
+        return '5-10';
+      case 3:
+        return '11-15';
+      case 4:
+        return '16-20';
+      default:
+        return '>20';
+    }
+  }
 }
 
 class TicketPageEntity extends BaseEntity {
@@ -39,6 +60,13 @@ class TicketPageEntity extends BaseEntity {
   List<UserEntity> assigniedEmployees = [];
   int? totalCount;
   int? pageCount;
+}
+
+class TopResolversEntity extends BaseEntity {
+  int? id;
+  String? name;
+  String? designation;
+  int? ticketCount;
 }
 
 class TicketEntity extends BaseEntity {

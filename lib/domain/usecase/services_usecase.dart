@@ -28,9 +28,10 @@ class ServicesUseCase extends BaseUseCase {
   }
 
   Future<Either<Failure, ApiEntity<DashboardEntity>>> getDashboardData(
-      {required Map<String, dynamic> requestParams}) async {
+      {required String apiUrl,
+      required Map<String, dynamic> requestParams}) async {
     var apiResponse = await apisRepository.get<DashboardModel>(
-      apiUrl: dashboardApiUrl,
+      apiUrl: apiUrl,
       requestParams: requestParams,
       responseModel: DashboardModel.fromJson,
     );

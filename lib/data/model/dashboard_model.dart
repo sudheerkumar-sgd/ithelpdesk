@@ -12,8 +12,14 @@ class DashboardModel extends BaseModel {
   int? openRequests;
   int? closedRequests;
   int? totalRequests;
+  int? averageDayOpenRequests;
+  int? damekSatisfaction;
   List<TicketsByMonthEntity>? ticketsByMonth;
   List<TicketsByCategoryEntity>? ticketsByCategory;
+  List<TicketsByCategoryEntity> ticketsByPriority = [];
+  List<TicketsByCategoryEntity> ticketsByIssueType = [];
+  List<TicketsByCategoryEntity> ticketsByOpenDay = [];
+  List<TopResolversEntity> topResolvers = [];
   List<TicketEntity> assignedTickets = [];
   List<TicketEntity> myTickets = [];
   List<TicketEntity> teamTickets = [];
@@ -25,6 +31,8 @@ class DashboardModel extends BaseModel {
     openRequests = json['openRequests'];
     closedRequests = json['closedRequests'];
     totalRequests = json['totalRequests'];
+    averageDayOpenRequests = json['averageDayOpenRequests'];
+    damekSatisfaction = json['damekSatisfaction'];
     if (json['ticketsByMonth'] != null) {
       ticketsByMonth = <TicketsByMonthEntity>[];
       json['ticketsByMonth'].forEach((v) {
@@ -61,6 +69,29 @@ class DashboardModel extends BaseModel {
         historyTickets.add(TicketsModel.fromJson(v).toEntity());
       });
     }
+
+    if (json['ticketsByPriority'] != null) {
+      json['ticketsByPriority'].forEach((v) {
+        ticketsByPriority.add(TicketsByCategoryModel.fromJson(v).toEntity());
+      });
+    }
+
+    if (json['ticketsByIssueType'] != null) {
+      json['ticketsByIssueType'].forEach((v) {
+        ticketsByIssueType.add(TicketsByCategoryModel.fromJson(v).toEntity());
+      });
+    }
+
+    if (json['ticketsByOpenDay'] != null) {
+      json['ticketsByOpenDay'].forEach((v) {
+        ticketsByOpenDay.add(TicketsByCategoryModel.fromJson(v).toEntity());
+      });
+    }
+    if (json['topResolvers'] != null) {
+      json['topResolvers'].forEach((v) {
+        topResolvers.add(TopResolversModel.fromJson(v).toEntity());
+      });
+    }
   }
 
   @override
@@ -76,6 +107,12 @@ class DashboardModel extends BaseModel {
     dashboardEntity.myTickets = myTickets;
     dashboardEntity.teamTickets = teamTickets;
     dashboardEntity.historyTickets = historyTickets;
+    dashboardEntity.topResolvers = topResolvers;
+    dashboardEntity.ticketsByPriority = ticketsByPriority;
+    dashboardEntity.ticketsByIssueType = ticketsByIssueType;
+    dashboardEntity.ticketsByOpenDay = ticketsByOpenDay;
+    dashboardEntity.averageDayOpenRequests = averageDayOpenRequests;
+    dashboardEntity.damekSatisfaction = damekSatisfaction;
     return dashboardEntity;
   }
 }
@@ -110,7 +147,7 @@ class TicketsByCategoryModel extends BaseModel {
   int? count;
 
   TicketsByCategoryModel.fromJson(Map<String, dynamic> json) {
-    category = json['category'];
+    category = json['category'] ?? json['type'];
     count = json['count'];
   }
 
@@ -127,6 +164,30 @@ class TicketsByCategoryModel extends BaseModel {
     ticketsByCategoryEntity.category = category;
     ticketsByCategoryEntity.count = count;
     return ticketsByCategoryEntity;
+  }
+}
+
+class TopResolversModel extends BaseModel {
+  int? id;
+  String? name;
+  String? designation;
+  int? ticketCount;
+
+  TopResolversModel.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    designation = json['designation'];
+    ticketCount = json['count'];
+  }
+
+  @override
+  TopResolversEntity toEntity() {
+    var topResolversEntity = TopResolversEntity();
+    topResolversEntity.id = id;
+    topResolversEntity.name = name;
+    topResolversEntity.designation = designation;
+    topResolversEntity.ticketCount = ticketCount;
+    return topResolversEntity;
   }
 }
 

@@ -15,10 +15,11 @@ class ServicesBloc extends Cubit<ServicesState> {
   ServicesBloc({required this.servicesUseCase}) : super(Init());
 
   Future<void> getDashboardData(
-      {required Map<String, dynamic> requestParams}) async {
+      {required String apiUrl,
+      required Map<String, dynamic> requestParams}) async {
     emit(OnLoading());
-    final result =
-        await servicesUseCase.getDashboardData(requestParams: requestParams);
+    final result = await servicesUseCase.getDashboardData(
+        apiUrl: apiUrl, requestParams: requestParams);
     emit(result.fold((l) => OnApiError(message: _getErrorMessage(l)), (r) {
       return OnDashboardSuccess(dashboardEntity: r);
     }));

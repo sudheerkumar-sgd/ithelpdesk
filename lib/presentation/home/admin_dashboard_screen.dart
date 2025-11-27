@@ -10,10 +10,12 @@ import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
+import 'package:ithelpdesk/data/remote/api_urls.dart';
 import 'package:ithelpdesk/domain/entities/api_entity.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
 import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
 import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
+import 'package:ithelpdesk/domain/entities/user_entity.dart';
 import 'package:ithelpdesk/injection_container.dart';
 import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
 import 'package:ithelpdesk/presentation/common_widgets/barchart_widget.dart';
@@ -148,10 +150,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     .onFontSize(resources.fontSize.dp10),
                 callback: (p0) {
                   _selectedYear.value = p0 ?? 2025;
-                  _servicesBloc.getDashboardData(requestParams: {
-                    "userId": UserCredentialsEntity.details().id,
-                    'year': p0 ?? 0
-                  });
+                  _servicesBloc.getDashboardData(
+                      apiUrl: newDashboardApiUrl,
+                      requestParams: {
+                        "userId": UserCredentialsEntity.details().id,
+                        'year': p0 ?? 0
+                      });
                 },
               )
             ],
@@ -364,32 +368,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     );
   }
 
-  Widget _getByPriorityWidget() {
+  Widget _getByPriorityWidget(List<TicketsByCategoryEntity> ticketsByPriority) {
     final resources = context.resources;
-    final data = [
-      {
-        "label": "High",
-        "count": 123,
-        "color": resources.color.dashboardSecondary
-      },
-      {
-        "label": "Medium",
-        "count": 34,
-        "color": resources.color.dashboardSecondary
-      },
-      {
-        "label": "Low",
-        "count": 45,
-        "color": resources.color.dashboardSecondary
-      },
-      {
-        "label": "Unassigned",
-        "count": 23,
-        "color": resources.color.dashboardSecondary
-      },
-    ];
-    final maxValue =
-        data.map((e) => e["count"] as int).reduce((a, b) => a > b ? a : b);
+    final maxValue = ticketsByPriority
+        .map((e) => e.count ?? 0)
+        .reduce((a, b) => a > b ? a : b);
     return Container(
       height: 275,
       width: double.infinity,
@@ -416,14 +399,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              for (int i = 0; i < data.length; i++)
+              for (int i = 0; i < ticketsByPriority.length; i++)
                 Expanded(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // Count bubble
-                      TooltipWidget(text: '${data[i]['count']}'),
+                      TooltipWidget(text: '${ticketsByPriority[i].count}'),
 
                       const SizedBox(height: 6),
 
@@ -431,7 +414,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       AnimatedContainer(
                         duration: const Duration(milliseconds: 600),
                         curve: Curves.easeOut,
-                        height: ((data[i]['count'] as int) / maxValue) *
+                        height: ((ticketsByPriority[i].count ?? 0) / maxValue) *
                             (275 * 0.55),
                         width: 24,
                         decoration: BoxDecoration(
@@ -441,8 +424,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                             begin: Alignment.bottomCenter,
                             end: Alignment.topCenter,
                             colors: [
-                              (data[i]['color'] as Color).withAlpha(50),
-                              (data[i]['color'] as Color).withAlpha(255),
+                              resources.color.dashboardSecondary.withAlpha(50),
+                              resources.color.dashboardSecondary.withAlpha(255),
                             ],
                           ),
                         ),
@@ -452,7 +435,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
                       // Label
                       Text(
-                        data[i]['label'].toString(),
+                        PriorityType.fromId(ticketsByPriority[i].category ?? 1)
+                            .toString(),
                         maxLines: 1,
                         style: context.textFontWeight600.onFontSize(10),
                       ),
@@ -466,30 +450,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     );
   }
 
-  Widget _getByIssutypeWidget() {
+  Widget _getByIssutypeWidget(List<TicketsByCategoryEntity> ticketsByIssutype) {
     final resources = context.resources;
-    final data = [
-      {
-        "issue_type": "Customer",
-        "count": 123,
-      },
-      {
-        "issue_type": "Employee",
-        "count": 34,
-      },
-      {
-        "issue_type": "System",
-        "count": 45,
-      },
-      {
-        "issue_type": "Bugs",
-        "count": 23,
-      },
-      {
-        "issue_type": "Others",
-        "count": 23,
-      },
-    ];
     return Container(
         height: 275,
         width: double.infinity,
@@ -511,7 +473,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             SizedBox(
               height: resources.dimen.dp10,
             ),
-            for (int i = 0; i < data.length; i++)
+            for (int i = 0; i < ticketsByIssutype.length; i++)
               Expanded(
                 child: Container(
                   width: double.infinity,
@@ -527,16 +489,18 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       .roundedCornerBoxWithShadow,
                   child: Row(children: [
                     Expanded(
-                      child: Text(data[i]['issue_type'].toString(),
+                      child: Text(
+                          IssueType.fromId(ticketsByIssutype[i].category ?? 1)
+                              .toString(),
                           maxLines: 1,
                           style: context.textFontWeight700
-                              .onFontSize(resources.fontSize.dp10)
+                              .onFontSize(resources.fontSize.dp8)
                               .onColor(const Color(0xFF14213D))),
                     ),
-                    Text('${data[i]['count']}',
+                    Text('${ticketsByIssutype[i].count ?? 0}',
                         maxLines: 1,
                         style: context.textFontWeight700
-                            .onFontSize(resources.fontSize.dp12)
+                            .onFontSize(resources.fontSize.dp10)
                             .onColor(resources.color.dashboardSecondary)),
                   ]),
                 ),
@@ -545,37 +509,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         ));
   }
 
-  Widget _getByOpenDayWidget() {
+  Widget _getByOpenDayWidget(List<TicketsByCategoryEntity> ticketsByOpenDay) {
     final resources = context.resources;
-    final data = [
-      {
-        "label": "1-4",
-        "count": 123,
-        "color": resources.color.dashboardSecondary
-      },
-      {
-        "label": "5-9",
-        "count": 34,
-        "color": resources.color.dashboardSecondary
-      },
-      {
-        "label": "10-15",
-        "count": 45,
-        "color": resources.color.dashboardSecondary
-      },
-      {
-        "label": "16-20",
-        "count": 23,
-        "color": resources.color.dashboardSecondary
-      },
-      {
-        "label": "<20",
-        "count": 65,
-        "color": resources.color.dashboardSecondary
-      },
-    ];
-    final lables = data.map((e) => e["label"].toString()).toList();
-    final values = data.map((e) => e["count"] as double).toList();
+    final lables = ticketsByOpenDay
+        .map((e) => e.getOpendayDisplayName().toString())
+        .toList();
+    final values = ticketsByOpenDay.map((e) => e.count as double).toList();
     return Container(
       height: 275,
       width: double.infinity,
@@ -747,25 +686,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         ));
   }
 
-  Widget _getTopResolversWidget() {
+  Widget _getTopResolversWidget(List<TopResolversEntity> topResolvers) {
     final resources = context.resources;
-    final data = [
-      {
-        "name": "Ujjuwal",
-        "department": 'System & Smart Services Department',
-        "count": 123,
-      },
-      {
-        "name": "Syed Ibrahim",
-        "department": 'Infrastructure Department',
-        "count": 34,
-      },
-      {
-        "name": "Anu",
-        "department": 'System & Smart Services Department',
-        "count": 34,
-      },
-    ];
     return Container(
         height: 200,
         width: double.infinity,
@@ -792,7 +714,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             Expanded(
                 child: SingleChildScrollView(
                     child: Column(children: [
-              for (int i = 0; i < data.length; i++)
+              for (int i = 0; i < topResolvers.length; i++)
                 Container(
                   width: double.infinity,
                   padding:
@@ -820,21 +742,21 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       child: Text.rich(
                           maxLines: 2,
                           TextSpan(
-                              text: data[i]['name'].toString(),
+                              text: topResolvers[i].name.toString(),
                               style: context.textFontWeight700
                                   .onFontSize(resources.fontSize.dp10)
                                   .onColor(const Color(0xFF14213D)),
                               children: [
                                 TextSpan(
                                     text:
-                                        '\n${data[i]['department'].toString()}',
+                                        '\n${topResolvers[i].designation.toString()}',
                                     style: context.textFontWeight400
                                         .onFontSize(resources.dimen.dp10)
                                         .onColor(
                                             resources.color.textColorLight))
                               ])),
                     ),
-                    Text('${data[i]['count']}',
+                    Text('\n${topResolvers[i].ticketCount.toString()}',
                         style: context.textFontWeight700
                             .onFontSize(resources.fontSize.dp12)
                             .onColor(resources.color.dashboardSecondary)),
@@ -850,6 +772,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   void initState() {
     Future.delayed(Duration.zero, () {
       _servicesBloc.getDashboardData(
+          apiUrl: newDashboardApiUrl,
           requestParams: UserCredentialsEntity.details().id != null
               ? {"userId": UserCredentialsEntity.details().id}
               : {});
@@ -1103,8 +1026,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                                           resources.dimen.dp20,
                                                     ),
                                                     Expanded(
-                                                      child:
-                                                          _getTopResolversWidget(),
+                                                      child: _getTopResolversWidget(
+                                                          _dashboardEntity
+                                                                  ?.topResolvers ??
+                                                              []),
                                                     )
                                                   ],
                                                 )
@@ -1126,16 +1051,20 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                                   Row(
                                                     children: [
                                                       Expanded(
-                                                        child:
-                                                            _getByPriorityWidget(),
+                                                        child: _getByPriorityWidget(
+                                                            _dashboardEntity
+                                                                    ?.ticketsByPriority ??
+                                                                []),
                                                       ),
                                                       SizedBox(
                                                         width: resources
                                                             .dimen.dp20,
                                                       ),
                                                       Expanded(
-                                                        child:
-                                                            _getByIssutypeWidget(),
+                                                        child: _getByIssutypeWidget(
+                                                            _dashboardEntity
+                                                                    ?.ticketsByIssueType ??
+                                                                []),
                                                       ),
                                                     ],
                                                   ),
@@ -1157,8 +1086,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                                             .dimen.dp20,
                                                       ),
                                                       Expanded(
-                                                        child:
-                                                            _getByOpenDayWidget(),
+                                                        child: _getByOpenDayWidget(
+                                                            _dashboardEntity
+                                                                    ?.ticketsByOpenDay ??
+                                                                []),
                                                       ),
                                                     ],
                                                   ),
