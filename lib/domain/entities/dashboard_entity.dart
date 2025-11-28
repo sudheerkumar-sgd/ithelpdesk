@@ -28,6 +28,7 @@ class DashboardEntity extends BaseEntity {
   List<TicketEntity> myTickets = [];
   List<TicketEntity> teamTickets = [];
   List<TicketEntity> historyTickets = [];
+  List<TicketEntity> delayedTickets = [];
 }
 
 class TicketsByMonthEntity extends BaseEntity {
@@ -342,6 +343,18 @@ class TicketEntity extends BaseEntity {
         "createDate": createdOn ?? '',
         "closedDate": closedOn ?? '',
       };
+  Map<String, dynamic> toDelayedCasesJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['Request No.'] = id;
+    data['Subject'] = subject ?? '';
+    data['Category'] = CategoryEnum.fromId(categoryID ?? 1).toString();
+    data['Priority'] = priority?.toString();
+    data['Assignee'] = assignedTo;
+    data['Overdue'] = getDays(
+        getDateTimeByString('dd-MMM-yyyy HH:mm', createdOn ?? ''),
+        DateTime.now());
+    return data;
+  }
 }
 
 class TicketHistoryEntity extends BaseEntity {

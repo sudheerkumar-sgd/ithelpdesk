@@ -465,3 +465,37 @@ enum RequestStepActions {
             throw ArgumentError('Invalid RequestStepActions name: $value'));
   }
 }
+
+enum CategoryEnum {
+  itsupport(1),
+  isocr(2),
+  eservice(3),
+  application(4);
+
+  final int value;
+  const CategoryEnum(this.value);
+
+  factory CategoryEnum.fromId(int value) {
+    return values.firstWhere((e) => e.value == value,
+        orElse: () => throw ArgumentError('Invalid Category id: $value'));
+  }
+
+  factory CategoryEnum.fromName(String value) {
+    return values.firstWhere((e) => e.name.toLowerCase() == value.toLowerCase(),
+        orElse: () => throw ArgumentError('Invalid Category name: $value'));
+  }
+
+  @override
+  String toString() {
+    switch (this) {
+      case itsupport:
+        return isSelectedLocalEn ? 'IT Support' : "الدعم الفني";
+      case isocr:
+        return isSelectedLocalEn ? 'ISO CR' : "نماذج طلبات التغيير";
+      case eservice:
+        return isSelectedLocalEn ? 'Eservices' : "الخدمات";
+      case application:
+        return isSelectedLocalEn ? 'Application' : "الانظمة";
+    }
+  }
+}

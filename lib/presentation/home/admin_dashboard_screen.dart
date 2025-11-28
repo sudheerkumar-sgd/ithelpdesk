@@ -15,7 +15,6 @@ import 'package:ithelpdesk/domain/entities/api_entity.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
 import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
 import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
-import 'package:ithelpdesk/domain/entities/user_entity.dart';
 import 'package:ithelpdesk/injection_container.dart';
 import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
 import 'package:ithelpdesk/presentation/common_widgets/barchart_widget.dart';
@@ -105,12 +104,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               textAlign: TextAlign.right,
               monthName(monthData.month?.toInt() ?? 1)),
         ));
-      } else {
-        lineChartData.add(FlSpot(double.parse('${i + 1}'), 0));
-        tilesData.add(Expanded(
-          child: Text(textAlign: TextAlign.right, monthName(startMonth)),
-        ));
       }
+      //  else {
+      //   lineChartData.add(FlSpot(double.parse('${i + 1}'), 0));
+      //   tilesData.add(Expanded(
+      //     child: Text(textAlign: TextAlign.right, monthName(startMonth)),
+      //   ));
+      // }
     }
     return Container(
       height: 350,
@@ -189,6 +189,27 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   ),
                 ),
                 titlesData: FlTitlesData(
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 50, // ✅ Gives enough space for numbers
+                        interval:
+                            50, // ✅ Controls vertical distance between labels
+                        getTitlesWidget: (value, meta) {
+                          if (value == meta.max) return const SizedBox();
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 6),
+                            child: Text(
+                              value.toInt().toString(),
+                              style: const TextStyle(
+                                fontSize: 11,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                     topTitles: const AxisTitles(),
                     rightTitles: const AxisTitles(),
                     bottomTitles: AxisTitles(
@@ -370,9 +391,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
   Widget _getByPriorityWidget(List<TicketsByCategoryEntity> ticketsByPriority) {
     final resources = context.resources;
-    final maxValue = ticketsByPriority
-        .map((e) => e.count ?? 0)
-        .reduce((a, b) => a > b ? a : b);
+    final maxValue = ticketsByPriority.isEmpty
+        ? 0
+        : ticketsByPriority
+            .map((e) => e.count ?? 0)
+            .reduce((a, b) => a > b ? a : b);
     return Container(
       height: 275,
       width: double.infinity,
@@ -511,10 +534,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
   Widget _getByOpenDayWidget(List<TicketsByCategoryEntity> ticketsByOpenDay) {
     final resources = context.resources;
-    final lables = ticketsByOpenDay
-        .map((e) => e.getOpendayDisplayName().toString())
-        .toList();
-    final values = ticketsByOpenDay.map((e) => e.count as double).toList();
+    final lables = ticketsByOpenDay.isEmpty
+        ? [].cast<String>()
+        : ticketsByOpenDay
+            .map((e) => e.getOpendayDisplayName().toString())
+            .toList();
+    final values = ticketsByOpenDay.isEmpty
+        ? [].cast<double>()
+        : ticketsByOpenDay.map((e) => e.count as double).toList();
     return Container(
       height: 275,
       width: double.infinity,
@@ -537,44 +564,20 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             height: resources.dimen.dp20,
           ),
           Expanded(
-            child: BarchartWidget(
-              bottomLables: lables,
-              values: values,
-            ),
+            child: lables.isEmpty
+                ? const SizedBox()
+                : BarchartWidget(
+                    bottomLables: lables,
+                    values: values,
+                  ),
           ),
         ],
       ),
     );
   }
 
-  Widget _getDelayedCasesWidget() {
+  Widget _getDelayedCasesWidget(List<TicketEntity> delayedTickets) {
     final resources = context.resources;
-    final data = [
-      {
-        "name": "Request No.",
-        "value": '12345',
-      },
-      {
-        "name": "Subject",
-        "value": 'Unable to submit request',
-      },
-      {
-        "name": "Category",
-        "value": 'Eservice',
-      },
-      {
-        "name": "Priority",
-        "value": 'Open',
-      },
-      {
-        "name": "Assignee",
-        "value": 'Ahmed Abdullah',
-      },
-      {
-        "name": "Overdue",
-        "value": '24 Days',
-      },
-    ];
     final pageController = PageController(initialPage: 0);
     ValueNotifier pageIndex = ValueNotifier(0);
     return Container(
@@ -606,50 +609,57 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 child: PageView(
                   controller: pageController,
                   children: [
-                    for (int i = 0; i < 4; i++)
+                    for (int c = 0; c < (delayedTickets.length / 2).ceil(); c++)
                       Row(
                         children: [
-                          for (int i = 0; i < 2; i++)
+                          for (int r = 0; r < 2; r++)
                             Expanded(
-                              child: Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 7),
-                                margin: EdgeInsets.only(
-                                    bottom: resources.dimen.dp5,
-                                    right: i == 0 ? resources.dimen.dp10 : 0),
-                                decoration: BackgroundBoxDecoration(
-                                        boxColor: resources.color.colorF7F8FF,
-                                        radious: 8)
-                                    .roundedCornerBox,
-                                child: Column(
-                                  children: List.generate(
-                                      6,
-                                      (index) => Row(children: [
-                                            Expanded(
-                                              child: Text(
-                                                  data[index]['name']
-                                                      .toString(),
-                                                  maxLines: 1,
-                                                  style: context
-                                                      .textFontWeight400
-                                                      .onFontSize(resources
-                                                          .fontSize.dp10)
-                                                      .onColor(const Color(
-                                                          0xFF14213D))),
-                                            ),
-                                            Expanded(
-                                              child: Text(
-                                                  '${data[index]['value']}',
-                                                  maxLines: 1,
-                                                  style: context
-                                                      .textFontWeight600
-                                                      .onFontSize(resources
-                                                          .fontSize.dp12)),
-                                            ),
-                                          ])),
-                                ),
-                              ),
+                              child: (c * 2 + r < delayedTickets.length)
+                                  ? Container(
+                                      width: double.infinity,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10, vertical: 7),
+                                      margin: EdgeInsets.only(
+                                          bottom: resources.dimen.dp5,
+                                          right: r == 0
+                                              ? resources.dimen.dp10
+                                              : 0),
+                                      decoration: BackgroundBoxDecoration(
+                                              boxColor:
+                                                  resources.color.colorF7F8FF,
+                                              radious: 8)
+                                          .roundedCornerBox,
+                                      child: Column(
+                                        children: (delayedTickets[c * 2 + r]
+                                            .toDelayedCasesJson()
+                                            .entries
+                                            .map((v) {
+                                          return Expanded(
+                                            child: Row(children: [
+                                              Expanded(
+                                                child: Text(v.key,
+                                                    maxLines: 1,
+                                                    style: context
+                                                        .textFontWeight400
+                                                        .onFontSize(resources
+                                                            .fontSize.dp10)
+                                                        .onColor(const Color(
+                                                            0xFF14213D))),
+                                              ),
+                                              Expanded(
+                                                child: Text('${v.value}',
+                                                    maxLines: 1,
+                                                    style: context
+                                                        .textFontWeight600
+                                                        .onFontSize(resources
+                                                            .fontSize.dp10)),
+                                              ),
+                                            ]),
+                                          );
+                                        }).toList()),
+                                      ),
+                                    )
+                                  : const SizedBox(),
                             ),
                         ],
                       ),
@@ -669,7 +679,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   return Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        for (int i = 0; i < 4; i++)
+                        for (int i = 0;
+                            i < (delayedTickets.length / 2).ceil();
+                            i++)
                           Container(
                             width: 8,
                             height: 8,
@@ -797,33 +809,35 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     _selectedYear.value = DateTime.now().year;
     final requestTypesRows = isDesktop(context) ? 1 : 2;
     final requestTypesColumns = isDesktop(context) ? 5 : 2;
-    _requestTypes = [
-      {
-        'name': resources.string.notAssignedRequests,
-        'icon_path': DrawableAssets.icNotAssignedRequests,
-        'count': 0
-      },
-      {
-        'name': resources.string.openRequests,
-        'icon_path': DrawableAssets.icOpenRequests,
-        'count': 0
-      },
-      {
-        'name': resources.string.closedRequests,
-        'icon_path': DrawableAssets.icClosedRequests,
-        'count': 0
-      },
-      {
-        'name': resources.string.noOfRequests,
-        'icon_path': DrawableAssets.icNoOfRequests,
-        'count': 0
-      },
-      {
-        'name': resources.string.noOfRequests,
-        'icon_path': DrawableAssets.icNoOfRequests,
-        'count': 0
-      },
-    ];
+    if (_requestTypes.isEmpty) {
+      _requestTypes = [
+        {
+          'name': resources.string.noOfRequests,
+          'icon_path': DrawableAssets.icNotAssignedRequests,
+          'count': 0
+        },
+        {
+          'name': resources.string.openRequests,
+          'icon_path': DrawableAssets.icOpenRequests,
+          'count': 0
+        },
+        {
+          'name': resources.string.closedRequests,
+          'icon_path': DrawableAssets.icNoOfRequests,
+          'count': 0
+        },
+        {
+          'name': 'AVG. Day open',
+          'icon_path': DrawableAssets.icClosedRequests,
+          'count': 0
+        },
+        {
+          'name': 'Damek Satisfaction',
+          'icon_path': DrawableAssets.icDamek,
+          'count': 0
+        },
+      ];
+    }
     double topBannerHeight = screenSize.height * 0.25;
     return SelectionArea(
       child: Scaffold(
@@ -836,12 +850,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               if (state is OnDashboardSuccess) {
                 _dashboardEntity = state.dashboardEntity.entity;
                 _requestTypes[0]['count'] =
-                    _dashboardEntity?.notAssignedRequests ?? 0;
+                    _dashboardEntity?.totalRequests ?? 0;
                 _requestTypes[1]['count'] = _dashboardEntity?.openRequests ?? 0;
                 _requestTypes[2]['count'] =
                     _dashboardEntity?.closedRequests ?? 0;
                 _requestTypes[3]['count'] =
-                    _dashboardEntity?.totalRequests ?? 0;
+                    _dashboardEntity?.averageDayOpenRequests ?? 0;
+                _requestTypes[4]['count'] =
+                    _dashboardEntity?.damekSatisfaction ?? 0;
                 ticketsData = _dashboardEntity?.assignedTickets ?? [];
                 _onDataChange.value = !(_onDataChange.value);
               }
@@ -898,90 +914,97 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                   for (var i = 0;
                                       i < requestTypesRows;
                                       i++) ...[
-                                    Row(
-                                      children: List.generate(
-                                          requestTypesColumns, (index) {
-                                        final newIndex =
-                                            index + (i * requestTypesColumns);
-                                        return Expanded(
-                                          child: InkWell(
-                                            child: Container(
-                                              decoration:
-                                                  BackgroundBoxDecoration(
-                                                          boxColor: resources
-                                                              .color.colorWhite,
-                                                          radious: resources
-                                                              .dimen.dp10)
-                                                      .roundedCornerBox,
-                                              margin: isSelectedLocalEn
-                                                  ? EdgeInsets.only(
-                                                      right: index <
-                                                              requestTypesColumns -
-                                                                  1
-                                                          ? resources.dimen.dp15
-                                                          : 0,
-                                                    )
-                                                  : EdgeInsets.only(
-                                                      left: index <
-                                                              requestTypesColumns -
-                                                                  1
-                                                          ? resources.dimen.dp15
-                                                          : 0,
+                                    IntrinsicHeight(
+                                      child: Row(
+                                        children: List.generate(
+                                            requestTypesColumns, (index) {
+                                          final newIndex =
+                                              index + (i * requestTypesColumns);
+                                          return Expanded(
+                                            child: InkWell(
+                                              child: Container(
+                                                height: double.infinity,
+                                                decoration:
+                                                    BackgroundBoxDecoration(
+                                                            boxColor:
+                                                                resources.color
+                                                                    .colorWhite,
+                                                            radious: resources
+                                                                .dimen.dp10)
+                                                        .roundedCornerBox,
+                                                margin: isSelectedLocalEn
+                                                    ? EdgeInsets.only(
+                                                        right: index <
+                                                                requestTypesColumns -
+                                                                    1
+                                                            ? resources
+                                                                .dimen.dp15
+                                                            : 0,
+                                                      )
+                                                    : EdgeInsets.only(
+                                                        left: index <
+                                                                requestTypesColumns -
+                                                                    1
+                                                            ? resources
+                                                                .dimen.dp15
+                                                            : 0,
+                                                      ),
+                                                padding: EdgeInsets.all(
+                                                    resources.dimen.dp20),
+                                                child: Row(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Expanded(
+                                                      child: Text.rich(
+                                                        textAlign:
+                                                            TextAlign.start,
+                                                        TextSpan(
+                                                            text:
+                                                                '${_requestTypes[newIndex]['count'].toString()}\n',
+                                                            style: context
+                                                                .textFontWeight700
+                                                                .onFontSize(
+                                                                    resources
+                                                                        .fontSize
+                                                                        .dp25)
+                                                                .onFontFamily(
+                                                                    fontFamily:
+                                                                        fontFamilyEN),
+                                                            children: [
+                                                              TextSpan(
+                                                                text: _requestTypes[
+                                                                            newIndex]
+                                                                        ['name']
+                                                                    .toString(),
+                                                                style: context
+                                                                    .textFontWeight600
+                                                                    .onFontSize(
+                                                                        resources
+                                                                            .fontSize
+                                                                            .dp12)
+                                                                    .onHeight(
+                                                                        1.1),
+                                                              )
+                                                            ]),
+                                                      ),
                                                     ),
-                                              padding: EdgeInsets.all(
-                                                  resources.dimen.dp20),
-                                              child: Row(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Expanded(
-                                                    child: Text.rich(
-                                                      textAlign:
-                                                          TextAlign.start,
-                                                      TextSpan(
-                                                          text:
-                                                              '${_requestTypes[newIndex]['count'].toString()}\n',
-                                                          style: context
-                                                              .textFontWeight700
-                                                              .onFontSize(
-                                                                  resources
-                                                                      .fontSize
-                                                                      .dp25)
-                                                              .onFontFamily(
-                                                                  fontFamily:
-                                                                      fontFamilyEN),
-                                                          children: [
-                                                            TextSpan(
-                                                              text: _requestTypes[
-                                                                          newIndex]
-                                                                      ['name']
-                                                                  .toString(),
-                                                              style: context
-                                                                  .textFontWeight600
-                                                                  .onFontSize(
-                                                                      resources
-                                                                          .fontSize
-                                                                          .dp12)
-                                                                  .onHeight(
-                                                                      1.1),
-                                                            )
-                                                          ]),
-                                                    ),
-                                                  ),
-                                                  ImageWidget(
-                                                          path: _requestTypes[
-                                                                      newIndex]
-                                                                  ['icon_path']
-                                                              .toString(),
-                                                          width: 20,
-                                                          height: 20)
-                                                      .loadImage,
-                                                ],
+                                                    ImageWidget(
+                                                            path: _requestTypes[
+                                                                        newIndex]
+                                                                    [
+                                                                    'icon_path']
+                                                                .toString(),
+                                                            width: 20,
+                                                            height: 20)
+                                                        .loadImage,
+                                                  ],
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        );
-                                      }),
+                                          );
+                                        }),
+                                      ),
                                     ),
                                   ],
                                 ],
@@ -1018,8 +1041,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                                 Row(
                                                   children: [
                                                     Expanded(
-                                                      child:
-                                                          _getDelayedCasesWidget(),
+                                                      child: _getDelayedCasesWidget(
+                                                          _dashboardEntity
+                                                                  ?.delayedTickets ??
+                                                              []),
                                                     ),
                                                     SizedBox(
                                                       width:

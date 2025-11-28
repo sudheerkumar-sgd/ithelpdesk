@@ -24,6 +24,7 @@ class DashboardModel extends BaseModel {
   List<TicketEntity> myTickets = [];
   List<TicketEntity> teamTickets = [];
   List<TicketEntity> historyTickets = [];
+  List<TicketEntity> delayedTickets = [];
 
   DashboardModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -70,6 +71,13 @@ class DashboardModel extends BaseModel {
       });
     }
 
+    if (json['delayedTickets'] != null) {
+      delayedTickets = <TicketEntity>[];
+      json['delayedTickets'].forEach((v) {
+        delayedTickets.add(TicketsModel.fromJson(v).toEntity());
+      });
+    }
+
     if (json['ticketsByPriority'] != null) {
       json['ticketsByPriority'].forEach((v) {
         ticketsByPriority.add(TicketsByCategoryModel.fromJson(v).toEntity());
@@ -107,6 +115,7 @@ class DashboardModel extends BaseModel {
     dashboardEntity.myTickets = myTickets;
     dashboardEntity.teamTickets = teamTickets;
     dashboardEntity.historyTickets = historyTickets;
+    dashboardEntity.delayedTickets = delayedTickets;
     dashboardEntity.topResolvers = topResolvers;
     dashboardEntity.ticketsByPriority = ticketsByPriority;
     dashboardEntity.ticketsByIssueType = ticketsByIssueType;
