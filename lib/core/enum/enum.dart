@@ -499,3 +499,37 @@ enum CategoryEnum {
     }
   }
 }
+
+enum DashboardFilterEnum {
+  week(1),
+  month(2),
+  year(3),
+  custom(4);
+
+  final int value;
+  const DashboardFilterEnum(this.value);
+
+  factory DashboardFilterEnum.fromId(int value) {
+    return values.firstWhere((e) => e.value == value,
+        orElse: () => throw ArgumentError('Invalid Category id: $value'));
+  }
+
+  factory DashboardFilterEnum.fromName(String value) {
+    return values.firstWhere((e) => e.name.toLowerCase() == value.toLowerCase(),
+        orElse: () => throw ArgumentError('Invalid Category name: $value'));
+  }
+
+  @override
+  String toString() {
+    switch (this) {
+      case week:
+        return isSelectedLocalEn ? 'Week' : "الأسبوع";
+      case month:
+        return isSelectedLocalEn ? 'Month' : "الشهر";
+      case year:
+        return isSelectedLocalEn ? 'Year' : "السنة";
+      case custom:
+        return isSelectedLocalEn ? 'Custom' : "مخصص";
+    }
+  }
+}

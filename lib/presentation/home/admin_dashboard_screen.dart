@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable
 import 'dart:async';
+import 'dart:math';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -22,8 +23,10 @@ import 'package:ithelpdesk/presentation/common_widgets/dropdown_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/my_custom_scrollbehavior.dart';
 import 'package:ithelpdesk/presentation/common_widgets/tooltip_widget.dart';
+import 'package:ithelpdesk/presentation/utils/date_time_util.dart';
 import 'package:ithelpdesk/res/drawables/background_box_decoration.dart';
 import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -47,11 +50,15 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
   int selectTicketCategory = 1;
 
-  final ValueNotifier<int> _selectedYear = ValueNotifier(2024);
+  final ValueNotifier<DashboardFilterEnum> _selectedFilter =
+      ValueNotifier(DashboardFilterEnum.week);
 
   final ValueNotifier<List<String>> _filteredDates = ValueNotifier([]);
 
   StatusType filteredStatus = StatusType.all;
+
+  DateTime? startDate;
+  DateTime? endDate;
 
   Future<ApiEntity<ListEntity>> _getDashboradTickets() {
     final tickets = ApiEntity<ListEntity>();
@@ -77,41 +84,78 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     return Future.value(tickets);
   }
 
+  TextAlign getAlign(int i, int length) {
+    if (length == 2) {
+      return i == 0 ? TextAlign.start : TextAlign.end;
+    }
+
+    // default behavior for other lengths
+    final middle = (length / 2).floor();
+
+    return (i == middle)
+        ? TextAlign.center
+        : (i < middle ? TextAlign.start : TextAlign.end);
+  }
+
   Widget getLineChart(
       BuildContext context, List<TicketsByMonthEntity> ticketsByMonthEntity) {
     final resources = context.resources;
-    final currentYear = DateTime.now().year;
-    final years = [
-      currentYear,
-      currentYear - 1,
-      currentYear - 2,
-      currentYear - 3
-    ];
     final lineChartData = List<FlSpot>.empty(growable: true);
     final tilesData = List<Widget>.empty(growable: true);
-    for (var i = 0; i < 12; i++) {
-      final currentMonth =
-          _selectedYear.value == DateTime.now().year ? DateTime.now().month : 0;
-      final startMonth = ((currentMonth + i) % 12) + 1;
-      final monthData = ticketsByMonthEntity
-          .where((month) => month.month == startMonth)
-          .firstOrNull;
-      if (monthData != null) {
+    if (_selectedFilter.value == DashboardFilterEnum.week) {
+      for (var i = 0; i < ticketsByMonthEntity.length; i++) {
         lineChartData
-            .add(FlSpot(double.parse('${i + 1}'), monthData.count ?? 0));
+            .add(FlSpot(i + 1.toDouble(), ticketsByMonthEntity[i].count ?? 0));
         tilesData.add(Expanded(
           child: Text(
-              textAlign: TextAlign.right,
-              monthName(monthData.month?.toInt() ?? 1)),
+              textAlign: getAlign(i, ticketsByMonthEntity.length),
+              weekDayName((ticketsByMonthEntity[i].month?.toInt() ?? 1))),
         ));
       }
-      //  else {
-      //   lineChartData.add(FlSpot(double.parse('${i + 1}'), 0));
-      //   tilesData.add(Expanded(
-      //     child: Text(textAlign: TextAlign.right, monthName(startMonth)),
-      //   ));
-      // }
+    } else if (_selectedFilter.value == DashboardFilterEnum.month) {
+      for (var i = 0; i < ticketsByMonthEntity.length; i++) {
+        lineChartData.add(FlSpot(
+            double.parse('${i + 1}'), ticketsByMonthEntity[i].count ?? 0));
+        tilesData.add(Expanded(
+          child: Text(
+              textAlign: getAlign(i, ticketsByMonthEntity.length),
+              '${ticketsByMonthEntity[i].month?.toInt() ?? 1}'),
+        ));
+      }
+    } else {
+      for (var i = 0; i < ticketsByMonthEntity.length; i++) {
+        // final currentMonth = DateTime.now().month;
+        // final startMonth = ((currentMonth + i) % 12) + 1;
+        // final monthData = ticketsByMonthEntity
+        //     .where((month) => month.month == startMonth)
+        //     .firstOrNull;
+        // if (monthData != null) {
+        lineChartData.add(FlSpot(
+            double.parse('${i + 1}'), ticketsByMonthEntity[i].count ?? 0));
+        tilesData.add(Expanded(
+          child: Text(
+              textAlign: getAlign(i, ticketsByMonthEntity.length),
+              (_selectedFilter.value == DashboardFilterEnum.custom &&
+                      getDays(startDate ?? DateTime.now(),
+                              endDate ?? DateTime.now()) <=
+                          31)
+                  ? '${ticketsByMonthEntity[i].month?.toInt() ?? 1}'
+                  : monthName((ticketsByMonthEntity[i].month?.toInt() ?? 1))),
+        ));
+        // }
+        //  else {
+        //   lineChartData.add(FlSpot(double.parse('${i + 1}'), 0));
+        //   tilesData.add(Expanded(
+        //     child: Text(textAlign: TextAlign.right, monthName(startMonth)),
+        //   ));
+        // }
+      }
     }
+    final maxValue = ticketsByMonthEntity.isEmpty
+        ? 0
+        : ticketsByMonthEntity
+            .map((e) => e.count ?? 0)
+            .reduce((a, b) => a > b ? a : b);
     return Container(
       height: 350,
       padding: EdgeInsets.all(resources.dimen.dp15),
@@ -140,24 +184,71 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       ]),
                 ),
               ),
-              DropDownWidget<int>(
-                width: 80,
+              DropDownWidget<DashboardFilterEnum>(
+                width: 100,
                 height: 28,
-                list: years,
+                list: DashboardFilterEnum.values,
                 iconSize: 20,
-                selectedValue: _selectedYear.value,
+                selectedValue: _selectedFilter.value,
                 fontStyle: context.textFontWeight400
                     .onFontSize(resources.fontSize.dp10),
                 callback: (p0) {
-                  _selectedYear.value = p0 ?? 2025;
-                  _servicesBloc.getDashboardData(
-                      apiUrl: newDashboardApiUrl,
-                      requestParams: {
-                        "userId": UserCredentialsEntity.details().id,
-                        'year': p0 ?? 0
-                      });
+                  final requestParams = <String, dynamic>{
+                    "userId": UserCredentialsEntity.details().id
+                  };
+                  if (p0 == DashboardFilterEnum.week) {
+                    requestParams['showWeekly'] = true;
+                  } else if (p0 == DashboardFilterEnum.month) {
+                    requestParams['showMonthly'] = true;
+                  } else if (p0 == DashboardFilterEnum.year) {
+                    requestParams['showYearly'] = true;
+                  } else if (p0 == DashboardFilterEnum.custom) {
+                    showDateRangePickerDialog(context,
+                        selectionMode: DateRangePickerSelectionMode.range,
+                        initialSelectedDate: startDate ?? DateTime.now(),
+                        initialSelectedDates: [
+                          startDate ?? DateTime.now(),
+                          endDate ?? DateTime.now()
+                        ],
+                        initialSelectedRange:
+                            PickerDateRange(startDate, endDate),
+                        initialSelectedRanges: [
+                          PickerDateRange(startDate, endDate)
+                        ]).then((value) {
+                      if (value != null &&
+                          value is PickerDateRange &&
+                          value.startDate != null) {
+                        startDate = value.startDate!;
+                        endDate = value.endDate ?? value.startDate!;
+                        requestParams['startDate'] = getDateByformat(
+                            'yyyy-MM-dd', startDate ?? DateTime.now());
+                        requestParams['endDate'] = getDateByformat(
+                            'yyyy-MM-dd', endDate ?? DateTime.now());
+                        _servicesBloc.getDashboardData(
+                            apiUrl: newDashboardApiUrl,
+                            requestParams: requestParams);
+                      }
+                    });
+                  }
+                  _selectedFilter.value = p0 ?? DashboardFilterEnum.week;
+                  if (p0 != DashboardFilterEnum.custom) {
+                    _servicesBloc.getDashboardData(
+                        apiUrl: newDashboardApiUrl,
+                        requestParams: requestParams);
+                  }
                 },
-              )
+              ),
+              if (_selectedFilter.value == DashboardFilterEnum.custom &&
+                  startDate != null) ...[
+                SizedBox(
+                  width: resources.dimen.dp10,
+                ),
+                Text(
+                  '${getDateByformat('dd/MMM/yyyy', startDate ?? DateTime.now())} - ${getDateByformat('dd/MMM/yyyy', endDate ?? DateTime.now())}',
+                  style: context.textFontWeight600
+                      .onFontSize(resources.fontSize.dp10),
+                ),
+              ]
             ],
           ),
           SizedBox(
@@ -166,6 +257,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           Expanded(
             child: LineChart(
               LineChartData(
+                baselineY: 0,
+                minY: 0,
                 gridData: const FlGridData(show: false),
                 backgroundColor: resources.color.colorWhite,
                 lineTouchData: LineTouchData(
@@ -192,9 +285,16 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
-                        reservedSize: 50, // ✅ Gives enough space for numbers
-                        interval:
-                            50, // ✅ Controls vertical distance between labels
+                        reservedSize: 40, // ✅ Gives enough space for numbers
+                        interval: maxValue > 400
+                            ? 100
+                            : maxValue > 200
+                                ? 50
+                                : maxValue >= 100
+                                    ? 20
+                                    : maxValue >= 20
+                                        ? 10
+                                        : 1, // ✅ Controls vertical distance between labels
                         getTitlesWidget: (value, meta) {
                           if (value == meta.max) return const SizedBox();
                           return Padding(
@@ -213,8 +313,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     topTitles: const AxisTitles(),
                     rightTitles: const AxisTitles(),
                     bottomTitles: AxisTitles(
-                      axisNameWidget: Row(
-                        children: tilesData,
+                      axisNameWidget: Padding(
+                        padding:
+                            EdgeInsetsGeometry.only(left: resources.dimen.dp40),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: tilesData,
+                        ),
                       ),
                     )),
                 borderData: FlBorderData(
@@ -786,8 +891,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       _servicesBloc.getDashboardData(
           apiUrl: newDashboardApiUrl,
           requestParams: UserCredentialsEntity.details().id != null
-              ? {"userId": UserCredentialsEntity.details().id}
-              : {});
+              ? {
+                  "userId": UserCredentialsEntity.details().id,
+                  'showWeekly': true
+                }
+              : {'showWeekly': true});
     });
     _resizeTimer = Timer(const Duration(minutes: 15), () {
       if (!mounted) return;
@@ -806,7 +914,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final resources = context.resources;
-    _selectedYear.value = DateTime.now().year;
+    //_selectedYear.value = '${DateTime.now().year}';
     final requestTypesRows = isDesktop(context) ? 1 : 2;
     final requestTypesColumns = isDesktop(context) ? 5 : 2;
     if (_requestTypes.isEmpty) {

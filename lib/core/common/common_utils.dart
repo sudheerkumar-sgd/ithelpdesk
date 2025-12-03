@@ -581,6 +581,12 @@ String monthName(int month, {String locale = 'en'}) {
   return DateFormat.MMM(locale).format(DateTime(0, month));
 }
 
+String weekDayName(int dayNumber) {
+  final now = DateTime.now();
+  final date = now.subtract(Duration(days: now.weekday - dayNumber));
+  return DateFormat.E().format(date); // Full day name
+}
+
 Future<bool> exportToExcel(ExportDataEntity exportData) async {
   try {
     final workbook = excel.Workbook();
