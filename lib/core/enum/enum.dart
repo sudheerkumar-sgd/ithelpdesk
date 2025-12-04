@@ -209,6 +209,19 @@ enum UserType {
   factory UserType.fromName(String value) {
     return values.firstWhere((e) => e.name.contains(value.toLowerCase()));
   }
+
+  bool isAdmin() {
+    switch (this) {
+      case superAdmin:
+      case sgdAdmin:
+      case mdAdmin:
+      case dedAdmin:
+      case itAdmin:
+        return true;
+      default:
+        return false;
+    }
+  }
 }
 
 enum IssueType {

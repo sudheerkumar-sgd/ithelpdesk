@@ -72,7 +72,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..labelAr = 'الاسم الأول للموظف'
           ..validation = (FormValidationEntity()
             ..isrequired = true
-            ..regex = nameNumberRegex)
+            ..regex = nameSpaceRegExp)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Employee First Name'
             ..requiredAr = 'الرجاء إدخال الاسم الأول للموظف'
@@ -88,7 +88,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..labelAr = 'الاسم الأخير للموظف'
           ..validation = (FormValidationEntity()
             ..isrequired = true
-            ..regex = nameNumberRegex)
+            ..regex = nameSpaceRegExp)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Employee Last Name'
             ..requiredAr = 'الرجاء إدخال اسم العائلة للموظف'
@@ -281,7 +281,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..labelAr = 'الاسم الأول للموظف'
           ..validation = (FormValidationEntity()
             ..isrequired = true
-            ..regex = nameNumberRegex)
+            ..regex = nameSpaceRegExp)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Employee First Name'
             ..requiredAr = 'الرجاء إدخال الاسم الأول للموظف'
@@ -297,7 +297,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
           ..labelAr = 'الاسم الأخير للموظف'
           ..validation = (FormValidationEntity()
             ..isrequired = true
-            ..regex = nameNumberRegex)
+            ..regex = nameSpaceRegExp)
           ..messages = (FormMessageEntity()
             ..requiredEn = 'Please Enter Employee Last Name'
             ..requiredAr = 'الرجاء إدخال اسم العائلة للموظف'

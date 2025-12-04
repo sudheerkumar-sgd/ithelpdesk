@@ -15,6 +15,7 @@ import 'package:ithelpdesk/presentation/common_widgets/msearch_user_app_bar.dart
 import 'package:ithelpdesk/presentation/common_widgets/page_user_app_bar.dart';
 import 'package:ithelpdesk/presentation/common_widgets/search_user_app_bar.dart';
 import 'package:ithelpdesk/presentation/home/user_home_navigator_screen.dart';
+import 'package:ithelpdesk/presentation/home/user_home_screen.dart';
 import 'package:ithelpdesk/presentation/utils/NavbarNotifier.dart';
 import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 import 'package:ithelpdesk/res/resources.dart';
@@ -40,7 +41,7 @@ class _BasePageWidgetState extends State<BasePageWidget> {
     }
     switch (index) {
       case 0:
-        currentScreen = UserHomeNavigatorScreen();
+        currentScreen = const UserHomeNavigatorScreen(screen: UserHomeScreen());
       case 1:
       //currentScreen = ReportsNavigatorScreen();
       case 2:
@@ -48,9 +49,10 @@ class _BasePageWidgetState extends State<BasePageWidget> {
       case 3:
       //currentScreen = ProfileNavigatorScreen();
       default:
-        currentScreen = UserHomeNavigatorScreen();
+        currentScreen = const UserHomeNavigatorScreen(screen: UserHomeScreen());
     }
-    return currentScreen ?? UserHomeNavigatorScreen();
+    return currentScreen ??
+        const UserHomeNavigatorScreen(screen: UserHomeScreen());
   }
 
   @override

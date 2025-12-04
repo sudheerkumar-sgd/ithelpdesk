@@ -468,7 +468,11 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                                   return Expanded(
                                     child: InkWell(
                                       child: Container(
-                                        color: resources.color.colorWhite,
+                                        decoration: BackgroundBoxDecoration(
+                                                boxColor:
+                                                    resources.color.colorWhite,
+                                                radious: resources.dimen.dp10)
+                                            .roundedCornerBox,
                                         margin: isSelectedLocalEn
                                             ? EdgeInsets.only(
                                                 left: index ==
@@ -573,68 +577,6 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                           ],
                         );
                       }),
-                  SizedBox(
-                    height: resources.dimen.dp20,
-                  ),
-                  if (UserCredentialsEntity.details().userType ==
-                          UserType.superAdmin ||
-                      UserCredentialsEntity.details().userType ==
-                          UserType.itAdmin ||
-                      UserCredentialsEntity.details().userType ==
-                          UserType.sgdIT ||
-                      UserCredentialsEntity.details().userType ==
-                          UserType.localIT) ...[
-                    ValueListenableBuilder(
-                        valueListenable: _onDataChange,
-                        builder: (context, onDataChange, child) {
-                          return isDesktop(context)
-                              ? Row(
-                                  children: [
-                                    Flexible(
-                                        flex: 4,
-                                        child: getLineChart(
-                                            context,
-                                            _dashboardEntity?.ticketsByMonth ??
-                                                [])),
-                                    SizedBox(
-                                      width: resources.dimen.dp20,
-                                    ),
-                                    if (UserCredentialsEntity.details()
-                                                .userType ==
-                                            UserType.superAdmin ||
-                                        UserCredentialsEntity.details()
-                                                .userType ==
-                                            UserType.itAdmin)
-                                      Flexible(
-                                          flex: 2,
-                                          child: getPieChart(
-                                              context,
-                                              _dashboardEntity
-                                                      ?.ticketsByCategory ??
-                                                  []))
-                                  ],
-                                )
-                              : Column(
-                                  children: [
-                                    getLineChart(context,
-                                        _dashboardEntity?.ticketsByMonth ?? []),
-                                    SizedBox(
-                                      height: resources.dimen.dp20,
-                                    ),
-                                    if (UserCredentialsEntity.details()
-                                                .userType ==
-                                            UserType.superAdmin ||
-                                        UserCredentialsEntity.details()
-                                                .userType ==
-                                            UserType.itAdmin)
-                                      getPieChart(
-                                          context,
-                                          _dashboardEntity?.ticketsByCategory ??
-                                              [])
-                                  ],
-                                );
-                        }),
-                  ],
                   SizedBox(
                     height: resources.dimen.dp20,
                   ),
@@ -830,16 +772,16 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                             child: ActionButtonWidget(
                               text: resources.string.assignedTickets,
                               padding: EdgeInsets.symmetric(
-                                  vertical: resources.dimen.dp7,
+                                  vertical: resources.dimen.dp10,
                                   horizontal: resources.dimen.dp20),
                               decoration: BackgroundBoxDecoration(
                                       boxColor: selectTicketCategory == 1
                                           ? resources.color.viewBgColor
                                           : resources.color.colorWhite,
-                                      radious: 0,
-                                      boarderWidth: resources.dimen.dp1,
+                                      radious: 10,
+                                      boarderWidth: 0,
                                       boarderColor: selectTicketCategory != 1
-                                          ? resources.color.colorGray9E9E9E
+                                          ? resources.color.colorWhite
                                           : resources.color.viewBgColor)
                                   .roundedCornerBox,
                               textColor: selectTicketCategory == 1
@@ -847,6 +789,9 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                                   : resources.color.textColor,
                             ),
                           )),
+                          SizedBox(
+                            width: resources.dimen.dp20,
+                          ),
                           Expanded(
                             child: InkWell(
                               onTap: () {
@@ -860,17 +805,17 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                               child: ActionButtonWidget(
                                 text: resources.string.myTickets,
                                 padding: EdgeInsets.symmetric(
-                                    vertical: resources.dimen.dp7,
+                                    vertical: resources.dimen.dp10,
                                     horizontal: resources.dimen.dp20),
                                 decoration: BackgroundBoxDecoration(
                                   boxColor: selectTicketCategory == 2
                                       ? resources.color.viewBgColor
                                       : resources.color.colorWhite,
-                                  radious: 0,
-                                  boarderWidth: resources.dimen.dp1,
+                                  radious: 10,
+                                  boarderWidth: 0,
                                   boarderColor: selectTicketCategory == 2
                                       ? resources.color.viewBgColor
-                                      : resources.color.colorGray9E9E9E,
+                                      : resources.color.colorWhite,
                                 ).roundedCornerBox,
                                 textColor: selectTicketCategory == 2
                                     ? resources.color.colorWhite
@@ -878,7 +823,11 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                               ),
                             ),
                           ),
-                          if (_dashboardEntity?.teamTickets.isNotEmpty == true)
+                          if (_dashboardEntity?.teamTickets.isNotEmpty ==
+                              true) ...[
+                            SizedBox(
+                              width: resources.dimen.dp20,
+                            ),
                             Expanded(
                               child: InkWell(
                                 onTap: () {
@@ -892,26 +841,28 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                                 child: ActionButtonWidget(
                                   text: 'Team Tickets',
                                   padding: EdgeInsets.symmetric(
-                                      vertical: resources.dimen.dp7,
+                                      vertical: resources.dimen.dp10,
                                       horizontal: resources.dimen.dp20),
                                   decoration: BackgroundBoxDecoration(
                                     boxColor: selectTicketCategory == 3
                                         ? resources.color.viewBgColor
                                         : resources.color.colorWhite,
-                                    radious: 0,
-                                    boarderWidth: resources.dimen.dp1,
+                                    radious: 10,
+                                    boarderWidth: 0,
                                     boarderColor: selectTicketCategory == 3
                                         ? resources.color.viewBgColor
-                                        : resources.color.colorGray9E9E9E,
+                                        : resources.color.colorWhite,
                                   ).roundedCornerBox,
                                   textColor: selectTicketCategory == 3
                                       ? resources.color.colorWhite
                                       : resources.color.textColor,
                                 ),
                               ),
-                            ),
+                            )
+                          ],
                           if (_dashboardEntity?.historyTickets.isNotEmpty ==
-                              true)
+                              true) ...[
+                            SizedBox(width: resources.dimen.dp20),
                             Expanded(
                               child: InkWell(
                                 onTap: () {
@@ -925,17 +876,17 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                                 child: ActionButtonWidget(
                                   text: 'Ticket History',
                                   padding: EdgeInsets.symmetric(
-                                      vertical: resources.dimen.dp7,
+                                      vertical: resources.dimen.dp10,
                                       horizontal: resources.dimen.dp20),
                                   decoration: BackgroundBoxDecoration(
                                     boxColor: selectTicketCategory == 4
                                         ? resources.color.viewBgColor
                                         : resources.color.colorWhite,
-                                    radious: 0,
-                                    boarderWidth: resources.dimen.dp1,
+                                    radious: 10,
+                                    boarderWidth: 0,
                                     boarderColor: selectTicketCategory == 4
                                         ? resources.color.viewBgColor
-                                        : resources.color.colorGray9E9E9E,
+                                        : resources.color.colorWhite,
                                   ).roundedCornerBox,
                                   textColor: selectTicketCategory == 4
                                       ? resources.color.colorWhite
@@ -943,8 +894,12 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                                 ),
                               ),
                             )
+                          ]
                         ]);
                       }),
+                  SizedBox(
+                    height: resources.dimen.dp20,
+                  ),
                   ValueListenableBuilder(
                       valueListenable: _onDataChange,
                       builder: (context, onDataChange, child) {

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:ithelpdesk/core/constants/constants.dart';
+import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
@@ -42,6 +44,37 @@ class SideBar extends StatelessWidget {
                 SizedBox(
                   height: resources.dimen.dp20,
                 ),
+                if (UserCredentialsEntity.details().userType?.isAdmin() ??
+                    false) ...[
+                  ListTile(
+                    onTap: () {
+                      _selectedIndex.value = 5;
+                      onItemSelected(5);
+                    },
+                    leading: SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: ImageWidget(
+                              path: DrawableAssets.icHome,
+                              backgroundTint: index == 5
+                                  ? resources.color.sideBarItemSelected
+                                  : resources.color.sideBarItemUnselected,
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 5))
+                          .loadImageWithMoreTapArea,
+                    ),
+                    title: Text(
+                      isSelectedLocalEn ? 'Dashboard' : 'لوحة القيادة',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.textFontWeight600
+                          .onFontSize(resources.fontSize.dp12),
+                    ),
+                  ),
+                  SizedBox(
+                    height: resources.dimen.dp10,
+                  ),
+                ],
                 ListTile(
                   onTap: () {
                     _selectedIndex.value = 0;

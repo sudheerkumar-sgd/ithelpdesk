@@ -30,8 +30,7 @@ class UserCredentialsEntity {
         userData?.departmentID = int.tryParse(data['DepartmentID']);
         userData?.username = data['UserName'];
         userData?.name = data['Name'];
-        userData?.userType = UserType
-            .superAdmin; // UserType.fromId(int.tryParse(data['Role']) ?? 7);
+        userData?.userType = UserType.fromId(int.tryParse(data['Role']) ?? 7);
         userData?.isoUser =
             bool.tryParse((data['isoUser'] ?? "false")) ?? false;
         userData?.isoUserCategories = data['isoUserCategories'];

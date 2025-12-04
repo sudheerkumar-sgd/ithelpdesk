@@ -16,7 +16,10 @@ import 'package:ithelpdesk/presentation/common_widgets/msearch_user_app_bar.dart
 import 'package:ithelpdesk/presentation/common_widgets/search_user_app_bar.dart';
 import 'package:ithelpdesk/presentation/common_widgets/side_bar.dart';
 import 'package:ithelpdesk/presentation/directory/directory_navigator_screen.dart';
+import 'package:ithelpdesk/presentation/home/admin_dashboard_screen.dart';
+import 'package:ithelpdesk/presentation/home/user_dashboard_navigator_screen.dart';
 import 'package:ithelpdesk/presentation/home/user_home_navigator_screen.dart';
+import 'package:ithelpdesk/presentation/home/user_home_screen.dart';
 import 'package:ithelpdesk/presentation/iso/iso_navigator_screen.dart';
 import 'package:ithelpdesk/presentation/profile/profile_navigator_screen.dart';
 import 'package:ithelpdesk/presentation/reports/reports_navigator_screen.dart';
@@ -87,7 +90,7 @@ class _MainScreenState extends State<UserMainScreen> {
         currentScreen =
             UserCredentialsEntity.details().userType == UserType.user
                 ? CreateNewRequest()
-                : UserHomeNavigatorScreen();
+                : const UserHomeNavigatorScreen(screen: UserHomeScreen());
       case 1:
         currentScreen = ReportsNavigatorScreen();
       case 2:
@@ -96,16 +99,19 @@ class _MainScreenState extends State<UserMainScreen> {
         currentScreen = DirectoryNavigatorScreen();
       case 4:
         currentScreen = ProfileNavigatorScreen();
+      case 5:
+        currentScreen =
+            const UserDashboardNavigatorScreen(screen: AdminDashboardScreen());
       default:
         currentScreen =
             UserCredentialsEntity.details().userType == UserType.user
                 ? CreateNewRequest()
-                : UserHomeNavigatorScreen();
+                : const UserHomeNavigatorScreen(screen: UserHomeScreen());
     }
     return currentScreen ??
         (UserCredentialsEntity.details().userType == UserType.user
             ? CreateNewRequest()
-            : UserHomeNavigatorScreen());
+            : const UserHomeNavigatorScreen(screen: UserHomeScreen()));
   }
 
   @override
@@ -201,41 +207,43 @@ class _MainScreenState extends State<UserMainScreen> {
               ),
               body: LayoutBuilder(builder: (context, size) {
                 screenSize = size.biggest;
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (isDesktop(context, size: size.biggest))
-                      SizedBox(
-                        width: 250,
-                        child: sideBar,
-                      ),
-                    Expanded(
-                      child: Column(
-                        children: [
-                          FutureBuilder(
-                              future: _userBloc.validateUser({}),
-                              builder: (context, snapShot) {
-                                if (snapShot.data != null) {
-                                  userToken = snapShot.data?.token ?? '';
-                                  UserCredentialsEntity.create(
-                                      snapShot.data?.token ?? '');
-                                }
-                                return UserCredentialsEntity.details()
-                                            .userType ==
-                                        UserType.superAdmin
-                                    ? const SizedBox.shrink()
-                                    : getUserAppBar(context);
-                              }),
-                          ValueListenableBuilder(
-                              valueListenable: _selectedIndex,
-                              builder: (context, index, child) {
-                                return Expanded(child: getScreen(index));
-                              }),
-                        ],
-                      ),
-                    ),
-                  ],
-                );
+                return FutureBuilder(
+                    future: _userBloc.validateUser({}),
+                    builder: (context, snapShot) {
+                      if (snapShot.data != null) {
+                        userToken = snapShot.data?.token ?? '';
+                        UserCredentialsEntity.create(
+                            snapShot.data?.token ?? '');
+                      }
+                      return UserCredentialsEntity.details().id == null
+                          ? const CircularProgressIndicator()
+                          : Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (isDesktop(context, size: size.biggest))
+                                  SizedBox(
+                                    width: 250,
+                                    child: sideBar,
+                                  ),
+                                Expanded(
+                                  child: ValueListenableBuilder(
+                                      valueListenable: _selectedIndex,
+                                      builder: (context, index, child) {
+                                        return Column(
+                                          children: [
+                                            UserCredentialsEntity.details()
+                                                        .userType ==
+                                                    UserType.superAdmin
+                                                ? const SizedBox.shrink()
+                                                : getUserAppBar(context),
+                                            Expanded(child: getScreen(index)),
+                                          ],
+                                        );
+                                      }),
+                                ),
+                              ],
+                            );
+                    });
               }),
             ),
           ),

@@ -523,55 +523,62 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           SizedBox(
             height: resources.dimen.dp10,
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              for (int i = 0; i < ticketsByPriority.length; i++)
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      // Count bubble
-                      TooltipWidget(text: '${ticketsByPriority[i].count}'),
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                for (int i = 0; i < ticketsByPriority.length; i++)
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // Count bubble
+                        TooltipWidget(text: '${ticketsByPriority[i].count}'),
 
-                      const SizedBox(height: 6),
+                        const SizedBox(height: 6),
 
-                      // Animated Bar
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 600),
-                        curve: Curves.easeOut,
-                        height: ((ticketsByPriority[i].count ?? 0) / maxValue) *
-                            (275 * 0.55),
-                        width: 24,
-                        decoration: BoxDecoration(
-                          borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(18)),
-                          gradient: LinearGradient(
-                            begin: Alignment.bottomCenter,
-                            end: Alignment.topCenter,
-                            colors: [
-                              resources.color.dashboardSecondary.withAlpha(50),
-                              resources.color.dashboardSecondary.withAlpha(255),
-                            ],
+                        // Animated Bar
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 600),
+                          curve: Curves.easeOut,
+                          height: maxValue == 0
+                              ? 0
+                              : ((ticketsByPriority[i].count ?? 0) / maxValue) *
+                                  (275 * 0.55),
+                          width: 24,
+                          decoration: BoxDecoration(
+                            borderRadius: const BorderRadius.vertical(
+                                top: Radius.circular(18)),
+                            gradient: LinearGradient(
+                              begin: Alignment.bottomCenter,
+                              end: Alignment.topCenter,
+                              colors: [
+                                resources.color.dashboardSecondary
+                                    .withAlpha(50),
+                                resources.color.dashboardSecondary
+                                    .withAlpha(255),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
 
-                      const SizedBox(height: 10),
+                        const SizedBox(height: 10),
 
-                      // Label
-                      Text(
-                        PriorityType.fromId(ticketsByPriority[i].category ?? 1)
-                            .toString(),
-                        maxLines: 1,
-                        style: context.textFontWeight600.onFontSize(10),
-                      ),
-                    ],
+                        // Label
+                        Text(
+                          PriorityType.fromId(
+                                  ticketsByPriority[i].category ?? 1)
+                              .toString(),
+                          maxLines: 1,
+                          style: context.textFontWeight600.onFontSize(10),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
@@ -1172,11 +1179,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                           width: resources.dimen.dp20,
                                         ),
                                         if (UserCredentialsEntity.details()
-                                                    .userType ==
-                                                UserType.superAdmin ||
-                                            UserCredentialsEntity.details()
-                                                    .userType ==
-                                                UserType.itAdmin)
+                                                .userType
+                                                ?.isAdmin() ??
+                                            false)
                                           Flexible(
                                               flex: 4,
                                               child: Column(
