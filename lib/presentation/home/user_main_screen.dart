@@ -1,5 +1,7 @@
 // ignore_for_file: must_be_immutable
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
@@ -216,13 +218,13 @@ class _MainScreenState extends State<UserMainScreen> {
                             snapShot.data?.token ?? '');
                       }
                       return UserCredentialsEntity.details().id == null
-                          ? const CircularProgressIndicator()
+                          ? const Center(child: CircularProgressIndicator())
                           : Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 if (isDesktop(context, size: size.biggest))
                                   SizedBox(
-                                    width: 250,
+                                    width: 200,
                                     child: sideBar,
                                   ),
                                 Expanded(

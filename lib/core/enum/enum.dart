@@ -514,7 +514,7 @@ enum CategoryEnum {
 }
 
 enum DashboardFilterEnum {
-  week(1),
+  current(1),
   month(2),
   year(3),
   custom(4);
@@ -535,10 +535,10 @@ enum DashboardFilterEnum {
   @override
   String toString() {
     switch (this) {
-      case week:
-        return isSelectedLocalEn ? 'Week' : "الأسبوع";
+      case current:
+        return isSelectedLocalEn ? 'Current Month' : "الشهر الحالي";
       case month:
-        return isSelectedLocalEn ? 'Month' : "الشهر";
+        return isSelectedLocalEn ? 'Last Month' : "الشهر السابق";
       case year:
         return isSelectedLocalEn ? 'Year' : "السنة";
       case custom:

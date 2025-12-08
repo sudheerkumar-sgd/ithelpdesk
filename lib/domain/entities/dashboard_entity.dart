@@ -119,6 +119,7 @@ class TicketEntity extends BaseEntity {
   String? raisedByName;
   String? email;
   String? customerMobileNumber;
+  int? daysOpen;
 
   @override
   String toString() {
@@ -350,9 +351,7 @@ class TicketEntity extends BaseEntity {
     data['Category'] = CategoryEnum.fromId(categoryID ?? 1).toString();
     data['Priority'] = priority?.toString();
     data['Assignee'] = assignedTo;
-    data['Overdue'] = getDays(
-        getDateTimeByString('dd-MMM-yyyy HH:mm', createdOn ?? ''),
-        DateTime.now());
+    data['Overdue'] = daysOpen ?? 0;
     return data;
   }
 }

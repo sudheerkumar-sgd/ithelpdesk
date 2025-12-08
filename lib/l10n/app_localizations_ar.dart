@@ -67,7 +67,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get searchHere => 'ابحث هنا';
 
   @override
-  String get supportSummary => 'ملخص الدعم';
+  String get supportSummary => 'ملخص مركز مساعدة تكنولوجيا المعلومات';
 
   @override
   String get supportSummaryDes =>

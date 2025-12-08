@@ -52,6 +52,7 @@ class DropDownWidget<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
         if (labelText.isNotEmpty) ...[
           Text.rich(TextSpan(

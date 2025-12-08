@@ -67,7 +67,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchHere => 'Search here with ticket ID...';
 
   @override
-  String get supportSummary => 'Support Summary';
+  String get supportSummary => 'IT Helpdesk Summary';
 
   @override
   String get supportSummaryDes =>

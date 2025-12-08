@@ -50,39 +50,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
   int selectTicketCategory = 1;
 
-  final ValueNotifier<DashboardFilterEnum> _selectedFilter =
-      ValueNotifier(DashboardFilterEnum.week);
+  DashboardFilterEnum _selectedFilter = DashboardFilterEnum.current;
 
-  final ValueNotifier<List<String>> _filteredDates = ValueNotifier([]);
+  final ValueNotifier<bool> _onDateRangeChange = ValueNotifier(false);
 
   StatusType filteredStatus = StatusType.all;
 
   DateTime? startDate;
   DateTime? endDate;
-
-  Future<ApiEntity<ListEntity>> _getDashboradTickets() {
-    final tickets = ApiEntity<ListEntity>();
-    final listEntity = ListEntity();
-    listEntity.items = ticketsData;
-    tickets.entity = listEntity;
-    return Future.value(tickets);
-  }
-
-  Future<ApiEntity<ListEntity>> _getAllTickets() async {
-    var dateFormat = DateFormat('dd-MMM-yyyy HH:mm');
-    var startTime = DateFormat('yyyy/MM/dd').parse(_filteredDates.value[0]);
-    var endTime = DateFormat('yyyy/MM/dd').parse(_filteredDates.value[1]);
-    final alltickets = await _servicesBloc.getTticketsByUser(requestParams: {
-      'ticketType': selectTicketCategory,
-      'startDate': dateFormat.format(startTime),
-      'endDate': dateFormat.format(endTime),
-    });
-    final tickets = ApiEntity<ListEntity>();
-    final listEntity = ListEntity();
-    listEntity.items = alltickets.entity?.ticketsList ?? [];
-    tickets.entity = listEntity;
-    return Future.value(tickets);
-  }
 
   TextAlign getAlign(int i, int length) {
     if (length == 2) {
@@ -102,17 +77,20 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     final resources = context.resources;
     final lineChartData = List<FlSpot>.empty(growable: true);
     final tilesData = List<Widget>.empty(growable: true);
-    if (_selectedFilter.value == DashboardFilterEnum.week) {
-      for (var i = 0; i < ticketsByMonthEntity.length; i++) {
-        lineChartData
-            .add(FlSpot(i + 1.toDouble(), ticketsByMonthEntity[i].count ?? 0));
-        tilesData.add(Expanded(
-          child: Text(
-              textAlign: getAlign(i, ticketsByMonthEntity.length),
-              weekDayName((ticketsByMonthEntity[i].month?.toInt() ?? 1))),
-        ));
-      }
-    } else if (_selectedFilter.value == DashboardFilterEnum.month) {
+    // if (_selectedFilter.value == DashboardFilterEnum.week) {
+    //   for (var i = 0; i < ticketsByMonthEntity.length; i++) {
+    //     lineChartData
+    //         .add(FlSpot(i + 1.toDouble(), ticketsByMonthEntity[i].count ?? 0));
+    //     tilesData.add(Expanded(
+    //       child: Text(
+    //           textAlign: getAlign(i, ticketsByMonthEntity.length),
+    //           weekDayName((ticketsByMonthEntity[i].month?.toInt() ?? 1))),
+    //     ));
+    //   }
+    // } else
+
+    if (_selectedFilter == DashboardFilterEnum.current ||
+        _selectedFilter == DashboardFilterEnum.month) {
       for (var i = 0; i < ticketsByMonthEntity.length; i++) {
         lineChartData.add(FlSpot(
             double.parse('${i + 1}'), ticketsByMonthEntity[i].count ?? 0));
@@ -135,7 +113,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         tilesData.add(Expanded(
           child: Text(
               textAlign: getAlign(i, ticketsByMonthEntity.length),
-              (_selectedFilter.value == DashboardFilterEnum.custom &&
+              (_selectedFilter == DashboardFilterEnum.custom &&
                       getDays(startDate ?? DateTime.now(),
                               endDate ?? DateTime.now()) <=
                           31)
@@ -184,71 +162,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       ]),
                 ),
               ),
-              DropDownWidget<DashboardFilterEnum>(
-                width: 100,
-                height: 28,
-                list: DashboardFilterEnum.values,
-                iconSize: 20,
-                selectedValue: _selectedFilter.value,
-                fontStyle: context.textFontWeight400
-                    .onFontSize(resources.fontSize.dp10),
-                callback: (p0) {
-                  final requestParams = <String, dynamic>{
-                    "userId": UserCredentialsEntity.details().id
-                  };
-                  if (p0 == DashboardFilterEnum.week) {
-                    requestParams['showWeekly'] = true;
-                  } else if (p0 == DashboardFilterEnum.month) {
-                    requestParams['showMonthly'] = true;
-                  } else if (p0 == DashboardFilterEnum.year) {
-                    requestParams['showYearly'] = true;
-                  } else if (p0 == DashboardFilterEnum.custom) {
-                    showDateRangePickerDialog(context,
-                        selectionMode: DateRangePickerSelectionMode.range,
-                        initialSelectedDate: startDate ?? DateTime.now(),
-                        initialSelectedDates: [
-                          startDate ?? DateTime.now(),
-                          endDate ?? DateTime.now()
-                        ],
-                        initialSelectedRange:
-                            PickerDateRange(startDate, endDate),
-                        initialSelectedRanges: [
-                          PickerDateRange(startDate, endDate)
-                        ]).then((value) {
-                      if (value != null &&
-                          value is PickerDateRange &&
-                          value.startDate != null) {
-                        startDate = value.startDate!;
-                        endDate = value.endDate ?? value.startDate!;
-                        requestParams['startDate'] = getDateByformat(
-                            'yyyy-MM-dd', startDate ?? DateTime.now());
-                        requestParams['endDate'] = getDateByformat(
-                            'yyyy-MM-dd', endDate ?? DateTime.now());
-                        _servicesBloc.getDashboardData(
-                            apiUrl: newDashboardApiUrl,
-                            requestParams: requestParams);
-                      }
-                    });
-                  }
-                  _selectedFilter.value = p0 ?? DashboardFilterEnum.week;
-                  if (p0 != DashboardFilterEnum.custom) {
-                    _servicesBloc.getDashboardData(
-                        apiUrl: newDashboardApiUrl,
-                        requestParams: requestParams);
-                  }
-                },
-              ),
-              if (_selectedFilter.value == DashboardFilterEnum.custom &&
-                  startDate != null) ...[
-                SizedBox(
-                  width: resources.dimen.dp10,
-                ),
-                Text(
-                  '${getDateByformat('dd/MMM/yyyy', startDate ?? DateTime.now())} - ${getDateByformat('dd/MMM/yyyy', endDate ?? DateTime.now())}',
-                  style: context.textFontWeight600
-                      .onFontSize(resources.fontSize.dp10),
-                ),
-              ]
             ],
           ),
           SizedBox(
@@ -436,19 +349,25 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                             color: resources.color.sideBarItemUnselected),
                         bottom: BorderSide(
                             color: resources.color.sideBarItemUnselected))),
-                sections: List.generate(
-                    categoryData.length,
-                    (index) => PieChartSectionData(
-                        radius: 25,
-                        value: (categoryData[index]['count'] ?? 0) as double,
-                        color: (categoryData[index]['color'] ?? Colors.yellow)
-                            as Color,
-                        title:
-                            '${((categoryData[index]['count'] / totalCount) * 100).toStringAsFixed(0)}%',
-                        titleStyle: context.textFontWeight600
-                            .onFontSize(10)
-                            .onFontFamily(fontFamily: fontFamilyEN)
-                            .onColor(resources.color.colorWhite))),
+                sections: List.generate(categoryData.length, (index) {
+                  final percentage =
+                      (((categoryData[index]['count'] as int) / totalCount) *
+                              100)
+                          .round();
+                  return PieChartSectionData(
+                      radius: 25,
+                      value: percentage > 0
+                          ? (categoryData[index]['count'] ?? 0) as double
+                          : 0,
+                      color: (categoryData[index]['color'] ?? Colors.yellow)
+                          as Color,
+                      title:
+                          '${((categoryData[index]['count'] / totalCount) * 100).toStringAsFixed(0)}%',
+                      titleStyle: context.textFontWeight600
+                          .onFontSize(10)
+                          .onFontFamily(fontFamily: fontFamilyEN)
+                          .onColor(resources.color.colorWhite));
+                }),
               ), // Optional
             ),
           ),
@@ -456,9 +375,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             height: resources.dimen.dp20,
           ),
           Row(
-            children: List.generate(
-                categoryData.length,
-                (index) => Expanded(
+            children: List.generate(categoryData.length, (index) {
+              final percentage =
+                  (((categoryData[index]['count'] as int) / totalCount) * 100)
+                      .round();
+              return percentage > 0
+                  ? Expanded(
                       child: Align(
                         alignment: Alignment.center,
                         child: Row(
@@ -470,9 +392,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                   textAlign: TextAlign.center,
                                   maxLines: 2,
                                   TextSpan(
-                                      text:
-                                          '${((categoryData[index]['count'] / totalCount) * 100).toStringAsFixed(0)}%\n'
-                                              .toString(),
+                                      text: '$percentage%\n'.toString(),
                                       style: context.textFontWeight700
                                           .onFontSize(resources.fontSize.dp12),
                                       children: [
@@ -487,7 +407,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                           ],
                         ),
                       ),
-                    )),
+                    )
+                  : const SizedBox.shrink();
+            }),
           ),
         ],
       ),
@@ -997,23 +919,119 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                         child: Padding(
                           padding: EdgeInsets.only(
                               left: resources.dimen.dp20,
-                              top: topBannerHeight * .3,
                               right: resources.dimen.dp20,
                               bottom: resources.dimen.dp20),
-                          child: Text.rich(
-                            TextSpan(
-                                text: '${resources.string.supportSummary}\n',
-                                style: context.textFontWeight600
-                                    .onColor(resources.color.colorWhite),
-                                children: [
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: Text.rich(
                                   TextSpan(
                                       text:
-                                          '${resources.string.supportSummaryDes}\n',
-                                      style: context.textFontWeight400
-                                          .onFontSize(resources.fontSize.dp12)
-                                          .onColor(resources.color.colorWhite)
-                                          .onHeight(1))
-                                ]),
+                                          '${resources.string.supportSummary}\n',
+                                      style: context.textFontWeight600
+                                          .onColor(resources.color.colorWhite),
+                                      children: [
+                                        TextSpan(
+                                            text:
+                                                '${resources.string.supportSummaryDes}\n',
+                                            style: context.textFontWeight400
+                                                .onFontSize(
+                                                    resources.fontSize.dp12)
+                                                .onColor(
+                                                    resources.color.colorWhite)
+                                                .onHeight(1))
+                                      ]),
+                                ),
+                              ),
+                              DropDownWidget<DashboardFilterEnum>(
+                                width: 120,
+                                height: 28,
+                                list: DashboardFilterEnum.values,
+                                iconSize: 20,
+                                selectedValue: _selectedFilter,
+                                fontStyle: context.textFontWeight400
+                                    .onFontSize(resources.fontSize.dp10),
+                                callback: (p0) {
+                                  final requestParams = <String, dynamic>{
+                                    "userId": UserCredentialsEntity.details().id
+                                  };
+                                  // if (p0 == DashboardFilterEnum.current) {
+                                  //   requestParams['showWeekly'] = true;
+                                  // } else
+                                  if (p0 == DashboardFilterEnum.month) {
+                                    requestParams['showMonthly'] = true;
+                                  } else if (p0 == DashboardFilterEnum.year) {
+                                    requestParams['showYearly'] = true;
+                                  } else if (p0 == DashboardFilterEnum.custom) {
+                                    showDateRangePickerDialog(context,
+                                        selectionMode:
+                                            DateRangePickerSelectionMode.range,
+                                        initialSelectedDate:
+                                            startDate ?? DateTime.now(),
+                                        initialSelectedDates: [
+                                          startDate ?? DateTime.now(),
+                                          endDate ?? DateTime.now()
+                                        ],
+                                        initialSelectedRange:
+                                            PickerDateRange(startDate, endDate),
+                                        initialSelectedRanges: [
+                                          PickerDateRange(startDate, endDate)
+                                        ]).then((value) {
+                                      if (value != null &&
+                                          value is PickerDateRange &&
+                                          value.startDate != null) {
+                                        startDate = value.startDate!;
+                                        endDate =
+                                            value.endDate ?? value.startDate!;
+                                        _onDateRangeChange.value =
+                                            !(_onDateRangeChange.value);
+                                        requestParams['startDate'] =
+                                            getDateByformat('yyyy-MM-dd',
+                                                startDate ?? DateTime.now());
+                                        requestParams['endDate'] =
+                                            getDateByformat('yyyy-MM-dd',
+                                                endDate ?? DateTime.now());
+                                        _servicesBloc.getDashboardData(
+                                            apiUrl: newDashboardApiUrl,
+                                            requestParams: requestParams);
+                                      }
+                                    });
+                                  }
+                                  _selectedFilter =
+                                      p0 ?? DashboardFilterEnum.current;
+                                  if (p0 != DashboardFilterEnum.custom) {
+                                    _servicesBloc.getDashboardData(
+                                        apiUrl: newDashboardApiUrl,
+                                        requestParams: requestParams);
+                                  }
+                                },
+                              ),
+                              ValueListenableBuilder(
+                                  valueListenable: _onDateRangeChange,
+                                  builder: (context, value, child) {
+                                    return _selectedFilter ==
+                                            DashboardFilterEnum.custom
+                                        ? Padding(
+                                            padding: EdgeInsets.only(
+                                                left: isSelectedLocalEn
+                                                    ? resources.dimen.dp10
+                                                    : 0,
+                                                right: isSelectedLocalEn
+                                                    ? 0
+                                                    : resources.dimen.dp10),
+                                            child: Text(
+                                              '${getDateByformat('dd/MMM/yyyy', startDate ?? DateTime.now())} - ${getDateByformat('dd/MMM/yyyy', endDate ?? DateTime.now())}',
+                                              style: context.textFontWeight600
+                                                  .onFontSize(
+                                                      resources.fontSize.dp12)
+                                                  .onColor(resources
+                                                      .color.colorWhite),
+                                            ),
+                                          )
+                                        : const SizedBox.shrink();
+                                  }),
+                            ],
                           ),
                         ),
                       ),

@@ -215,7 +215,7 @@ abstract class AppLocalizations {
   /// No description provided for @supportSummary.
   ///
   /// In en, this message translates to:
-  /// **'Support Summary'**
+  /// **'IT Helpdesk Summary'**
   String get supportSummary;
 
   /// No description provided for @supportSummaryDes.
