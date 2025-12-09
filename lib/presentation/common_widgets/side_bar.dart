@@ -75,34 +75,38 @@ class SideBar extends StatelessWidget {
                     height: resources.dimen.dp10,
                   ),
                 ],
-                ListTile(
-                  onTap: () {
-                    _selectedIndex.value = 0;
-                    onItemSelected(0);
-                  },
-                  selected: true,
-                  leading: SizedBox(
-                    width: 40,
-                    height: 40,
-                    child: ImageWidget(
-                            path: DrawableAssets.icHome,
-                            backgroundTint: index == 0
-                                ? resources.color.sideBarItemSelected
-                                : resources.color.sideBarItemUnselected,
-                            padding: const EdgeInsets.symmetric(horizontal: 5))
-                        .loadImageWithMoreTapArea,
+                if (UserCredentialsEntity.details().userType !=
+                    UserType.superAdmin) ...[
+                  ListTile(
+                    onTap: () {
+                      _selectedIndex.value = 0;
+                      onItemSelected(0);
+                    },
+                    selected: true,
+                    leading: SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: ImageWidget(
+                              path: DrawableAssets.icHome,
+                              backgroundTint: index == 0
+                                  ? resources.color.sideBarItemSelected
+                                  : resources.color.sideBarItemUnselected,
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 5))
+                          .loadImageWithMoreTapArea,
+                    ),
+                    title: Text(
+                      resources.string.home,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.textFontWeight600
+                          .onFontSize(resources.fontSize.dp12),
+                    ),
                   ),
-                  title: Text(
-                    resources.string.home,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: context.textFontWeight600
-                        .onFontSize(resources.fontSize.dp12),
-                  ),
-                ),
-                SizedBox(
-                  height: resources.dimen.dp10,
-                ),
+                  SizedBox(
+                    height: resources.dimen.dp10,
+                  )
+                ],
                 ListTile(
                   onTap: () {
                     _selectedIndex.value = 1;
@@ -149,7 +153,7 @@ class SideBar extends StatelessWidget {
                           .loadImageWithMoreTapArea,
                     ),
                     title: Text(
-                      'IT ISO Requests',
+                      isSelectedLocalEn ? 'IT ISO Requests' : 'คำขอ ISO IT',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: context.textFontWeight600

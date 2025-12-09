@@ -494,7 +494,8 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                           children: [
                             Text(
                               '${index + 1}.',
-                              style: context.textFontWeight600,
+                              style: context.textFontWeight600
+                                  .onFontFamily(fontFamily: fontFamilyEN),
                             ),
                             SizedBox(
                               width: context.resources.dimen.dp5,
@@ -508,14 +509,14 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                                       if (item.comments.firstOrNull != null)
                                         TextSpan(
                                           text:
-                                              '\n${isSelectedLocalEn ? 'Details' : ''}: ${item.comments.firstOrNull?.comment ?? ""}',
+                                              '\n${isSelectedLocalEn ? 'Details' : 'تفاصيل'}: ${item.comments.firstOrNull?.comment ?? ""}',
                                           style: context.textFontWeight500,
                                         ),
                                       if (item.attachments.isNotEmpty ==
                                           true) ...[
                                         TextSpan(
                                           text:
-                                              '\n${isSelectedLocalEn ? 'Attachements' : ''}: ',
+                                              '\n${isSelectedLocalEn ? 'Attachments' : 'المرفقات'}: ',
                                           style: context.textFontWeight500,
                                         ),
                                         for (var i = 0;
@@ -940,9 +941,16 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                                 requestEntity.steps[i].stepFormData ?? {})
                             .entries) ...[
                           TableRow(children: [
-                            Text(item.key, style: context.textFontWeight400),
+                            Text(item.key,
+                                style: isStringArabic(item.key)
+                                    ? context.textFontWeight400
+                                    : context.textFontWeight400.onFontFamily(
+                                        fontFamily: fontFamilyEN)),
                             Text(': ${item.value ?? ''}',
-                                style: context.textFontWeight600),
+                                style: isStringArabic('${item.value ?? ''}')
+                                    ? context.textFontWeight600
+                                    : context.textFontWeight600.onFontFamily(
+                                        fontFamily: fontFamilyEN)),
                           ])
                         ]
                       } else ...{
@@ -951,9 +959,16 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                                 requestEntity.steps[i].stepFormData ?? {})
                             .entries) ...[
                           TableRow(children: [
-                            Text(item.key, style: context.textFontWeight400),
+                            Text(item.key,
+                                style: isStringArabic(item.key)
+                                    ? context.textFontWeight400
+                                    : context.textFontWeight400.onFontFamily(
+                                        fontFamily: fontFamilyEN)),
                             Text(': ${item.value ?? ''}',
-                                style: context.textFontWeight600),
+                                style: isStringArabic('${item.value ?? ''}')
+                                    ? context.textFontWeight600
+                                    : context.textFontWeight600.onFontFamily(
+                                        fontFamily: fontFamilyEN)),
                           ])
                         ]
                       }
@@ -974,9 +989,16 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                               requestEntity.steps[i].stepFormData ?? {})
                           .entries) ...[
                         TableRow(children: [
-                          Text(item.key, style: context.textFontWeight400),
+                          Text(item.key,
+                              style: isStringArabic(item.key)
+                                  ? context.textFontWeight400
+                                  : context.textFontWeight400
+                                      .onFontFamily(fontFamily: fontFamilyEN)),
                           Text(': ${item.value ?? ''}',
-                              style: context.textFontWeight600),
+                              style: isStringArabic('${item.value ?? ''}')
+                                  ? context.textFontWeight600
+                                  : context.textFontWeight600
+                                      .onFontFamily(fontFamily: fontFamilyEN)),
                         ])
                       ]
                     }
@@ -985,7 +1007,8 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                     TableRow(children: [
                       Text('Updated On', style: context.textFontWeight400),
                       Text(': ${requestEntity.updatedAt ?? ''}',
-                          style: context.textFontWeight600),
+                          style: context.textFontWeight600
+                              .onFontFamily(fontFamily: fontFamilyEN)),
                     ])
                   }
                 ],

@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
+import 'package:ithelpdesk/core/extensions/string_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/res/drawables/background_box_decoration.dart';
 
@@ -61,7 +62,8 @@ class ItemServiceSteps extends StatelessWidget {
                 text: stepText,
                 style: context.textFontWeight700
                     .onFontSize(resources.fontSize.dp12)
-                    .onHeight(1.2),
+                    .onHeight(1.2)
+                    .onFontFamily(fontFamily: stepText.getFontStyleByString()),
                 recognizer: TapGestureRecognizer()
                   ..onTap = () {
                     userProfileCallback?.call();
@@ -72,7 +74,9 @@ class ItemServiceSteps extends StatelessWidget {
                       text: '\n$stepSubText',
                       style: context.textFontWeight500
                           .onFontSize(resources.fontSize.dp10)
-                          .onHeight(1.2),
+                          .onHeight(1.2)
+                          .onFontFamily(
+                              fontFamily: stepSubText.getFontStyleByString()),
                     )
                 ])),
           ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/presentation/common_widgets/tooltip_painter.dart';
 
@@ -23,7 +24,8 @@ class TooltipWidget extends StatelessWidget {
               context.textFontWeight400
                   .onColor(Colors.white)
                   .onFontSize(10)
-                  .onHeight(1.2),
+                  .onHeight(1.2)
+                  .onFontFamily(fontFamily: fontFamilyEN),
         ),
       ),
     );

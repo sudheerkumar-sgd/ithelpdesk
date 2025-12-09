@@ -116,6 +116,11 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
         ));
       }
     }
+    final maxValue = ticketsByMonthEntity.isEmpty
+        ? 0
+        : ticketsByMonthEntity
+            .map((e) => e.count ?? 0)
+            .reduce((a, b) => a > b ? a : b);
     return Container(
       height: 350,
       color: resources.color.colorWhite,
@@ -169,13 +174,35 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
               LineChartData(
                 backgroundColor: resources.color.colorWhite,
                 titlesData: FlTitlesData(
-                    topTitles: const AxisTitles(),
-                    rightTitles: const AxisTitles(),
-                    bottomTitles: AxisTitles(
-                      axisNameWidget: Row(
-                        children: tilesData,
-                      ),
-                    )),
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 40, // ✅ Gives enough space for numbers
+                      interval: maxValue > 6
+                          ? (maxValue / 6).roundToDouble()
+                          : 1.roundToDouble(), // ✅ Controls vertical distance between labels
+                      getTitlesWidget: (value, meta) {
+                        if (value == meta.max) return const SizedBox();
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 6),
+                          child: Text(
+                            value.toInt().toString(),
+                            style: context.textFontWeight400
+                                .onFontSize(resources.fontSize.dp12)
+                                .onFontFamily(fontFamily: fontFamilyEN),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  topTitles: const AxisTitles(),
+                  rightTitles: const AxisTitles(),
+                  bottomTitles: AxisTitles(
+                    axisNameWidget: Row(
+                      children: tilesData,
+                    ),
+                  ),
+                ),
                 borderData: FlBorderData(
                     show: true,
                     border: Border(
@@ -451,6 +478,20 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                       )
                     ],
                   ),
+                  if (UserCredentialsEntity.details().userType ==
+                          UserType.sgdIT ||
+                      UserCredentialsEntity.details().userType ==
+                          UserType.localIT) ...[
+                    SizedBox(
+                      height: resources.dimen.dp20,
+                    ),
+                    ValueListenableBuilder(
+                        valueListenable: _onDataChange,
+                        builder: (context, onDataChange, child) {
+                          return getLineChart(
+                              context, _dashboardEntity?.ticketsByMonth ?? []);
+                        }),
+                  ],
                   SizedBox(
                     height: resources.dimen.dp20,
                   ),

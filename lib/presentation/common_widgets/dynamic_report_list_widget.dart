@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
+import 'package:ithelpdesk/core/extensions/string_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/res/drawables/background_box_decoration.dart';
 
@@ -47,10 +48,15 @@ class DynamicReportListWidget extends StatelessWidget {
                         context.resources.fontSize.dp10,
                       )
                       .onColor(context.resources.color.rejected)
+                      .onFontFamily(
+                          fontFamily: '${value ?? ''}'.getFontStyleByString())
                       .copyWith(decoration: TextDecoration.underline)
-                  : context.textFontWeight600.onFontSize(
-                      context.resources.fontSize.dp10,
-                    ),
+                  : context.textFontWeight600
+                      .onFontSize(
+                        context.resources.fontSize.dp10,
+                      )
+                      .onFontFamily(
+                          fontFamily: '${value ?? ''}'.getFontStyleByString()),
             ),
           ),
         ),

@@ -1,3 +1,6 @@
+import 'package:ithelpdesk/core/common/common_utils.dart';
+import 'package:ithelpdesk/core/constants/constants.dart';
+
 extension StringExtension on String {
   String capitalize() {
     return toLowerCase().split(' ').map((word) {
@@ -26,5 +29,9 @@ extension StringExtension on String {
 
   String withPrefix(String prefix) {
     return '$prefix $this';
+  }
+
+  String getFontStyleByString() {
+    return isStringArabic(this) ? fontFamilyAR : fontFamilyEN;
   }
 }

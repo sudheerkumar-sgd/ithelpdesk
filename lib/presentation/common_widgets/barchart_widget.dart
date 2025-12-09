@@ -1,6 +1,8 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
+import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 
 class BarchartWidget extends StatefulWidget {
   final List<String> bottomLables;
@@ -37,11 +39,10 @@ class _BarchartWidgetState extends State<BarchartWidget> {
               getTooltipItem: (group, groupIndex, rod, rodIndex) {
                 return BarTooltipItem(
                   '${rod.toY}',
-                  const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13,
-                  ),
+                  context.textFontWeight600
+                      .onFontSize(12)
+                      .onColor(Colors.white)
+                      .onFontFamily(fontFamily: fontFamilyEN),
                 );
               },
             ),
@@ -112,11 +113,13 @@ class _BarchartWidgetState extends State<BarchartWidget> {
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Text(
+        textDirection: TextDirection.ltr,
         widget.bottomLables[value.toInt()],
-        style: const TextStyle(
-          fontSize: 11,
-          color: Colors.grey,
-        ),
+        style: context.textFontWeight600
+            .onFontSize(
+              context.resources.fontSize.dp10,
+            )
+            .onFontFamily(fontFamily: fontFamilyEN),
       ),
     );
   }

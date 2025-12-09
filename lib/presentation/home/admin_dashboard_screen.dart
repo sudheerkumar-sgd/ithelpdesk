@@ -1,20 +1,16 @@
 // ignore_for_file: must_be_immutable
 import 'dart:async';
-import 'dart:math';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/data/remote/api_urls.dart';
-import 'package:ithelpdesk/domain/entities/api_entity.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
-import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
 import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
 import 'package:ithelpdesk/injection_container.dart';
 import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
@@ -149,17 +145,18 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               Expanded(
                 child: Text.rich(
                   TextSpan(
-                      text: '${resources.string.ticketsSummary}\n',
-                      style: context.textFontWeight600
-                          .onFontSize(resources.fontSize.dp12),
-                      children: [
-                        TextSpan(
-                            text: '${resources.string.ticketsSummaryDes}\n',
-                            style: context.textFontWeight400
-                                .onFontSize(resources.fontSize.dp10)
-                                .onColor(resources.color.textColorLight)
-                                .onHeight(1))
-                      ]),
+                    text: resources.string.ticketsSummary,
+                    style: context.textFontWeight600
+                        .onFontSize(resources.fontSize.dp12),
+                    //children: [
+                    // TextSpan(
+                    //     text: '${resources.string.ticketsSummaryDes}\n',
+                    //     style: context.textFontWeight400
+                    //         .onFontSize(resources.fontSize.dp10)
+                    //         .onColor(resources.color.textColorLight)
+                    //         .onHeight(1))
+                    //]
+                  ),
                 ),
               ),
             ],
@@ -188,7 +185,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                           touchedSpot.y.ceil().toString(),
                           context.textFontWeight600
                               .onColor(Colors.white)
-                              .onFontSize(12),
+                              .onFontSize(12)
+                              .onFontFamily(fontFamily: fontFamilyEN),
                         );
                       }).toList();
                     },
@@ -214,10 +212,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                             padding: const EdgeInsets.only(right: 6),
                             child: Text(
                               value.toInt().toString(),
-                              style: const TextStyle(
-                                fontSize: 11,
-                                color: Colors.black87,
-                              ),
+                              style: context.textFontWeight400
+                                  .onFontSize(resources.fontSize.dp12)
+                                  .onFontFamily(fontFamily: fontFamilyEN),
                             ),
                           );
                         },
@@ -332,7 +329,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'By Category',
+            isSelectedLocalEn ? 'By Category' : 'حسب الفئة',
             style:
                 context.textFontWeight600.onFontSize(resources.fontSize.dp12),
           ),
@@ -394,7 +391,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                   TextSpan(
                                       text: '$percentage%\n'.toString(),
                                       style: context.textFontWeight700
-                                          .onFontSize(resources.fontSize.dp12),
+                                          .onFontSize(resources.fontSize.dp12)
+                                          .onFontFamily(
+                                              fontFamily: fontFamilyEN),
                                       children: [
                                         TextSpan(
                                             text: categoryData[index]['name']
@@ -436,7 +435,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'By Priority',
+            isSelectedLocalEn ? 'By Priority' : 'حسب الأولوية',
             maxLines: 1,
             style: context.textFontWeight600.onFontSize(
               resources.fontSize.dp12,
@@ -522,7 +521,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'By Issue Type',
+              isSelectedLocalEn ? 'By Issue Type' : 'حسب نوع المشكلة',
               style: context.textFontWeight700.onFontSize(
                 resources.fontSize.dp12,
               ),
@@ -558,7 +557,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                         maxLines: 1,
                         style: context.textFontWeight700
                             .onFontSize(resources.fontSize.dp10)
-                            .onColor(resources.color.dashboardSecondary)),
+                            .onColor(resources.color.dashboardSecondary)
+                            .onFontFamily(fontFamily: fontFamilyEN)),
                   ]),
                 ),
               )
@@ -589,7 +589,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'By Open Day',
+            isSelectedLocalEn ? 'By Open Day' : 'حسب يوم الفتح',
             style: context.textFontWeight600.onFontSize(
               resources.fontSize.dp12,
             ),
@@ -627,7 +627,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Delayed Cases',
+              isSelectedLocalEn ? 'Delayed Cases' : 'الحالات المتأخرة',
               style: context.textFontWeight700
                   .onFontSize(
                     resources.fontSize.dp12,
@@ -683,10 +683,21 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                               Expanded(
                                                 child: Text('${v.value}',
                                                     maxLines: 1,
-                                                    style: context
-                                                        .textFontWeight600
-                                                        .onFontSize(resources
-                                                            .fontSize.dp10)),
+                                                    style: isStringArabic(
+                                                            '${v.value}')
+                                                        ? context
+                                                            .textFontWeight600
+                                                            .onFontSize(resources
+                                                                .fontSize.dp10)
+                                                        : context
+                                                            .textFontWeight600
+                                                            .onFontSize(
+                                                                resources
+                                                                    .fontSize
+                                                                    .dp10)
+                                                            .onFontFamily(
+                                                                fontFamily:
+                                                                    fontFamilyEN)),
                                               ),
                                             ]),
                                           );
@@ -747,7 +758,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Top Resolvers',
+              isSelectedLocalEn ? 'Top Resolvers' : 'أفضل المحلين',
               style: context.textFontWeight700
                   .onFontSize(
                     resources.fontSize.dp12,
@@ -791,21 +802,23 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                               text: topResolvers[i].name.toString(),
                               style: context.textFontWeight700
                                   .onFontSize(resources.fontSize.dp10)
-                                  .onColor(const Color(0xFF14213D)),
+                                  .onColor(const Color(0xFF14213D))
+                                  .onFontFamily(fontFamily: fontFamilyEN),
                               children: [
                                 TextSpan(
                                     text:
                                         '\n${topResolvers[i].designation.toString()}',
                                     style: context.textFontWeight400
                                         .onFontSize(resources.dimen.dp10)
-                                        .onColor(
-                                            resources.color.textColorLight))
+                                        .onColor(resources.color.textColorLight)
+                                        .onFontFamily(fontFamily: fontFamilyEN))
                               ])),
                     ),
                     Text('\n${topResolvers[i].ticketCount.toString()}',
                         style: context.textFontWeight700
                             .onFontSize(resources.fontSize.dp12)
-                            .onColor(resources.color.dashboardSecondary)),
+                            .onColor(resources.color.dashboardSecondary)
+                            .onFontFamily(fontFamily: fontFamilyEN)),
                   ]),
                 )
             ]))),
@@ -864,12 +877,18 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           'count': 0
         },
         {
-          'name': 'AVG. Day open',
+          'name': isSelectedLocalEn ? 'AVG. Day open' : 'متوسط الأيام المفتوحة',
           'icon_path': DrawableAssets.icClosedRequests,
           'count': 0
         },
         {
-          'name': 'Damek Satisfaction',
+          'name': UserCredentialsEntity.details().userType == UserType.itAdmin
+              ? isSelectedLocalEn
+                  ? 'Employee Satisfaction'
+                  : 'رضا الموظف'
+              : isSelectedLocalEn
+                  ? 'Damek Satisfaction'
+                  : 'رضا دامك',
           'icon_path': DrawableAssets.icDamek,
           'count': 0
         },
@@ -1005,6 +1024,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                         apiUrl: newDashboardApiUrl,
                                         requestParams: requestParams);
                                   }
+                                  _onDateRangeChange.value =
+                                      !(_onDateRangeChange.value);
                                 },
                               ),
                               ValueListenableBuilder(
@@ -1026,7 +1047,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                                   .onFontSize(
                                                       resources.fontSize.dp12)
                                                   .onColor(resources
-                                                      .color.colorWhite),
+                                                      .color.colorWhite)
+                                                  .onFontFamily(
+                                                      fontFamily: fontFamilyEN),
                                             ),
                                           )
                                         : const SizedBox.shrink();

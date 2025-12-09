@@ -101,12 +101,15 @@ class IsoCrHomeScreen extends BaseScreenWidget {
                         flex: 2,
                         child: Text.rich(
                           TextSpan(
-                              text: 'IT ISO Requests\n',
+                              text: isSelectedLocalEn
+                                  ? 'IT ISO Requests\n'
+                                  : 'طلبات IT ISO\n',
                               style: context.textFontWeight600,
                               children: [
                                 TextSpan(
-                                    text:
-                                        'The dashboard about the IT ISO Requests',
+                                    text: isSelectedLocalEn
+                                        ? 'The dashboard about the IT ISO Requests'
+                                        : 'لوحة المعلومات حول طلبات IT ISO',
                                     style: context.textFontWeight400
                                         .onFontSize(resources.fontSize.dp12)
                                         .onColor(resources.color.textColorLight)

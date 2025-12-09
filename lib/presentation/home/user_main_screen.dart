@@ -120,8 +120,12 @@ class _MainScreenState extends State<UserMainScreen> {
   void initState() {
     super.initState();
     if (mounted) {
-      _selectedIndex.value = context.appSettingsDB
-          .get(AppSettingsDB.selectedSideBarIndex, defaultValue: 0);
+      _selectedIndex.value = context.appSettingsDB.get(
+          AppSettingsDB.selectedSideBarIndex,
+          defaultValue:
+              UserCredentialsEntity.details().userType == UserType.superAdmin
+                  ? 5
+                  : 0);
     }
     sideBar = SideBar(
       onItemSelected: (p0) {

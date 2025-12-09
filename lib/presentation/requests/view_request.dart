@@ -162,68 +162,82 @@ class ViewRequest extends BaseScreenWidget {
                                 child: Padding(
                                   padding: EdgeInsets.symmetric(
                                       vertical: context.resources.dimen.dp10),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children:
-                                        List.generate(items.length, (index) {
-                                      final item =
-                                          items[index] as TicketHistoryEntity;
-                                      return Text.rich(
-                                        TextSpan(
-                                            text: item.comment ?? "",
-                                            style: context.textFontWeight500,
-                                            children: [
-                                              if (item.attachments
-                                                      ?.isNotEmpty ==
-                                                  true) ...[
-                                                WidgetSpan(
-                                                  child: PopupMenuButton(
-                                                    child: ImageWidget(
-                                                            path: DrawableAssets
-                                                                .icAttachment,
-                                                            padding: EdgeInsets
-                                                                .all(context
-                                                                    .resources
-                                                                    .dimen
-                                                                    .dp5))
-                                                        .loadImageWithMoreTapArea,
-                                                    onSelected: (value) {
-                                                      Dialogs.showDialogWithClose(
-                                                          context,
-                                                          maxWidth: 400,
-                                                          AttachmentPreviewWidget(
-                                                            fileName: value,
-                                                          ));
-                                                    },
-                                                    itemBuilder: (BuildContext
-                                                            context) =>
-                                                        (item.attachments ?? [])
-                                                            .map((item) =>
-                                                                PopupMenuItem(
-                                                                  value: item,
-                                                                  child: Text(
-                                                                    item.toString(),
-                                                                    style: context
-                                                                        .textFontWeight500,
-                                                                  ),
-                                                                ))
-                                                            .toList(),
-                                                  ),
-                                                )
-                                              ],
-                                              TextSpan(
-                                                  text:
-                                                      '- ${item.userName ?? ""}',
-                                                  style: context
-                                                      .textFontWeight400
-                                                      .onFontSize(context
-                                                          .resources
-                                                          .fontSize
-                                                          .dp12))
-                                            ]),
-                                      );
-                                    }),
+                                  child: ConstrainedBox(
+                                    constraints: isExpand ?? false
+                                        ? const BoxConstraints()
+                                        : BoxConstraints(
+                                            maxHeight:
+                                                getScrrenSize(context).height *
+                                                    0.6),
+                                    child: SingleChildScrollView(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: List.generate(items.length,
+                                            (index) {
+                                          final item = items[index]
+                                              as TicketHistoryEntity;
+                                          return Text.rich(
+                                            TextSpan(
+                                                text: item.comment ?? "",
+                                                style:
+                                                    context.textFontWeight500,
+                                                children: [
+                                                  if (item.attachments
+                                                          ?.isNotEmpty ==
+                                                      true) ...[
+                                                    WidgetSpan(
+                                                      child: PopupMenuButton(
+                                                        child: ImageWidget(
+                                                                path: DrawableAssets
+                                                                    .icAttachment,
+                                                                padding: EdgeInsets
+                                                                    .all(context
+                                                                        .resources
+                                                                        .dimen
+                                                                        .dp5))
+                                                            .loadImageWithMoreTapArea,
+                                                        onSelected: (value) {
+                                                          Dialogs.showDialogWithClose(
+                                                              context,
+                                                              maxWidth: 400,
+                                                              AttachmentPreviewWidget(
+                                                                fileName: value,
+                                                              ));
+                                                        },
+                                                        itemBuilder: (BuildContext
+                                                                context) =>
+                                                            (item.attachments ??
+                                                                    [])
+                                                                .map((item) =>
+                                                                    PopupMenuItem(
+                                                                      value:
+                                                                          item,
+                                                                      child:
+                                                                          Text(
+                                                                        item.toString(),
+                                                                        style: context
+                                                                            .textFontWeight500,
+                                                                      ),
+                                                                    ))
+                                                                .toList(),
+                                                      ),
+                                                    )
+                                                  ],
+                                                  TextSpan(
+                                                      text:
+                                                          '- ${item.userName ?? ""}',
+                                                      style: context
+                                                          .textFontWeight400
+                                                          .onFontSize(context
+                                                              .resources
+                                                              .fontSize
+                                                              .dp12))
+                                                ]),
+                                          );
+                                        }),
+                                      ),
+                                    ),
                                   ),
                                 ),
                               );
@@ -403,88 +417,278 @@ class ViewRequest extends BaseScreenWidget {
       padding: EdgeInsets.symmetric(
           vertical: resources.dimen.dp15, horizontal: resources.dimen.dp20),
       color: resources.color.colorWhite,
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              color: resources.color.colorWhite,
-              child: Column(
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                          child: FutureBuilder(
-                              future: _masterDataBloc.getSubCategories(
-                                  requestParams: {
-                                    'categoryID': ticket.categoryID
-                                  }),
-                              builder: (context, snapShot) {
-                                var selectedValue = (snapShot.data?.items ??
-                                        List<SubCategoryEntity>.empty())
-                                    .where((subCategory) =>
-                                        (subCategory as SubCategoryEntity).id ==
-                                        ticket.subCategoryID)
-                                    .firstOrNull;
-                                if (selectedValue != null) {
-                                  _subCategoryValue.value ??=
-                                      selectedValue as SubCategoryEntity;
-                                }
-                                return DropDownWidget(
-                                  list: snapShot.data?.items ?? [],
-                                  labelText: resources.string.subCategory,
-                                  isEnabled: false,
-                                  hintText: resources.string.subCategory
-                                      .withPrefix(
-                                          resources.string.pleaseSelect),
-                                  errorMessage: resources.string.subCategory
-                                      .withPrefix(
-                                          resources.string.pleaseSelect),
-                                  borderRadius: 0,
-                                  fillColor: resources.color.colorWhite,
-                                  selectedValue: _subCategoryValue.value,
-                                  callback: (p0) {
-                                    _subCategoryValue.value =
-                                        (p0 as SubCategoryEntity);
-                                  },
-                                );
-                              })),
+      child: ScrollConfiguration(
+        behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+        child: SingleChildScrollView(
+          physics: const NeverScrollableScrollPhysics(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                color: resources.color.colorWhite,
+                child: Column(
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                            child: FutureBuilder(
+                                future: _masterDataBloc.getSubCategories(
+                                    requestParams: {
+                                      'categoryID': ticket.categoryID
+                                    }),
+                                builder: (context, snapShot) {
+                                  var selectedValue = (snapShot.data?.items ??
+                                          List<SubCategoryEntity>.empty())
+                                      .where((subCategory) =>
+                                          (subCategory as SubCategoryEntity)
+                                              .id ==
+                                          ticket.subCategoryID)
+                                      .firstOrNull;
+                                  if (selectedValue != null) {
+                                    _subCategoryValue.value ??=
+                                        selectedValue as SubCategoryEntity;
+                                  }
+                                  return DropDownWidget(
+                                    list: snapShot.data?.items ?? [],
+                                    labelText: resources.string.subCategory,
+                                    isEnabled: false,
+                                    hintText: resources.string.subCategory
+                                        .withPrefix(
+                                            resources.string.pleaseSelect),
+                                    errorMessage: resources.string.subCategory
+                                        .withPrefix(
+                                            resources.string.pleaseSelect),
+                                    borderRadius: 0,
+                                    fillColor: resources.color.colorWhite,
+                                    selectedValue: _subCategoryValue.value,
+                                    callback: (p0) {
+                                      _subCategoryValue.value =
+                                          (p0 as SubCategoryEntity);
+                                    },
+                                  );
+                                })),
+                        SizedBox(
+                          width: resources.dimen.dp40,
+                        ),
+                        Expanded(
+                            child: DropDownWidget<PriorityType>(
+                          list: priorities,
+                          isEnabled: ticket.canEnable(),
+                          labelText: resources.string.priority,
+                          hintText: resources.string.priority
+                              .withPrefix(resources.string.pleaseSelect),
+                          errorMessage: resources.string.priority
+                              .withPrefix(resources.string.pleaseSelect),
+                          borderRadius: 0,
+                          fillColor: resources.color.colorWhite,
+                          selectedValue: ticket.priority,
+                          callback: (value) {
+                            //priority = priorities.indexOf(value ?? '');
+                          },
+                        )),
+                      ],
+                    ),
+                    SizedBox(
+                      height: resources.dimen.dp10,
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: RightIconTextWidget(
+                            isReadOnly: true,
+                            labelText: resources.string.contactNoTelephoneExt,
+                            hintText: resources.string.contactNoTelephoneExt
+                                .withPrefix(resources.string.pleaseEnter),
+                            errorMessage: resources.string.contactNoTelephoneExt
+                                .withPrefix(resources.string.pleaseEnter),
+                            textController: _contactNoController,
+                            fillColor: resources.color.colorWhite,
+                            borderSide: BorderSide(
+                                color: context
+                                    .resources.color.sideBarItemUnselected,
+                                width: 1),
+                            borderRadius: 0,
+                            onChanged: (value) {},
+                          ),
+                        ),
+                        if (ticket.categoryID == 3) ...[
+                          SizedBox(
+                            width: resources.dimen.dp40,
+                          ),
+                          Expanded(
+                            child: RightIconTextWidget(
+                              isReadOnly: true,
+                              labelText: resources.string.raisedBy,
+                              textController: _rasisedByController,
+                              fillColor: resources.color.colorWhite,
+                              borderSide: BorderSide(
+                                  color: context
+                                      .resources.color.sideBarItemUnselected,
+                                  width: 1),
+                              borderRadius: 0,
+                              onChanged: (value) {},
+                            ),
+                          ),
+                        ]
+                      ],
+                    ),
+                    SizedBox(
+                      height: resources.dimen.dp10,
+                    ),
+                    if (ticket.categoryID == 3) ...[
+                      FutureBuilder(
+                          future: _masterDataBloc.getEservices(requestParams: {
+                            'departmentID': ticket.subCategoryID
+                          }),
+                          builder: (context, snapShot) {
+                            var selectedValue = snapShot.data?.items
+                                .where((item) =>
+                                    (item as EserviceEntity).id ==
+                                    ticket.serviceId)
+                                .firstOrNull;
+                            return DropDownWidget(
+                              isEnabled: ticket.canEnable(),
+                              list: snapShot.data?.items ?? [],
+                              labelText: resources.string.serviceName,
+                              selectedValue: selectedValue,
+                              hintText: resources.string.serviceName
+                                  .withPrefix(resources.string.pleaseSelect),
+                              errorMessage: resources.string.serviceName
+                                  .withPrefix(resources.string.pleaseSelect),
+                              borderRadius: 0,
+                              fillColor: resources.color.colorWhite,
+                              callback: (value) {},
+                            );
+                          }),
+                      if (ticket.serviceId == 0) ...[
+                        SizedBox(
+                          height: resources.dimen.dp10,
+                        ),
+                        RightIconTextWidget(
+                          isReadOnly: true,
+                          textController: _servieNameController,
+                          hintText: resources.string.serviceName
+                              .withPrefix(resources.string.pleaseEnter),
+                          errorMessage: resources.string.serviceName
+                              .withPrefix(resources.string.pleaseEnter),
+                          fillColor: resources.color.colorWhite,
+                          borderSide: BorderSide(
+                              color:
+                                  context.resources.color.sideBarItemUnselected,
+                              width: 1),
+                          borderRadius: 0,
+                        ),
+                      ],
                       SizedBox(
-                        width: resources.dimen.dp40,
+                        height: resources.dimen.dp10,
                       ),
-                      Expanded(
-                          child: DropDownWidget<PriorityType>(
-                        list: priorities,
-                        isEnabled: ticket.canEnable(),
-                        labelText: resources.string.priority,
-                        hintText: resources.string.priority
-                            .withPrefix(resources.string.pleaseSelect),
-                        errorMessage: resources.string.priority
-                            .withPrefix(resources.string.pleaseSelect),
-                        borderRadius: 0,
+                      RightIconTextWidget(
+                        isReadOnly: true,
+                        textController: _reqNoController,
+                        labelText: resources.string.requestNo,
+                        hintText: resources.string.requestNo
+                            .withPrefix(resources.string.pleaseEnter),
+                        errorMessage: resources.string.requestNo
+                            .withPrefix(resources.string.pleaseEnter),
                         fillColor: resources.color.colorWhite,
-                        selectedValue: ticket.priority,
-                        callback: (value) {
-                          //priority = priorities.indexOf(value ?? '');
-                        },
-                      )),
+                        borderSide: BorderSide(
+                            color:
+                                context.resources.color.sideBarItemUnselected,
+                            width: 1),
+                        borderRadius: 0,
+                        onChanged: (value) {},
+                      ),
+                      if (ticket.subCategoryID == 2) ...[
+                        SizedBox(
+                          height: resources.dimen.dp10,
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: RightIconTextWidget(
+                                isReadOnly: true,
+                                textController: _tradeLicenseNameController,
+                                labelText: resources.string.tradeLicenseName,
+                                hintText: resources.string.tradeLicenseName
+                                    .withPrefix(resources.string.pleaseEnter),
+                                errorMessage: resources.string.tradeLicenseName
+                                    .withPrefix(resources.string.pleaseEnter),
+                                fillColor: resources.color.colorWhite,
+                                borderSide: BorderSide(
+                                    color: context
+                                        .resources.color.sideBarItemUnselected,
+                                    width: 1),
+                                borderRadius: 0,
+                              ),
+                            ),
+                            SizedBox(
+                              width: resources.dimen.dp40,
+                            ),
+                            Expanded(
+                              child: RightIconTextWidget(
+                                isReadOnly: true,
+                                textController: _tradeLicenseNumberController,
+                                labelText: resources.string.tradeLicenseNumber,
+                                textInputType: TextInputType.number,
+                                hintText: resources.string.tradeLicenseNumber
+                                    .withPrefix(resources.string.pleaseEnter),
+                                errorMessage: resources
+                                    .string.tradeLicenseNumber
+                                    .withPrefix(resources.string.pleaseEnter),
+                                fillColor: resources.color.colorWhite,
+                                borderSide: BorderSide(
+                                    color: context
+                                        .resources.color.sideBarItemUnselected,
+                                    width: 1),
+                                borderRadius: 0,
+                              ),
+                            ),
+                          ],
+                        )
+                      ],
+                      SizedBox(
+                        height: resources.dimen.dp10,
+                      ),
                     ],
-                  ),
-                  SizedBox(
-                    height: resources.dimen.dp10,
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
+                    FutureBuilder(
+                        future: _masterDataBloc.getReasons(requestParams: {
+                          'categoryID': ticket.categoryID,
+                          'subCategoryID': ticket.subCategoryID
+                        }),
+                        builder: (context, snapShot) {
+                          final selectedReason = (snapShot.data?.items ?? [])
+                              .where((reason) =>
+                                  (reason as ReasonsEntity).id ==
+                                  ticket.subjectID)
+                              .firstOrNull;
+                          return DropDownWidget(
+                            isEnabled: false,
+                            list: snapShot.data?.items ?? [],
+                            labelText: resources.string.reason,
+                            hintText: resources.string.reason
+                                .withPrefix(resources.string.pleaseSelect),
+                            errorMessage: resources.string.reason
+                                .withPrefix(resources.string.pleaseSelect),
+                            borderRadius: 0,
+                            selectedValue: selectedReason,
+                            fillColor: resources.color.colorWhite,
+                            callback: (value) {
+                              _reasonValue.value = value;
+                            },
+                          );
+                        }),
+                    if (ticket.subjectID == 999) ...[
+                      Padding(
+                        padding: EdgeInsets.only(top: resources.dimen.dp10),
                         child: RightIconTextWidget(
                           isReadOnly: true,
-                          labelText: resources.string.contactNoTelephoneExt,
-                          hintText: resources.string.contactNoTelephoneExt
+                          hintText: resources.string.reason
                               .withPrefix(resources.string.pleaseEnter),
-                          errorMessage: resources.string.contactNoTelephoneExt
+                          errorMessage: resources.string.reason
                               .withPrefix(resources.string.pleaseEnter),
-                          textController: _contactNoController,
+                          textController: _reasonController,
                           fillColor: resources.color.colorWhite,
                           borderSide: BorderSide(
                               color:
@@ -494,95 +698,29 @@ class ViewRequest extends BaseScreenWidget {
                           onChanged: (value) {},
                         ),
                       ),
-                      if (ticket.categoryID == 3) ...[
-                        SizedBox(
-                          width: resources.dimen.dp40,
-                        ),
-                        Expanded(
-                          child: RightIconTextWidget(
-                            isReadOnly: true,
-                            labelText: resources.string.raisedBy,
-                            textController: _rasisedByController,
-                            fillColor: resources.color.colorWhite,
-                            borderSide: BorderSide(
-                                color: context
-                                    .resources.color.sideBarItemUnselected,
-                                width: 1),
-                            borderRadius: 0,
-                            onChanged: (value) {},
-                          ),
-                        ),
-                      ]
-                    ],
-                  ),
-                  SizedBox(
-                    height: resources.dimen.dp10,
-                  ),
-                  if (ticket.categoryID == 3) ...[
-                    FutureBuilder(
-                        future: _masterDataBloc.getEservices(requestParams: {
-                          'departmentID': ticket.subCategoryID
-                        }),
-                        builder: (context, snapShot) {
-                          var selectedValue = snapShot.data?.items
-                              .where((item) =>
-                                  (item as EserviceEntity).id ==
-                                  ticket.serviceId)
-                              .firstOrNull;
-                          return DropDownWidget(
-                            isEnabled: ticket.canEnable(),
-                            list: snapShot.data?.items ?? [],
-                            labelText: resources.string.serviceName,
-                            selectedValue: selectedValue,
-                            hintText: resources.string.serviceName
-                                .withPrefix(resources.string.pleaseSelect),
-                            errorMessage: resources.string.serviceName
-                                .withPrefix(resources.string.pleaseSelect),
-                            borderRadius: 0,
-                            fillColor: resources.color.colorWhite,
-                            callback: (value) {},
-                          );
-                        }),
-                    if (ticket.serviceId == 0) ...[
-                      SizedBox(
-                        height: resources.dimen.dp10,
-                      ),
-                      RightIconTextWidget(
-                        isReadOnly: true,
-                        textController: _servieNameController,
-                        hintText: resources.string.serviceName
-                            .withPrefix(resources.string.pleaseEnter),
-                        errorMessage: resources.string.serviceName
-                            .withPrefix(resources.string.pleaseEnter),
-                        fillColor: resources.color.colorWhite,
-                        borderSide: BorderSide(
-                            color:
-                                context.resources.color.sideBarItemUnselected,
-                            width: 1),
-                        borderRadius: 0,
-                      ),
                     ],
                     SizedBox(
                       height: resources.dimen.dp10,
                     ),
                     RightIconTextWidget(
                       isReadOnly: true,
-                      textController: _reqNoController,
-                      labelText: resources.string.requestNo,
-                      hintText: resources.string.requestNo
+                      labelText: resources.string.description,
+                      hintText: resources.string.description
                           .withPrefix(resources.string.pleaseEnter),
-                      errorMessage: resources.string.requestNo
+                      errorMessage: resources.string.description
                           .withPrefix(resources.string.pleaseEnter),
+                      textController: _descriptionController,
                       fillColor: resources.color.colorWhite,
+                      maxLines: 8,
                       borderSide: BorderSide(
                           color: context.resources.color.sideBarItemUnselected,
                           width: 1),
                       borderRadius: 0,
                       onChanged: (value) {},
                     ),
-                    if (ticket.subCategoryID == 2) ...[
+                    if (ticket.categoryID == 3 && ticket.departmentID != 0) ...[
                       SizedBox(
-                        height: resources.dimen.dp10,
+                        height: resources.dimen.dp20,
                       ),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -590,18 +728,15 @@ class ViewRequest extends BaseScreenWidget {
                           Expanded(
                             child: RightIconTextWidget(
                               isReadOnly: true,
-                              textController: _tradeLicenseNameController,
-                              labelText: resources.string.tradeLicenseName,
-                              hintText: resources.string.tradeLicenseName
-                                  .withPrefix(resources.string.pleaseEnter),
-                              errorMessage: resources.string.tradeLicenseName
-                                  .withPrefix(resources.string.pleaseEnter),
+                              textController: _customerIssueType,
+                              labelText: resources.string.issueType,
                               fillColor: resources.color.colorWhite,
                               borderSide: BorderSide(
                                   color: context
                                       .resources.color.sideBarItemUnselected,
                                   width: 1),
                               borderRadius: 0,
+                              onChanged: (value) {},
                             ),
                           ),
                           SizedBox(
@@ -610,194 +745,80 @@ class ViewRequest extends BaseScreenWidget {
                           Expanded(
                             child: RightIconTextWidget(
                               isReadOnly: true,
-                              textController: _tradeLicenseNumberController,
-                              labelText: resources.string.tradeLicenseNumber,
-                              textInputType: TextInputType.number,
-                              hintText: resources.string.tradeLicenseNumber
-                                  .withPrefix(resources.string.pleaseEnter),
-                              errorMessage: resources.string.tradeLicenseNumber
-                                  .withPrefix(resources.string.pleaseEnter),
+                              textController: _customerEmailController,
+                              labelText: resources.string.customerEmail,
                               fillColor: resources.color.colorWhite,
                               borderSide: BorderSide(
                                   color: context
                                       .resources.color.sideBarItemUnselected,
                                   width: 1),
                               borderRadius: 0,
+                              onChanged: (value) {},
                             ),
                           ),
                         ],
-                      )
-                    ],
-                    SizedBox(
-                      height: resources.dimen.dp10,
-                    ),
-                  ],
-                  FutureBuilder(
-                      future: _masterDataBloc.getReasons(requestParams: {
-                        'categoryID': ticket.categoryID,
-                        'subCategoryID': ticket.subCategoryID
-                      }),
-                      builder: (context, snapShot) {
-                        final selectedReason = (snapShot.data?.items ?? [])
-                            .where((reason) =>
-                                (reason as ReasonsEntity).id ==
-                                ticket.subjectID)
-                            .firstOrNull;
-                        return DropDownWidget(
-                          isEnabled: false,
-                          list: snapShot.data?.items ?? [],
-                          labelText: resources.string.reason,
-                          hintText: resources.string.reason
-                              .withPrefix(resources.string.pleaseSelect),
-                          errorMessage: resources.string.reason
-                              .withPrefix(resources.string.pleaseSelect),
-                          borderRadius: 0,
-                          selectedValue: selectedReason,
-                          fillColor: resources.color.colorWhite,
-                          callback: (value) {
-                            _reasonValue.value = value;
-                          },
-                        );
-                      }),
-                  if (ticket.subjectID == 999) ...[
-                    Padding(
-                      padding: EdgeInsets.only(top: resources.dimen.dp10),
-                      child: RightIconTextWidget(
-                        isReadOnly: true,
-                        hintText: resources.string.reason
-                            .withPrefix(resources.string.pleaseEnter),
-                        errorMessage: resources.string.reason
-                            .withPrefix(resources.string.pleaseEnter),
-                        textController: _reasonController,
-                        fillColor: resources.color.colorWhite,
-                        borderSide: BorderSide(
-                            color:
-                                context.resources.color.sideBarItemUnselected,
-                            width: 1),
-                        borderRadius: 0,
-                        onChanged: (value) {},
                       ),
-                    ),
+                    ],
                   ],
-                  SizedBox(
-                    height: resources.dimen.dp10,
-                  ),
-                  RightIconTextWidget(
-                    isReadOnly: true,
-                    labelText: resources.string.description,
-                    hintText: resources.string.description
-                        .withPrefix(resources.string.pleaseEnter),
-                    errorMessage: resources.string.description
-                        .withPrefix(resources.string.pleaseEnter),
-                    textController: _descriptionController,
-                    fillColor: resources.color.colorWhite,
-                    maxLines: 8,
-                    borderSide: BorderSide(
-                        color: context.resources.color.sideBarItemUnselected,
-                        width: 1),
-                    borderRadius: 0,
-                    onChanged: (value) {},
-                  ),
-                  if (ticket.categoryID == 3 && ticket.departmentID != 0) ...[
-                    SizedBox(
-                      height: resources.dimen.dp20,
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: RightIconTextWidget(
-                            isReadOnly: true,
-                            textController: _customerIssueType,
-                            labelText: resources.string.issueType,
-                            fillColor: resources.color.colorWhite,
-                            borderSide: BorderSide(
-                                color: context
-                                    .resources.color.sideBarItemUnselected,
-                                width: 1),
-                            borderRadius: 0,
-                            onChanged: (value) {},
-                          ),
-                        ),
-                        SizedBox(
-                          width: resources.dimen.dp40,
-                        ),
-                        Expanded(
-                          child: RightIconTextWidget(
-                            isReadOnly: true,
-                            textController: _customerEmailController,
-                            labelText: resources.string.customerEmail,
-                            fillColor: resources.color.colorWhite,
-                            borderSide: BorderSide(
-                                color: context
-                                    .resources.color.sideBarItemUnselected,
-                                width: 1),
-                            borderRadius: 0,
-                            onChanged: (value) {},
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            SizedBox(
-              height: resources.dimen.dp20,
-            ),
-            if (ticket.attachments?.isNotEmpty == true) ...[
-              Text(
-                resources.string.attachments,
-                style: context.textFontWeight600,
-              ),
-              SizedBox(
-                height: resources.dimen.dp10,
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children:
-                    List.generate(ticket.attachments?.length ?? 0, (index) {
-                  return InkWell(
-                    onTap: () {
-                      Dialogs.showDialogWithClose(
-                          context,
-                          maxWidth: 400,
-                          AttachmentPreviewWidget(
-                            fileName: ticket.attachments?[index] ?? "",
-                          ));
-                    },
-                    child: Row(
-                      children: [
-                        ImageWidget(
-                                path: DrawableAssets.icAttachment,
-                                backgroundTint: resources.color.viewBgColor)
-                            .loadImage,
-                        SizedBox(
-                          width: resources.dimen.dp10,
-                        ),
-                        Text(
-                          (ticket.attachments?[index] ?? ""),
-                          style: context.textFontWeight500
-                              .copyWith(decoration: TextDecoration.underline),
-                        ),
-                      ],
-                    ),
-                  );
-                }),
+                ),
               ),
               SizedBox(
                 height: resources.dimen.dp20,
               ),
+              if (ticket.attachments?.isNotEmpty == true) ...[
+                Text(
+                  resources.string.attachments,
+                  style: context.textFontWeight600,
+                ),
+                SizedBox(
+                  height: resources.dimen.dp10,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children:
+                      List.generate(ticket.attachments?.length ?? 0, (index) {
+                    return InkWell(
+                      onTap: () {
+                        Dialogs.showDialogWithClose(
+                            context,
+                            maxWidth: 400,
+                            AttachmentPreviewWidget(
+                              fileName: ticket.attachments?[index] ?? "",
+                            ));
+                      },
+                      child: Row(
+                        children: [
+                          ImageWidget(
+                                  path: DrawableAssets.icAttachment,
+                                  backgroundTint: resources.color.viewBgColor)
+                              .loadImage,
+                          SizedBox(
+                            width: resources.dimen.dp10,
+                          ),
+                          Text(
+                            (ticket.attachments?[index] ?? ""),
+                            style: context.textFontWeight500
+                                .copyWith(decoration: TextDecoration.underline),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                ),
+                SizedBox(
+                  height: resources.dimen.dp20,
+                ),
+              ],
+              if ((ticket.status == StatusType.closed ||
+                  ticket.status == StatusType.reject)) ...[
+                _getComments(context,
+                    padding: EdgeInsets.symmetric(
+                      vertical: context.resources.dimen.dp15,
+                    ),
+                    isExpand: true)
+              ],
             ],
-            if ((ticket.status == StatusType.closed ||
-                ticket.status == StatusType.reject)) ...[
-              _getComments(context,
-                  padding: EdgeInsets.symmetric(
-                    vertical: context.resources.dimen.dp15,
-                  ),
-                  isExpand: true)
-            ],
-          ],
+          ),
         ),
       ),
     );
