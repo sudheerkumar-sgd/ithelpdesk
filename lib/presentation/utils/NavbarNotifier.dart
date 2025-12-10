@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:ithelpdesk/presentation/directory/directory_navigator_screen.dart';
+import 'package:ithelpdesk/presentation/home/user_dashboard_navigator_screen.dart';
 import 'package:ithelpdesk/presentation/home/user_home_navigator_screen.dart';
 import 'package:ithelpdesk/presentation/iso/iso_navigator_screen.dart';
 import 'package:ithelpdesk/presentation/profile/profile_navigator_screen.dart';
@@ -61,6 +62,13 @@ class NavbarNotifier extends ChangeNotifier {
         if (ProfileNavigatorScreen.profileKey.currentState != null &&
             ProfileNavigatorScreen.profileKey.currentState!.canPop()) {
           ProfileNavigatorScreen.profileKey.currentState!.maybePop();
+          exitingApp = false;
+        }
+        break;
+      case 5:
+        if (UserDashboardNavigatorScreen.homeKey.currentState != null &&
+            UserDashboardNavigatorScreen.homeKey.currentState!.canPop()) {
+          UserDashboardNavigatorScreen.homeKey.currentState!.maybePop();
           exitingApp = false;
         }
         break;

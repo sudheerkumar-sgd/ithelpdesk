@@ -19,6 +19,7 @@ import 'package:ithelpdesk/presentation/common_widgets/dropdown_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/my_custom_scrollbehavior.dart';
 import 'package:ithelpdesk/presentation/common_widgets/tooltip_widget.dart';
+import 'package:ithelpdesk/presentation/requests/view_request.dart';
 import 'package:ithelpdesk/presentation/utils/date_time_util.dart';
 import 'package:ithelpdesk/res/drawables/background_box_decoration.dart';
 import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
@@ -203,9 +204,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                 ? 50
                                 : maxValue >= 100
                                     ? 20
-                                    : maxValue >= 20
+                                    : maxValue > 20
                                         ? 10
-                                        : 1, // ✅ Controls vertical distance between labels
+                                        : maxValue >= 6
+                                            ? 2
+                                            : 1, // ✅ Controls vertical distance between labels
                         getTitlesWidget: (value, meta) {
                           if (value == meta.max) return const SizedBox();
                           return Padding(
@@ -522,7 +525,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           children: [
             Text(
               isSelectedLocalEn ? 'By Issue Type' : 'حسب نوع المشكلة',
-              style: context.textFontWeight700.onFontSize(
+              style: context.textFontWeight600.onFontSize(
                 resources.fontSize.dp12,
               ),
             ),
@@ -628,7 +631,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           children: [
             Text(
               isSelectedLocalEn ? 'Delayed Cases' : 'الحالات المتأخرة',
-              style: context.textFontWeight700
+              style: context.textFontWeight600
                   .onFontSize(
                     resources.fontSize.dp12,
                   )
@@ -638,82 +641,124 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               height: resources.dimen.dp10,
             ),
             Expanded(
-              child: ScrollConfiguration(
-                behavior: MyCustomScrollBehavior(),
-                child: PageView(
-                  controller: pageController,
-                  children: [
-                    for (int c = 0; c < (delayedTickets.length / 2).ceil(); c++)
-                      Row(
+              child: delayedTickets.isEmpty
+                  ? Center(
+                      child: Text(
+                        isSelectedLocalEn
+                            ? 'No Delayed Cases'
+                            : 'لا توجد الحالات المتأخرة',
+                        style: context.textFontWeight600
+                            .onColor(resources.color.viewBgColor),
+                      ),
+                    )
+                  : ScrollConfiguration(
+                      behavior: MyCustomScrollBehavior(),
+                      child: PageView(
+                        controller: pageController,
                         children: [
-                          for (int r = 0; r < 2; r++)
-                            Expanded(
-                              child: (c * 2 + r < delayedTickets.length)
-                                  ? Container(
-                                      width: double.infinity,
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 10, vertical: 7),
-                                      margin: EdgeInsets.only(
-                                          bottom: resources.dimen.dp5,
-                                          right: r == 0
-                                              ? resources.dimen.dp10
-                                              : 0),
-                                      decoration: BackgroundBoxDecoration(
-                                              boxColor:
-                                                  resources.color.colorF7F8FF,
-                                              radious: 8)
-                                          .roundedCornerBox,
-                                      child: Column(
-                                        children: (delayedTickets[c * 2 + r]
-                                            .toDelayedCasesJson()
-                                            .entries
-                                            .map((v) {
-                                          return Expanded(
-                                            child: Row(children: [
-                                              Expanded(
-                                                child: Text(v.key,
-                                                    maxLines: 1,
-                                                    style: context
-                                                        .textFontWeight400
-                                                        .onFontSize(resources
-                                                            .fontSize.dp10)
-                                                        .onColor(const Color(
-                                                            0xFF14213D))),
-                                              ),
-                                              Expanded(
-                                                child: Text('${v.value}',
-                                                    maxLines: 1,
-                                                    style: isStringArabic(
-                                                            '${v.value}')
-                                                        ? context
-                                                            .textFontWeight600
-                                                            .onFontSize(resources
-                                                                .fontSize.dp10)
-                                                        : context
-                                                            .textFontWeight600
-                                                            .onFontSize(
-                                                                resources
-                                                                    .fontSize
-                                                                    .dp10)
-                                                            .onFontFamily(
-                                                                fontFamily:
-                                                                    fontFamilyEN)),
-                                              ),
-                                            ]),
-                                          );
-                                        }).toList()),
-                                      ),
-                                    )
-                                  : const SizedBox(),
+                          for (int c = 0;
+                              c < (delayedTickets.length / 2).ceil();
+                              c++)
+                            Row(
+                              children: [
+                                for (int r = 0; r < 2; r++)
+                                  Expanded(
+                                    child: (c * 2 + r < delayedTickets.length)
+                                        ? Container(
+                                            width: double.infinity,
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 10, vertical: 7),
+                                            margin: EdgeInsets.only(
+                                                bottom: resources.dimen.dp5,
+                                                right: r == 0
+                                                    ? resources.dimen.dp10
+                                                    : 0),
+                                            decoration: BackgroundBoxDecoration(
+                                                    boxColor: resources
+                                                        .color.colorF7F8FF,
+                                                    radious: 8)
+                                                .roundedCornerBox,
+                                            child: Column(
+                                              children:
+                                                  (delayedTickets[c * 2 + r]
+                                                      .toDelayedCasesJson()
+                                                      .entries
+                                                      .map((v) {
+                                                return Expanded(
+                                                  child: Row(children: [
+                                                    Expanded(
+                                                      child: Text(v.key,
+                                                          maxLines: 1,
+                                                          style: context
+                                                              .textFontWeight400
+                                                              .onFontSize(
+                                                                  resources
+                                                                      .fontSize
+                                                                      .dp10)
+                                                              .onColor(const Color(
+                                                                  0xFF14213D))),
+                                                    ),
+                                                    Expanded(
+                                                      child: v.key ==
+                                                              'Request No.'
+                                                          ? InkWell(
+                                                              onTap: () {
+                                                                ViewRequest.start(
+                                                                    context,
+                                                                    null,
+                                                                    ticketId: v
+                                                                        .value
+                                                                        .toString());
+                                                              },
+                                                              child: Text(
+                                                                  '${v.value}',
+                                                                  maxLines: 1,
+                                                                  style: context
+                                                                      .textFontWeight600
+                                                                      .onFontSize(resources
+                                                                          .fontSize
+                                                                          .dp10)
+                                                                      .onFontFamily(
+                                                                          fontFamily:
+                                                                              fontFamilyEN)
+                                                                      .copyWith(
+                                                                        decoration:
+                                                                            TextDecoration.underline,
+                                                                      )),
+                                                            )
+                                                          : Text('${v.value}',
+                                                              maxLines: 1,
+                                                              style: isStringArabic(
+                                                                      '${v.value}')
+                                                                  ? context
+                                                                      .textFontWeight600
+                                                                      .onFontSize(resources
+                                                                          .fontSize
+                                                                          .dp10)
+                                                                  : context
+                                                                      .textFontWeight600
+                                                                      .onFontSize(resources
+                                                                          .fontSize
+                                                                          .dp10)
+                                                                      .onFontFamily(
+                                                                          fontFamily:
+                                                                              fontFamilyEN)),
+                                                    ),
+                                                  ]),
+                                                );
+                                              }).toList()),
+                                            ),
+                                          )
+                                        : const SizedBox(),
+                                  ),
+                              ],
                             ),
                         ],
+                        onPageChanged: (value) {
+                          pageIndex.value = value;
+                        },
                       ),
-                  ],
-                  onPageChanged: (value) {
-                    pageIndex.value = value;
-                  },
-                ),
-              ),
+                    ),
             ),
             SizedBox(
               height: resources.dimen.dp10,
@@ -759,7 +804,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           children: [
             Text(
               isSelectedLocalEn ? 'Top Resolvers' : 'أفضل المحلين',
-              style: context.textFontWeight700
+              style: context.textFontWeight600
                   .onFontSize(
                     resources.fontSize.dp12,
                   )
@@ -1167,6 +1212,60 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                               );
                             }),
                       ),
+                      if (UserCredentialsEntity.details().userType ==
+                          UserType.superAdmin)
+                        Positioned(
+                          top: resources.dimen.dp5,
+                          right: isSelectedLocalEn ? resources.dimen.dp20 : 0,
+                          left: isSelectedLocalEn ? 0 : resources.dimen.dp20,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  resources.setLocal(
+                                      language:
+                                          isSelectedLocalEn ? 'ar' : 'en');
+                                },
+                                child: Tooltip(
+                                  message: resources.string.language,
+                                  child: ImageWidget(
+                                          path: isSelectedLocalEn
+                                              ? DrawableAssets.icLangAr
+                                              : DrawableAssets.icLangEn,
+                                          width: 20,
+                                          height: 20,
+                                          backgroundTint:
+                                              resources.color.colorWhite,
+                                          padding: EdgeInsets.all(
+                                              resources.dimen.dp10))
+                                      .loadImageWithMoreTapArea,
+                                ),
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  //?.call(AppBarItem.user);
+                                },
+                                child: Tooltip(
+                                  message: resources.string.userProfile,
+                                  child: ImageWidget(
+                                          path: DrawableAssets.icUserCircle,
+                                          width: 20,
+                                          height: 20,
+                                          backgroundTint:
+                                              resources.color.colorWhite,
+                                          padding: EdgeInsets.all(
+                                              resources.dimen.dp10))
+                                      .loadImageWithMoreTapArea,
+                                ),
+                              ),
+                              Text(UserCredentialsEntity.details().name ?? "",
+                                  style: context.textFontWeight600
+                                      .onFontSize(resources.fontSize.dp12)
+                                      .onColor(resources.color.colorWhite))
+                            ],
+                          ),
+                        )
                     ],
                   ),
                   SizedBox(

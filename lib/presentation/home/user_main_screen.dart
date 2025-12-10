@@ -1,7 +1,5 @@
 // ignore_for_file: must_be_immutable
 
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
@@ -35,7 +33,8 @@ import '../requests/create_new_request.dart';
 class UserMainScreen extends StatefulWidget {
   static ValueNotifier onUnAuthorizedResponse = ValueNotifier<bool>(false);
   static ValueNotifier onNetworkConnectionError = ValueNotifier<int>(1);
-  const UserMainScreen({super.key});
+  final Widget? child;
+  const UserMainScreen({this.child, super.key});
   @override
   State<StatefulWidget> createState() => _MainScreenState();
 }
@@ -59,6 +58,7 @@ class _MainScreenState extends State<UserMainScreen> {
     return isDesktop(context)
         ? SearchUserAppBarWidget(
             userName: UserCredentialsEntity.details().name ?? "",
+            showSearch: _selectedIndex.value == 0 || _selectedIndex.value == 1,
             onItemTap: (p0) {
               if (p0 == AppBarItem.user) {
                 sideBar.selectItem(3);
@@ -238,11 +238,14 @@ class _MainScreenState extends State<UserMainScreen> {
                                         return Column(
                                           children: [
                                             UserCredentialsEntity.details()
-                                                        .userType ==
-                                                    UserType.superAdmin
+                                                            .userType ==
+                                                        UserType.superAdmin &&
+                                                    index == 5
                                                 ? const SizedBox.shrink()
                                                 : getUserAppBar(context),
-                                            Expanded(child: getScreen(index)),
+                                            Expanded(
+                                                child: widget.child ??
+                                                    getScreen(index)),
                                           ],
                                         );
                                       }),

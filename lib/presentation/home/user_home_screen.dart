@@ -20,7 +20,6 @@ import 'package:ithelpdesk/injection_container.dart';
 import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
 import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/alert_dialog_widget.dart';
-import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dropdown_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/report_list_widget.dart';
@@ -983,7 +982,4 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
       ),
     ));
   }
-
-  @override
-  doDispose() {}
 }

@@ -39,7 +39,8 @@ import '../common_widgets/attachment_preview_widget.dart';
 import 'widgets/ticket_return_widget.dart';
 
 class ViewRequest extends BaseScreenWidget {
-  static start(BuildContext context, TicketEntity ticket, {bool? isMyTicket}) {
+  static start(BuildContext context, TicketEntity? ticket,
+      {bool? isMyTicket, String? ticketId}) {
     Navigator.push(
       context,
       PageTransition(
@@ -47,6 +48,7 @@ class ViewRequest extends BaseScreenWidget {
           child: ViewRequest(
             ticketDetails: ticket,
             isMyTicket: isMyTicket,
+            ticketId: ticketId,
           )),
     );
   }
@@ -1145,11 +1147,9 @@ class ViewRequest extends BaseScreenWidget {
                       SizedBox(
                         height: resources.dimen.dp10,
                       ),
-                      ticketId != null
-                          ? _getScrollwidget(context)
-                          : Expanded(
-                              child: _getScrollwidget(context),
-                            ),
+                      Expanded(
+                        child: _getScrollwidget(context),
+                      ),
                       SizedBox(
                         height: resources.dimen.dp20,
                       ),

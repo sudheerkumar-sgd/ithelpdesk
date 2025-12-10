@@ -2,12 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
-import 'package:ithelpdesk/presentation/home/admin_dashboard_screen.dart';
-import 'package:ithelpdesk/presentation/home/user_home_screen.dart';
 
 class UserHomeNavigatorScreen extends BaseScreenWidget {
   final Widget screen;
-  const UserHomeNavigatorScreen({required this.screen, Key? key}) : super(key: key);
+  const UserHomeNavigatorScreen({required this.screen, Key? key})
+      : super(key: key);
   static GlobalKey<NavigatorState> homeKey = GlobalKey<NavigatorState>();
   // late UserHomeScreen homeScreen;
   // late AdminDashboardScreen adminDashboardScreen;

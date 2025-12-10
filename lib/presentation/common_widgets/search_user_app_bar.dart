@@ -6,6 +6,7 @@ import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/data/local/user_data_db.dart';
+import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
 import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/search_textfield_widget.dart';
 import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
@@ -14,9 +15,14 @@ class SearchUserAppBarWidget extends StatelessWidget
     implements PreferredSizeWidget {
   final String userName;
   final EdgeInsets? padding;
+  final bool showSearch;
   final Function(AppBarItem)? onItemTap;
   SearchUserAppBarWidget(
-      {required this.userName, this.padding, this.onItemTap, super.key});
+      {required this.userName,
+      this.padding,
+      this.showSearch = true,
+      this.onItemTap,
+      super.key});
   final ValueNotifier _isAvailable = ValueNotifier<bool>(false);
 
   @override
@@ -32,31 +38,37 @@ class SearchUserAppBarWidget extends StatelessWidget
         children: [
           Row(
             children: [
-              Expanded(child: SearchDropDownWidget(
-                onSearchItemSelected: (item) {
-                  context.push(
-                      AppRoutes.ticketRoute.replaceAll(':id', '${item.id}'));
-                },
-              )),
+              Expanded(
+                  child: showSearch
+                      ? SearchDropDownWidget(
+                          onSearchItemSelected: (item) {
+                            context.push(AppRoutes.ticketRoute
+                                .replaceAll(':id', '${item.id}'));
+                          },
+                        )
+                      : const SizedBox.shrink()),
               SizedBox(
                 width: screenSize.width * .10,
               ),
-              ValueListenableBuilder(
-                  valueListenable: _isAvailable,
-                  builder: (context, value, child) {
-                    return Tooltip(
-                      message: resources.string.vacation,
-                      child: Switch(
-                          activeColor: resources.color.viewBgColor,
-                          value: value,
-                          onChanged: (value) {
-                            _isAvailable.value = value;
-                            context.userDataDB
-                                .put(UserDataDB.userOnvaction, value);
-                            onItemTap?.call(AppBarItem.vacation);
-                          }),
-                    );
-                  }),
+              if (UserCredentialsEntity.details().userType !=
+                  UserType.superAdmin) ...[
+                ValueListenableBuilder(
+                    valueListenable: _isAvailable,
+                    builder: (context, value, child) {
+                      return Tooltip(
+                        message: resources.string.vacation,
+                        child: Switch(
+                            activeThumbColor: resources.color.viewBgColor,
+                            value: value,
+                            onChanged: (value) {
+                              _isAvailable.value = value;
+                              context.userDataDB
+                                  .put(UserDataDB.userOnvaction, value);
+                              onItemTap?.call(AppBarItem.vacation);
+                            }),
+                      );
+                    })
+              ],
               InkWell(
                 onTap: () {
                   resources.setLocal(language: isSelectedLocalEn ? 'ar' : 'en');

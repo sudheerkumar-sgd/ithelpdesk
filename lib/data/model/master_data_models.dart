@@ -8,7 +8,6 @@ import 'package:ithelpdesk/data/model/single_data_model.dart';
 import 'package:ithelpdesk/domain/entities/base_entity.dart';
 import 'package:ithelpdesk/domain/entities/directory_entity.dart';
 import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
-import 'package:ithelpdesk/domain/entities/single_data_entity.dart';
 
 class ListModel extends BaseModel {
   List<BaseEntity> items = [];
