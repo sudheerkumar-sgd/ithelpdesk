@@ -9,18 +9,23 @@ import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
+import 'package:ithelpdesk/data/local/user_data_db.dart';
 import 'package:ithelpdesk/data/remote/api_urls.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
 import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
 import 'package:ithelpdesk/injection_container.dart';
 import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
+import 'package:ithelpdesk/presentation/bloc/user/user_bloc.dart';
+import 'package:ithelpdesk/presentation/common_widgets/alert_dialog_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/barchart_widget.dart';
+import 'package:ithelpdesk/presentation/common_widgets/department_barchart.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dropdown_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/my_custom_scrollbehavior.dart';
 import 'package:ithelpdesk/presentation/common_widgets/tooltip_widget.dart';
 import 'package:ithelpdesk/presentation/requests/view_request.dart';
 import 'package:ithelpdesk/presentation/utils/date_time_util.dart';
+import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 import 'package:ithelpdesk/res/drawables/background_box_decoration.dart';
 import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
@@ -55,6 +60,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
   DateTime? startDate;
   DateTime? endDate;
+  final ValueNotifier _isAvailable = ValueNotifier<bool>(false);
 
   TextAlign getAlign(int i, int length) {
     if (length == 2) {
@@ -93,8 +99,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             double.parse('${i + 1}'), ticketsByMonthEntity[i].count ?? 0));
         tilesData.add(Expanded(
           child: Text(
-              textAlign: getAlign(i, ticketsByMonthEntity.length),
-              '${ticketsByMonthEntity[i].month?.toInt() ?? 1}'),
+            textAlign: getAlign(i, ticketsByMonthEntity.length),
+            '${ticketsByMonthEntity[i].month?.toInt() ?? 1}',
+            style: context.textFontWeight400.onFontSize(10),
+          ),
         ));
       }
     } else {
@@ -271,55 +279,112 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     );
   }
 
+  Widget _getByDepartmentWidget(
+      List<TicketsByCategoryEntity> ticketsByDepartment) {
+    final resources = context.resources;
+    final lables = ticketsByDepartment.isEmpty
+        ? [].cast<String>()
+        : ticketsByDepartment
+            .map((e) => DepartmentEnum.fromId(e.category ?? 0).toString())
+            .toList();
+    final values = ticketsByDepartment.isEmpty
+        ? [].cast<double>()
+        : ticketsByDepartment.map((e) => e.count as double).toList();
+    final maxValue = ticketsByDepartment.isEmpty
+        ? 0
+        : ticketsByDepartment
+            .map((e) => e.count ?? 0)
+            .reduce((a, b) => a > b ? a : b);
+    return Container(
+      height: 350,
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(
+          horizontal: resources.dimen.dp20, vertical: resources.dimen.dp15),
+      decoration: BackgroundBoxDecoration(
+        boxColor: resources.color.colorWhite,
+        radious: resources.dimen.dp10,
+      ).roundedBoxWithShadow,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            isSelectedLocalEn ? 'Ticket by Department' : 'التذاكر حسب القسم',
+            maxLines: 1,
+            style: context.textFontWeight600.onFontSize(
+              resources.fontSize.dp12,
+            ),
+          ),
+          SizedBox(
+            height: resources.dimen.dp10,
+          ),
+          Expanded(
+            child: DepartmentBarChart(bottomLables: lables, values: values),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget getPieChart(BuildContext context,
       List<TicketsByCategoryEntity> ticketsByCategoryEntity) {
     final resources = context.resources;
-    final categoryData = List.empty(growable: true);
+    //final categoryData = List.empty(growable: true);
     var totalCount = 0;
-    for (var i = 0; i < ticketsByCategoryEntity.length; i++) {
-      switch (ticketsByCategoryEntity[i].category) {
-        case 1:
-          {
-            var item = {
-              'name': resources.string.support,
-              'count': ticketsByCategoryEntity[i].count ?? 0,
-              'color': const Color(0xFF7685FB)
+    final categoryData = ticketsByCategoryEntity.isEmpty
+        ? [].cast<Map>()
+        : ticketsByCategoryEntity.map((e) {
+            totalCount += e.count ?? 0;
+            final status = StatusType.fromId(e.category ?? 1);
+            return {
+              'name': status.toString(),
+              'count': e.count ?? 0,
+              'color': status.getColor(),
             };
-            categoryData.add(item);
-            totalCount = (ticketsByCategoryEntity[i].count ?? 0) + totalCount;
-          }
-        case 2:
-          {
-            var item = {
-              'name': resources.string.itRequests,
-              'count': ticketsByCategoryEntity[i].count ?? 0,
-              'color': const Color(0xFF7685FB)
-            };
-            categoryData.add(item);
-            totalCount = (ticketsByCategoryEntity[i].count ?? 0) + totalCount;
-          }
-        case 3:
-          {
-            var item = {
-              'name': resources.string.eservices,
-              'count': ticketsByCategoryEntity[i].count ?? 0,
-              'color': const Color(0xFF344BFD)
-            };
-            categoryData.add(item);
-            totalCount = (ticketsByCategoryEntity[i].count ?? 0) + totalCount;
-          }
-        case 4:
-          {
-            var item = {
-              'name': resources.string.application,
-              'count': ticketsByCategoryEntity[i].count ?? 0,
-              'color': const Color(0xFF102559)
-            };
-            categoryData.add(item);
-            totalCount = (ticketsByCategoryEntity[i].count ?? 0) + totalCount;
-          }
-      }
-    }
+          }).toList();
+    // for (var i = 0; i < ticketsByCategoryEntity.length; i++) {
+    //   switch (ticketsByCategoryEntity[i].category) {
+    //     case 1:
+    //       {
+    //         var item = {
+    //           'name': resources.string.support,
+    //           'count': ticketsByCategoryEntity[i].count ?? 0,
+    //           'color': const Color(0xFF7685FB)
+    //         };
+    //         categoryData.add(item);
+    //         totalCount = (ticketsByCategoryEntity[i].count ?? 0) + totalCount;
+    //       }
+    //     case 2:
+    //       {
+    //         var item = {
+    //           'name': resources.string.itRequests,
+    //           'count': ticketsByCategoryEntity[i].count ?? 0,
+    //           'color': const Color(0xFF7685FB)
+    //         };
+    //         categoryData.add(item);
+    //         totalCount = (ticketsByCategoryEntity[i].count ?? 0) + totalCount;
+    //       }
+    //     case 3:
+    //       {
+    //         var item = {
+    //           'name': resources.string.eservices,
+    //           'count': ticketsByCategoryEntity[i].count ?? 0,
+    //           'color': const Color(0xFF344BFD)
+    //         };
+    //         categoryData.add(item);
+    //         totalCount = (ticketsByCategoryEntity[i].count ?? 0) + totalCount;
+    //       }
+    //     case 4:
+    //       {
+    //         var item = {
+    //           'name': resources.string.application,
+    //           'count': ticketsByCategoryEntity[i].count ?? 0,
+    //           'color': const Color(0xFF102559)
+    //         };
+    //         categoryData.add(item);
+    //         totalCount = (ticketsByCategoryEntity[i].count ?? 0) + totalCount;
+    //       }
+    //   }
+    // }
     return Container(
       height: 275,
       width: double.infinity,
@@ -332,7 +397,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            isSelectedLocalEn ? 'By Category' : 'حسب الفئة',
+            isSelectedLocalEn ? 'By Status' : 'حسب الحالة',
             style:
                 context.textFontWeight600.onFontSize(resources.fontSize.dp12),
           ),
@@ -880,9 +945,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           requestParams: UserCredentialsEntity.details().id != null
               ? {
                   "userId": UserCredentialsEntity.details().id,
-                  'showWeekly': true
                 }
-              : {'showWeekly': true});
+              : {});
     });
     _resizeTimer = Timer(const Duration(minutes: 15), () {
       if (!mounted) return;
@@ -1212,60 +1276,100 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                               );
                             }),
                       ),
-                      if (UserCredentialsEntity.details().userType ==
-                          UserType.superAdmin)
-                        Positioned(
-                          top: resources.dimen.dp5,
-                          right: isSelectedLocalEn ? resources.dimen.dp20 : 0,
-                          left: isSelectedLocalEn ? 0 : resources.dimen.dp20,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  resources.setLocal(
-                                      language:
-                                          isSelectedLocalEn ? 'ar' : 'en');
-                                },
-                                child: Tooltip(
-                                  message: resources.string.language,
-                                  child: ImageWidget(
-                                          path: isSelectedLocalEn
-                                              ? DrawableAssets.icLangAr
-                                              : DrawableAssets.icLangEn,
-                                          width: 20,
-                                          height: 20,
-                                          backgroundTint:
-                                              resources.color.colorWhite,
-                                          padding: EdgeInsets.all(
-                                              resources.dimen.dp10))
-                                      .loadImageWithMoreTapArea,
-                                ),
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  //?.call(AppBarItem.user);
-                                },
-                                child: Tooltip(
-                                  message: resources.string.userProfile,
-                                  child: ImageWidget(
-                                          path: DrawableAssets.icUserCircle,
-                                          width: 20,
-                                          height: 20,
-                                          backgroundTint:
-                                              resources.color.colorWhite,
-                                          padding: EdgeInsets.all(
-                                              resources.dimen.dp10))
-                                      .loadImageWithMoreTapArea,
-                                ),
-                              ),
-                              Text(UserCredentialsEntity.details().name ?? "",
-                                  style: context.textFontWeight600
-                                      .onFontSize(resources.fontSize.dp12)
-                                      .onColor(resources.color.colorWhite))
+                      Positioned(
+                        top: resources.dimen.dp5,
+                        right: isSelectedLocalEn ? resources.dimen.dp20 : 0,
+                        left: isSelectedLocalEn ? 0 : resources.dimen.dp20,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            if (UserCredentialsEntity.details().userType !=
+                                UserType.superAdmin) ...[
+                              ValueListenableBuilder(
+                                  valueListenable: _isAvailable,
+                                  builder: (context, value, child) {
+                                    return Tooltip(
+                                      message: resources.string.vacation,
+                                      child: Switch(
+                                          activeThumbColor:
+                                              resources.color.viewBgColor,
+                                          value: value,
+                                          onChanged: (value) async {
+                                            _isAvailable.value = value;
+                                            context.userDataDB.put(
+                                                UserDataDB.userOnvaction,
+                                                value);
+                                            Dialogs.loader(context);
+                                            final state = await sl<UserBloc>()
+                                                .setVaction(requestParams: {
+                                              'vacation': context.userDataDB
+                                                  .get(UserDataDB.userOnvaction,
+                                                      defaultValue: false)
+                                            });
+                                            if (!context.mounted) {
+                                              return;
+                                            }
+                                            Dialogs.dismiss(context);
+                                            if (state is UpdateVactionStatus) {
+                                              Dialogs.showInfoDialog(
+                                                  context,
+                                                  PopupType.success,
+                                                  state.updateVactionStatus);
+                                            } else if (state
+                                                is OnLoginApiError) {
+                                              Dialogs.showInfoDialog(
+                                                  context,
+                                                  PopupType.fail,
+                                                  state.message);
+                                            }
+                                          }),
+                                    );
+                                  })
                             ],
-                          ),
-                        )
+                            InkWell(
+                              onTap: () {
+                                resources.setLocal(
+                                    language: isSelectedLocalEn ? 'ar' : 'en');
+                              },
+                              child: Tooltip(
+                                message: resources.string.language,
+                                child: ImageWidget(
+                                        path: isSelectedLocalEn
+                                            ? DrawableAssets.icLangAr
+                                            : DrawableAssets.icLangEn,
+                                        width: 20,
+                                        height: 20,
+                                        backgroundTint:
+                                            resources.color.colorWhite,
+                                        padding: EdgeInsets.all(
+                                            resources.dimen.dp10))
+                                    .loadImageWithMoreTapArea,
+                              ),
+                            ),
+                            InkWell(
+                              onTap: () {
+                                //?.call(AppBarItem.user);
+                              },
+                              child: Tooltip(
+                                message: resources.string.userProfile,
+                                child: ImageWidget(
+                                        path: DrawableAssets.icUserCircle,
+                                        width: 20,
+                                        height: 20,
+                                        backgroundTint:
+                                            resources.color.colorWhite,
+                                        padding: EdgeInsets.all(
+                                            resources.dimen.dp10))
+                                    .loadImageWithMoreTapArea,
+                              ),
+                            ),
+                            Text(UserCredentialsEntity.details().name ?? "",
+                                style: context.textFontWeight600
+                                    .onFontSize(resources.fontSize.dp12)
+                                    .onColor(resources.color.colorWhite))
+                          ],
+                        ),
+                      )
                     ],
                   ),
                   SizedBox(
@@ -1285,11 +1389,29 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                             flex: 6,
                                             child: Column(
                                               children: [
-                                                getLineChart(
-                                                    context,
-                                                    _dashboardEntity
-                                                            ?.ticketsByMonth ??
-                                                        []),
+                                                Row(
+                                                  children: [
+                                                    Flexible(
+                                                      flex: 2,
+                                                      child: getLineChart(
+                                                          context,
+                                                          _dashboardEntity
+                                                                  ?.ticketsByMonth ??
+                                                              []),
+                                                    ),
+                                                    SizedBox(
+                                                      width:
+                                                          resources.dimen.dp20,
+                                                    ),
+                                                    Flexible(
+                                                      flex: 1,
+                                                      child: _getByDepartmentWidget(
+                                                          _dashboardEntity
+                                                                  ?.ticketsByDepartment ??
+                                                              []),
+                                                    ),
+                                                  ],
+                                                ),
                                                 SizedBox(
                                                   height: resources.dimen.dp20,
                                                 ),
@@ -1356,7 +1478,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                                         child: getPieChart(
                                                             context,
                                                             _dashboardEntity
-                                                                    ?.ticketsByCategory ??
+                                                                    ?.ticketsByStatus ??
                                                                 []),
                                                       ),
                                                       SizedBox(

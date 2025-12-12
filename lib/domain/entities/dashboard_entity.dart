@@ -21,6 +21,8 @@ class DashboardEntity extends BaseEntity {
   List<TicketsByMonthEntity>? ticketsByMonth;
   List<TicketsByCategoryEntity>? ticketsByCategory;
   List<TicketsByCategoryEntity> ticketsByPriority = [];
+  List<TicketsByCategoryEntity> ticketsByDepartment = [];
+  List<TicketsByCategoryEntity> ticketsByStatus = [];
   List<TicketsByCategoryEntity> ticketsByIssueType = [];
   List<TicketsByCategoryEntity> ticketsByOpenDay = [];
   List<TopResolversEntity> topResolvers = [];

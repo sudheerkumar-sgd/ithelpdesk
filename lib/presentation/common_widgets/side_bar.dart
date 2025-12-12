@@ -87,16 +87,18 @@ class SideBar extends StatelessWidget {
                       width: 40,
                       height: 40,
                       child: ImageWidget(
-                              path: DrawableAssets.icHome,
+                              path: DrawableAssets.icMytickets,
+                              width: 24,
+                              height: 24,
                               backgroundTint: index == 0
                                   ? resources.color.sideBarItemSelected
                                   : resources.color.sideBarItemUnselected,
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 5))
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 5, vertical: 5))
                           .loadImageWithMoreTapArea,
                     ),
                     title: Text(
-                      resources.string.home,
+                      resources.string.myTickets,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: context.textFontWeight600

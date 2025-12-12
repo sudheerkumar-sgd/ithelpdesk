@@ -237,10 +237,7 @@ class _MainScreenState extends State<UserMainScreen> {
                                       builder: (context, index, child) {
                                         return Column(
                                           children: [
-                                            UserCredentialsEntity.details()
-                                                            .userType ==
-                                                        UserType.superAdmin &&
-                                                    index == 5
+                                            index == 5
                                                 ? const SizedBox.shrink()
                                                 : getUserAppBar(context),
                                             Expanded(

@@ -17,6 +17,8 @@ class DashboardModel extends BaseModel {
   List<TicketsByMonthEntity>? ticketsByMonth;
   List<TicketsByCategoryEntity>? ticketsByCategory;
   List<TicketsByCategoryEntity> ticketsByPriority = [];
+  List<TicketsByCategoryEntity> ticketsByDepartment = [];
+  List<TicketsByCategoryEntity> ticketsByStatus = [];
   List<TicketsByCategoryEntity> ticketsByIssueType = [];
   List<TicketsByCategoryEntity> ticketsByOpenDay = [];
   List<TopResolversEntity> topResolvers = [];
@@ -84,6 +86,18 @@ class DashboardModel extends BaseModel {
       });
     }
 
+    if (json['ticketsByDepartment'] != null) {
+      json['ticketsByDepartment'].forEach((v) {
+        ticketsByDepartment.add(TicketsByCategoryModel.fromJson(v).toEntity());
+      });
+    }
+
+    if (json['ticketsByStatus'] != null) {
+      json['ticketsByStatus'].forEach((v) {
+        ticketsByStatus.add(TicketsByCategoryModel.fromJson(v).toEntity());
+      });
+    }
+
     if (json['ticketsByIssueType'] != null) {
       json['ticketsByIssueType'].forEach((v) {
         ticketsByIssueType.add(TicketsByCategoryModel.fromJson(v).toEntity());
@@ -118,6 +132,8 @@ class DashboardModel extends BaseModel {
     dashboardEntity.delayedTickets = delayedTickets;
     dashboardEntity.topResolvers = topResolvers;
     dashboardEntity.ticketsByPriority = ticketsByPriority;
+    dashboardEntity.ticketsByDepartment = ticketsByDepartment;
+    dashboardEntity.ticketsByStatus = ticketsByStatus;
     dashboardEntity.ticketsByIssueType = ticketsByIssueType;
     dashboardEntity.ticketsByOpenDay = ticketsByOpenDay;
     dashboardEntity.averageDayOpenRequests = averageDayOpenRequests;

@@ -546,3 +546,34 @@ enum DashboardFilterEnum {
     }
   }
 }
+
+enum DepartmentEnum {
+  external(0, "EXT"),
+  sgd(1, "SGD"),
+  ded(2, "DED"),
+  ec(3, "EC"),
+  upd(4, "UPD"),
+  md(5, "MD"),
+  tad(6, "TAD"),
+  tar(7, "TAR"),
+  fd(8, "FD"),
+  bcd(10, "BCD"),
+  fad(12, "FAD"),
+  dewan(17, "Dewan"),
+  rec(18, "REC");
+
+  final int id;
+  final String name;
+
+  const DepartmentEnum(this.id, this.name);
+
+  factory DepartmentEnum.fromId(int value) {
+    return values.firstWhere((e) => e.id == value,
+        orElse: () => throw ArgumentError('Invalid Category id: $value'));
+  }
+
+  @override
+  String toString() {
+    return name;
+  }
+}
