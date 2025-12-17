@@ -99,9 +99,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             double.parse('${i + 1}'), ticketsByMonthEntity[i].count ?? 0));
         tilesData.add(Expanded(
           child: Text(
+            maxLines: 1,
             textAlign: getAlign(i, ticketsByMonthEntity.length),
             '${ticketsByMonthEntity[i].month?.toInt() ?? 1}',
-            style: context.textFontWeight400.onFontSize(10),
+            style: ticketsByMonthEntity.length > 20
+                ? context.textFontWeight400.onFontSize(8)
+                : context.textFontWeight400.onFontSize(10),
           ),
         ));
       }
@@ -123,7 +126,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                               endDate ?? DateTime.now()) <=
                           31)
                   ? '${ticketsByMonthEntity[i].month?.toInt() ?? 1}'
-                  : monthName((ticketsByMonthEntity[i].month?.toInt() ?? 1))),
+                  : monthName((ticketsByMonthEntity[i].month?.toInt() ?? 1)),
+              style: ticketsByMonthEntity.length > 20
+                  ? context.textFontWeight400.onFontSize(8)
+                  : context.textFontWeight400.onFontSize(10)),
         ));
         // }
         //  else {
@@ -205,7 +211,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
-                        reservedSize: 40, // ✅ Gives enough space for numbers
+                        reservedSize: 32, // ✅ Gives enough space for numbers
                         interval: maxValue > 400
                             ? 100
                             : maxValue > 200
@@ -224,7 +230,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                             child: Text(
                               value.toInt().toString(),
                               style: context.textFontWeight400
-                                  .onFontSize(resources.fontSize.dp12)
+                                  .onFontSize(resources.fontSize.dp10)
                                   .onFontFamily(fontFamily: fontFamilyEN),
                             ),
                           );
@@ -235,8 +241,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     rightTitles: const AxisTitles(),
                     bottomTitles: AxisTitles(
                       axisNameWidget: Padding(
-                        padding:
-                            EdgeInsetsGeometry.only(left: resources.dimen.dp40),
+                        padding: const EdgeInsetsGeometry.only(left: 32),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: tilesData,
@@ -290,11 +295,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     final values = ticketsByDepartment.isEmpty
         ? [].cast<double>()
         : ticketsByDepartment.map((e) => e.count as double).toList();
-    final maxValue = ticketsByDepartment.isEmpty
-        ? 0
-        : ticketsByDepartment
-            .map((e) => e.count ?? 0)
-            .reduce((a, b) => a > b ? a : b);
     return Container(
       height: 350,
       width: double.infinity,
@@ -318,7 +318,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             height: resources.dimen.dp10,
           ),
           Expanded(
-            child: DepartmentBarChart(bottomLables: lables, values: values),
+            child: values.isEmpty
+                ? const SizedBox()
+                : DepartmentBarChart(bottomLables: lables, values: values),
           ),
         ],
       ),
@@ -415,8 +417,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                         bottom: BorderSide(
                             color: resources.color.sideBarItemUnselected))),
                 sections: List.generate(categoryData.length, (index) {
-                  final percentage =
-                      (((categoryData[index]['count'] as int) / totalCount) *
+                  final percentage = totalCount == 0
+                      ? 0
+                      : (((categoryData[index]['count'] as int) / totalCount) *
                               100)
                           .round();
                   return PieChartSectionData(
@@ -426,8 +429,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                           : 0,
                       color: (categoryData[index]['color'] ?? Colors.yellow)
                           as Color,
-                      title:
-                          '${((categoryData[index]['count'] / totalCount) * 100).toStringAsFixed(0)}%',
+                      title: totalCount == 0
+                          ? ''
+                          : '${((categoryData[index]['count'] / totalCount) * 100).toStringAsFixed(0)}%',
                       titleStyle: context.textFontWeight600
                           .onFontSize(10)
                           .onFontFamily(fontFamily: fontFamilyEN)
@@ -441,8 +445,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           ),
           Row(
             children: List.generate(categoryData.length, (index) {
-              final percentage =
-                  (((categoryData[index]['count'] as int) / totalCount) * 100)
+              final percentage = totalCount == 0
+                  ? 0
+                  : (((categoryData[index]['count'] as int) / totalCount) * 100)
                       .round();
               return percentage > 0
                   ? Expanded(
@@ -453,23 +458,39 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Expanded(
-                              child: Text.rich(
-                                  textAlign: TextAlign.center,
-                                  maxLines: 2,
-                                  TextSpan(
-                                      text: '$percentage%\n'.toString(),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    padding:
+                                        EdgeInsets.all(resources.dimen.dp7),
+                                    decoration: BackgroundBoxDecoration(
+                                            boxColor:
+                                                resources.color.colorWhite,
+                                            boarderColor: resources
+                                                .color.dashboardPrimary
+                                                .withAlpha(50),
+                                            boarderWidth: 1)
+                                        .circularBoxWithShadow,
+                                    child: Text(
+                                      textAlign: TextAlign.center,
+                                      maxLines: 1,
+                                      '$percentage%'.toString(),
                                       style: context.textFontWeight700
-                                          .onFontSize(resources.fontSize.dp12)
+                                          .onFontSize(resources.fontSize.dp10)
                                           .onFontFamily(
-                                              fontFamily: fontFamilyEN),
-                                      children: [
-                                        TextSpan(
-                                            text: categoryData[index]['name']
-                                                .toString(),
-                                            style: context.textFontWeight400
-                                                .onFontSize(
-                                                    resources.fontSize.dp10))
-                                      ])),
+                                              fontFamily: fontFamilyEN)
+                                          .onColor(const Color(0xFF102559)),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: resources.dimen.dp3,
+                                  ),
+                                  Text(categoryData[index]['name'].toString(),
+                                      style: context.textFontWeight600
+                                          .onFontSize(resources.fontSize.dp10)
+                                          .onColor(const Color(0xFF102559)))
+                                ],
+                              ),
                             ),
                           ],
                         ),
@@ -966,8 +987,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   Widget build(BuildContext context) {
     final resources = context.resources;
     //_selectedYear.value = '${DateTime.now().year}';
-    final requestTypesRows = isDesktop(context) ? 1 : 2;
-    final requestTypesColumns = isDesktop(context) ? 5 : 2;
     if (_requestTypes.isEmpty) {
       _requestTypes = [
         {
@@ -986,7 +1005,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           'count': 0
         },
         {
-          'name': isSelectedLocalEn ? 'AVG. Day open' : 'متوسط الأيام المفتوحة',
+          'name': isSelectedLocalEn ? 'AVG. Day Closed' : 'متوسط يوم الاغلاق',
           'icon_path': DrawableAssets.icClosedRequests,
           'count': 0
         },
@@ -1002,7 +1021,17 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           'count': 0
         },
       ];
+      if (UserCredentialsEntity.details().userType == UserType.superAdmin) {
+        _requestTypes.add({
+          'name': isSelectedLocalEn ? 'Employee Satisfaction' : 'رضا الموظف',
+          'icon_path': DrawableAssets.icDamek,
+          'count': 0
+        });
+      }
     }
+
+    final requestTypesRows = isDesktop(context) ? 1 : 2;
+    final requestTypesColumns = isDesktop(context) ? _requestTypes.length : 2;
     double topBannerHeight = screenSize.height * 0.25;
     return SelectionArea(
       child: Scaffold(
@@ -1022,7 +1051,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 _requestTypes[3]['count'] =
                     _dashboardEntity?.averageDayOpenRequests ?? 0;
                 _requestTypes[4]['count'] =
-                    _dashboardEntity?.damekSatisfaction ?? 0;
+                    UserCredentialsEntity.details().userType == UserType.itAdmin
+                        ? (_dashboardEntity?.itSupportSatisfaction ?? 0)
+                        : (_dashboardEntity?.damekSatisfaction ?? 0);
+                if (_requestTypes.length == 6) {
+                  _requestTypes[5]['count'] =
+                      _dashboardEntity?.itSupportSatisfaction ?? 0;
+                }
                 ticketsData = _dashboardEntity?.assignedTickets ?? [];
                 _onDataChange.value = !(_onDataChange.value);
               }
@@ -1392,7 +1427,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                                 Row(
                                                   children: [
                                                     Flexible(
-                                                      flex: 2,
+                                                      flex: 3,
                                                       child: getLineChart(
                                                           context,
                                                           _dashboardEntity
@@ -1403,8 +1438,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                                       width:
                                                           resources.dimen.dp20,
                                                     ),
-                                                    Flexible(
-                                                      flex: 1,
+                                                    SizedBox(
+                                                      width: 8 * 32,
                                                       child: _getByDepartmentWidget(
                                                           _dashboardEntity
                                                                   ?.ticketsByDepartment ??

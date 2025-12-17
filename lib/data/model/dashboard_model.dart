@@ -14,6 +14,7 @@ class DashboardModel extends BaseModel {
   int? totalRequests;
   int? averageDayOpenRequests;
   int? damekSatisfaction;
+  int? itSupportSatisfaction;
   List<TicketsByMonthEntity>? ticketsByMonth;
   List<TicketsByCategoryEntity>? ticketsByCategory;
   List<TicketsByCategoryEntity> ticketsByPriority = [];
@@ -36,6 +37,7 @@ class DashboardModel extends BaseModel {
     totalRequests = json['totalRequests'];
     averageDayOpenRequests = json['averageDayOpenRequests'];
     damekSatisfaction = json['damekSatisfaction'];
+    itSupportSatisfaction = json['itSupportSatisfaction'];
     if (json['ticketsByMonth'] != null) {
       ticketsByMonth = <TicketsByMonthEntity>[];
       json['ticketsByMonth'].forEach((v) {
@@ -138,6 +140,7 @@ class DashboardModel extends BaseModel {
     dashboardEntity.ticketsByOpenDay = ticketsByOpenDay;
     dashboardEntity.averageDayOpenRequests = averageDayOpenRequests;
     dashboardEntity.damekSatisfaction = damekSatisfaction;
+    dashboardEntity.itSupportSatisfaction = itSupportSatisfaction;
     return dashboardEntity;
   }
 }

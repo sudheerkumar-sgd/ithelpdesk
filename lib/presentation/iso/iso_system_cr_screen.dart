@@ -479,6 +479,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
               NameIDEntity(9, 'IT (Local Admin Access)'),
               NameIDEntity(10, 'AD Service Account'),
               NameIDEntity(11, 'AD Security Group'),
+              NameIDEntity(12, 'Time Attendance System'),
             ]
           }
           ..onDatachnage = (value) {

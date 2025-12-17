@@ -16,7 +16,7 @@ class TooltipPainter extends CustomPainter {
 
     // Rounded rectangle
     path.addRRect(RRect.fromLTRBR(
-      size.width > 30 ? 10 : 0,
+      size.width > 40 ? 10 : 0,
       0,
       size.width - (size.width > 40 ? 10 : 0),
       size.height + bottomOffset - arrowHeight,

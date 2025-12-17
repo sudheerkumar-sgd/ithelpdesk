@@ -55,6 +55,7 @@ class ReportListWidget extends StatelessWidget {
   final List<int> _selectedCategories = List<int>.empty(growable: true);
   final List<int> _filteredStatus = List<int>.empty(growable: true);
   final List<int> _filteredIssueType = List<int>.empty(growable: true);
+  final List<int> _filteredPriorities = List<int>.empty(growable: true);
   bool _chargeable = false;
   final _masterDataBloc = sl<MasterDataBloc>();
   List<dynamic>? _employees;
@@ -91,15 +92,17 @@ class ReportListWidget extends StatelessWidget {
         return (dateSort == 1
             ? Icons.arrow_upward_sharp
             : Icons.arrow_downward_sharp);
-      case 6:
-        return prioritySort == 1
-            ? Icons.arrow_downward_sharp
-            : Icons.arrow_upward_sharp;
+      // case 6:
+      //   return prioritySort == 1
+      //       ? Icons.arrow_downward_sharp
+      //       : Icons.arrow_upward_sharp;
       case 5:
         return Icons.filter_list;
       case 10:
         return Icons.filter_list;
       case 7:
+        return Icons.filter_list;
+      case 6:
         return Icons.filter_list;
       case 8:
         return Icons.filter_list;
@@ -175,6 +178,7 @@ class ReportListWidget extends StatelessWidget {
     _selectedCategories.addAll(filters?['categories'] ?? []);
     _filteredStatus.addAll(filters?['status'] ?? []);
     _filteredIssueType.addAll(filters?['issueType'] ?? []);
+    _filteredPriorities.addAll(filters?['priority'] ?? []);
     _selectedDepartments.addAll(filters?['departments'] ?? []);
     _chargeable = filters?['chargeable'] ?? false;
 
@@ -268,15 +272,15 @@ class ReportListWidget extends StatelessWidget {
               },
             );
           }
-          if (sortBy == 'priority') {
-            filteredData.sort(
-              (a, b) {
-                return prioritySort == 0
-                    ? a.priority.value.compareTo(b.priority.value)
-                    : b.priority.value.compareTo(a.priority.value);
-              },
-            );
-          }
+          // if (sortBy == 'priority') {
+          //   filteredData.sort(
+          //     (a, b) {
+          //       return prioritySort == 0
+          //           ? a.priority.value.compareTo(b.priority.value)
+          //           : b.priority.value.compareTo(a.priority.value);
+          //     },
+          //   );
+          // }
           final startIndex = (page - 1) * pageCount;
           final currentPageData = filteredData.sublist(
               min(startIndex, filteredData.length),
@@ -312,15 +316,56 @@ class ReportListWidget extends StatelessWidget {
                                           } else if (ticketsHeaderData[index]
                                                   .id ==
                                               6) {
-                                            sortBy = 'priority';
-                                            if (prioritySort == 1) {
-                                              prioritySort = 0;
-                                            } else {
-                                              prioritySort = 1;
-                                            }
-                                            page = 1;
-                                            _onSortChange.value =
-                                                !_onSortChange.value;
+                                            // sortBy = 'priority';
+                                            // if (prioritySort == 1) {
+                                            //   prioritySort = 0;
+                                            // } else {
+                                            //   prioritySort = 1;
+                                            // }
+                                            // page = 1;
+                                            // _onSortChange.value =
+                                            //     !_onSortChange.value;
+                                            Dialogs.showDialogWithClose(
+                                                    context,
+                                                    MultiSelectDialogWidget<
+                                                        PriorityType>(
+                                                      list: getPriorityTypes(),
+                                                      selectedItems: getPriorityTypes()
+                                                          .where((e) =>
+                                                              _filteredPriorities
+                                                                  .contains(
+                                                                      e.value))
+                                                          .toList(),
+                                                    ),
+                                                    maxWidth: isDesktop(context)
+                                                        ? 250
+                                                        : null,
+                                                    showClose: false)
+                                                .then((value) {
+                                              if (value != null &&
+                                                  value is List<PriorityType>) {
+                                                _filteredPriorities.clear();
+                                                _filteredPriorities.addAll(
+                                                    value.map((e) => e.value));
+                                                page = 1;
+                                                onFilterChange?.call({
+                                                  'categories':
+                                                      _selectedCategories,
+                                                  'status': _filteredStatus,
+                                                  'issueType':
+                                                      _filteredIssueType,
+                                                  'employees':
+                                                      _selectedEmployees,
+                                                  'departments':
+                                                      _selectedDepartments,
+                                                  'chargeable': _chargeable,
+                                                  'priority':
+                                                      _filteredPriorities
+                                                });
+                                                // _onSortChange.value =
+                                                //     !_onSortChange.value;
+                                              }
+                                            });
                                           } else if (ticketsHeaderData[index]
                                                   .id ==
                                               5) {
@@ -358,7 +403,9 @@ class ReportListWidget extends StatelessWidget {
                                                       _selectedEmployees,
                                                   'departments':
                                                       _selectedDepartments,
-                                                  'chargeable': _chargeable
+                                                  'chargeable': _chargeable,
+                                                  'priority':
+                                                      _filteredPriorities
                                                 });
                                                 // _onSortChange.value =
                                                 //     !_onSortChange.value;
@@ -408,7 +455,9 @@ class ReportListWidget extends StatelessWidget {
                                                         _selectedEmployees,
                                                     'departments':
                                                         _selectedDepartments,
-                                                    'chargeable': _chargeable
+                                                    'chargeable': _chargeable,
+                                                    'priority':
+                                                        _filteredPriorities
                                                   });
                                                 }
                                               });
@@ -457,7 +506,9 @@ class ReportListWidget extends StatelessWidget {
                                                         _selectedDepartments,
                                                     'employees':
                                                         _selectedEmployees,
-                                                    'chargeable': _chargeable
+                                                    'chargeable': _chargeable,
+                                                    'priority':
+                                                        _filteredPriorities
                                                   });
                                                   // _onSortChange.value =
                                                   //     !_onSortChange.value;

@@ -109,6 +109,10 @@ class BackgroundBoxDecoration {
         shape: BoxShape.circle);
   }
 
+  BoxDecoration get circularBoxWithShadow {
+    return circularBox.copyWith(boxShadow: kElevationToShadow[1]);
+  }
+
   BoxDecoration get linearGradient {
     return BoxDecoration(
       borderRadius: BorderRadius.circular(radious ?? 0),

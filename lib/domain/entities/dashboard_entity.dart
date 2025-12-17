@@ -18,6 +18,7 @@ class DashboardEntity extends BaseEntity {
   int? totalRequests;
   int? averageDayOpenRequests;
   int? damekSatisfaction;
+  int? itSupportSatisfaction;
   List<TicketsByMonthEntity>? ticketsByMonth;
   List<TicketsByCategoryEntity>? ticketsByCategory;
   List<TicketsByCategoryEntity> ticketsByPriority = [];

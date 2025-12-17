@@ -727,6 +727,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
       'issueType': (filteredData?['issueType'] is List)
           ? (filteredData?['issueType'].join(', '))
           : null,
+      'priority': (filteredData?['priority'] is List)
+          ? (filteredData?['priority'].join(', '))
+          : null,
       'employees': (filteredData?['employees'] is List)
           ? (filteredData?['employees'].join(', '))
           : null,

@@ -98,7 +98,7 @@ class DepartmentBarChart extends StatelessWidget {
                     toY: value.toDouble(),
                     width: 18,
                     borderRadius: BorderRadius.zero,
-                    color: const Color(0xFF7685FB),
+                    color: const Color(0xFF344BFD),
 
                     // Background Bar
                     backDrawRodData: BackgroundBarChartRodData(
@@ -126,16 +126,19 @@ class DepartmentBarChart extends StatelessWidget {
                     alignment: Alignment.topCenter,
                     children: [
                       Positioned(
-                        bottom: min(barHeight * .7,
-                            max(barHeight * (d / maxY), barHeight * .2)),
+                        bottom: maxY == 0
+                            ? barHeight * .5
+                            : min(barHeight * .7,
+                                max(barHeight * (d / maxY), barHeight * .2)),
                         child: Transform.rotate(
                           angle: -1.5708,
                           child: Text(
                             d.toString(),
                             style: context.textFontWeight600
                                 .onFontSize(12)
-                                .onColor(
-                                    context.resources.color.dashboardPrimary)
+                                .onColor(d >= maxY * .7
+                                    ? context.resources.color.colorWhite
+                                    : context.resources.color.dashboardPrimary)
                                 .onFontFamily(fontFamily: fontFamilyEN),
                           ),
                         ),
