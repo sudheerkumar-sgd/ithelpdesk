@@ -729,7 +729,8 @@ class ISOViewRequestScreen extends BaseScreenWidget {
         if (value != null) {
           if (context.mounted) {
             _updateDialog(context, status, message, isCommentRequired,
-                transferedTo: value['employeeId']);
+                transferedTo: value['employeeId'],
+                transferStepId: value['transferStepId']);
           }
         }
       });
@@ -738,7 +739,7 @@ class ISOViewRequestScreen extends BaseScreenWidget {
 
   _updateDialog(BuildContext context, RequestStepStatus status, String message,
       bool isCommentRequired,
-      {int? transferedTo}) {
+      {int? transferedTo, int? transferStepId}) {
     Dialogs.showDialogWithClose(
       context,
       TicketActionWidget(
@@ -756,6 +757,7 @@ class ISOViewRequestScreen extends BaseScreenWidget {
           'files': dialogResult['files']
         };
         requestParams['transferTo'] = transferedTo;
+        requestParams['transferStepId'] = transferStepId;
         _isoBloc.createISORequest(
             requestParams: requestParams,
             apiUrl: updateCRRequestApiUrl,

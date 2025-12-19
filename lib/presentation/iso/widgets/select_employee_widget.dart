@@ -72,6 +72,7 @@ class SelectEmployeeWidget extends StatelessWidget {
                 Navigator.pop(context, {
                   'employeeId': _selectedEmployee?.id,
                   'employeeName': _selectedEmployee?.name,
+                  'transferStepId': _selectedEmployee?.transferStepId
                 });
               },
               child: ActionButtonWidget(
