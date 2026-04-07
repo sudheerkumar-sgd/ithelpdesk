@@ -549,7 +549,7 @@ enum DashboardFilterEnum {
 
 enum DepartmentEnum {
   external(0, "EXT"),
-  sgd(1, "SGD"),
+  sgd(1, "DGD"),
   ded(2, "DED"),
   ec(3, "EC"),
   upd(4, "UPD"),

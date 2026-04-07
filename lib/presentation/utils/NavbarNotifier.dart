@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:ithelpdesk/presentation/directory/directory_navigator_screen.dart';
 import 'package:ithelpdesk/presentation/home/user_dashboard_navigator_screen.dart';
 import 'package:ithelpdesk/presentation/home/user_home_navigator_screen.dart';
+import 'package:ithelpdesk/presentation/ibtaker/ibtaker_navigator_screen.dart';
 import 'package:ithelpdesk/presentation/iso/iso_navigator_screen.dart';
 import 'package:ithelpdesk/presentation/profile/profile_navigator_screen.dart';
 import 'package:ithelpdesk/presentation/reports/reports_navigator_screen.dart';
@@ -69,6 +70,13 @@ class NavbarNotifier extends ChangeNotifier {
         if (UserDashboardNavigatorScreen.homeKey.currentState != null &&
             UserDashboardNavigatorScreen.homeKey.currentState!.canPop()) {
           UserDashboardNavigatorScreen.homeKey.currentState!.maybePop();
+          exitingApp = false;
+        }
+        break;
+      case 6:
+        if (IbtakerNavigatorScreen.ibtakerKey.currentState != null &&
+            IbtakerNavigatorScreen.ibtakerKey.currentState!.canPop()) {
+          IbtakerNavigatorScreen.ibtakerKey.currentState!.maybePop();
           exitingApp = false;
         }
         break;

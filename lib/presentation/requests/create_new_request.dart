@@ -62,6 +62,7 @@ class CreateNewRequest extends BaseScreenWidget {
   PriorityType? priority;
   final ValueNotifier<EserviceEntity?> _serviceID = ValueNotifier(null);
   final ValueNotifier<UserEntity?> _raisedBy = ValueNotifier(null);
+  bool isSubmitting = false;
 
   @override
   Widget build(BuildContext context) {
@@ -108,6 +109,7 @@ class CreateNewRequest extends BaseScreenWidget {
                   Dialogs.showInfoLoader(
                       context, resources.string.submittingRequest);
                 } else if (state is OnCreateTicketSuccess) {
+                  isSubmitting = false;
                   Dialogs.dismiss(context);
                   Dialogs.showInfoDialog(context, PopupType.success,
                           '${resources.string.successfullySubmitted}\n\n Ticket Id: ${state.createTicketResponse}')
@@ -115,6 +117,7 @@ class CreateNewRequest extends BaseScreenWidget {
                     reloadPage();
                   });
                 } else if (state is OnApiError) {
+                  isSubmitting = false;
                   Dialogs.dismiss(context);
                   Dialogs.showInfoDialog(
                       context, PopupType.fail, state.message);
@@ -1048,7 +1051,9 @@ class CreateNewRequest extends BaseScreenWidget {
                             ),
                             InkWell(
                               onTap: () async {
-                                if (_formKey.currentState?.validate() == true) {
+                                if (_formKey.currentState?.validate() == true &&
+                                    isSubmitting == false) {
+                                  isSubmitting = true;
                                   final ticket = TicketEntity();
                                   ticket.userID =
                                       UserCredentialsEntity.details().id;

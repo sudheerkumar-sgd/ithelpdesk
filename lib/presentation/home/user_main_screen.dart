@@ -20,6 +20,7 @@ import 'package:ithelpdesk/presentation/home/admin_dashboard_screen.dart';
 import 'package:ithelpdesk/presentation/home/user_dashboard_navigator_screen.dart';
 import 'package:ithelpdesk/presentation/home/user_home_navigator_screen.dart';
 import 'package:ithelpdesk/presentation/home/user_home_screen.dart';
+import 'package:ithelpdesk/presentation/ibtaker/ibtaker_navigator_screen.dart';
 import 'package:ithelpdesk/presentation/iso/iso_navigator_screen.dart';
 import 'package:ithelpdesk/presentation/profile/profile_navigator_screen.dart';
 import 'package:ithelpdesk/presentation/reports/reports_navigator_screen.dart';
@@ -104,6 +105,8 @@ class _MainScreenState extends State<UserMainScreen> {
       case 5:
         currentScreen =
             const UserDashboardNavigatorScreen(screen: AdminDashboardScreen());
+      case 6:
+        currentScreen = IbtakerNavigatorScreen();
       default:
         currentScreen =
             UserCredentialsEntity.details().userType == UserType.user

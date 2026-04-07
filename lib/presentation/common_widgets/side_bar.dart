@@ -12,7 +12,6 @@ class SideBar extends StatelessWidget {
   final Function(int) onItemSelected;
   SideBar({required this.onItemSelected, this.seletedItem = 0, super.key});
   final ValueNotifier _selectedIndex = ValueNotifier(0);
-  final ValueNotifier _onCRClick = ValueNotifier(false);
 
   @override
   Widget build(BuildContext context) {
@@ -229,6 +228,33 @@ class SideBar extends StatelessWidget {
                   ),
                   title: Text(
                     resources.string.directory,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: context.textFontWeight600
+                        .onFontSize(resources.fontSize.dp12),
+                  ),
+                ),
+                SizedBox(
+                  height: resources.dimen.dp10,
+                ),
+                ListTile(
+                  onTap: () {
+                    _selectedIndex.value = 6;
+                    onItemSelected(6);
+                  },
+                  leading: SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: ImageWidget(
+                            path: DrawableAssets.icStar,
+                            backgroundTint: index == 6
+                                ? resources.color.sideBarItemSelected
+                                : resources.color.sideBarItemUnselected,
+                            padding: const EdgeInsets.symmetric(horizontal: 5))
+                        .loadImageWithMoreTapArea,
+                  ),
+                  title: Text(
+                    'Ibtaker',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: context.textFontWeight600
