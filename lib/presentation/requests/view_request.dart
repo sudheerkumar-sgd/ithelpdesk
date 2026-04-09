@@ -348,6 +348,24 @@ class ViewRequest extends BaseScreenWidget {
                       ),
                       maxWidth: 450)
                   .then((value) async {
+                if (value == null) return;
+                if (value['isForwordToCategory'] == true) {
+                  final categoryID = value['categoryID'] ?? 0;
+                  final subCategoryID = value['subCategoryID'] ?? 0;
+                  final assignedTo = value['assignedTo'];
+                  if (categoryID > 0 && subCategoryID > 0) {
+                    _servicesBloc.updateTicketByStatus(
+                      apiUrl: changeCategoryAndAssignApiUrl,
+                      requestParams: {
+                        'ticketId': ticket.id ?? 0,
+                        'categoryID': categoryID,
+                        'subCategoryID': subCategoryID,
+                        'assignedTo': assignedTo,
+                      },
+                    );
+                  }
+                  return;
+                }
                 updateTicket.status = StatusType.open;
                 if (value['employee'] > 0) {
                   updateTicket.assignedUserID = value['employee'];
@@ -378,6 +396,24 @@ class ViewRequest extends BaseScreenWidget {
                       ),
                       maxWidth: 450)
                   .then((value) async {
+                if (value == null) return;
+                if (value['isForwordToCategory'] == true) {
+                  final categoryID = value['categoryID'] ?? 0;
+                  final subCategoryID = value['subCategoryID'] ?? 0;
+                  final assignedTo = value['assignedTo'] ?? 0;
+                  if (categoryID > 0 && subCategoryID > 0 && assignedTo > 0) {
+                    _servicesBloc.updateTicketByStatus(
+                      apiUrl: changeCategoryAndAssignApiUrl,
+                      requestParams: {
+                        'ticketId': ticket.id ?? 0,
+                        'categoryID': categoryID,
+                        'subCategoryID': subCategoryID,
+                        'assignedTo': assignedTo,
+                      },
+                    );
+                  }
+                  return;
+                }
                 updateTicket.status = StatusType.open;
                 if (value['employee'] > 0) {
                   updateTicket.assignedUserID = value['employee'];

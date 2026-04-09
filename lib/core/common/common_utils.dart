@@ -538,6 +538,8 @@ openNewTab(String url) {
 
 String get getImageBaseUrl =>
     '${FlavorConfig.instance.values.portalBaseUrl}Attachments/';
+String get getPortalImageBaseUrl =>
+    '${FlavorConfig.instance.values.portalBaseUrl}UAQIntranetPortal/';
 
 List<StatusType> getStatusTypes() {
   return [

@@ -126,6 +126,8 @@ const String getTicketsDetailsApiUrl = '${apiFolderUrl}Ticket/GetTicketById';
 const String updateTicketByStatusApiUrl =
     '${apiFolderUrl}CreateTicket/UpdateTicket';
 const String forwordTicketApiUrl = '${apiFolderUrl}CreateTicket/ForwordTicket';
+const String changeCategoryAndAssignApiUrl =
+    '${apiFolderUrl}CreateTicket/ChangeCategoryAndAssign';
 
 //iso system urls
 const String getManagersByDptApiUrl =
