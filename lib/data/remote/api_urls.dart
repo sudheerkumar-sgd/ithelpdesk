@@ -140,3 +140,4 @@ const String crTransferEmployeesApiUrl =
     '${apiFolderUrl}ISOCR/GetCRTransferEmployees';
 const String myAndTeamIbtakerIdeasApiUrl =
     '${apiFolderUrl}Ibtakar/GetAllIbtakerIdeas';
+const String updateIbtakerStatusApiUrl = '${apiFolderUrl}Ibtakar/UpdateStatus';

@@ -16,6 +16,8 @@ const mobileRegx = r'^05[0-9]{8}$';
 const emailTemplatePath = 'assets/json/email_template.txt';
 const requestService = 'assets/json/request_service.json';
 
+const ibtakerUsers = ['mooza.binyeem', 'sudheer.akula', 'mohammed.kamran'];
+
 final List<NameIDEntity> designations = [
   NameIDEntity(1, "Accountant"),
   NameIDEntity(2, "Accounting"),

@@ -1,13 +1,24 @@
 // ignore_for_file: must_be_immutable
 import 'package:flutter/material.dart';
+import 'package:ithelpdesk/core/constants/constants.dart';
+import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
+import 'package:ithelpdesk/data/remote/api_urls.dart';
 import 'package:ithelpdesk/domain/entities/ibtaker_entity.dart';
-import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
+import 'package:ithelpdesk/injection_container.dart';
+import 'package:ithelpdesk/presentation/bloc/iso/iso_bloc.dart';
+import 'package:ithelpdesk/presentation/common_widgets/attachment_preview_widget.dart';
+import 'package:ithelpdesk/presentation/common_widgets/alert_dialog_widget.dart';
+import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
+import 'package:ithelpdesk/presentation/common_widgets/item_service_steps.dart';
+import 'package:ithelpdesk/presentation/utils/dialogs.dart';
+import 'package:ithelpdesk/res/drawables/background_box_decoration.dart';
+import 'package:ithelpdesk/res/drawables/drawable_assets.dart';
 
-class IbtakerDetailsScreen extends BaseScreenWidget {
+class IbtakerDetailsScreen extends StatefulWidget {
   final IbtakerIdeaEntity idea;
-  IbtakerDetailsScreen({required this.idea, super.key});
+  const IbtakerDetailsScreen({required this.idea, super.key});
 
   static Future<dynamic> start(BuildContext context, IbtakerIdeaEntity idea) {
     return Navigator.push(
@@ -17,6 +28,18 @@ class IbtakerDetailsScreen extends BaseScreenWidget {
       ),
     );
   }
+
+  @override
+  State<IbtakerDetailsScreen> createState() => _IbtakerDetailsScreenState();
+}
+
+class _IbtakerDetailsScreenState extends State<IbtakerDetailsScreen> {
+  final ISOBloc _isoBloc = sl<ISOBloc>();
+  final TextEditingController _remarksController = TextEditingController();
+  final TextEditingController _assignedToController = TextEditingController();
+  bool _updating = false;
+
+  IbtakerIdeaEntity get idea => widget.idea;
 
   Widget _pair(BuildContext context, String title, String value) {
     final resources = context.resources;
@@ -69,6 +92,47 @@ class IbtakerDetailsScreen extends BaseScreenWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _updateStatus(IbtakerStatus status, {int? assignedTo}) async {
+    if (_updating) return;
+    _updating = true;
+    Dialogs.loader(context);
+    final remarks = _remarksController.text.trim().isEmpty
+        ? '${status.toString()} by ${idea.name ?? 'user'}'
+        : _remarksController.text.trim();
+    final payload = <String, dynamic>{
+      'id': idea.id ?? 0,
+      'status': status.value,
+      'remarks': remarks,
+    };
+    if (assignedTo != null && assignedTo > 0) {
+      payload['assignedTo'] = assignedTo;
+    }
+    final response = await _isoBloc.createISORequest(
+      apiUrl: updateIbtakerStatusApiUrl,
+      requestParams: payload,
+    );
+    if (mounted) {
+      Dialogs.dismiss(context);
+      if (response is OnISOApiResponse) {
+        await Dialogs.showInfoDialog(
+          context,
+          PopupType.success,
+          isSelectedLocalEn ? 'Status updated successfully' : 'تم تحديث الحالة',
+        );
+        if (mounted) {
+          Navigator.pop(context, true);
+        }
+      } else if (response is OnISOApiError) {
+        await Dialogs.showInfoDialog(
+          context,
+          PopupType.fail,
+          response.message,
+        );
+      }
+    }
+    _updating = false;
   }
 
   @override
@@ -131,18 +195,18 @@ class IbtakerDetailsScreen extends BaseScreenWidget {
                       ),
                       const SizedBox(height: 8),
                       Container(
-                        color: const Color(0xffFBE4B2),
+                        decoration: BackgroundBoxDecoration(
+                                boxColor: idea.status?.color(), radious: 5)
+                            .roundedCornerBox,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 6),
                         child: Text(
-                          (idea.status == 3)
-                              ? 'Approved'
-                              : (idea.status == 5)
-                                  ? 'Rejected'
-                                  : 'Open',
-                          style: context.textFontWeight700.onFontSize(
-                            resources.fontSize.dp11,
-                          ),
+                          idea.status?.toString() ?? '',
+                          style: context.textFontWeight700
+                              .onFontSize(
+                                resources.fontSize.dp11,
+                              )
+                              .onColor(resources.color.colorWhite),
                         ),
                       )
                     ],
@@ -176,6 +240,74 @@ class IbtakerDetailsScreen extends BaseScreenWidget {
                         SizedBox(height: resources.dimen.dp10),
                         _pair(context, 'Improvement Proposal',
                             idea.improvementProposal ?? ''),
+                        if (idea.ibtakerAttachments.isNotEmpty) ...[
+                          SizedBox(height: resources.dimen.dp10),
+                          Container(
+                            color: resources.color.colorWhite,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  resources.string.attachments,
+                                  style: context.textFontWeight700
+                                      .onFontSize(resources.fontSize.dp13),
+                                ),
+                                SizedBox(height: resources.dimen.dp10),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: List.generate(
+                                      idea.ibtakerAttachments.length, (index) {
+                                    final filePath = idea
+                                            .ibtakerAttachments[index]
+                                            .filePath ??
+                                        '';
+                                    if (filePath.isEmpty) {
+                                      return const SizedBox.shrink();
+                                    }
+                                    return InkWell(
+                                      onTap: () {
+                                        Dialogs.showDialogWithClose(
+                                          context,
+                                          maxWidth: 400,
+                                          AttachmentPreviewWidget(
+                                              fileName: filePath),
+                                        );
+                                      },
+                                      child: Padding(
+                                        padding: EdgeInsets.only(
+                                            bottom: resources.dimen.dp8),
+                                        child: Row(
+                                          children: [
+                                            ImageWidget(
+                                                    path: DrawableAssets
+                                                        .icAttachment,
+                                                    backgroundTint: resources
+                                                        .color.viewBgColor)
+                                                .loadImage,
+                                            SizedBox(
+                                                width: resources.dimen.dp10),
+                                            Expanded(
+                                              child: Text(
+                                                filePath.split('/').last,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: context.textFontWeight500
+                                                    .copyWith(
+                                                  decoration:
+                                                      TextDecoration.underline,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  }),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),
@@ -195,30 +327,21 @@ class IbtakerDetailsScreen extends BaseScreenWidget {
                               .onFontSize(resources.fontSize.dp14),
                         ),
                         SizedBox(height: resources.dimen.dp10),
-                        for (final action in updates.take(5)) ...[
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                width: 10,
-                                height: 10,
-                                margin: const EdgeInsets.only(top: 5),
-                                decoration: const BoxDecoration(
-                                  color: Color(0xff41C76A),
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  '${action.actionName}\n${action.actionDate ?? ''}',
-                                  style: context.textFontWeight500
-                                      .onFontSize(resources.fontSize.dp11),
-                                ),
-                              ),
-                            ],
+                        for (int i = 0; i < updates.length; i++) ...[
+                          ItemServiceSteps(
+                            stepText: updates[i].actionByName ?? '',
+                            stepColor: (i < updates.length - 1)
+                                ? Colors.green
+                                : updates[i].action == IbtakerStatus.closed
+                                    ? resources.color.colorGreen26B757
+                                    : updates[i].action ==
+                                            IbtakerStatus.rejected
+                                        ? resources.color.rejected
+                                        : resources.color.pending,
+                            stepSubText:
+                                '${updates[i].action?.toString() ?? ''}\n${updates[i].actionDate ?? ''}',
+                            isLastStep: i == updates.length - 1,
                           ),
-                          SizedBox(height: resources.dimen.dp10),
                         ]
                       ],
                     ),
@@ -226,64 +349,65 @@ class IbtakerDetailsScreen extends BaseScreenWidget {
                 )
               ],
             ),
-            SizedBox(height: resources.dimen.dp10),
-            Container(
-              color: resources.color.colorWhite,
-              padding: EdgeInsets.all(resources.dimen.dp15),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Comments',
-                    style: context.textFontWeight700
-                        .onFontSize(resources.fontSize.dp13),
-                  ),
-                  SizedBox(height: resources.dimen.dp10),
-                  TextFormField(
-                    minLines: 3,
-                    maxLines: 4,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
+            if (idea.status != IbtakerStatus.closed &&
+                idea.status != IbtakerStatus.rejected) ...[
+              SizedBox(height: resources.dimen.dp10),
+              Container(
+                color: resources.color.colorWhite,
+                padding: EdgeInsets.all(resources.dimen.dp15),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Comments',
+                      style: context.textFontWeight700
+                          .onFontSize(resources.fontSize.dp13),
                     ),
-                  )
+                    SizedBox(height: resources.dimen.dp10),
+                    TextFormField(
+                      controller: _remarksController,
+                      minLines: 3,
+                      maxLines: 4,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: resources.dimen.dp12),
+              Row(
+                children: [
+                  if (idea.status == IbtakerStatus.approved)
+                    _actionButton(
+                      context,
+                      IbtakerStatus.closed.toString(),
+                      IbtakerStatus.closed.color(),
+                      () => _updateStatus(IbtakerStatus.closed),
+                    ),
+                  if (idea.status == IbtakerStatus.submitted)
+                    _actionButton(
+                      context,
+                      IbtakerStatus.approved.toString(),
+                      IbtakerStatus.approved.color(),
+                      () => _updateStatus(IbtakerStatus.approved),
+                    ),
+                  if (idea.status != IbtakerStatus.hold)
+                    _actionButton(
+                      context,
+                      IbtakerStatus.hold.toString(),
+                      IbtakerStatus.hold.color(),
+                      () => _updateStatus(IbtakerStatus.hold),
+                    ),
+                  _actionButton(
+                    context,
+                    IbtakerStatus.rejected.toString(),
+                    IbtakerStatus.rejected.color(),
+                    () => _updateStatus(IbtakerStatus.rejected),
+                  ),
                 ],
               ),
-            ),
-            SizedBox(height: resources.dimen.dp12),
-            Row(
-              children: [
-                _actionButton(
-                  context,
-                  'Close',
-                  resources.color.colorGray9E9E9E,
-                  () => Navigator.pop(context),
-                ),
-                _actionButton(
-                  context,
-                  'Transfer',
-                  const Color(0xffF6A63A),
-                  () {},
-                ),
-                _actionButton(
-                  context,
-                  'Approve',
-                  const Color(0xff4CAF50),
-                  () {},
-                ),
-                _actionButton(
-                  context,
-                  'Hold',
-                  const Color(0xff3B77F5),
-                  () {},
-                ),
-                _actionButton(
-                  context,
-                  'Reject',
-                  const Color(0xffF26C6C),
-                  () {},
-                ),
-              ],
-            ),
+            ]
           ],
         ),
       ),
@@ -291,5 +415,9 @@ class IbtakerDetailsScreen extends BaseScreenWidget {
   }
 
   @override
-  void doDispose() {}
+  void dispose() {
+    _remarksController.dispose();
+    _assignedToController.dispose();
+    super.dispose();
+  }
 }

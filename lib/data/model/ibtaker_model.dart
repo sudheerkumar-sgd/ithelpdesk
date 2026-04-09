@@ -1,3 +1,6 @@
+// ignore_for_file: must_be_immutable
+
+import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/data/model/base_model.dart';
 import 'package:ithelpdesk/domain/entities/ibtaker_entity.dart';
 
@@ -7,6 +10,7 @@ class IbtakerListDataModel extends BaseModel {
   int? totalCount;
   int? totalPages;
   List<IbtakerIdeaEntity> ideas = [];
+  List<IbtakerStatusCountEntity> countByStatus = [];
 
   IbtakerListDataModel.fromJson(Map<String, dynamic> response) {
     pageNumber = response['pageNumber'] as int?;
@@ -18,8 +22,16 @@ class IbtakerListDataModel extends BaseModel {
       ideas = <IbtakerIdeaEntity>[];
       for (final dynamic e in rawIdeas) {
         if (e is Map<String, dynamic>) {
-          ideas.add(IbtakerIdeaModel.fromJson(e)
-              .toEntity());
+          ideas.add(IbtakerIdeaModel.fromJson(e).toEntity());
+        }
+      }
+    }
+    final dynamic rawStatusCounts = response['countByStatus'];
+    if (rawStatusCounts is List) {
+      countByStatus = <IbtakerStatusCountEntity>[];
+      for (final dynamic e in rawStatusCounts) {
+        if (e is Map<String, dynamic>) {
+          countByStatus.add(IbtakerStatusCountModel.fromJson(e).toEntity());
         }
       }
     }
@@ -32,7 +44,8 @@ class IbtakerListDataModel extends BaseModel {
       ..pageSize = pageSize
       ..totalCount = totalCount
       ..totalPages = totalPages
-      ..ideas = ideas;
+      ..ideas = ideas
+      ..countByStatus = countByStatus;
   }
 }
 
@@ -71,6 +84,7 @@ class IbtakerIdeaModel extends BaseModel {
   String? createdOn;
   IbtakerDepartmentEntity? departmentData;
   List<IbtakerActionEntity> actions = [];
+  List<IbtakerAttachmentEntity> ibtakerAttachments = [];
 
   IbtakerIdeaModel.fromJson(Map<String, dynamic> json) {
     id = json['id'] as int?;
@@ -100,6 +114,16 @@ class IbtakerIdeaModel extends BaseModel {
         }
       }
     }
+    final dynamic attachmentItems = json['ibtakerAttachments'];
+    if (attachmentItems is List) {
+      ibtakerAttachments = <IbtakerAttachmentEntity>[];
+      for (final dynamic item in attachmentItems) {
+        if (item is Map<String, dynamic>) {
+          ibtakerAttachments
+              .add(IbtakerAttachmentModel.fromJson(item).toEntity());
+        }
+      }
+    }
   }
 
   @override
@@ -114,11 +138,12 @@ class IbtakerIdeaModel extends BaseModel {
       ..currentIssue = currentIssue
       ..improvementProposal = improvementProposal
       ..attachments = attachments?.toString()
-      ..status = status
+      ..status = IbtakerStatus.fromId(status)
       ..isDeleted = isDeleted
       ..createdOn = createdOn
       ..departmentData = departmentData
-      ..actions = actions;
+      ..actions = actions
+      ..ibtakerAttachments = ibtakerAttachments;
   }
 }
 
@@ -127,6 +152,7 @@ class IbtakerActionModel extends BaseModel {
   int? ibtakerId;
   int? actionType;
   int? actionBy;
+  String? actionByName;
   int? actionTo;
   String? remarks;
   String? actionDate;
@@ -136,6 +162,7 @@ class IbtakerActionModel extends BaseModel {
     ibtakerId = json['ibtakerId'] as int?;
     actionType = json['actionType'] as int?;
     actionBy = json['actionBy'] as int?;
+    actionByName = json['actionByName'] as String?;
     actionTo = json['actionTo'] as int?;
     remarks = json['remarks'] as String?;
     actionDate = json['actionDate'] as String?;
@@ -147,9 +174,54 @@ class IbtakerActionModel extends BaseModel {
       ..id = id
       ..ibtakerId = ibtakerId
       ..actionType = actionType
+      ..action = IbtakerStatus.fromId(actionType)
       ..actionBy = actionBy
+      ..actionByName = actionByName
       ..actionTo = actionTo
       ..remarks = remarks
       ..actionDate = actionDate;
+  }
+}
+
+class IbtakerStatusCountModel extends BaseModel {
+  String? status;
+  int? statusValue;
+  int? count;
+
+  IbtakerStatusCountModel.fromJson(Map<String, dynamic> json) {
+    status = json['status'] as String?;
+    statusValue = json['statusValue'] as int?;
+    count = json['count'] as int?;
+  }
+
+  @override
+  IbtakerStatusCountEntity toEntity() {
+    return IbtakerStatusCountEntity()
+      ..status = status
+      ..statusValue = statusValue
+      ..count = count;
+  }
+}
+
+class IbtakerAttachmentModel extends BaseModel {
+  int? id;
+  int? ibtakerId;
+  String? filePath;
+  String? uploadedOn;
+
+  IbtakerAttachmentModel.fromJson(Map<String, dynamic> json) {
+    id = json['id'] as int?;
+    ibtakerId = json['ibtakerId'] as int?;
+    filePath = json['filePath'] as String?;
+    uploadedOn = json['uploadedOn'] as String?;
+  }
+
+  @override
+  IbtakerAttachmentEntity toEntity() {
+    return IbtakerAttachmentEntity()
+      ..id = id
+      ..ibtakerId = ibtakerId
+      ..filePath = filePath
+      ..uploadedOn = uploadedOn;
   }
 }

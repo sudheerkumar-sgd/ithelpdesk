@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:flutter/material.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/extensions/string_extension.dart';
 
@@ -575,5 +576,66 @@ enum DepartmentEnum {
   @override
   String toString() {
     return name;
+  }
+}
+
+enum IbtakerStatus {
+  all(-1),
+  pending(0),
+  submitted(1),
+  approved(2),
+  rejected(3),
+  transfered(4),
+  hold(5),
+  closed(6);
+
+  final int value;
+  const IbtakerStatus(this.value);
+
+  factory IbtakerStatus.fromId(int? value) {
+    return values.firstWhere((e) => e.value == (value ?? 0));
+  }
+
+  @override
+  String toString() {
+    switch (this) {
+      case pending:
+        return isSelectedLocalEn ? 'Pending' : 'في الانتظار';
+      case approved:
+        return isSelectedLocalEn ? 'Approved' : 'معتمد';
+      case rejected:
+        return isSelectedLocalEn ? 'Rejected' : 'مرفوض';
+      case transfered:
+        return isSelectedLocalEn ? 'Transfered' : 'تحويل';
+      case submitted:
+        return isSelectedLocalEn ? 'Submitted' : 'تم الارسال';
+      case hold:
+        return isSelectedLocalEn ? 'Hold' : 'تعليق';
+      case closed:
+        return isSelectedLocalEn ? 'Closed' : 'اغلاق';
+      case all:
+        return isSelectedLocalEn ? 'All' : 'جميع';
+    }
+  }
+
+  Color color() {
+    switch (this) {
+      case IbtakerStatus.pending:
+        return Colors.orange;
+      case IbtakerStatus.submitted:
+        return Colors.blue;
+      case IbtakerStatus.approved:
+        return Colors.green;
+      case IbtakerStatus.rejected:
+        return Colors.red;
+      case IbtakerStatus.transfered:
+        return Colors.purple;
+      case IbtakerStatus.hold:
+        return Colors.orange;
+      case IbtakerStatus.closed:
+        return Colors.green;
+      case all:
+        return Colors.grey;
+    }
   }
 }
