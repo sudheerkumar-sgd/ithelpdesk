@@ -13,6 +13,7 @@ import 'package:ithelpdesk/data/model/master_data_models.dart';
 import 'package:ithelpdesk/data/remote/api_urls.dart';
 import 'package:ithelpdesk/domain/entities/form_entities.dart';
 import 'package:ithelpdesk/domain/entities/single_data_entity.dart';
+import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
 import 'package:ithelpdesk/injection_container.dart';
 import 'package:ithelpdesk/presentation/bloc/iso/iso_bloc.dart';
 import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart';
@@ -1330,7 +1331,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
   Widget build(BuildContext context) {
     final resources = context.resources;
     int employeeCategory = 0;
-    final categories = [
+    final allCategories = [
       NameIDEntity(1, 'New Employee', nameAr: 'موظف جديد'),
       NameIDEntity(2, 'Migration Employee', nameAr: 'موظف الهجرة'),
       NameIDEntity(3, 'Existing Employee', nameAr: 'الموظف الحالي'),
@@ -1339,8 +1340,27 @@ class IsoSystemCrScreen extends BaseScreenWidget {
       NameIDEntity(6, 'Database and Applications',
           nameAr: 'قاعدة البيانات والتطبيقات'),
     ];
-    var noOfCategoryRows = 2;
-    var noOfCategoryRowItems = 4; //categories.length;
+    final userCategoryIds =
+        (UserCredentialsEntity.userData?.isoUserCategories ?? '')
+            .split(RegExp(r'[,\s]+'))
+            .where((id) => id.trim().isNotEmpty)
+            .map((id) => int.tryParse(id.trim()))
+            .whereType<int>()
+            .toSet();
+    final filteredCategories = userCategoryIds.isEmpty
+        ? allCategories
+        : allCategories
+            .where((category) => userCategoryIds.contains(category.id))
+            .toList();
+    final categories =
+        filteredCategories.isEmpty ? allCategories : filteredCategories;
+    int getSelectedCategoryId() => categories[employeeCategory].id ?? 1;
+
+    var noOfCategoryRowItems = 4;
+    var noOfCategoryRows = (categories.length / noOfCategoryRowItems).ceil();
+    if (noOfCategoryRows == 0) {
+      noOfCategoryRows = 1;
+    }
     final currrentFieds = [
       _getNewEmpFormFields(context),
       _getMigrationEmpFormFields(context),
@@ -1495,7 +1515,8 @@ class IsoSystemCrScreen extends BaseScreenWidget {
               ValueListenableBuilder(
                   valueListenable: doScreenRefresh,
                   builder: (context, redresh, child) {
-                    final currentFields = currrentFieds[employeeCategory];
+                    final selectedCategoryId = getSelectedCategoryId();
+                    final currentFields = currrentFieds[selectedCategoryId - 1];
                     return Container(
                       padding: EdgeInsets.symmetric(
                           vertical: resources.dimen.dp15,
@@ -1589,6 +1610,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
                   InkWell(
                     onTap: () async {
                       if (_formKey.currentState?.validate() == true) {
+                        final selectedCategoryId = getSelectedCategoryId();
                         // final request = RequestDetail();
                         // request.workflowId = categories[employeeCategory].id;
                         // request.firstName = fieldsData['firstname'] ?? '';
@@ -1618,7 +1640,7 @@ class IsoSystemCrScreen extends BaseScreenWidget {
                         //     (fieldsData['accessdetails'] as NameIDEntity?)
                         //         ?.name;
                         final data = <String, dynamic>{};
-                        data['workflowId'] = categories[employeeCategory].id;
+                        data['workflowId'] = selectedCategoryId;
                         //data['requestDetails'] = jsonEncode(data);
                         data['requestPriority'] =
                             (fieldsData['priority'] as NameIDEntity?)?.id ?? 1;
@@ -1631,8 +1653,8 @@ class IsoSystemCrScreen extends BaseScreenWidget {
                         }
                         details['createdon'] =
                             getDateByformat('dd/MM/yyyy', DateTime.now());
-                        if (categories[employeeCategory].id == 4 ||
-                            categories[employeeCategory].id == 5) {
+                        if (selectedCategoryId == 4 ||
+                            selectedCategoryId == 5) {
                           details['showmore'] = fieldsData['showmore'] ?? false;
                         }
                         data['requestDetails'] = jsonEncode(details);

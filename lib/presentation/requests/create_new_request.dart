@@ -67,18 +67,11 @@ class CreateNewRequest extends BaseScreenWidget {
   @override
   Widget build(BuildContext context) {
     final resources = context.resources;
-    final categories = UserCredentialsEntity.details().isoUser == true
-        ? [
-            resources.string.supportITRequest,
-            resources.string.itISOCRS,
-            resources.string.eservices,
-            resources.string.application
-          ]
-        : [
-            resources.string.supportITRequest,
-            resources.string.eservices,
-            resources.string.application
-          ];
+    final categories = [
+      resources.string.supportITRequest,
+      resources.string.eservices,
+      resources.string.application
+    ];
     final priorities = getPriorityTypes();
     var noOfCategoryRows = 1;
     var noOfCategoryRowItems = categories.length;
