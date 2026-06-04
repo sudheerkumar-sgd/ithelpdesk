@@ -15,6 +15,7 @@ import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
 import 'package:ithelpdesk/injection_container.dart';
 import 'package:ithelpdesk/presentation/bloc/iso/iso_bloc.dart';
 import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart';
+import 'package:ithelpdesk/presentation/common_widgets/dynamic_report_column_config.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dynamic_report_list_widget.dart';
 import 'package:ithelpdesk/presentation/ibtaker/ibtaker_details_screen.dart';
 import 'package:ithelpdesk/presentation/utils/dialogs.dart';
@@ -533,11 +534,13 @@ class _IbtakerHomeScreenState extends State<IbtakerHomeScreen> {
                                   ),
                                 );
                               }
-                              final reportHeaderData =
+                              final reportLabels =
                                   ideas.first.toJson().keys.toList();
+                              final ticketsHeaderData =
+                                  buildReportHeadersFromKeys(reportLabels);
                               final reportTableColunwidths =
                                   <int, FlexColumnWidth>{};
-                              reportHeaderData.asMap().forEach((index, value) {
+                              ticketsHeaderData.asMap().forEach((index, value) {
                                 reportTableColunwidths[index] =
                                     const FlexColumnWidth(4);
                               });
@@ -547,7 +550,7 @@ class _IbtakerHomeScreenState extends State<IbtakerHomeScreen> {
                                 page: snapShot.data?.entity?.pageNumber ?? 1,
                                 totalPagecount:
                                     snapShot.data?.entity?.totalPages ?? 1,
-                                ticketsHeaderData: reportHeaderData,
+                                ticketsHeaderData: ticketsHeaderData,
                                 onRowSelected: (item) {
                                   if (item is IbtakerIdeaEntity) {
                                     IbtakerDetailsScreen.start(context, item)

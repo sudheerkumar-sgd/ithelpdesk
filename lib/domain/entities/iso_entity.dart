@@ -14,7 +14,7 @@ class CRRequestEntity extends BaseEntity {
   String? requestType;
   int? workflowId;
   int? currentStep;
-  RequestStatus? requestStaus;
+  RequestStatus? requestStatus;
   String? createdAt;
   String? updatedAt;
   String? attachmentUrlPrefix;
@@ -35,11 +35,12 @@ class CRRequestEntity extends BaseEntity {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['requestId'] = requestId;
     data['requestType'] = requestType;
+    data['currentStep'] = currentStep;
     data['currentStepName'] = currentStepName;
-    data['requestStaus'] = requestStaus;
+    data['requestStaus'] = requestStatus;
+    data['requestStatus'] = requestStatus?.toString();
     data['assginedEmployee'] = assginedEmployee;
     data['requestPriority'] = requestPriority?.toString();
-    data['requestPriority'] = requestPriority.toString();
     data['createdAt'] = createdAt;
     data['updatedAt'] = updatedAt;
     return data;

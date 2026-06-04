@@ -768,6 +768,27 @@ class IsoSystemCrScreen extends BaseScreenWidget {
             fieldsData['priority'] = value;
           },
         FormEntity()
+          ..type = FormFieldType.collection
+          ..name = 'crtype'
+          ..labelEn = 'CR Type'
+          ..labelAr = 'نوع التغيير'
+          ..validation = (FormValidationEntity()..isrequired = true)
+          ..messages = (FormMessageEntity()
+            ..requiredEn = 'Please Select CR Type'
+            ..requiredAr = 'الرجاء تحديد نوع التغيير')
+          ..inputFieldData = {
+            'items': [
+              NameIDEntity(1, 'VPN'),
+              NameIDEntity(2, 'IP Blocking'),
+              NameIDEntity(3, 'VAPT'),
+              NameIDEntity(4, 'Firewall'),
+              NameIDEntity(5, 'Others'),
+            ]
+          }
+          ..onDatachnage = (value) {
+            fieldsData['crtype'] = value;
+          },
+        FormEntity()
           ..type = FormFieldType.textarea
           ..labelEn = 'Change Description'
           ..labelAr = 'تغيير الوصف'

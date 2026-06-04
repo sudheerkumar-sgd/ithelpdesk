@@ -248,14 +248,26 @@ final List<NameIDEntity> designations = [
   NameIDEntity(224, "Vice President of the General Department of Health"),
 ];
 
+/// ISO CR current-step filter options (id = AssignedRole sent as `currentStep` API param).
+final List<NameIDEntity> isoCrCurrentStepFilters = [
+  NameIDEntity(2, 'Infrastructure Director Approval'),
+  NameIDEntity(3, 'System Team Implementation'),
+  NameIDEntity(4, 'Oracle Team Implementation'),
+  NameIDEntity(5, 'Time Attendance Team Implementation'),
+  NameIDEntity(6, 'New Department'),
+  NameIDEntity(7, 'Network Team Implementation'),
+  NameIDEntity(8, 'System and Network Security'),
+  NameIDEntity(9, 'DB Team'),
+  NameIDEntity(10, 'DATABASE DIRECTOR'),
+];
+
 final crRequestReport = [
   {"key": "requestId", "Name": "Request Id"},
   {"key": "requestType", "Name": "Request Type"},
   {"key": "requestPriority", "Name": "Priority"},
-  {"key": "comments", "Name": "Comments"},
   {"key": "currentStep", "Name": "Current Step"},
   {"key": "assginedEmployee", "Name": "Assgined Employee"},
-  {"key": "requestStaus", "Name": "Request Status"},
+  {"key": "requestStatus", "Name": "Request Status"},
   {"key": "createdAt", "Name": "Created On"},
   {"key": "updatedAt", "Name": "Updated On"},
 ];

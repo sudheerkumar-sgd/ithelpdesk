@@ -36,7 +36,7 @@ class CRRequestModel extends BaseModel {
   String? requestType;
   int? workflowId;
   int? currentStep;
-  int? requestStaus;
+  int? requestStatus;
   String? createdAt;
   String? updatedAt;
   String? attachmentUrlPrefix;
@@ -60,7 +60,7 @@ class CRRequestModel extends BaseModel {
     requestType = json['requestType'];
     workflowId = json['workflowId'];
     currentStep = json['currentStep'];
-    requestStaus = json['requestStaus'];
+    requestStatus = json['requestStatus'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
     attachmentUrlPrefix = json['attachmentUrlPrefix'];
@@ -109,7 +109,7 @@ class CRRequestModel extends BaseModel {
       ..requestType = requestType
       ..workflowId = workflowId
       ..currentStep = currentStep
-      ..requestStaus = RequestStatus.fromId(requestStaus ?? 1)
+      ..requestStatus = RequestStatus.fromId(requestStatus ?? 1)
       ..createdAt = createdAt
       ..updatedAt = updatedAt
       ..attachmentUrlPrefix = attachmentUrlPrefix

@@ -2,20 +2,32 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/common/log.dart';
+import 'package:ithelpdesk/core/config/flavor_config.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
+import 'package:ithelpdesk/core/constants/data_constants.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
+import 'package:ithelpdesk/core/extensions/string_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/domain/entities/api_entity.dart';
 import 'package:ithelpdesk/domain/entities/iso_entity.dart';
+import 'package:ithelpdesk/domain/entities/single_data_entity.dart';
+import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
 import 'package:ithelpdesk/injection_container.dart';
 import 'package:ithelpdesk/presentation/bloc/iso/iso_bloc.dart';
+import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
 import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
+import 'package:ithelpdesk/presentation/common_widgets/date_range_filter_widget.dart';
+import 'package:ithelpdesk/presentation/common_widgets/dropdown_widget.dart';
+import 'package:ithelpdesk/presentation/common_widgets/dynamic_report_column_config.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dynamic_report_list_widget.dart';
+import 'package:ithelpdesk/presentation/common_widgets/multi_select_dialog_widget.dart';
 import 'package:ithelpdesk/presentation/iso/iso_system_cr_screen.dart';
 import 'package:ithelpdesk/presentation/iso/iso_view_request_screen.dart';
+import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 
 class IsoCrHomeScreen extends BaseScreenWidget {
   IsoCrHomeScreen({super.key});
@@ -29,17 +41,226 @@ class IsoCrHomeScreen extends BaseScreenWidget {
   //final ValueNotifier<List<String>> _filteredDates = ValueNotifier([]);
   StatusType filteredStatus = StatusType.all;
   int index = 0;
+  final List<int> _filteredRequestStatus = List<int>.empty(growable: true);
+  final List<int> _filteredCurrentSteps = List<int>.empty(growable: true);
+  String? _sortByField;
+  bool _sortAscending = true;
+  DynamicReportHeaderEntity? _sortHeader;
+  Map<String, dynamic>? filteredData;
 
-  Future<ApiEntity<CRRequestDataEntity>> _getCRTickets() async {
-    //var dateFormat = DateFormat('dd-MMM-yyyy HH:mm');
-    //var startTime = DateFormat('yyyy/MM/dd').parse(_filteredDates.value[0]);
-    //var endTime = DateFormat('yyyy/MM/dd').parse(_filteredDates.value[1]);
-    final response = await _isoBloc.getRequests(requestParams: {
-      //'ticketType': selectTicketCategory,
-      //'startDate': dateFormat.format(startTime),
-      //'endDate': dateFormat.format(endTime),
-      'index': index,
-    });
+  final ValueNotifier<List<String>> filteredDates = ValueNotifier([]);
+  int? _selectedCategory = 0;
+
+  Widget _getFilters(BuildContext context) {
+    final resources = context.resources;
+    final categories = [
+      resources.string.all,
+      isSelectedLocalEn ? 'My Tickets' : 'طلباتي',
+      isSelectedLocalEn ? 'Pending Approval' : 'تحت المراجعة',
+    ];
+    return Wrap(
+      alignment: WrapAlignment.end,
+      runSpacing: resources.dimen.dp10,
+      runAlignment: WrapAlignment.start,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        DateRangeFilterWidget(
+          filteredDates: filteredDates,
+          onChanged: () {
+            if (context.mounted) {
+              index = 0;
+              _onDataChange.value = !_onDataChange.value;
+            }
+          },
+        ),
+        SizedBox(
+          width: resources.dimen.dp20,
+        ),
+        SizedBox(
+          width: 200,
+          child: Row(
+            children: [
+              Text(
+                resources.string.category,
+                style: context.textFontWeight600
+                    .onFontSize(resources.fontSize.dp10),
+              ),
+              SizedBox(
+                width: resources.dimen.dp5,
+              ),
+              Expanded(
+                child: DropDownWidget<String>(
+                  height: 32,
+                  list: categories,
+                  selectedValue: categories[_selectedCategory ?? 0],
+                  iconSize: 20,
+                  fontStyle: context.textFontWeight400
+                      .onFontSize(resources.fontSize.dp12),
+                  callback: (p0) {
+                    _selectedCategory = categories.indexOf(p0 ?? 'All');
+                    index = 0;
+                    _onDataChange.value = !_onDataChange.value;
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          width: resources.dimen.dp10,
+        ),
+        InkWell(
+          onTap: () async {
+            if (context.mounted) {
+              Dialogs.loader(context);
+            }
+            final allTicketsResponse = await _getCRTickets(forReport: true);
+            await sl<ServicesBloc>()
+                .exportToExcel(allTicketsResponse.entity?.requests ?? []);
+            if (context.mounted) {
+              Dialogs.dismiss(context);
+            }
+          },
+          child: ActionButtonWidget(
+              text: 'Excel',
+              radious: resources.dimen.dp15,
+              textSize: resources.fontSize.dp10,
+              padding: EdgeInsets.symmetric(
+                  vertical: resources.dimen.dp5,
+                  horizontal: resources.dimen.dp15),
+              color: resources.color.sideBarItemSelected),
+        ),
+        SizedBox(
+          width: resources.dimen.dp10,
+        ),
+        InkWell(
+          onTap: () {
+            _printData(context);
+          },
+          child: ActionButtonWidget(
+            text: 'PDF',
+            padding: EdgeInsets.symmetric(
+                vertical: resources.dimen.dp5,
+                horizontal: resources.dimen.dp15),
+            radious: resources.dimen.dp15,
+            textSize: resources.fontSize.dp10,
+            color: resources.color.sideBarItemSelected,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _printData(BuildContext context) async {
+    Dialogs.loader(context);
+    final allRequestsResponse = await _getCRTickets(forReport: true);
+    final allRequests = allRequestsResponse.entity?.requests ?? [];
+    List<String> headers = List.empty(growable: true);
+    if (allRequests.isNotEmpty) {
+      allRequests.first.toJson().forEach((k, v) {
+        if (!headers.contains(k.capitalize())) {
+          headers.add(k.capitalize());
+        }
+      });
+    }
+    String tableHeader = '<tr>';
+    for (var item in headers) {
+      tableHeader = '$tableHeader\n <td>$item</td>';
+    }
+    tableHeader = '$tableHeader\n</tr>';
+    String tableBody = '';
+    for (var item in allRequests) {
+      tableBody = '$tableBody\n<tr>';
+      item.toJson().forEach((k, v) {
+        tableBody =
+            '$tableBody\n <td>${k == 'TicketNo' ? '''<a href="${FlavorConfig.isProduction() ? "https://ithelpdesk.uaqgov.ae" : "http://localhost:50768"}/ticket/$v" target="_blank"> $v </a>''' : v}</td>';
+      });
+      tableBody = '$tableBody\n</tr>';
+    }
+    printData(
+        title: "Tickets",
+        headerData: tableHeader,
+        bodyData: tableBody,
+        count: allRequests.length);
+    if (context.mounted) Dialogs.dismiss(context);
+  }
+
+  List<Widget> _getFilterBar(BuildContext context) {
+    final resources = context.resources;
+    return [
+      if (UserCredentialsEntity.details().userType != UserType.user) ...[
+        SizedBox(
+          width: resources.dimen.dp20,
+          height: resources.dimen.dp10,
+        ),
+        isDesktop(context)
+            ? Expanded(
+                child: _getFilters(context),
+              )
+            : _getFilters(context)
+      ],
+    ];
+  }
+
+  List<DynamicReportHeaderEntity> _getDefaultTicketsHeaderData() {
+    final labels =
+        crRequestReport.map((field) => field['Name']!.toString()).toList();
+    return buildReportHeadersFromKeys(
+      labels,
+      reportFields: crRequestReport,
+    );
+  }
+
+  List<DynamicReportHeaderEntity> _getTicketsHeaderData(
+    List<dynamic> tickets,
+  ) {
+    if (tickets.isEmpty) {
+      return _getDefaultTicketsHeaderData();
+    }
+    final firstTicket = tickets.first as CRRequestEntity;
+    return buildReportHeadersFromKeys(
+      firstTicket.toJson().keys.toList(),
+      reportFields: firstTicket.workflowFieldEntity?.reportFields,
+    );
+  }
+
+  (DateTime? fromDate, DateTime? toDate) _getDateRangeFilter() {
+    final dates = filteredDates.value;
+    if (dates.isEmpty) {
+      return (null, null);
+    }
+    final fromDate = getDateTimeByString('yyyy/MM/dd', dates[0]);
+    DateTime? toDate;
+    if (dates.length > 1) {
+      toDate = getDateTimeByString('yyyy/MM/dd', dates[1]);
+    }
+    return (fromDate, toDate);
+  }
+
+  Map<String, dynamic> _getRequestParams({bool forReport = false}) {
+    final requestParams = <String, dynamic>{'index': index};
+    requestParams['forReport'] = forReport;
+    if (_filteredRequestStatus.isNotEmpty) {
+      requestParams['requestStatus'] = _filteredRequestStatus.join(',');
+    }
+    if (_filteredCurrentSteps.isNotEmpty) {
+      requestParams['currentStep'] = _filteredCurrentSteps.join(',');
+    }
+    final (fromDate, toDate) = _getDateRangeFilter();
+    if (fromDate != null) {
+      requestParams['fromDate'] = fromDate;
+    }
+    if (toDate != null) {
+      requestParams['toDate'] = toDate;
+    }
+    requestParams['viewType'] = _selectedCategory;
+    return requestParams;
+  }
+
+  Future<ApiEntity<CRRequestDataEntity>> _getCRTickets(
+      {bool forReport = false}) async {
+    final response = await _isoBloc.getRequests(
+        requestParams: _getRequestParams(forReport: forReport));
     final requestData = ApiEntity<CRRequestDataEntity>();
     if (response is OnISOApiResponse) {
       final crRequestDataEntity =
@@ -47,6 +268,86 @@ class IsoCrHomeScreen extends BaseScreenWidget {
       requestData.entity = crRequestDataEntity;
     }
     return Future.value(requestData);
+  }
+
+  List<dynamic> _applyClientSort(
+    List<dynamic> tickets,
+    List<DynamicReportHeaderEntity> headers,
+  ) {
+    if (_sortByField == null) {
+      return tickets;
+    }
+    final header = _sortHeader ??
+        headers.firstWhere(
+          (item) => item.resolvedFieldKey == _sortByField,
+          orElse: () => DynamicReportHeaderEntity(
+            label: '',
+            fieldKey: _sortByField,
+          ),
+        );
+    return sortReportData(tickets, header, ascending: _sortAscending);
+  }
+
+  Future<void> _handleColumnHeaderTap(
+    BuildContext context,
+    DynamicReportHeaderEntity header,
+  ) async {
+    if (header.hasSort) {
+      final fieldKey = header.resolvedFieldKey;
+      if (_sortByField == fieldKey) {
+        _sortAscending = !_sortAscending;
+      } else {
+        _sortByField = fieldKey;
+        _sortHeader = header;
+        _sortAscending = true;
+      }
+      _onDataChange.value = !_onDataChange.value;
+      return;
+    }
+
+    if (header.filterType == DynamicReportFilterType.requestStatus) {
+      final selected = await Dialogs.showDialogWithClose(
+        context,
+        MultiSelectDialogWidget<RequestStatus>(
+          list: RequestStatus.values,
+          selectedItems: RequestStatus.values
+              .where((status) => _filteredRequestStatus.contains(status.value))
+              .toList(),
+        ),
+        maxWidth: isDesktop(context) ? 250 : null,
+        showClose: false,
+      );
+      if (selected is List<RequestStatus>) {
+        _filteredRequestStatus
+          ..clear()
+          ..addAll(selected.map((status) => status.value));
+        index = 0;
+        _onDataChange.value = !_onDataChange.value;
+      }
+      return;
+    }
+
+    if (header.filterType == DynamicReportFilterType.currentStep) {
+      final selected = await Dialogs.showDialogWithClose(
+        context,
+        MultiSelectDialogWidget<NameIDEntity>(
+          list: isoCrCurrentStepFilters,
+          selectedItems: isoCrCurrentStepFilters
+              .where((step) =>
+                  step.id != null && _filteredCurrentSteps.contains(step.id))
+              .toList(),
+        ),
+        maxWidth: isDesktop(context) ? 300 : null,
+        showClose: false,
+      );
+      if (selected is List<NameIDEntity>) {
+        _filteredCurrentSteps
+          ..clear()
+          ..addAll(selected.map((step) => step.id).whereType<int>());
+        index = 0;
+        _onDataChange.value = !_onDataChange.value;
+      }
+    }
   }
 
   @override
@@ -444,65 +745,93 @@ class IsoCrHomeScreen extends BaseScreenWidget {
                   // SizedBox(
                   //   height: resources.dimen.dp20,
                   // ),
+                  isDesktop(context)
+                      ? Row(
+                          children: _getFilterBar(context),
+                        )
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: _getFilterBar(context),
+                        ),
+                  SizedBox(
+                    height: resources.dimen.dp20,
+                  ),
                   ValueListenableBuilder(
                       valueListenable: _onDataChange,
                       builder: (context, onDataChange, child) {
                         return FutureBuilder(
                             future: _getCRTickets(),
                             builder: (context, snapShot) {
-                              final filterTickets = List.from(
-                                  snapShot.data?.entity?.requests ?? []);
-                              if (filterTickets.isEmpty) {
+                              if (snapShot.connectionState ==
+                                  ConnectionState.waiting) {
                                 return Padding(
-                                  padding: const EdgeInsets.only(top: 40.0),
-                                  child: Text(
-                                    isSelectedLocalEn
-                                        ? 'No Requests'
-                                        : 'لا توجد طلبات',
-                                    style: context.textFontWeight600
-                                        .onFontSize(resources.fontSize.dp16),
+                                  padding: EdgeInsets.only(
+                                    top: resources.dimen.dp40,
+                                  ),
+                                  child: const Center(
+                                    child: CircularProgressIndicator(),
                                   ),
                                 );
                               }
-                              final reportHeaderData =
-                                  filterTickets.first.toJson().keys.toList();
+                              final tickets = List.from(
+                                  snapShot.data?.entity?.requests ?? []);
+                              final ticketsHeaderData =
+                                  _getTicketsHeaderData(tickets);
+                              final displayTickets =
+                                  _applyClientSort(tickets, ticketsHeaderData);
                               final reportTableColunwidths =
                                   <int, FlexColumnWidth>{};
-                              reportHeaderData.asMap().forEach((index, value) {
+                              ticketsHeaderData.asMap().forEach((index, value) {
                                 reportTableColunwidths[index] =
                                     const FlexColumnWidth(4);
                               });
-                              return filterTickets.isNotEmpty
-                                  ? DynamicReportListWidget(
-                                      reportData: filterTickets,
-                                      ticketsTableColunwidths:
-                                          reportTableColunwidths,
-                                      page: index ~/ 10 + 1,
-                                      totalPagecount:
-                                          snapShot.data?.entity?.totalPage ?? 1,
-                                      ticketsHeaderData: reportHeaderData,
-                                      onRowSelected: (item) {
-                                        if (item is CRRequestEntity) {
-                                          ISOViewRequestScreen.start(
-                                            context,
-                                            item.requestId ?? 0,
-                                          );
-                                        }
-                                      },
-                                      onColumnClick: (key, item) {},
-                                      onPageChange: (page) {
-                                        index = (page - 1) * 10;
-                                        _onDataChange.value =
-                                            !_onDataChange.value;
-                                      },
-                                    )
-                                  : Padding(
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  DynamicReportListWidget(
+                                    reportData: displayTickets,
+                                    ticketsTableColunwidths:
+                                        reportTableColunwidths,
+                                    activeSortFieldKey: _sortByField,
+                                    sortAscending: _sortAscending,
+                                    page: tickets.isEmpty ? 1 : index ~/ 10 + 1,
+                                    totalPagecount: tickets.isEmpty
+                                        ? 0
+                                        : snapShot.data?.entity?.totalPage ?? 1,
+                                    ticketsHeaderData: ticketsHeaderData,
+                                    onColumnHeaderTap: _handleColumnHeaderTap,
+                                    onRowSelected: (item) {
+                                      if (item is CRRequestEntity) {
+                                        ISOViewRequestScreen.start(
+                                          context,
+                                          item.requestId ?? 0,
+                                        );
+                                      }
+                                    },
+                                    onColumnClick: (key, item) {},
+                                    onPageChange: (page) {
+                                      index = (page - 1) * 10;
+                                      _onDataChange.value =
+                                          !_onDataChange.value;
+                                    },
+                                  ),
+                                  if (tickets.isEmpty &&
+                                      snapShot.connectionState ==
+                                          ConnectionState.done)
+                                    Padding(
                                       padding: const EdgeInsets.only(top: 20.0),
                                       child: Text(
-                                        resources.string.noTickets,
-                                        style: context.textFontWeight600,
+                                        isSelectedLocalEn
+                                            ? 'No Requests'
+                                            : 'لا توجد طلبات',
+                                        textAlign: TextAlign.center,
+                                        style: context.textFontWeight600
+                                            .onFontSize(
+                                                resources.fontSize.dp16),
                                       ),
-                                    );
+                                    ),
+                                ],
+                              );
                             });
                       })
                 ],

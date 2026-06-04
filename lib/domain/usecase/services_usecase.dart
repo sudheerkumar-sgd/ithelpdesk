@@ -185,7 +185,7 @@ class ServicesUseCase extends BaseUseCase {
       utils.exportToExcel(ExportDataEntity()
         ..title = 'Tickets'
         ..date = getDateByformat('dd/MM/yyyy', DateTime.now())
-        ..columns = (TicketEntity().toExcel().keys.toList())
+        ..columns = (tickets.first.toExcel().keys.toList())
         ..rows = tickets);
       // var excel = Excel.createExcel();
       // var sheetObject = excel[excel.getDefaultSheet() ?? 'SheetName'];

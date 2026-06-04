@@ -1057,8 +1057,8 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                 }),
               ),
             ],
-            if (requestEntity.requestStaus != RequestStatus.completed &&
-                requestEntity.requestStaus != RequestStatus.rejected &&
+            if (requestEntity.requestStatus != RequestStatus.completed &&
+                requestEntity.requestStatus != RequestStatus.rejected &&
                 ticketActionButtons.length > 1)
               Form(
                   key: _formKey,
@@ -1151,9 +1151,9 @@ class ISOViewRequestScreen extends BaseScreenWidget {
             ItemServiceSteps(
               stepColor:
                   (requestEntity.steps[i].status == RequestStepStatus.close ||
-                          requestEntity.requestStaus == RequestStatus.completed)
+                          requestEntity.requestStatus == RequestStatus.completed)
                       ? resources.color.colorGreen26B757
-                      : requestEntity.requestStaus == RequestStatus.rejected
+                      : requestEntity.requestStatus == RequestStatus.rejected
                           ? resources.color.rejected
                           : resources.color.pending,
               stepText: steps[i].stepName ?? "",
@@ -1321,12 +1321,12 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                                         style: context.textFontWeight600,
                                         children: [
                                           TextSpan(
-                                            text: (requestEntity.requestStaus
+                                            text: (requestEntity.requestStatus
                                                     .toString())
                                                 .toString(),
                                             style: context.textFontWeight700
                                                 .onColor((requestEntity
-                                                            .requestStaus ??
+                                                            .requestStatus ??
                                                         RequestStatus
                                                             .inprogress)
                                                     .getColor()),
@@ -1356,9 +1356,9 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                       //   height: resources.dimen.dp20,
                       // ),
                       // ],
-                      if (requestEntity.requestStaus !=
+                      if (requestEntity.requestStatus !=
                               RequestStatus.completed &&
-                          requestEntity.requestStaus != RequestStatus.rejected)
+                          requestEntity.requestStatus != RequestStatus.rejected)
                         ValueListenableBuilder(
                             valueListenable: _onDataChanged,
                             builder: (context, onDataChange, child) {
