@@ -6,6 +6,7 @@ import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/data/local/user_data_db.dart';
+import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
 import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
 import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/search_textfield_widget.dart';
@@ -42,8 +43,14 @@ class SearchUserAppBarWidget extends StatelessWidget
                   child: showSearch
                       ? SearchDropDownWidget(
                           onSearchItemSelected: (item) {
-                            context.push(AppRoutes.ticketRoute
-                                .replaceAll(':id', '${item.id}'));
+                            FocusManager.instance.primaryFocus?.unfocus();
+                            if (item is TicketEntity) {
+                              context.push(
+                                AppRoutes.ticketRoute
+                                    .replaceAll(':id', '${item.id}'),
+                                extra: item,
+                              );
+                            }
                           },
                         )
                       : const SizedBox.shrink()),

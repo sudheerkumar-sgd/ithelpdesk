@@ -150,3 +150,12 @@ class UserFeedbackEntity extends BaseEntity {
   int? ticketID;
   int? feedbackFrom;
 }
+
+class PendingRatingTicketEntity extends BaseEntity {
+  int? ticketId;
+  String? requestNO;
+  String? subject;
+  String? closedOn;
+  int? categoryId;
+  int? subCategoryId;
+}

@@ -38,21 +38,19 @@ class SearchDropDownWidget extends StatelessWidget {
 
   final focusNode = FocusNode();
 
+  Future<List<TicketEntity>> _getSearchSuggestions(String search) async {
+    if (search.length < 3) {
+      return _searchResults.value.cast<TicketEntity>();
+    }
+    final response = await _servicesBloc
+        .getTticketsBySearch(requestParams: {'searchString': search});
+    _searchResults.value = response;
+    return response;
+  }
+
   @override
   Widget build(BuildContext context) {
     final resources = context.resources;
-    textEditingController.addListener(
-      () async {
-        // printLog('textEditingController.text: ${textEditingController.text}');
-        // _searchString.value = textEditingController.text;
-        if (textEditingController.text.length > 2) {
-          final response = await _servicesBloc.getTticketsBySearch(
-              requestParams: {'searchString': textEditingController.text});
-          _searchResults.value = response;
-          _searchResults.notifyListeners();
-        }
-      },
-    );
     return ValueListenableBuilder(
         valueListenable: _searchValue,
         builder: (context, value, child) {
@@ -71,19 +69,17 @@ class SearchDropDownWidget extends StatelessWidget {
           // );
 
           return TypeAheadField<TicketEntity>(
-            suggestionsCallback: (search) => _servicesBloc
-                .getTticketsBySearch(requestParams: {'searchString': value}),
+            suggestionsCallback: _getSearchSuggestions,
             builder: (context, controller, focusNode) {
               return TextField(
                 controller: controller,
                 focusNode: focusNode,
-                autofocus: true,
+                autofocus: false,
                 onChanged: (value) {
-                  if (value.length > 3) {
-                    _searchValue.value = value;
-                  } else if (value.isEmpty) {
-                    _searchValue.value = '';
+                  if (value.isEmpty) {
+                    _searchResults.value = [];
                   }
+                  _searchValue.value = value;
                 },
                 decoration: InputDecoration(
                   constraints: const BoxConstraints(maxHeight: 32),

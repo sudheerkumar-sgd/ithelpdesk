@@ -49,6 +49,7 @@ class ViewRequest extends BaseScreenWidget {
             ticketDetails: ticket,
             isMyTicket: isMyTicket,
             ticketId: ticketId,
+            isFromRoute: false,
           )),
     );
   }
@@ -56,7 +57,13 @@ class ViewRequest extends BaseScreenWidget {
   final TicketEntity? ticketDetails;
   final String? ticketId;
   final bool? isMyTicket;
-  ViewRequest({this.ticketDetails, this.ticketId, this.isMyTicket, super.key});
+  final bool? isFromRoute;
+  ViewRequest(
+      {this.ticketDetails,
+      this.ticketId,
+      this.isMyTicket,
+      this.isFromRoute,
+      super.key});
   late TicketEntity ticket;
   Size screenDimentions = screenSize;
   String apiResponseMessage = '';
@@ -1013,8 +1020,8 @@ class ViewRequest extends BaseScreenWidget {
             Dialogs.showInfoDialog(context, PopupType.fail, state.message);
           }
         },
-        child: SelectionArea(
-          child: Container(
+        child: _wrapSelectable(
+          Container(
             color: resources.color.appScaffoldBg,
             padding: EdgeInsets.symmetric(
                 horizontal: resources.dimen.dp15,
@@ -1022,6 +1029,9 @@ class ViewRequest extends BaseScreenWidget {
             child: FutureBuilder(
                 future: _getTicketDetails(),
                 builder: (context, snapShot) {
+                  if (snapShot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
                   if (snapShot.data == null) {
                     return const SizedBox();
                   }
@@ -1183,9 +1193,9 @@ class ViewRequest extends BaseScreenWidget {
                       SizedBox(
                         height: resources.dimen.dp10,
                       ),
-                      Expanded(
-                        child: _getScrollwidget(context),
-                      ),
+                      (isFromRoute ?? false)
+                          ? _getScrollwidget(context)
+                          : Expanded(child: _getScrollwidget(context)),
                       SizedBox(
                         height: resources.dimen.dp20,
                       ),
@@ -1271,5 +1281,10 @@ class ViewRequest extends BaseScreenWidget {
         ),
       ),
     );
+  }
+
+  Widget _wrapSelectable(Widget child) {
+    if (isFromRoute ?? false) return child;
+    return SelectionArea(child: child);
   }
 }

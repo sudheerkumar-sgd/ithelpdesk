@@ -147,270 +147,276 @@ class _IbtakerDetailsScreenState extends State<IbtakerDetailsScreen> {
               ..actionDate = idea.createdOn
               ..remarks = 'Idea submitted'
           ];
-    return Scaffold(
-      backgroundColor: resources.color.appScaffoldBg,
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(resources.dimen.dp20),
-        child: Column(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  left: BorderSide(
-                    color: resources.color.sideBarItemSelected,
-                    width: 3,
-                  ),
-                ),
-                color: resources.color.colorWhite,
-              ),
-              padding: EdgeInsets.all(resources.dimen.dp10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Text.rich(
-                      TextSpan(
-                        text: 'IBTAKER - ${idea.proposalTitle ?? '-'}\n',
-                        style: context.textFontWeight700
-                            .onFontSize(resources.fontSize.dp18),
-                        children: [
-                          TextSpan(
-                            text:
-                                'Created by ${idea.name ?? '-'} on ${idea.createdOn ?? '-'}',
-                            style: context.textFontWeight400
-                                .onFontSize(resources.fontSize.dp11)
-                                .onColor(resources.color.textColorLight),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        'Status',
-                        style: context.textFontWeight500
-                            .onFontSize(resources.fontSize.dp12),
-                      ),
-                      const SizedBox(height: 8),
-                      Container(
-                        decoration: BackgroundBoxDecoration(
-                                boxColor: idea.status?.color(), radious: 5)
-                            .roundedCornerBox,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 6),
-                        child: Text(
-                          idea.status?.toString() ?? '',
-                          style: context.textFontWeight700
-                              .onFontSize(
-                                resources.fontSize.dp11,
-                              )
-                              .onColor(resources.color.colorWhite),
-                        ),
-                      )
-                    ],
-                  )
-                ],
-              ),
-            ),
-            SizedBox(height: resources.dimen.dp10),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: Container(
-                    color: resources.color.colorWhite,
-                    padding: EdgeInsets.all(resources.dimen.dp20),
-                    child: Column(
-                      children: [
-                        _pair(context, 'Name', idea.name ?? ''),
-                        _pair(context, 'Employee ID', idea.empID ?? ''),
-                        _pair(
-                            context, 'Entity', idea.departmentData?.name ?? ''),
-                        _pair(context, 'Email ID', idea.username ?? ''),
-                        SizedBox(height: resources.dimen.dp10),
-                        _pair(context, 'Proposal Title',
-                            idea.proposalTitle ?? ''),
-                        _pair(
-                            context, 'Proposal Type', idea.proposalType ?? ''),
-                        _pair(
-                            context, 'Current Issue', idea.currentIssue ?? ''),
-                        SizedBox(height: resources.dimen.dp10),
-                        _pair(context, 'Improvement Proposal',
-                            idea.improvementProposal ?? ''),
-                        if (idea.ibtakerAttachments.isNotEmpty) ...[
-                          SizedBox(height: resources.dimen.dp10),
-                          Container(
-                            color: resources.color.colorWhite,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  resources.string.attachments,
-                                  style: context.textFontWeight700
-                                      .onFontSize(resources.fontSize.dp13),
-                                ),
-                                SizedBox(height: resources.dimen.dp10),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: List.generate(
-                                      idea.ibtakerAttachments.length, (index) {
-                                    final filePath = idea
-                                            .ibtakerAttachments[index]
-                                            .filePath ??
-                                        '';
-                                    if (filePath.isEmpty) {
-                                      return const SizedBox.shrink();
-                                    }
-                                    return InkWell(
-                                      onTap: () {
-                                        Dialogs.showDialogWithClose(
-                                          context,
-                                          maxWidth: 400,
-                                          AttachmentPreviewWidget(
-                                              baseUrl: getPortalImageBaseUrl,
-                                              fileName: filePath),
-                                        );
-                                      },
-                                      child: Padding(
-                                        padding: EdgeInsets.only(
-                                            bottom: resources.dimen.dp8),
-                                        child: Row(
-                                          children: [
-                                            ImageWidget(
-                                                    path: DrawableAssets
-                                                        .icAttachment,
-                                                    backgroundTint: resources
-                                                        .color.viewBgColor)
-                                                .loadImage,
-                                            SizedBox(
-                                                width: resources.dimen.dp10),
-                                            Expanded(
-                                              child: Text(
-                                                filePath.split('/').last,
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: context.textFontWeight500
-                                                    .copyWith(
-                                                  decoration:
-                                                      TextDecoration.underline,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  }),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(width: resources.dimen.dp10),
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    color: resources.color.colorWhite,
-                    padding: EdgeInsets.all(resources.dimen.dp15),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Latest Update',
-                          style: context.textFontWeight700
-                              .onFontSize(resources.fontSize.dp14),
-                        ),
-                        SizedBox(height: resources.dimen.dp10),
-                        for (int i = 0; i < updates.length; i++) ...[
-                          ItemServiceSteps(
-                            stepText: updates[i].actionByName ?? '',
-                            stepColor: (i < updates.length - 1)
-                                ? Colors.green
-                                : updates[i].action == IbtakerStatus.closed
-                                    ? resources.color.colorGreen26B757
-                                    : updates[i].action ==
-                                            IbtakerStatus.rejected
-                                        ? resources.color.rejected
-                                        : resources.color.pending,
-                            stepSubText:
-                                '${updates[i].action?.toString() ?? ''}\n${updates[i].actionDate ?? ''}',
-                            isLastStep: i == updates.length - 1,
-                          ),
-                        ]
-                      ],
-                    ),
-                  ),
-                )
-              ],
-            ),
-            if (idea.status != IbtakerStatus.closed &&
-                idea.status != IbtakerStatus.rejected) ...[
-              SizedBox(height: resources.dimen.dp10),
+    return SelectionArea(
+      child: Scaffold(
+        backgroundColor: resources.color.appScaffoldBg,
+        body: SingleChildScrollView(
+          padding: EdgeInsets.all(resources.dimen.dp20),
+          child: Column(
+            children: [
               Container(
-                color: resources.color.colorWhite,
-                padding: EdgeInsets.all(resources.dimen.dp15),
-                child: Column(
+                decoration: BoxDecoration(
+                  border: Border(
+                    left: BorderSide(
+                      color: resources.color.sideBarItemSelected,
+                      width: 3,
+                    ),
+                  ),
+                  color: resources.color.colorWhite,
+                ),
+                padding: EdgeInsets.all(resources.dimen.dp10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Comments',
-                      style: context.textFontWeight700
-                          .onFontSize(resources.fontSize.dp13),
-                    ),
-                    SizedBox(height: resources.dimen.dp10),
-                    TextFormField(
-                      controller: _remarksController,
-                      minLines: 3,
-                      maxLines: 4,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
+                    Expanded(
+                      child: Text.rich(
+                        TextSpan(
+                          text: 'IBTAKER - ${idea.proposalTitle ?? '-'}\n',
+                          style: context.textFontWeight700
+                              .onFontSize(resources.fontSize.dp18),
+                          children: [
+                            TextSpan(
+                              text:
+                                  'Created by ${idea.name ?? '-'} on ${idea.createdOn ?? '-'}',
+                              style: context.textFontWeight400
+                                  .onFontSize(resources.fontSize.dp11)
+                                  .onColor(resources.color.textColorLight),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          'Status',
+                          style: context.textFontWeight500
+                              .onFontSize(resources.fontSize.dp12),
+                        ),
+                        const SizedBox(height: 8),
+                        Container(
+                          decoration: BackgroundBoxDecoration(
+                                  boxColor: idea.status?.color(), radious: 5)
+                              .roundedCornerBox,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 6),
+                          child: Text(
+                            idea.status?.toString() ?? '',
+                            style: context.textFontWeight700
+                                .onFontSize(
+                                  resources.fontSize.dp11,
+                                )
+                                .onColor(resources.color.colorWhite),
+                          ),
+                        )
+                      ],
+                    )
                   ],
                 ),
               ),
-              SizedBox(height: resources.dimen.dp12),
+              SizedBox(height: resources.dimen.dp10),
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (idea.status == IbtakerStatus.approved)
-                    _actionButton(
-                      context,
-                      IbtakerStatus.closed.toString(),
-                      IbtakerStatus.closed.color(),
-                      () => _updateStatus(IbtakerStatus.closed),
+                  Expanded(
+                    flex: 3,
+                    child: Container(
+                      color: resources.color.colorWhite,
+                      padding: EdgeInsets.all(resources.dimen.dp20),
+                      child: Column(
+                        children: [
+                          _pair(context, 'Name', idea.name ?? ''),
+                          _pair(context, 'Employee ID', idea.empID ?? ''),
+                          _pair(context, 'Entity',
+                              idea.departmentData?.name ?? ''),
+                          _pair(context, 'Email ID', idea.username ?? ''),
+                          SizedBox(height: resources.dimen.dp10),
+                          _pair(context, 'Proposal Title',
+                              idea.proposalTitle ?? ''),
+                          _pair(context, 'Proposal Type',
+                              idea.proposalType ?? ''),
+                          _pair(context, 'Current Issue',
+                              idea.currentIssue ?? ''),
+                          SizedBox(height: resources.dimen.dp10),
+                          _pair(context, 'Improvement Proposal',
+                              idea.improvementProposal ?? ''),
+                          if (idea.ibtakerAttachments.isNotEmpty) ...[
+                            SizedBox(height: resources.dimen.dp10),
+                            Container(
+                              color: resources.color.colorWhite,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    resources.string.attachments,
+                                    style: context.textFontWeight700
+                                        .onFontSize(resources.fontSize.dp13),
+                                  ),
+                                  SizedBox(height: resources.dimen.dp10),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: List.generate(
+                                        idea.ibtakerAttachments.length,
+                                        (index) {
+                                      final filePath = idea
+                                              .ibtakerAttachments[index]
+                                              .filePath ??
+                                          '';
+                                      if (filePath.isEmpty) {
+                                        return const SizedBox.shrink();
+                                      }
+                                      return InkWell(
+                                        onTap: () {
+                                          Dialogs.showDialogWithClose(
+                                            context,
+                                            maxWidth: 400,
+                                            AttachmentPreviewWidget(
+                                                baseUrl: getPortalImageBaseUrl,
+                                                fileName: filePath),
+                                          );
+                                        },
+                                        child: Padding(
+                                          padding: EdgeInsets.only(
+                                              bottom: resources.dimen.dp8),
+                                          child: Row(
+                                            children: [
+                                              ImageWidget(
+                                                      path: DrawableAssets
+                                                          .icAttachment,
+                                                      backgroundTint: resources
+                                                          .color.viewBgColor)
+                                                  .loadImage,
+                                              SizedBox(
+                                                  width: resources.dimen.dp10),
+                                              Expanded(
+                                                child: Text(
+                                                  filePath.split('/').last,
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: context
+                                                      .textFontWeight500
+                                                      .copyWith(
+                                                    decoration: TextDecoration
+                                                        .underline,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    }),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
                     ),
-                  if (idea.status == IbtakerStatus.submitted)
-                    _actionButton(
-                      context,
-                      IbtakerStatus.approved.toString(),
-                      IbtakerStatus.approved.color(),
-                      () => _updateStatus(IbtakerStatus.approved),
-                    ),
-                  if (idea.status != IbtakerStatus.hold)
-                    _actionButton(
-                      context,
-                      IbtakerStatus.hold.toString(),
-                      IbtakerStatus.hold.color(),
-                      () => _updateStatus(IbtakerStatus.hold),
-                    ),
-                  _actionButton(
-                    context,
-                    IbtakerStatus.rejected.toString(),
-                    IbtakerStatus.rejected.color(),
-                    () => _updateStatus(IbtakerStatus.rejected),
                   ),
+                  SizedBox(width: resources.dimen.dp10),
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      color: resources.color.colorWhite,
+                      padding: EdgeInsets.all(resources.dimen.dp15),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Latest Update',
+                            style: context.textFontWeight700
+                                .onFontSize(resources.fontSize.dp14),
+                          ),
+                          SizedBox(height: resources.dimen.dp10),
+                          for (int i = 0; i < updates.length; i++) ...[
+                            ItemServiceSteps(
+                              stepText: updates[i].actionByName ?? '',
+                              stepColor: (i < updates.length - 1)
+                                  ? Colors.green
+                                  : updates[i].action == IbtakerStatus.closed
+                                      ? resources.color.colorGreen26B757
+                                      : updates[i].action ==
+                                              IbtakerStatus.rejected
+                                          ? resources.color.rejected
+                                          : resources.color.pending,
+                              stepSubText:
+                                  '${updates[i].action?.toString() ?? ''}\n${updates[i].actionDate ?? ''}',
+                              isLastStep: i == updates.length - 1,
+                            ),
+                          ]
+                        ],
+                      ),
+                    ),
+                  )
                 ],
               ),
-            ]
-          ],
+              if (idea.status != IbtakerStatus.closed &&
+                  idea.status != IbtakerStatus.rejected) ...[
+                SizedBox(height: resources.dimen.dp10),
+                Container(
+                  color: resources.color.colorWhite,
+                  padding: EdgeInsets.all(resources.dimen.dp15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Comments',
+                        style: context.textFontWeight700
+                            .onFontSize(resources.fontSize.dp13),
+                      ),
+                      SizedBox(height: resources.dimen.dp10),
+                      TextFormField(
+                        controller: _remarksController,
+                        minLines: 3,
+                        maxLines: 4,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: resources.dimen.dp12),
+                Row(
+                  children: [
+                    if (idea.status == IbtakerStatus.approved)
+                      _actionButton(
+                        context,
+                        IbtakerStatus.closed.toString(),
+                        IbtakerStatus.closed.color(),
+                        () => _updateStatus(IbtakerStatus.closed),
+                      ),
+                    if (idea.status == IbtakerStatus.submitted)
+                      _actionButton(
+                        context,
+                        IbtakerStatus.approved.toString(),
+                        IbtakerStatus.approved.color(),
+                        () => _updateStatus(IbtakerStatus.approved),
+                      ),
+                    if (idea.status != IbtakerStatus.hold)
+                      _actionButton(
+                        context,
+                        IbtakerStatus.hold.toString(),
+                        IbtakerStatus.hold.color(),
+                        () => _updateStatus(IbtakerStatus.hold),
+                      ),
+                    _actionButton(
+                      context,
+                      IbtakerStatus.rejected.toString(),
+                      IbtakerStatus.rejected.color(),
+                      () => _updateStatus(IbtakerStatus.rejected),
+                    ),
+                  ],
+                ),
+              ]
+            ],
+          ),
         ),
       ),
     );

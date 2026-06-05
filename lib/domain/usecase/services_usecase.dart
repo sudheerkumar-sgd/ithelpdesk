@@ -180,6 +180,20 @@ class ServicesUseCase extends BaseUseCase {
     });
   }
 
+  Future<Either<Failure, ApiEntity<ListEntity>>> getPendingRatingTickets() async {
+    var apiResponse = await apisRepository.get<ListModel>(
+      apiUrl: getPendingRatingTicketApiUrl,
+      requestParams: {},
+      responseModel: ListModel.fromPendingRatingTicketsJson,
+    );
+    return apiResponse.fold((l) {
+      return Left(l);
+    }, (r) {
+      var apiResponseEntity = r.toEntity<ListEntity>();
+      return Right(apiResponseEntity);
+    });
+  }
+
   Future<Either<Failure, bool>> exportToExcel(List<dynamic> tickets) async {
     try {
       utils.exportToExcel(ExportDataEntity()

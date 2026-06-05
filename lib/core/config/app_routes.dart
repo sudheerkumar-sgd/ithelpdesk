@@ -6,6 +6,7 @@ import 'package:ithelpdesk/presentation/iso/iso_view_request_screen.dart';
 import 'package:ithelpdesk/presentation/profile/profile_screen.dart';
 import 'package:ithelpdesk/presentation/profile/profile_screen_widget.dart';
 import 'package:ithelpdesk/presentation/profile/rating_screen_widget.dart';
+import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
 import 'package:ithelpdesk/presentation/requests/view_request.dart';
 
 class AppRoutes {
@@ -62,8 +63,12 @@ class AppRoutes {
         name: 'ticket',
         builder: (context, state) {
           final ticketId = state.pathParameters['id'];
+          final ticketDetails =
+              state.extra is TicketEntity ? state.extra as TicketEntity : null;
           return PageWidgetProvider(ViewRequest(
             ticketId: ticketId,
+            ticketDetails: ticketDetails,
+            isFromRoute: true,
           ));
         },
       ),

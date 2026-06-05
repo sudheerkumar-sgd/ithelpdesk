@@ -4,6 +4,7 @@ import 'package:ithelpdesk/data/model/base_model.dart';
 import 'package:ithelpdesk/data/model/dashboard_model.dart';
 import 'package:ithelpdesk/data/model/iso_model.dart';
 import 'package:ithelpdesk/data/model/login_model.dart';
+import 'package:ithelpdesk/data/model/services_model.dart';
 import 'package:ithelpdesk/data/model/single_data_model.dart';
 import 'package:ithelpdesk/domain/entities/base_entity.dart';
 import 'package:ithelpdesk/domain/entities/directory_entity.dart';
@@ -95,6 +96,14 @@ class ListModel extends BaseModel {
     if (json['data'] is List) {
       for (var json in (json['data'] as List)) {
         items.add(NameIDModel.fromJson(json).toEntity());
+      }
+    }
+  }
+
+  ListModel.fromPendingRatingTicketsJson(Map<String, dynamic> json) {
+    if (json['data'] is List) {
+      for (var item in (json['data'] as List)) {
+        items.add(PendingRatingTicketModel.fromJson(item).toEntity());
       }
     }
   }

@@ -126,6 +126,15 @@ class ServicesBloc extends Cubit<ServicesState> {
         (r) => OnApiResponse(response: r)));
   }
 
+  Future<List<PendingRatingTicketEntity>> getPendingRatingTickets() async {
+    final result = await servicesUseCase.getPendingRatingTickets();
+    return result.fold((l) => [], (r) {
+      return (r.entity?.items ?? [])
+          .map((item) => item as PendingRatingTicketEntity)
+          .toList();
+    });
+  }
+
   String _getErrorMessage(Failure failure) {
     return failure.errorMessage;
   }

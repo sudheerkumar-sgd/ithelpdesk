@@ -441,3 +441,32 @@ class UserFeedbackModel extends BaseModel {
       ..feedbackFrom = feedbackFrom;
   }
 }
+
+class PendingRatingTicketModel extends BaseModel {
+  int? ticketId;
+  String? requestNO;
+  String? subject;
+  String? closedOn;
+  int? categoryId;
+  int? subCategoryId;
+
+  PendingRatingTicketModel.fromJson(Map<String, dynamic> json) {
+    ticketId = json['ticketId'];
+    requestNO = json['requestNO'];
+    subject = json['subject'];
+    closedOn = json['closedOn'];
+    categoryId = json['categoryId'];
+    subCategoryId = json['subCategoryId'];
+  }
+
+  @override
+  PendingRatingTicketEntity toEntity() {
+    return PendingRatingTicketEntity()
+      ..ticketId = ticketId
+      ..requestNO = requestNO
+      ..subject = subject
+      ..closedOn = closedOn
+      ..categoryId = categoryId
+      ..subCategoryId = subCategoryId;
+  }
+}

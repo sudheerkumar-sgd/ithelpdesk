@@ -9,7 +9,9 @@ import 'package:ithelpdesk/data/local/app_settings_db.dart';
 import 'package:ithelpdesk/data/local/user_data_db.dart';
 import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
 import 'package:ithelpdesk/injection_container.dart';
+import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
 import 'package:ithelpdesk/presentation/bloc/user/user_bloc.dart';
+import 'package:ithelpdesk/presentation/profile/rating_screen_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/alert_dialog_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/msearch_user_app_bar.dart';
@@ -48,7 +50,9 @@ class _MainScreenState extends State<UserMainScreen> {
   int activeTab = 0;
   double sideBarWidth = 200;
   final UserBloc _userBloc = sl<UserBloc>();
+  final ServicesBloc _servicesBloc = sl<ServicesBloc>();
   late SideBar sideBar;
+  bool _pendingRatingChecked = false;
 
   Widget getUserAppBar(BuildContext context) {
     context.userDataDB.put(
@@ -74,6 +78,30 @@ class _MainScreenState extends State<UserMainScreen> {
         : MSearchUserAppBarWidget(
             userName: UserCredentialsEntity.details().name ?? "",
           );
+  }
+
+  Future<void> _checkPendingRating() async {
+    final today = getCurrentDateByformat('yyyy-MM-dd');
+    final lastShown = context.appSettingsDB
+        .get(AppSettingsDB.pendingRatingPopupDateKey, defaultValue: '')
+        .toString();
+    if (lastShown == today) return;
+
+    final tickets = await _servicesBloc.getPendingRatingTickets();
+    if (!mounted || tickets.isEmpty) return;
+
+    final ticketId = tickets.first.ticketId?.toString() ?? '';
+    if (ticketId.isEmpty) return;
+
+    await context.appSettingsDB
+        .put(AppSettingsDB.pendingRatingPopupDateKey, today);
+    if (!mounted) return;
+
+    await Dialogs.showDialogWithClose(
+      context,
+      RatingScreenWidget(ticketID: ticketId),
+      maxWidth: 550,
+    );
   }
 
   void _onItemTapped(int index) {
@@ -223,6 +251,13 @@ class _MainScreenState extends State<UserMainScreen> {
                         userToken = snapShot.data?.token ?? '';
                         UserCredentialsEntity.create(
                             snapShot.data?.token ?? '');
+                      }
+                      if (UserCredentialsEntity.details().id != null &&
+                          !_pendingRatingChecked) {
+                        _pendingRatingChecked = true;
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          _checkPendingRating();
+                        });
                       }
                       return UserCredentialsEntity.details().id == null
                           ? const Center(child: CircularProgressIndicator())

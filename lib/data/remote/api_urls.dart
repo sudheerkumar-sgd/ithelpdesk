@@ -115,6 +115,8 @@ const String submitUserFeedbackApiUrl =
     '${apiFolderUrl}CreateTicket/SubmitUserFeedback';
 const String getUserFeedbackByIdApiUrl =
     '${apiFolderUrl}CreateTicket/GetUserFeedbackById';
+const String getPendingRatingTicketApiUrl =
+    '${apiFolderUrl}CreateTicket/GetPendingRatingTicket';
 const String createTicketUploadMultiPartApiUrl =
     '${apiFolderUrl}CreateTicket/UploadMultiPart';
 const String ticketHistoryApiUrl = '${apiFolderUrl}Ticket/GetTicketHistory';
