@@ -98,41 +98,13 @@ class ServicesBloc extends Cubit<ServicesState> {
     }));
   }
 
-  Future<ServicesState> exportToExcel(List<dynamic> tickets) async {
+  Future<ServicesState> exportToExcel(List<dynamic> tickets,
+      {String title = 'Tickets'}) async {
     //emit(OnLoading());
-    final result = await servicesUseCase.exportToExcel(tickets);
+    final result = await servicesUseCase.exportToExcel(tickets, title: title);
     return (result.fold((l) => OnApiError(message: _getErrorMessage(l)), (r) {
       return OnExportExcel(response: r);
     }));
-  }
-
-  Future<void> submitTicketFeedback(
-      {required Map<String, dynamic> requestParams}) async {
-    emit(OnLoading());
-    final result = await servicesUseCase.submitTicketFeedback(
-        requestParams: requestParams);
-    emit(result.fold(
-        (l) => OnApiError(message: _getErrorMessage(l)),
-        (r) => OnUpdateTicketSuccess(
-            updateTicketResponse: r.entity?.value ?? '')));
-  }
-
-  Future<ServicesState> getUserTicketFeedback(
-      {required Map<String, dynamic> requestParams}) async {
-    //emit(OnLoading());
-    final result = await servicesUseCase.getUserTicketFeedback(
-        requestParams: requestParams);
-    return (result.fold((l) => OnApiError(message: _getErrorMessage(l)),
-        (r) => OnApiResponse(response: r)));
-  }
-
-  Future<List<PendingRatingTicketEntity>> getPendingRatingTickets() async {
-    final result = await servicesUseCase.getPendingRatingTickets();
-    return result.fold((l) => [], (r) {
-      return (r.entity?.items ?? [])
-          .map((item) => item as PendingRatingTicketEntity)
-          .toList();
-    });
   }
 
   String _getErrorMessage(Failure failure) {

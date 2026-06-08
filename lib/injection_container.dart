@@ -14,6 +14,7 @@ import 'package:ithelpdesk/domain/usecase/user_usecase.dart';
 import 'package:ithelpdesk/presentation/bloc/iso/iso_bloc.dart';
 import 'package:ithelpdesk/presentation/bloc/user/user_bloc.dart';
 import 'package:ithelpdesk/presentation/bloc/master_data/master_data_bloc.dart';
+import 'package:ithelpdesk/presentation/bloc/rating/rating_bloc.dart';
 import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
 
 final sl = GetIt.instance;
@@ -41,6 +42,11 @@ Future<void> init() async {
   sl.registerFactory(
     () => ISOBloc(
       isoUseCase: sl(),
+    ),
+  );
+  sl.registerFactory(
+    () => RatingBloc(
+      servicesUseCase: sl(),
     ),
   );
   // Use Case

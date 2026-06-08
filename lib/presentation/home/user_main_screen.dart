@@ -9,9 +9,9 @@ import 'package:ithelpdesk/data/local/app_settings_db.dart';
 import 'package:ithelpdesk/data/local/user_data_db.dart';
 import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
 import 'package:ithelpdesk/injection_container.dart';
-import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
+import 'package:ithelpdesk/presentation/bloc/rating/rating_bloc.dart';
 import 'package:ithelpdesk/presentation/bloc/user/user_bloc.dart';
-import 'package:ithelpdesk/presentation/profile/rating_screen_widget.dart';
+import 'package:ithelpdesk/presentation/common_widgets/rating/rating_dialog.dart';
 import 'package:ithelpdesk/presentation/common_widgets/alert_dialog_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/base_screen_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/msearch_user_app_bar.dart';
@@ -50,7 +50,7 @@ class _MainScreenState extends State<UserMainScreen> {
   int activeTab = 0;
   double sideBarWidth = 200;
   final UserBloc _userBloc = sl<UserBloc>();
-  final ServicesBloc _servicesBloc = sl<ServicesBloc>();
+  final RatingBloc _ratingBloc = sl<RatingBloc>();
   late SideBar sideBar;
   bool _pendingRatingChecked = false;
 
@@ -80,28 +80,55 @@ class _MainScreenState extends State<UserMainScreen> {
           );
   }
 
+  Set<String> _getPromptedTicketIdsForToday(String today) {
+    final stored = context.appSettingsDB
+        .get(AppSettingsDB.pendingRatingPromptedTicketsKey, defaultValue: '')
+        .toString();
+    if (stored.isEmpty) return {};
+    final parts = stored.split('|');
+    if (parts.length != 2 || parts[0] != today || parts[1].isEmpty) return {};
+    return parts[1].split(',').toSet();
+  }
+
+  Future<void> _savePromptedTicketId(String today, String ticketId) async {
+    final prompted = _getPromptedTicketIdsForToday(today)..add(ticketId);
+    await context.appSettingsDB.put(
+      AppSettingsDB.pendingRatingPromptedTicketsKey,
+      '$today|${prompted.join(',')}',
+    );
+  }
+
+  bool _isClosedToday(String? closedOn) {
+    if (closedOn == null || closedOn.isEmpty) return true;
+    final closedDate = closedOn.split(' ').first;
+    return closedDate == getCurrentDateByformat('dd-MMM-yyyy');
+  }
+
   Future<void> _checkPendingRating() async {
     final today = getCurrentDateByformat('yyyy-MM-dd');
-    final lastShown = context.appSettingsDB
-        .get(AppSettingsDB.pendingRatingPopupDateKey, defaultValue: '')
-        .toString();
-    if (lastShown == today) return;
+    final promptedToday = _getPromptedTicketIdsForToday(today);
 
-    final tickets = await _servicesBloc.getPendingRatingTickets();
+    final tickets = await _ratingBloc.getPendingRatingTickets();
     if (!mounted || tickets.isEmpty) return;
 
-    final ticketId = tickets.first.ticketId?.toString() ?? '';
+    final unprompted = tickets.where((ticket) {
+      final ticketId = ticket.ticketId?.toString() ?? '';
+      return ticketId.isNotEmpty && !promptedToday.contains(ticketId);
+    }).toList();
+    if (unprompted.isEmpty) return;
+
+    final pendingTicket = unprompted.firstWhere(
+      (ticket) => _isClosedToday(ticket.closedOn),
+      orElse: () => unprompted.first,
+    );
+
+    final ticketId = pendingTicket.ticketId?.toString() ?? '';
     if (ticketId.isEmpty) return;
 
-    await context.appSettingsDB
-        .put(AppSettingsDB.pendingRatingPopupDateKey, today);
+    await _savePromptedTicketId(today, ticketId);
     if (!mounted) return;
 
-    await Dialogs.showDialogWithClose(
-      context,
-      RatingScreenWidget(ticketID: ticketId),
-      maxWidth: 550,
-    );
+    await RatingDialog.show(context, ticketId: ticketId);
   }
 
   void _onItemTapped(int index) {

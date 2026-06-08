@@ -13,7 +13,6 @@ import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/data/remote/api_urls.dart';
 import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
 import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
-import 'package:ithelpdesk/domain/entities/services_entity.dart';
 import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
 import 'package:ithelpdesk/injection_container.dart';
 import 'package:ithelpdesk/presentation/bloc/master_data/master_data_bloc.dart';
@@ -26,6 +25,7 @@ import 'package:ithelpdesk/presentation/common_widgets/dropdown_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/image_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/item_service_steps.dart';
 import 'package:ithelpdesk/presentation/common_widgets/right_icon_text_widget.dart';
+import 'package:ithelpdesk/presentation/common_widgets/rating/ticket_rating_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/ticket_action_widget.dart';
 import 'package:ithelpdesk/presentation/profile/customer_profile_screen_widget.dart';
 import 'package:ithelpdesk/presentation/profile/profile_screen_widget.dart';
@@ -938,6 +938,12 @@ class ViewRequest extends BaseScreenWidget {
     }
   }
 
+  bool _canRateTicket() {
+    return ticket.status == StatusType.closed &&
+        ticket.categoryID == 1 &&
+        ticket.userID == UserCredentialsEntity.details().id;
+  }
+
   Widget _getScrollwidget(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
@@ -1089,101 +1095,11 @@ class ViewRequest extends BaseScreenWidget {
                                           ),
                                         ]),
                                   ),
-                                  FutureBuilder(
-                                      future: _servicesBloc
-                                          .getUserTicketFeedback(
-                                              requestParams: {
-                                            "ticketID": ticket.id,
-                                          }),
-                                      builder: (context, snapshot) {
-                                        int value = 0;
-                                        if (snapshot.data is OnApiResponse) {
-                                          value =
-                                              ((snapshot.data as OnApiResponse)
-                                                              .response
-                                                              .entity
-                                                          as UserFeedbackEntity)
-                                                      .rating ??
-                                                  0;
-                                        }
-                                        return value != 0
-                                            ? Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                    ImageWidget(
-                                                            width: 20,
-                                                            path: DrawableAssets
-                                                                .icStar,
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(5),
-                                                            backgroundTint: value >
-                                                                    0
-                                                                ? resources
-                                                                    .color
-                                                                    .viewBgColor
-                                                                : null)
-                                                        .loadImageWithMoreTapArea,
-                                                    ImageWidget(
-                                                            width: 20,
-                                                            path: DrawableAssets
-                                                                .icStar,
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(5),
-                                                            backgroundTint: value >
-                                                                    1
-                                                                ? resources
-                                                                    .color
-                                                                    .viewBgColor
-                                                                : null)
-                                                        .loadImageWithMoreTapArea,
-                                                    ImageWidget(
-                                                            width: 20,
-                                                            path: DrawableAssets
-                                                                .icStar,
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(5),
-                                                            backgroundTint: value >
-                                                                    2
-                                                                ? resources
-                                                                    .color
-                                                                    .viewBgColor
-                                                                : null)
-                                                        .loadImageWithMoreTapArea,
-                                                    ImageWidget(
-                                                            width: 20,
-                                                            path: DrawableAssets
-                                                                .icStar,
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(5),
-                                                            backgroundTint: value >
-                                                                    3
-                                                                ? resources
-                                                                    .color
-                                                                    .viewBgColor
-                                                                : null)
-                                                        .loadImageWithMoreTapArea,
-                                                    ImageWidget(
-                                                            width: 20,
-                                                            path: DrawableAssets
-                                                                .icStar,
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(5),
-                                                            backgroundTint: value >
-                                                                    4
-                                                                ? resources
-                                                                    .color
-                                                                    .viewBgColor
-                                                                : null)
-                                                        .loadImageWithMoreTapArea,
-                                                  ])
-                                            : const SizedBox();
-                                      })
+                                  TicketRatingWidget(
+                                    ticketId: '${ticket.id}',
+                                    canRate: _canRateTicket(),
+                                    refreshNotifier: _onDataChanged,
+                                  ),
                                 ],
                               ),
                             ),

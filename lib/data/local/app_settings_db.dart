@@ -10,6 +10,8 @@ class AppSettingsDB {
   static const String welcomeTourDone = 'welcome_tour_done';
   static const String selectedSideBarIndex = 'selected_idebar_index';
   static const String pendingRatingPopupDateKey = 'pending_rating_popup_date';
+  static const String pendingRatingPromptedTicketsKey =
+      'pending_rating_prompted_tickets';
 
   Box settingDB = Hive.box(name);
 

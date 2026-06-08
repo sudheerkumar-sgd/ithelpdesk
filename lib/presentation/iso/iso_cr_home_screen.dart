@@ -55,7 +55,7 @@ class IsoCrHomeScreen extends BaseScreenWidget {
     final resources = context.resources;
     final categories = [
       resources.string.all,
-      isSelectedLocalEn ? 'My Tickets' : 'طلباتي',
+      isSelectedLocalEn ? 'My Requests' : 'الطلبات الخاصة بي',
       isSelectedLocalEn ? 'Pending Approval' : 'تحت المراجعة',
     ];
     return Wrap(
@@ -115,8 +115,9 @@ class IsoCrHomeScreen extends BaseScreenWidget {
               Dialogs.loader(context);
             }
             final allTicketsResponse = await _getCRTickets(forReport: true);
-            await sl<ServicesBloc>()
-                .exportToExcel(allTicketsResponse.entity?.requests ?? []);
+            await sl<ServicesBloc>().exportToExcel(
+                allTicketsResponse.entity?.requests ?? [],
+                title: 'ISO Requests');
             if (context.mounted) {
               Dialogs.dismiss(context);
             }
@@ -178,7 +179,7 @@ class IsoCrHomeScreen extends BaseScreenWidget {
       tableBody = '$tableBody\n</tr>';
     }
     printData(
-        title: "Tickets",
+        title: "ISO Requests",
         headerData: tableHeader,
         bodyData: tableBody,
         count: allRequests.length);

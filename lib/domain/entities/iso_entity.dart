@@ -141,6 +141,41 @@ class CRRequestEntity extends BaseEntity {
     // }
     return reportData;
   }
+
+  dynamic _excelValue(dynamic value) {
+    if (value == null) {
+      return '';
+    }
+    if (value is Enum) {
+      return value.toString();
+    }
+    if (value is Map) {
+      return value['name'] ?? value.toString();
+    }
+    return value;
+  }
+
+  Map<String, dynamic> toExcelJson() {
+    final excelData = <String, dynamic>{};
+    for (final entry in toJson().entries) {
+      excelData[entry.key] = _excelValue(entry.value);
+    }
+    if (excelData.isNotEmpty) {
+      return excelData;
+    }
+    return {
+      'Request Id': requestId ?? '',
+      'Request Type': requestType ?? '',
+      'Priority': requestPriority?.toString() ?? '',
+      'Current Step': currentStepName ?? currentStep ?? '',
+      'Assgined Employee': assginedEmployee ?? '',
+      'Request Status': requestStatus?.toString() ?? '',
+      'Created On': createdAt ?? '',
+      'Updated On': updatedAt ?? '',
+    };
+  }
+
+  Map<String, dynamic> toExcel() => toExcelJson();
 }
 
 class CRRequestDetailsEntity extends BaseEntity {

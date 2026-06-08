@@ -180,7 +180,8 @@ class ServicesUseCase extends BaseUseCase {
     });
   }
 
-  Future<Either<Failure, ApiEntity<ListEntity>>> getPendingRatingTickets() async {
+  Future<Either<Failure, ApiEntity<ListEntity>>>
+      getPendingRatingTickets() async {
     var apiResponse = await apisRepository.get<ListModel>(
       apiUrl: getPendingRatingTicketApiUrl,
       requestParams: {},
@@ -194,10 +195,11 @@ class ServicesUseCase extends BaseUseCase {
     });
   }
 
-  Future<Either<Failure, bool>> exportToExcel(List<dynamic> tickets) async {
+  Future<Either<Failure, bool>> exportToExcel(List<dynamic> tickets,
+      {required String title}) async {
     try {
       utils.exportToExcel(ExportDataEntity()
-        ..title = 'Tickets'
+        ..title = title
         ..date = getDateByformat('dd/MM/yyyy', DateTime.now())
         ..columns = (tickets.first.toExcel().keys.toList())
         ..rows = tickets);

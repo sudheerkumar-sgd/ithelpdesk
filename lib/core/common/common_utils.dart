@@ -495,7 +495,7 @@ Future<void> printData(
   <div class="title-section">
     <div></div> <!-- Spacer -->
     <div class="title">$title</div>
-    <div class="total-tickets">Total Tickets: $count</div>
+    <div class="total-tickets">Total $title: $count</div>
   </div>
   </td>
   </tr>
