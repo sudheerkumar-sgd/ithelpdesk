@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
@@ -236,11 +237,17 @@ class _MainScreenState extends State<UserMainScreen> {
     //     (defaultTargetPlatform == TargetPlatform.iOS ||
     //         defaultTargetPlatform == TargetPlatform.android);
 
+    final router = GoRouter.of(context);
     return BlocProvider(
       create: (context) => _userBloc,
       child: PopScope(
-        canPop: false,
-        onPopInvoked: (didPop) async {
+        canPop: router.canPop(),
+        onPopInvokedWithResult: (didPop, _) async {
+          if (didPop) return;
+          if (router.canPop()) {
+            router.pop();
+            return;
+          }
           await _navbarNotifier.onBackButtonPressed(_selectedIndex.value);
         },
         child: BlocProvider(

@@ -6,6 +6,7 @@ import 'dart:math';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
@@ -1244,7 +1245,10 @@ class ISOViewRequestScreen extends BaseScreenWidget {
             Dialogs.showInfoDialog(context, PopupType.success,
                     '${isSelectedLocalEn ? 'Request Updated' : 'تم تحديث الطلب'} ${requestEntity.requestCode}')
                 .then((value) {
-              if (context.mounted) {
+              if (!context.mounted) return;
+              if (isFromRoute ?? false) {
+                context.pop(true);
+              } else {
                 Navigator.pop(context, true);
               }
             });

@@ -103,6 +103,7 @@ class AppRoutes {
           return PageWidgetProvider(
             ISOViewRequestScreen(
               requestId: int.tryParse(requestId ?? '0') ?? 0,
+              isFromRoute: true,
             ),
           );
         },

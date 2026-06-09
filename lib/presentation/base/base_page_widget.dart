@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/data/local/app_settings_db.dart';
@@ -89,9 +90,15 @@ class _BasePageWidgetState extends State<BasePageWidget> {
   @override
   Widget build(BuildContext context) {
     Resources resources = context.resources;
+    final router = GoRouter.of(context);
     return PopScope(
-      canPop: false,
+      canPop: router.canPop(),
       onPopInvokedWithResult: (didPop, value) async {
+        if (didPop) return;
+        if (router.canPop()) {
+          router.pop();
+          return;
+        }
         await _navbarNotifier.onBackButtonPressed(_selectedIndex.value);
       },
       child: BlocProvider(

@@ -2,6 +2,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:ithelpdesk/core/config/app_routes.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/common/log.dart';
 import 'package:ithelpdesk/core/config/flavor_config.dart';
@@ -26,11 +28,12 @@ import 'package:ithelpdesk/presentation/common_widgets/dynamic_report_column_con
 import 'package:ithelpdesk/presentation/common_widgets/dynamic_report_list_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/multi_select_dialog_widget.dart';
 import 'package:ithelpdesk/presentation/iso/iso_system_cr_screen.dart';
-import 'package:ithelpdesk/presentation/iso/iso_view_request_screen.dart';
 import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 
 class IsoCrHomeScreen extends BaseScreenWidget {
   IsoCrHomeScreen({super.key});
+  static int savedListIndex = 0;
+
   late FocusNode requestStatusFocusNode;
   final ISOBloc _isoBloc = sl<ISOBloc>();
 
@@ -40,7 +43,17 @@ class IsoCrHomeScreen extends BaseScreenWidget {
   final ValueNotifier<int> _selectedYear = ValueNotifier(2024);
   //final ValueNotifier<List<String>> _filteredDates = ValueNotifier([]);
   StatusType filteredStatus = StatusType.all;
-  int index = 0;
+  int index = savedListIndex;
+
+  void _resetListIndex() {
+    index = 0;
+    savedListIndex = 0;
+  }
+
+  void _setListIndex(int newIndex) {
+    index = newIndex;
+    savedListIndex = newIndex;
+  }
   final List<int> _filteredRequestStatus = List<int>.empty(growable: true);
   final List<int> _filteredCurrentSteps = List<int>.empty(growable: true);
   String? _sortByField;
@@ -68,7 +81,7 @@ class IsoCrHomeScreen extends BaseScreenWidget {
           filteredDates: filteredDates,
           onChanged: () {
             if (context.mounted) {
-              index = 0;
+              _resetListIndex();
               _onDataChange.value = !_onDataChange.value;
             }
           },
@@ -98,7 +111,7 @@ class IsoCrHomeScreen extends BaseScreenWidget {
                       .onFontSize(resources.fontSize.dp12),
                   callback: (p0) {
                     _selectedCategory = categories.indexOf(p0 ?? 'All');
-                    index = 0;
+                    _resetListIndex();
                     _onDataChange.value = !_onDataChange.value;
                   },
                 ),
@@ -322,7 +335,7 @@ class IsoCrHomeScreen extends BaseScreenWidget {
         _filteredRequestStatus
           ..clear()
           ..addAll(selected.map((status) => status.value));
-        index = 0;
+        _resetListIndex();
         _onDataChange.value = !_onDataChange.value;
       }
       return;
@@ -345,7 +358,7 @@ class IsoCrHomeScreen extends BaseScreenWidget {
         _filteredCurrentSteps
           ..clear()
           ..addAll(selected.map((step) => step.id).whereType<int>());
-        index = 0;
+        _resetListIndex();
         _onDataChange.value = !_onDataChange.value;
       }
     }
@@ -801,17 +814,27 @@ class IsoCrHomeScreen extends BaseScreenWidget {
                                         : snapShot.data?.entity?.totalPage ?? 1,
                                     ticketsHeaderData: ticketsHeaderData,
                                     onColumnHeaderTap: _handleColumnHeaderTap,
-                                    onRowSelected: (item) {
+                                    onRowSelected: (item) async {
                                       if (item is CRRequestEntity) {
-                                        ISOViewRequestScreen.start(
-                                          context,
-                                          item.requestId ?? 0,
+                                        savedListIndex = index;
+                                        final didUpdate =
+                                            await context.push<bool>(
+                                          AppRoutes.crRequestRoute.replaceAll(
+                                            ':id',
+                                            '${item.requestId ?? 0}',
+                                          ),
                                         );
+                                        if (didUpdate == true &&
+                                            context.mounted) {
+                                          index = savedListIndex;
+                                          _onDataChange.value =
+                                              !_onDataChange.value;
+                                        }
                                       }
                                     },
                                     onColumnClick: (key, item) {},
                                     onPageChange: (page) {
-                                      index = (page - 1) * 10;
+                                      _setListIndex((page - 1) * 10);
                                       _onDataChange.value =
                                           !_onDataChange.value;
                                     },

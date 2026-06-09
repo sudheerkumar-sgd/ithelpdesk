@@ -375,7 +375,7 @@ Future<void> printData(
   String base64ImageLeft =
       await imageAssetToBase64('assets/images/ic_logo.png');
   String base64ImageRight =
-      await imageAssetToBase64('assets/images/ic_sgd_logo.png');
+      await imageAssetToBase64('assets/images/ic_dgd_logo.png');
   final htmlString = '''
   <!DOCTYPE html>
 <html>
