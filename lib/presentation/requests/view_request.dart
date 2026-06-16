@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ithelpdesk/core/common/common_utils.dart';
 import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
@@ -994,6 +995,34 @@ class ViewRequest extends BaseScreenWidget {
     );
   }
 
+  void _onBackPressed(BuildContext context) {
+    if (isFromRoute ?? false) {
+      if (context.canPop()) {
+        context.pop();
+      }
+      return;
+    }
+    if (Navigator.canPop(context)) {
+      Navigator.pop(context);
+    }
+  }
+
+  Widget _buildBackButton(BuildContext context) {
+    final resources = context.resources;
+    return InkWell(
+      onTap: () => _onBackPressed(context),
+      child: Padding(
+        padding: EdgeInsets.only(bottom: resources.dimen.dp10),
+        child: ImageWidget(
+          path: DrawableAssets.icArrowLeft,
+          boxType: BoxFit.fill,
+          isLocalEn: resources.isLocalEn,
+          backgroundTint: resources.color.viewBgColor,
+        ).loadImageWithMoreTapArea,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final resources = context.resources;
@@ -1045,7 +1074,9 @@ class ViewRequest extends BaseScreenWidget {
                   return Column(
                     children: [
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
+                          _buildBackButton(context),
                           Expanded(
                             flex: 3,
                             child: Text.rich(

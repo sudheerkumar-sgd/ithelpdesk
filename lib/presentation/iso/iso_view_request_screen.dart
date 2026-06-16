@@ -1150,13 +1150,13 @@ class ISOViewRequestScreen extends BaseScreenWidget {
           ),
           for (int i = 0; i < steps.length; i++) ...[
             ItemServiceSteps(
-              stepColor:
-                  (requestEntity.steps[i].status == RequestStepStatus.close ||
-                          requestEntity.requestStatus == RequestStatus.completed)
-                      ? resources.color.colorGreen26B757
-                      : requestEntity.requestStatus == RequestStatus.rejected
-                          ? resources.color.rejected
-                          : resources.color.pending,
+              stepColor: (requestEntity.steps[i].status ==
+                          RequestStepStatus.close ||
+                      requestEntity.requestStatus == RequestStatus.completed)
+                  ? resources.color.colorGreen26B757
+                  : requestEntity.requestStatus == RequestStatus.rejected
+                      ? resources.color.rejected
+                      : resources.color.pending,
               stepText: steps[i].stepName ?? "",
               stepSubText:
                   '${steps[i].status.toStatusString()} - ${steps[i].assigneDisplayName ?? ''} \n${steps[i].updatedAt}',
@@ -1217,6 +1217,34 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                   ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _onBackPressed(BuildContext context) {
+    if (isFromRoute ?? false) {
+      if (context.canPop()) {
+        context.pop();
+      }
+      return;
+    }
+    if (Navigator.canPop(context)) {
+      Navigator.pop(context);
+    }
+  }
+
+  Widget _buildBackButton(BuildContext context) {
+    final resources = context.resources;
+    return InkWell(
+      onTap: () => _onBackPressed(context),
+      child: Padding(
+        padding: EdgeInsets.only(bottom: resources.dimen.dp10),
+        child: ImageWidget(
+          path: DrawableAssets.icArrowLeft,
+          boxType: BoxFit.fill,
+          isLocalEn: resources.isLocalEn,
+          backgroundTint: resources.color.viewBgColor,
+        ).loadImageWithMoreTapArea,
       ),
     );
   }
@@ -1284,7 +1312,9 @@ class ISOViewRequestScreen extends BaseScreenWidget {
                   return Column(
                     children: [
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
+                          _buildBackButton(context),
                           Expanded(
                             flex: 3,
                             child: Text.rich(

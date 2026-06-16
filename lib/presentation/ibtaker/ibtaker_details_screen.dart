@@ -136,6 +136,28 @@ class _IbtakerDetailsScreenState extends State<IbtakerDetailsScreen> {
     _updating = false;
   }
 
+  void _onBackPressed(BuildContext context) {
+    if (Navigator.canPop(context)) {
+      Navigator.pop(context);
+    }
+  }
+
+  Widget _buildBackButton(BuildContext context) {
+    final resources = context.resources;
+    return InkWell(
+      onTap: () => _onBackPressed(context),
+      child: Padding(
+        padding: EdgeInsets.only(bottom: resources.dimen.dp10),
+        child: ImageWidget(
+          path: DrawableAssets.icArrowLeft,
+          boxType: BoxFit.fill,
+          isLocalEn: resources.isLocalEn,
+          backgroundTint: resources.color.viewBgColor,
+        ).loadImageWithMoreTapArea,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final resources = context.resources;
@@ -169,6 +191,7 @@ class _IbtakerDetailsScreenState extends State<IbtakerDetailsScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    _buildBackButton(context),
                     Expanded(
                       child: Text.rich(
                         TextSpan(

@@ -141,6 +141,8 @@ flutter:
      - assets/images/ic_star.svg
      - assets/images/ic_damek.svg
      - assets/images/ic_mytickets.svg
+     - assets/images/ic_arrow_back.svg
+     - assets/images/ic_arrow_left.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

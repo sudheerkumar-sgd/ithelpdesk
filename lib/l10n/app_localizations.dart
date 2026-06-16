@@ -584,17 +584,17 @@ abstract class AppLocalizations {
   /// **'Email ID'**
   String get emailID;
 
-  /// No description provided for @itSupportDirecotry.
+  /// No description provided for @itSupportDirectory.
   ///
   /// In en, this message translates to:
-  /// **'IT Support Direcotry'**
-  String get itSupportDirecotry;
+  /// **'IT Support Directory'**
+  String get itSupportDirectory;
 
-  /// No description provided for @itSupportDirecotryDes.
+  /// No description provided for @itSupportDirectoryDes.
   ///
   /// In en, this message translates to:
-  /// **'Umm Al Quwain Department - IT Support Direcotry'**
-  String get itSupportDirecotryDes;
+  /// **'Umm Al Quwain Department - IT Support Directory'**
+  String get itSupportDirectoryDes;
 
   /// No description provided for @userProfile.
   ///

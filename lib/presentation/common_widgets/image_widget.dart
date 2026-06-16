@@ -72,7 +72,7 @@ class ImageWidget {
     {
       return Padding(
         padding: padding,
-        child: getImage(),
+        child: loadImage,
       );
     }
   }

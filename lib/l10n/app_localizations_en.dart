@@ -257,11 +257,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get emailID => 'Email ID';
 
   @override
-  String get itSupportDirecotry => 'IT Support Direcotry';
+  String get itSupportDirectory => 'IT Support Directory';
 
   @override
-  String get itSupportDirecotryDes =>
-      'Umm Al Quwain Department - IT Support Direcotry';
+  String get itSupportDirectoryDes =>
+      'Umm Al Quwain Department - IT Support Directory';
 
   @override
   String get userProfile => 'User Profile';

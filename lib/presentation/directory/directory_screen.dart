@@ -219,13 +219,13 @@ class DirectoryScreen extends BaseScreenWidget {
                 children: [
                   Text.rich(
                     TextSpan(
-                        text: '${resources.string.itSupportDirecotry}\n',
+                        text: '${resources.string.itSupportDirectory}\n',
                         style: context.textFontWeight600
                             .onFontSize(resources.fontSize.dp12),
                         children: [
                           TextSpan(
                               text:
-                                  '${resources.string.itSupportDirecotryDes}\n',
+                                  '${resources.string.itSupportDirectoryDes}\n',
                               style: context.textFontWeight400
                                   .onFontSize(resources.fontSize.dp10)
                                   .onColor(resources.color.textColorLight)

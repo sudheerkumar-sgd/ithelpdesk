@@ -26,6 +26,7 @@ class DrawableAssets {
   static const icCallus = '${drawablePath}ic_callus.svg';
   static const icChevronBack = '${drawablePath}ic_chevron_back.svg';
   static const icArrowLeft = '${drawablePath}ic_arrow_left.svg';
+  static const icArrowBack = '${drawablePath}ic_arrow_back.svg';
   static const icChevronDown = '${drawablePath}ic_chevron_down.svg';
   static const icChevronUpExpand = '${drawablePath}ic_chevron_up_expand.svg';
   static const icChevronDownExpand =

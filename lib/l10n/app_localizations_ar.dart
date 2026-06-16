@@ -256,10 +256,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get emailID => 'البريد الإلكتروني';
 
   @override
-  String get itSupportDirecotry => 'دليل دعم تكنولوجيا المعلومات';
+  String get itSupportDirectory => 'دليل دعم تكنولوجيا المعلومات';
 
   @override
-  String get itSupportDirecotryDes =>
+  String get itSupportDirectoryDes =>
       'دوائر أم القيوين - دليل دعم تكنولوجيا المعلومات';
 
   @override

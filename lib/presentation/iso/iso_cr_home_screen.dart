@@ -28,6 +28,7 @@ import 'package:ithelpdesk/presentation/common_widgets/dynamic_report_column_con
 import 'package:ithelpdesk/presentation/common_widgets/dynamic_report_list_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/multi_select_dialog_widget.dart';
 import 'package:ithelpdesk/presentation/iso/iso_system_cr_screen.dart';
+import 'package:ithelpdesk/presentation/iso/iso_view_request_screen.dart';
 import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 
 class IsoCrHomeScreen extends BaseScreenWidget {
@@ -54,6 +55,7 @@ class IsoCrHomeScreen extends BaseScreenWidget {
     index = newIndex;
     savedListIndex = newIndex;
   }
+
   final List<int> _filteredRequestStatus = List<int>.empty(growable: true);
   final List<int> _filteredCurrentSteps = List<int>.empty(growable: true);
   String? _sortByField;
@@ -817,12 +819,11 @@ class IsoCrHomeScreen extends BaseScreenWidget {
                                     onRowSelected: (item) async {
                                       if (item is CRRequestEntity) {
                                         savedListIndex = index;
+                                        //
                                         final didUpdate =
-                                            await context.push<bool>(
-                                          AppRoutes.crRequestRoute.replaceAll(
-                                            ':id',
-                                            '${item.requestId ?? 0}',
-                                          ),
+                                            await ISOViewRequestScreen.start(
+                                          context,
+                                          item.requestId ?? 0,
                                         );
                                         if (didUpdate == true &&
                                             context.mounted) {
