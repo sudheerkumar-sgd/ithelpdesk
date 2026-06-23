@@ -105,14 +105,20 @@ class DropdownSearchWidget<T extends Object> extends StatelessWidget {
                     shrinkWrap: false,
                     itemBuilder: (BuildContext context, int index) {
                       final T option = options.elementAt(index);
-                      return InkWell(
-                        onTap: () => onSelected(option),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Text(
+                      return Listener(
+                        behavior: HitTestBehavior.opaque,
+                        onPointerDown: (PointerDownEvent event) {
+                          // Direct bypass of gesture detector tree
+                          onSelected(option);
+                        },
+                        child: ListTile(
+                          title: Text(
                             option.toString(),
-                            style: context.textFontWeight400,
+                            style: context.textFontWeight400
+                                .onFontFamily(fontFamily: fontFamily),
                           ),
+                          titleTextStyle: context.textFontWeight400
+                              .onFontFamily(fontFamily: fontFamily),
                         ),
                       );
                     },

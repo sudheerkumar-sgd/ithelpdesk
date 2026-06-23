@@ -132,8 +132,10 @@ class RightIconTextWidget extends StatelessWidget {
                           ? fontFamilyEN
                           : fontFamilyAR)
                   .onColor(context.resources.color.colorD6D6D6),
-              suffixIconConstraints:
-                  BoxConstraints(maxHeight: height, minHeight: height),
+              suffixIconConstraints: BoxConstraints(
+                minHeight: height * .5,
+                maxHeight: height * .5,
+              ),
               suffixIcon: (suffixIconPath ?? '').isNotEmpty
                   ? InkWell(
                       onTap: () {
@@ -142,6 +144,7 @@ class RightIconTextWidget extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 15.0),
                         child: ImageWidget(
+                          width: height * .5,
                           path: suffixIconPath ?? '',
                         ).loadImage,
                       ),
