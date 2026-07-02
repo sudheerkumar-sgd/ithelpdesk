@@ -20,7 +20,8 @@ class DynamicReportListWidget extends StatelessWidget {
   final Function(dynamic)? onRowSelected;
   final Function(String, dynamic)? onColumnClick;
   final Future<void> Function(
-      BuildContext context, DynamicReportHeaderEntity header)? onColumnHeaderTap;
+          BuildContext context, DynamicReportHeaderEntity header)?
+      onColumnHeaderTap;
 
   const DynamicReportListWidget({
     required this.reportData,
@@ -236,7 +237,8 @@ class DynamicReportListWidget extends StatelessWidget {
                       padding: EdgeInsets.all(resources.dimen.dp5),
                       child: Icon(
                         Icons.chevron_left_sharp,
-                        color: page == 1 ? resources.color.colorGray9E9E9E : null,
+                        color:
+                            page == 1 ? resources.color.colorGray9E9E9E : null,
                       ),
                     ),
                   ),
