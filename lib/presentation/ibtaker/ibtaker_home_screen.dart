@@ -50,6 +50,7 @@ class _IbtakerHomeScreenState extends State<IbtakerHomeScreen> {
   final int _pageSize = 20;
   String _search = '';
   int? _statusFilter;
+  int _ibtakerType = 1;
   List<_IbtakerStatusTab> _statusTabs = const [
     _IbtakerStatusTab(apiStatus: IbtakerStatus.all, count: 0),
     _IbtakerStatusTab(apiStatus: IbtakerStatus.submitted, count: 0),
@@ -64,6 +65,7 @@ class _IbtakerHomeScreenState extends State<IbtakerHomeScreen> {
     final m = <String, dynamic>{
       'pageNumber': pageNumber,
       'pageSize': _pageSize,
+      'ibtakerType': _ibtakerType,
     };
     if (_statusFilter != null && _statusFilter != -1) {
       m['status'] = _statusFilter;
@@ -104,6 +106,80 @@ class _IbtakerHomeScreenState extends State<IbtakerHomeScreen> {
       _pageNumber = 1;
     });
     _onDataChange.value = !_onDataChange.value;
+  }
+
+  void _selectIbtakerType(int ibtakerType) {
+    if (_ibtakerType == ibtakerType) return;
+    setState(() {
+      _ibtakerType = ibtakerType;
+      _pageNumber = 1;
+    });
+    _onDataChange.value = !_onDataChange.value;
+  }
+
+  Widget _buildTypeTab(
+    BuildContext context, {
+    required String label,
+    required int type,
+  }) {
+    final resources = context.resources;
+    final isSelected = _ibtakerType == type;
+    return Expanded(
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => _selectIbtakerType(type),
+          borderRadius: BorderRadius.circular(resources.dimen.dp8),
+          child: Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: resources.dimen.dp15,
+              vertical: resources.dimen.dp10,
+            ),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? resources.color.sideBarItemSelected
+                  : resources.color.colorWhite,
+              borderRadius: BorderRadius.circular(resources.dimen.dp8),
+              border: Border.all(
+                color: isSelected
+                    ? resources.color.sideBarItemSelected
+                    : resources.color.sideBarItemUnselected,
+              ),
+            ),
+            child: Text(
+              label,
+              textAlign: TextAlign.center,
+              style: context.textFontWeight600
+                  .onFontSize(resources.fontSize.dp11)
+                  .onColor(
+                    isSelected
+                        ? resources.color.colorWhite
+                        : resources.color.textColor,
+                  ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTypeTabs(BuildContext context) {
+    final resources = context.resources;
+    return Row(
+      children: [
+        _buildTypeTab(
+          context,
+          label: isSelectedLocalEn ? 'Internal' : 'داخلي',
+          type: 1,
+        ),
+        SizedBox(width: resources.dimen.dp8),
+        _buildTypeTab(
+          context,
+          label: isSelectedLocalEn ? 'External' : 'خارجي',
+          type: 2,
+        ),
+      ],
+    );
   }
 
   Widget _buildStatusTabs(BuildContext context) {
@@ -405,6 +481,8 @@ class _IbtakerHomeScreenState extends State<IbtakerHomeScreen> {
                     'Ibtaker report',
                     style: context.textFontWeight600,
                   ),
+                  SizedBox(height: resources.dimen.dp20),
+                  _buildTypeTabs(context),
                   SizedBox(height: resources.dimen.dp20),
                   ValueListenableBuilder(
                       valueListenable: _onTabDataChange,
