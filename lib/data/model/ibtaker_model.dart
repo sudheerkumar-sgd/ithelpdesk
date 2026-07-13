@@ -81,6 +81,8 @@ class IbtakerIdeaModel extends BaseModel {
   String? currentIssue;
   String? improvementProposal;
   dynamic attachments;
+  String? eid;
+  String? email;
   int? status;
   bool? isDeleted;
   String? createdOn;
@@ -100,6 +102,8 @@ class IbtakerIdeaModel extends BaseModel {
     currentIssue = json['currentIssue'] as String?;
     improvementProposal = json['improvementProposal'] as String?;
     attachments = json['attachments'];
+    eid = json['eid'] as String?;
+    email = json['email'] as String?;
     status = json['status'] as int?;
     isDeleted = json['isDeleted'] as bool?;
     createdOn = json['createdOn'] as String?;
@@ -153,6 +157,8 @@ class IbtakerIdeaModel extends BaseModel {
       ..currentIssue = currentIssue
       ..improvementProposal = improvementProposal
       ..attachments = attachments?.toString()
+      ..eid = eid
+      ..email = email
       ..status = IbtakerStatus.fromId(status)
       ..isDeleted = isDeleted
       ..createdOn = createdOn

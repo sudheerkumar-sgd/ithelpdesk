@@ -43,6 +43,8 @@ class IbtakerIdeaEntity extends BaseEntity {
   String? currentIssue;
   String? improvementProposal;
   String? attachments;
+  String? eid;
+  String? email;
   IbtakerStatus? status;
   bool? isDeleted;
   String? createdOn;
