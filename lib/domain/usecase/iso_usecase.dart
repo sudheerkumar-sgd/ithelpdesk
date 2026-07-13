@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:ithelpdesk/core/config/base_url_config.dart';
 import 'package:ithelpdesk/core/error/failures.dart';
 import 'package:ithelpdesk/data/model/api_response_model.dart';
 import 'package:ithelpdesk/data/model/ibtaker_model.dart';
@@ -88,7 +89,9 @@ class ISOUseCase extends BaseUseCase {
   Future<Either<Failure, ApiEntity<IbtakerListDataEntity>>>
       getMyAndTeamIbtakerIdeas(
           {required Map<String, dynamic> requestParams}) async {
-    var apiResponse = await apisRepository.get<IbtakerListDataModel>(
+    var apiResponse =
+        await apisRepository.getWithCustomBaseUrl<IbtakerListDataModel>(
+      baseUrl: 'https://ithelpdesk.uaqgov.ae:5009/',
       apiUrl: myAndTeamIbtakerIdeasApiUrl,
       requestParams: requestParams,
       responseModel: IbtakerListDataModel.fromJson,

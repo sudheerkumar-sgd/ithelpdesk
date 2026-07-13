@@ -1,7 +1,9 @@
 // ignore_for_file: must_be_immutable
 import 'package:ithelpdesk/core/common/common_utils.dart';
+import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/domain/entities/base_entity.dart';
+import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
 
 class IbtakerListDataEntity extends BaseEntity {
   int? pageNumber;
@@ -12,10 +14,23 @@ class IbtakerListDataEntity extends BaseEntity {
   List<IbtakerStatusCountEntity> countByStatus = [];
 }
 
-class IbtakerDepartmentEntity extends BaseEntity {
+class IbtakerProposalTypeEntity extends BaseEntity {
   int? id;
   String? name;
-  String? shortName;
+  String? nameAr;
+
+  bool get isOther {
+    final en = (name ?? '').trim().toLowerCase();
+    final ar = (nameAr ?? '').trim();
+    return en == 'other' || ar == 'أخرى' || ar == 'اخرى';
+  }
+
+  String displayName({required bool isLocalEn}) {
+    if (isLocalEn) {
+      return name ?? '';
+    }
+    return (nameAr?.isNotEmpty ?? false) ? nameAr! : (name ?? '');
+  }
 }
 
 class IbtakerIdeaEntity extends BaseEntity {
@@ -31,16 +46,35 @@ class IbtakerIdeaEntity extends BaseEntity {
   IbtakerStatus? status;
   bool? isDeleted;
   String? createdOn;
-  IbtakerDepartmentEntity? departmentData;
+  DepartmentEntity? departmentData;
+  IbtakerProposalTypeEntity? proposalTypeData;
+  DepartmentEntity? proposalToData;
   List<IbtakerActionEntity> actions = [];
   List<IbtakerAttachmentEntity> ibtakerAttachments = [];
+
+  String get displayProposalType {
+    return displayProposalTypeLocalized(isLocalEn: isSelectedLocalEn);
+  }
+
+  String displayProposalTypeLocalized({required bool isLocalEn}) {
+    if (proposalTypeData != null) {
+      if (proposalTypeData!.isOther) {
+        return (proposalType?.isNotEmpty ?? false)
+            ? proposalType!
+            : proposalTypeData!.displayName(isLocalEn: isLocalEn);
+      }
+      return proposalTypeData!.displayName(isLocalEn: isLocalEn);
+    }
+    return proposalType ?? '';
+  }
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'id': id,
       'name': name,
       'proposalTitle': proposalTitle,
-      'proposalType': proposalType,
+      'proposalType': displayProposalType,
+      'proposalTo': proposalToData?.shortName ?? proposalToData?.name ?? '',
       'currentIssue': currentIssue,
       'improvementProposal': improvementProposal,
       'status': status?.toString(),

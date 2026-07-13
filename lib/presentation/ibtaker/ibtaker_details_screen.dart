@@ -258,8 +258,20 @@ class _IbtakerDetailsScreenState extends State<IbtakerDetailsScreen> {
                           SizedBox(height: resources.dimen.dp10),
                           _pair(context, 'Proposal Title',
                               idea.proposalTitle ?? ''),
-                          _pair(context, 'Proposal Type',
-                              idea.proposalType ?? ''),
+                          _pair(
+                            context,
+                            'Proposal Type',
+                            idea.displayProposalTypeLocalized(
+                              isLocalEn: resources.isLocalEn,
+                            ),
+                          ),
+                          _pair(
+                            context,
+                            'Proposal To',
+                            idea.proposalToData?.name ??
+                                idea.proposalToData?.shortName ??
+                                '',
+                          ),
                           _pair(context, 'Current Issue',
                               idea.currentIssue ?? ''),
                           SizedBox(height: resources.dimen.dp10),

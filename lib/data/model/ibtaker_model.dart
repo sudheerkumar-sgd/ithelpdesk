@@ -2,7 +2,9 @@
 
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/data/model/base_model.dart';
+import 'package:ithelpdesk/data/model/master_data_models.dart';
 import 'package:ithelpdesk/domain/entities/ibtaker_entity.dart';
+import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
 
 class IbtakerListDataModel extends BaseModel {
   int? pageNumber;
@@ -49,23 +51,23 @@ class IbtakerListDataModel extends BaseModel {
   }
 }
 
-class IbtakerDepartmentModel extends BaseModel {
+class IbtakerProposalTypeModel extends BaseModel {
   int? id;
   String? name;
-  String? shortName;
+  String? nameAr;
 
-  IbtakerDepartmentModel.fromJson(Map<String, dynamic> json) {
+  IbtakerProposalTypeModel.fromJson(Map<String, dynamic> json) {
     id = json['id'] as int?;
     name = json['name'] as String?;
-    shortName = json['shortName'] as String?;
+    nameAr = json['nameAr'] as String?;
   }
 
   @override
-  IbtakerDepartmentEntity toEntity() {
-    return IbtakerDepartmentEntity()
+  IbtakerProposalTypeEntity toEntity() {
+    return IbtakerProposalTypeEntity()
       ..id = id
       ..name = name
-      ..shortName = shortName;
+      ..nameAr = nameAr;
   }
 }
 
@@ -82,7 +84,9 @@ class IbtakerIdeaModel extends BaseModel {
   int? status;
   bool? isDeleted;
   String? createdOn;
-  IbtakerDepartmentEntity? departmentData;
+  DepartmentEntity? departmentData;
+  IbtakerProposalTypeEntity? proposalTypeData;
+  DepartmentEntity? proposalToData;
   List<IbtakerActionEntity> actions = [];
   List<IbtakerAttachmentEntity> ibtakerAttachments = [];
 
@@ -102,7 +106,18 @@ class IbtakerIdeaModel extends BaseModel {
     final dynamic dept = json['departmentData'];
     if (dept is Map) {
       departmentData =
-          IbtakerDepartmentModel.fromJson(Map<String, dynamic>.from(dept))
+          DepartmentModel.fromJson(Map<String, dynamic>.from(dept)).toEntity();
+    }
+    final dynamic typeData = json['proposalTypeData'];
+    if (typeData is Map) {
+      proposalTypeData =
+          IbtakerProposalTypeModel.fromJson(Map<String, dynamic>.from(typeData))
+              .toEntity();
+    }
+    final dynamic toData = json['proposalToData'];
+    if (toData is Map) {
+      proposalToData =
+          DepartmentModel.fromJson(Map<String, dynamic>.from(toData))
               .toEntity();
     }
     final dynamic actionItems = json['actions'];
@@ -142,6 +157,8 @@ class IbtakerIdeaModel extends BaseModel {
       ..isDeleted = isDeleted
       ..createdOn = createdOn
       ..departmentData = departmentData
+      ..proposalTypeData = proposalTypeData
+      ..proposalToData = proposalToData
       ..actions = actions
       ..ibtakerAttachments = ibtakerAttachments;
   }
@@ -176,7 +193,7 @@ class IbtakerActionModel extends BaseModel {
       ..actionType = actionType
       ..action = IbtakerStatus.fromId(actionType)
       ..actionBy = actionBy
-      ..actionByName = actionByName
+      ..actionByName = actionByName ?? 'Customer'
       ..actionTo = actionTo
       ..remarks = remarks
       ..actionDate = actionDate;
