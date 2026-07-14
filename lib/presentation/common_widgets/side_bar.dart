@@ -208,8 +208,7 @@ class SideBar extends StatelessWidget {
                 //             )
                 //           : const SizedBox.shrink();
                 //     }),
-                if (ibtakerUsers
-                    .contains(UserCredentialsEntity.details().username)) ...[
+                if (UserCredentialsEntity.details().isIbtakerUser) ...[
                   SizedBox(
                     height: resources.dimen.dp10,
                   ),

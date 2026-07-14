@@ -12,6 +12,7 @@ import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
 import 'package:ithelpdesk/domain/entities/api_entity.dart';
 import 'package:ithelpdesk/domain/entities/ibtaker_entity.dart';
 import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
+import 'package:ithelpdesk/domain/entities/user_credentials_entity.dart';
 import 'package:ithelpdesk/injection_container.dart';
 import 'package:ithelpdesk/presentation/bloc/iso/iso_bloc.dart';
 import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart';
@@ -483,12 +484,14 @@ class _IbtakerHomeScreenState extends State<IbtakerHomeScreen> {
                   ),
                   SizedBox(height: resources.dimen.dp20),
                   _buildTypeTabs(context),
-                  SizedBox(height: resources.dimen.dp20),
-                  ValueListenableBuilder(
-                      valueListenable: _onTabDataChange,
-                      builder: (context, value, child) {
-                        return _buildStatusTabs(context);
-                      }),
+                  if (UserCredentialsEntity.details().isIbtakerSuperAdmin) ...[
+                    SizedBox(height: resources.dimen.dp20),
+                    ValueListenableBuilder(
+                        valueListenable: _onTabDataChange,
+                        builder: (context, value, child) {
+                          return _buildStatusTabs(context);
+                        }),
+                  ],
                   SizedBox(height: resources.dimen.dp20),
                   Row(
                     children: [

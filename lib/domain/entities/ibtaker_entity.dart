@@ -99,6 +99,7 @@ class IbtakerActionEntity extends BaseEntity {
   IbtakerStatus? action;
   int? actionBy;
   String? actionByName;
+  String? actionToName;
   int? actionTo;
   String? remarks;
   String? actionDate;

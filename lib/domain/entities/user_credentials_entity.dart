@@ -15,6 +15,7 @@ class UserCredentialsEntity {
   String? isoUserCategories;
   String? contactNumber;
   bool? userOnvaction;
+  int? ibtakerRoleId;
   UserCredentialsEntity();
   factory UserCredentialsEntity.details({isDataChanged = false}) {
     if (userData == null || isDataChanged) {
@@ -37,10 +38,15 @@ class UserCredentialsEntity {
         userData?.contactNumber = data['contactNumber'];
         userData?.userOnvaction =
             bool.tryParse('${data['onVacation'] ?? false}'.toLowerCase());
+        userData?.ibtakerRoleId =
+            int.tryParse('${data['ibtakerRoleId'] ?? ''}');
       }
     }
     return userData ?? UserCredentialsEntity();
   }
+
+  bool get isIbtakerSuperAdmin => ibtakerRoleId == 1;
+  bool get isIbtakerUser => ibtakerRoleId != null && ibtakerRoleId != 0;
 
   factory UserCredentialsEntity.create(String userToken) {
     final userDetails = UserDataDB();

@@ -9,6 +9,7 @@ import 'package:ithelpdesk/data/model/single_data_model.dart';
 import 'package:ithelpdesk/domain/entities/base_entity.dart';
 import 'package:ithelpdesk/domain/entities/directory_entity.dart';
 import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
+import 'package:ithelpdesk/domain/entities/user_entity.dart';
 
 class ListModel extends BaseModel {
   List<BaseEntity> items = [];
@@ -72,6 +73,27 @@ class ListModel extends BaseModel {
     if (json['data'] is List) {
       for (var json in (json['data'] as List)) {
         items.add(UserModel.fromJson(json).toEntity());
+      }
+    }
+  }
+
+  ListModel.fromIbtakerUsersJson(Map<String, dynamic> json) {
+    if (json['data'] is List) {
+      for (var item in (json['data'] as List)) {
+        if (item is Map) {
+          final map = Map<String, dynamic>.from(item);
+          final user = UserEntity()
+            ..id = map['userId'] as int? ?? map['id'] as int?
+            ..name = map['user'] as String? ?? map['name'] as String?
+            ..roleID = map['roleId'] as int?;
+          final dept = map['department'];
+          if (dept is Map) {
+            user.department = dept['shortName'] as String? ??
+                dept['name'] as String?;
+            user.departmentID = dept['id'] as int?;
+          }
+          items.add(user);
+        }
       }
     }
   }

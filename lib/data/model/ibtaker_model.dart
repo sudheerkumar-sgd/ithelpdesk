@@ -102,8 +102,8 @@ class IbtakerIdeaModel extends BaseModel {
     currentIssue = json['currentIssue'] as String?;
     improvementProposal = json['improvementProposal'] as String?;
     attachments = json['attachments'];
-    eid = json['eid'] as String?;
-    email = json['email'] as String?;
+    eid = '${json['eid']}'.toString();
+    email = '${json['email']}'.toString();
     status = json['status'] as int?;
     isDeleted = json['isDeleted'] as bool?;
     createdOn = json['createdOn'] as String?;
@@ -177,6 +177,7 @@ class IbtakerActionModel extends BaseModel {
   int? actionBy;
   String? actionByName;
   int? actionTo;
+  String? actionToName;
   String? remarks;
   String? actionDate;
 
@@ -187,6 +188,7 @@ class IbtakerActionModel extends BaseModel {
     actionBy = json['actionBy'] as int?;
     actionByName = json['actionByName'] as String?;
     actionTo = json['actionTo'] as int?;
+    actionToName = json['actionToName'] as String?;
     remarks = json['remarks'] as String?;
     actionDate = json['actionDate'] as String?;
   }
@@ -201,6 +203,7 @@ class IbtakerActionModel extends BaseModel {
       ..actionBy = actionBy
       ..actionByName = actionByName ?? 'Customer'
       ..actionTo = actionTo
+      ..actionToName = actionToName
       ..remarks = remarks
       ..actionDate = actionDate;
   }

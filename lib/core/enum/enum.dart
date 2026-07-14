@@ -587,7 +587,9 @@ enum IbtakerStatus {
   rejected(3),
   transfered(4),
   hold(5),
-  closed(6);
+  closed(6),
+  deleted(7),
+  assigned(8);
 
   final int value;
   const IbtakerStatus(this.value);
@@ -613,6 +615,35 @@ enum IbtakerStatus {
         return isSelectedLocalEn ? 'Hold' : 'تعليق';
       case closed:
         return isSelectedLocalEn ? 'Closed' : 'اغلاق';
+      case deleted:
+        return isSelectedLocalEn ? 'Deleted' : 'محذوف';
+      case assigned:
+        return isSelectedLocalEn ? 'Assigned' : 'معين';
+      case all:
+        return isSelectedLocalEn ? 'All' : 'جميع';
+    }
+  }
+
+  String toActionString() {
+    switch (this) {
+      case pending:
+        return isSelectedLocalEn ? 'Pending' : 'في الانتظار';
+      case approved:
+        return isSelectedLocalEn ? 'Approve' : 'موافق عليه';
+      case rejected:
+        return isSelectedLocalEn ? 'Reject' : 'رفض';
+      case transfered:
+        return isSelectedLocalEn ? 'Transfer' : 'تم التحويل';
+      case submitted:
+        return isSelectedLocalEn ? 'Submit' : 'تم الإرسال';
+      case hold:
+        return isSelectedLocalEn ? 'Hold' : 'معلق';
+      case closed:
+        return isSelectedLocalEn ? 'Close' : 'اغلاق';
+      case deleted:
+        return isSelectedLocalEn ? 'Delete' : 'حذف';
+      case assigned:
+        return isSelectedLocalEn ? 'Assign' : 'تعيين';
       case all:
         return isSelectedLocalEn ? 'All' : 'جميع';
     }
@@ -634,6 +665,10 @@ enum IbtakerStatus {
         return Colors.orange;
       case IbtakerStatus.closed:
         return Colors.green;
+      case IbtakerStatus.deleted:
+        return Colors.red;
+      case IbtakerStatus.assigned:
+        return Colors.blue;
       case all:
         return Colors.grey;
     }
