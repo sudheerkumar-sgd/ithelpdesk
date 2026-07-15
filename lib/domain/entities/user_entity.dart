@@ -35,12 +35,16 @@ class UserEntity extends BaseEntity {
   String? mobile;
   String? contactNumber;
   int? transferStepId;
+  bool showDept = true;
 
   @override
   List<Object?> get props => [id, name];
 
   @override
   String toString() {
+    if (showDept) {
+      return '$name - $department';
+    }
     return name ?? '';
   }
 

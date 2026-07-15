@@ -674,3 +674,31 @@ enum IbtakerStatus {
     }
   }
 }
+
+enum IbtakerType {
+  internal(1),
+  external(2);
+
+  final int value;
+  const IbtakerType(this.value);
+
+  factory IbtakerType.fromId(int? value) {
+    return values.firstWhere((e) => e.value == (value ?? 1),
+        orElse: () => throw ArgumentError('Invalid IbtakerType id: $value'));
+  }
+
+  factory IbtakerType.fromName(String value) {
+    return values.firstWhere((e) => e.name.toLowerCase() == value.toLowerCase(),
+        orElse: () => throw ArgumentError('Invalid IbtakerType name: $value'));
+  }
+
+  @override
+  String toString() {
+    switch (this) {
+      case internal:
+        return isSelectedLocalEn ? 'Internal' : 'داخلي';
+      case external:
+        return isSelectedLocalEn ? 'External' : 'خارجي';
+    }
+  }
+}

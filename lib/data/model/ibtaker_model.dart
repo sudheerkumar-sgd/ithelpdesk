@@ -83,7 +83,9 @@ class IbtakerIdeaModel extends BaseModel {
   dynamic attachments;
   String? eid;
   String? email;
+  String? mobileNumber;
   int? status;
+  int? ibtakerType;
   bool? isDeleted;
   String? createdOn;
   DepartmentEntity? departmentData;
@@ -102,9 +104,11 @@ class IbtakerIdeaModel extends BaseModel {
     currentIssue = json['currentIssue'] as String?;
     improvementProposal = json['improvementProposal'] as String?;
     attachments = json['attachments'];
-    eid = '${json['eid']}'.toString();
-    email = '${json['email']}'.toString();
+    eid = '${json['eid'] ?? ''}'.toString();
+    email = '${json['email'] ?? ''}'.toString();
+    mobileNumber = '${json['mobileNumber'] ?? ''}'.toString();
     status = json['status'] as int?;
+    ibtakerType = json['ibtakerType'] as int?;
     isDeleted = json['isDeleted'] as bool?;
     createdOn = json['createdOn'] as String?;
     final dynamic dept = json['departmentData'];
@@ -159,7 +163,9 @@ class IbtakerIdeaModel extends BaseModel {
       ..attachments = attachments?.toString()
       ..eid = eid
       ..email = email
+      ..mobileNumber = mobileNumber
       ..status = IbtakerStatus.fromId(status)
+      ..ibtakerType = IbtakerType.fromId(ibtakerType)
       ..isDeleted = isDeleted
       ..createdOn = createdOn
       ..departmentData = departmentData

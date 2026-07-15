@@ -45,6 +45,8 @@ class IbtakerIdeaEntity extends BaseEntity {
   String? attachments;
   String? eid;
   String? email;
+  String? mobileNumber;
+  IbtakerType? ibtakerType;
   IbtakerStatus? status;
   bool? isDeleted;
   String? createdOn;
@@ -74,6 +76,8 @@ class IbtakerIdeaEntity extends BaseEntity {
     return <String, dynamic>{
       'id': id,
       'name': name,
+      if (ibtakerType == IbtakerType.internal)
+        'department': departmentData?.shortName ?? '',
       'proposalTitle': proposalTitle,
       'proposalType': displayProposalType,
       'proposalTo': proposalToData?.shortName ?? proposalToData?.name ?? '',
@@ -82,7 +86,6 @@ class IbtakerIdeaEntity extends BaseEntity {
       'status': status?.toString(),
       'createdOn':
           getDateByformat('dd-MM-yyyy', DateTime.parse(createdOn ?? '')),
-      'department': departmentData?.shortName ?? '',
     };
   }
 

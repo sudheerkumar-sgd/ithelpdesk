@@ -295,11 +295,17 @@ class _IbtakerDetailsScreenState extends State<IbtakerDetailsScreen> {
                       child: Column(
                         children: [
                           _pair(context, 'Name', idea.name ?? ''),
-                          _pair(context, 'Employee ID', idea.empID ?? ''),
-                          _pair(context, 'Entity',
-                              idea.departmentData?.name ?? ''),
-                          _pair(context, 'Email ID', idea.email ?? ''),
-                          _pair(context, 'EID', idea.eid ?? ''),
+                          if (idea.ibtakerType == IbtakerType.internal) ...[
+                            _pair(context, 'Employee ID', idea.empID ?? ''),
+                            _pair(context, 'Entity',
+                                idea.departmentData?.name ?? ''),
+                          ],
+                          if (idea.ibtakerType == IbtakerType.external) ...[
+                            _pair(context, 'Email ID', idea.email ?? ''),
+                            _pair(context, 'Mobile Number',
+                                idea.mobileNumber ?? ''),
+                            _pair(context, 'EID', idea.eid ?? ''),
+                          ],
                           SizedBox(height: resources.dimen.dp10),
                           _pair(context, 'Proposal Title',
                               idea.proposalTitle ?? ''),
