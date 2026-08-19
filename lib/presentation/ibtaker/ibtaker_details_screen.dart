@@ -434,7 +434,7 @@ class _IbtakerDetailsScreenState extends State<IbtakerDetailsScreen> {
                                       ? resources.color.rejected
                                       : resources.color.pending,
                               stepSubText:
-                                  '${updates[i].action?.toString() ?? ''}\n${updates[i].actionDate ?? ''}',
+                                  '${updates[i].action?.toString() ?? ''}\n${getDateByformat('dd-MMM-yyyy hh:mm a', DateTime.parse(updates[i].actionDate ?? ''))}',
                               isLastStep: i == updates.length - 1,
                             ),
                           ]

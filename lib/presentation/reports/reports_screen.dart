@@ -10,11 +10,16 @@ import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/string_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
+import 'package:ithelpdesk/data/remote/api_urls.dart';
+import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
+import 'package:ithelpdesk/domain/entities/single_data_entity.dart';
 import 'package:ithelpdesk/domain/entities/user_entity.dart';
+import 'package:ithelpdesk/presentation/bloc/master_data/master_data_bloc.dart';
 import 'package:ithelpdesk/presentation/bloc/services/services_bloc.dart';
 import 'package:ithelpdesk/presentation/common_widgets/action_button_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/date_range_filter_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/dropdown_widget.dart';
+import 'package:ithelpdesk/presentation/common_widgets/multi_select_dialog_widget.dart';
 import 'package:ithelpdesk/presentation/common_widgets/report_list_widget.dart';
 import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 
@@ -33,8 +38,7 @@ class ReportsScreen extends StatefulWidget {
 
 class _ReportsScreenState extends State<ReportsScreen> {
   final ServicesBloc _servicesBloc = sl<ServicesBloc>();
-
-  // final _masterDataBloc = sl<MasterDataBloc>();
+  final _masterDataBloc = sl<MasterDataBloc>();
   List<TicketEntity> tickets = List.empty(growable: true);
   List<UserEntity> assigniedEmployees = List.empty(growable: true);
 
@@ -46,12 +50,21 @@ class _ReportsScreenState extends State<ReportsScreen> {
 
   int? _selectedCategory = 0;
 
-  // final ValueNotifier<UserEntity?> _selectedEmployee = ValueNotifier(null);
   String? selectedStatus;
 
   Map<String, dynamic>? filteredData;
 
   final ValueNotifier<List<String>> filteredDates = ValueNotifier([]);
+  final List<int> _selectedEmployees = [];
+  final List<int> _selectedDepartments = [];
+  final List<int> _selectedCategories = [];
+  final List<int> _filteredStatus = [];
+  final List<int> _filteredIssueType = [];
+  final List<int> _filteredPriorities = [];
+  final List<int> _filteredRatings = [];
+  bool _chargeable = false;
+  List<dynamic>? _employees;
+  List<dynamic>? _departments;
 
   Widget _getFilters(BuildContext context) {
     final resources = context.resources;
@@ -63,6 +76,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
       isSelectedLocalEn
           ? 'First Contact Resolved Tickets'
           : 'التذاكر المحلولة بالاتصال الأول',
+      isSelectedLocalEn ? 'Rating Tickets' : 'تذاكر التقييم',
     ];
     return Wrap(
       alignment: WrapAlignment.end,
@@ -105,6 +119,10 @@ class _ReportsScreenState extends State<ReportsScreen> {
                   callback: (p0) {
                     _selectedCategory = categories.indexOf(p0 ?? 'All');
                     index = 0;
+                    _employees = null;
+                    if ((_selectedCategory ?? 0) != 5) {
+                      _filteredRatings.clear();
+                    }
                     _updateTickets(context);
                   },
                 ),
@@ -232,8 +250,14 @@ class _ReportsScreenState extends State<ReportsScreen> {
             }
             final allTicketsResponse = await _servicesBloc.getTticketsByUser(
                 requestParams: _getFilteredData(null));
-            await _servicesBloc
-                .exportToExcel(allTicketsResponse.entity?.ticketsList ?? []);
+            final excelTickets =
+                allTicketsResponse.entity?.ticketsList ?? [];
+            if ((_selectedCategory ?? 0) == 5) {
+              for (final ticket in excelTickets) {
+                ticket.rating ??= 0;
+              }
+            }
+            await _servicesBloc.exportToExcel(excelTickets);
             if (context.mounted) {
               Dialogs.dismiss(context);
             }
@@ -274,8 +298,11 @@ class _ReportsScreenState extends State<ReportsScreen> {
         requestParams: _getFilteredData(null));
     final allTickets = allTicketsResponse.entity?.ticketsList ?? [];
     List<String> headers = List.empty(growable: true);
+    final includeRating = (_selectedCategory ?? 0) == 5;
     if (tickets.isNotEmpty) {
-      tickets.first.toITCategotyPrintJson().forEach((k, v) {
+      tickets.first
+          .toITCategotyPrintJson(includeRating: includeRating)
+          .forEach((k, v) {
         if (!headers.contains(k.capitalize())) {
           headers.add(k.capitalize());
         }
@@ -289,7 +316,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
     String tableBody = '';
     for (var item in allTickets) {
       tableBody = '$tableBody\n<tr>';
-      item.toITCategotyPrintJson().forEach((k, v) {
+      item.toITCategotyPrintJson(includeRating: includeRating).forEach((k, v) {
         tableBody =
             '$tableBody\n <td>${k == 'TicketNo' ? '''<a href="${FlavorConfig.isProduction() ? "https://ithelpdesk.uaqgov.ae" : "http://localhost:50768"}/ticket/$v" target="_blank"> $v </a>''' : v}</td>';
       });
@@ -377,6 +404,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
       'chargeable': filteredData?['chargeable'] ?? false,
       'startDate': startDate,
       'endDate': endDate,
+      'rating': _filteredRatings.isNotEmpty ? _filteredRatings.join(',') : null,
     };
     requestParams.removeWhere((key, value) => value == null);
     return requestParams;
@@ -412,6 +440,358 @@ class _ReportsScreenState extends State<ReportsScreen> {
     super.dispose();
   }
 
+  void _applyColumnFilters() {
+    index = 0;
+    filteredData = {
+      'categories': _selectedCategories,
+      'status': _filteredStatus,
+      'issueType': _filteredIssueType,
+      'employees': _selectedEmployees,
+      'departments': _selectedDepartments,
+      'chargeable': _chargeable,
+      'priority': _filteredPriorities,
+      'rating': _filteredRatings,
+    };
+    _updateTickets(context);
+  }
+
+  Future<void> _openMultiSelect<T>(
+    BuildContext context, {
+    required List<T> list,
+    required List<T> selected,
+    required void Function(List<T> value) onConfirm,
+    double? maxWidth,
+  }) async {
+    final value = await Dialogs.showDialogWithClose(
+        context,
+        MultiSelectDialogWidget<T>(
+          list: list,
+          selectedItems: selected,
+        ),
+        maxWidth: maxWidth ?? (isDesktop(context) ? 250 : null),
+        showClose: false);
+    if (value is List<T>) {
+      onConfirm(value);
+      _applyColumnFilters();
+    }
+  }
+
+  Future<List> _getEmployees() async {
+    if (_employees != null) return _employees!;
+    final result = await _masterDataBloc.getAssignedEmployees(
+        requestParams: {'ticketsCategory': (_selectedCategory ?? 0) + 1},
+        apiUrl: assignedEmployeesByUserApiUrl);
+    _employees = result.items;
+    return _employees!;
+  }
+
+  Future<List> _getDepartments() async {
+    if (_departments != null) return _departments!;
+    final result = await _masterDataBloc.getDepartments(requestParams: {});
+    _departments = result.items;
+    final externalDpt = DepartmentEntity()
+      ..id = 0
+      ..shortName = 'External'
+      ..name = 'External';
+    _departments?.add(externalDpt);
+    return _departments!;
+  }
+
+  int _compareCreatedOn(TicketEntity a, TicketEntity b) {
+    return getDateTimeByString('dd-MMM-yyyy HH:mm', a.createdOn ?? '')
+        .microsecondsSinceEpoch
+        .compareTo(getDateTimeByString('dd-MMM-yyyy HH:mm', b.createdOn ?? '')
+            .microsecondsSinceEpoch);
+  }
+
+  List<TableColumn<TicketEntity>> _tableColumns(BuildContext context) {
+    final resources = context.resources;
+    Widget cell(TicketEntity ticket, dynamic value, {bool numeric = false}) =>
+        ticketTableCell(
+          context,
+          value,
+          numeric: numeric,
+          onTap: () => ViewRequest.start(context, ticket),
+        );
+    final ratingItems = List.generate(5, (i) => NameIDEntity(i + 1, '${i + 1}'));
+    final ratingColumn = TableColumn<TicketEntity>(
+      key: 'rating',
+      title: isSelectedLocalEn ? 'Rating' : 'التقييم',
+      weight: 2,
+      onHeaderTap: () => _openMultiSelect<NameIDEntity>(
+            context,
+            list: ratingItems,
+            selected: ratingItems
+                .where((item) => _filteredRatings.contains(item.id))
+                .toList(),
+            onConfirm: (value) {
+              _filteredRatings
+                ..clear()
+                ..addAll(value.map((item) => item.id as int));
+            },
+          ),
+      cell: (ticket) =>
+          cell(ticket, (ticket.rating ?? 0) > 0 ? ticket.rating : ''),
+    );
+    if (!isDesktop(context)) {
+      return [
+        TableColumn(
+          key: 'id',
+          title: resources.string.id,
+          weight: 2,
+          cell: (ticket) => cell(ticket, ticket.id ?? '', numeric: true),
+        ),
+        TableColumn(
+          key: 'subject',
+          title: resources.string.subject,
+          weight: 4,
+          cell: (ticket) => cell(
+              ticket,
+              isSelectedLocalEn
+                  ? ticket.subject ?? ''
+                  : ticket.subjectAr ?? (ticket.subject ?? '')),
+        ),
+        TableColumn(
+          key: 'status',
+          title: resources.string.status,
+          weight: 2,
+          onHeaderTap: () => _openMultiSelect<StatusType>(
+                context,
+                list: getStatusTypes(),
+                selected: getStatusTypes()
+                    .where((e) => _filteredStatus.contains(e.value))
+                    .toList(),
+                onConfirm: (value) {
+                  _filteredStatus
+                    ..clear()
+                    ..addAll(value.map((e) => e.value));
+                },
+              ),
+          cell: (ticket) => cell(ticket, ticket.status),
+        ),
+        TableColumn(
+          key: 'priority',
+          title: resources.string.priority,
+          weight: 2,
+          onHeaderTap: () => _openMultiSelect<PriorityType>(
+                context,
+                list: getPriorityTypes(),
+                selected: getPriorityTypes()
+                    .where((e) => _filteredPriorities.contains(e.value))
+                    .toList(),
+                onConfirm: (value) {
+                  _filteredPriorities
+                    ..clear()
+                    ..addAll(value.map((e) => e.value));
+                },
+              ),
+          cell: (ticket) => cell(ticket, ticket.priority),
+        ),
+        TableColumn(
+          key: 'updateDate',
+          title: resources.string.updateDate,
+          weight: 2,
+          sortable: true,
+          compare: _compareCreatedOn,
+          cell: (ticket) => cell(
+              ticket, ticket.updatedOn ?? ticket.createdOn ?? '',
+              numeric: true),
+        ),
+        if ((_selectedCategory ?? 0) == 5) ratingColumn,
+      ];
+    }
+    return [
+      TableColumn(
+        key: 'id',
+        title: resources.string.id,
+        weight: 2,
+        cell: (ticket) => cell(ticket, ticket.id ?? '', numeric: true),
+      ),
+      TableColumn(
+        key: 'employeeName',
+        title: resources.string.employeeName,
+        weight: 3,
+        cell: (ticket) => cell(ticket, ticket.creator ?? ''),
+      ),
+      TableColumn(
+        key: 'category',
+        title: resources.string.category,
+        weight: 2,
+        onHeaderTap: () {
+          final items = [
+            NameIDEntity(1, "IT Support", nameAr: "الدعم الفني"),
+            NameIDEntity(2, "ISO CR", nameAr: "نماذج طلبات التغيير"),
+            NameIDEntity(3, "Eservices", nameAr: "الخدمات"),
+            NameIDEntity(4, "Application", nameAr: "الانظمة"),
+          ];
+          return _openMultiSelect<NameIDEntity>(
+            context,
+            list: items,
+            selected:
+                items.where((item) => _selectedCategories.contains(item.id)).toList(),
+            maxWidth: isDesktop(context) ? 400 : null,
+            onConfirm: (value) {
+              _selectedCategories
+                ..clear()
+                ..addAll(value.map((item) => item.id as int));
+            },
+          );
+        },
+        cell: (ticket) => cell(
+            ticket,
+            isSelectedLocalEn
+                ? ticket.categoryName ?? ''
+                : ticket.categoryNameAr ?? (ticket.categoryName ?? '')),
+      ),
+      TableColumn(
+        key: 'subject',
+        title: resources.string.subject,
+        weight: 3,
+        cell: (ticket) => cell(
+            ticket,
+            isSelectedLocalEn
+                ? ticket.subject ?? ''
+                : ticket.subjectAr ?? (ticket.subject ?? '')),
+      ),
+      TableColumn(
+        key: 'status',
+        title: resources.string.status,
+        weight: 2,
+        onHeaderTap: () => _openMultiSelect<StatusType>(
+              context,
+              list: getStatusTypes(),
+              selected: getStatusTypes()
+                  .where((e) => _filteredStatus.contains(e.value))
+                  .toList(),
+              onConfirm: (value) {
+                _filteredStatus
+                  ..clear()
+                  ..addAll(value.map((e) => e.value));
+              },
+            ),
+        cell: (ticket) => cell(ticket, ticket.status),
+      ),
+      TableColumn(
+        key: 'issueType',
+        title: resources.string.issueType,
+        weight: 2,
+        onHeaderTap: () => _openMultiSelect<IssueType>(
+              context,
+              list: IssueType.values,
+              selected: IssueType.values
+                  .where((e) => _filteredIssueType.contains(e.value))
+                  .toList(),
+              onConfirm: (value) {
+                _filteredIssueType
+                  ..clear()
+                  ..addAll(value.map((e) => e.value));
+              },
+            ),
+        cell: (ticket) => cell(ticket, ticket.issueType?.toString() ?? ''),
+      ),
+      TableColumn(
+        key: 'chargeable',
+        title: resources.string.chargeable,
+        weight: 2,
+        onHeaderTap: () {
+          final items = [NameIDEntity(1, "Yes")];
+          return _openMultiSelect<NameIDEntity>(
+            context,
+            list: items,
+            selected: _chargeable ? items : [],
+            maxWidth: isDesktop(context) ? 400 : null,
+            onConfirm: (value) {
+              _chargeable = value.isNotEmpty;
+            },
+          );
+        },
+        cell: (ticket) =>
+            cell(ticket, ticket.isChargeable == true ? 'Yes' : 'No'),
+      ),
+      TableColumn(
+        key: 'priority',
+        title: resources.string.priority,
+        weight: 2,
+        onHeaderTap: () => _openMultiSelect<PriorityType>(
+              context,
+              list: getPriorityTypes(),
+              selected: getPriorityTypes()
+                  .where((e) => _filteredPriorities.contains(e.value))
+                  .toList(),
+              onConfirm: (value) {
+                _filteredPriorities
+                  ..clear()
+                  ..addAll(value.map((e) => e.value));
+              },
+            ),
+        cell: (ticket) => cell(ticket, ticket.priority),
+      ),
+      TableColumn(
+        key: 'assignee',
+        title: resources.string.assignee,
+        weight: 2,
+        onHeaderTap: () async {
+          final items = await _getEmployees();
+          if (!context.mounted) return;
+          await _openMultiSelect(
+            context,
+            list: items,
+            selected: items
+                .where((item) => _selectedEmployees.contains(item.id))
+                .toList(),
+            maxWidth: isDesktop(context) ? 400 : null,
+            onConfirm: (value) {
+              _selectedEmployees
+                ..clear()
+                ..addAll(value.map((item) => (item.id ?? 0) as int));
+            },
+          );
+        },
+        cell: (ticket) => cell(ticket, ticket.assignedTo ?? ''),
+      ),
+      TableColumn(
+        key: 'department',
+        title: resources.string.department,
+        weight: 2,
+        onHeaderTap: () async {
+          final items = await _getDepartments();
+          if (!context.mounted) return;
+          await _openMultiSelect(
+            context,
+            list: items,
+            selected: items
+                .where((item) => _selectedDepartments.contains(item.id))
+                .toList(),
+            maxWidth: isDesktop(context) ? 400 : null,
+            onConfirm: (value) {
+              _selectedDepartments
+                ..clear()
+                ..addAll(value.map((item) => (item.id ?? 0) as int));
+            },
+          );
+        },
+        cell: (ticket) => cell(ticket, ticket.departmentName ?? ''),
+      ),
+      TableColumn(
+        key: 'createDate',
+        title: resources.string.createDate,
+        weight: 3,
+        sortable: true,
+        compare: _compareCreatedOn,
+        cell: (ticket) => cell(ticket, ticket.createdOn ?? '', numeric: true),
+      ),
+      TableColumn(
+        key: 'updateDate',
+        title: resources.string.updateDate,
+        weight: 3,
+        sortable: true,
+        compare: _compareCreatedOn,
+        cell: (ticket) => cell(ticket, ticket.updatedOn ?? '', numeric: true),
+      ),
+      if ((_selectedCategory ?? 0) == 5) ratingColumn,
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final resources = context.resources;
@@ -444,22 +824,11 @@ class _ReportsScreenState extends State<ReportsScreen> {
                       return ValueListenableBuilder(
                           valueListenable: _onFilterChange,
                           builder: (context, value, child) {
-                            return ReportListWidget(
+                            return ReportListWidget<TicketEntity>(
                               ticketsData: tickets,
-                              assigniedEmployees: assigniedEmployees,
-                              showActionButtons: true,
+                              columns: _tableColumns(context),
                               pageIndex: (index ?? 0) + 1,
                               totalPagecount: totalPagecount ?? 0,
-                              filters: filteredData,
-                              ticketsCategory: (_selectedCategory ?? 0) + 1,
-                              onTicketSelected: (ticket) {
-                                ViewRequest.start(context, ticket);
-                              },
-                              onFilterChange: (p0) {
-                                filteredData = p0;
-                                index = 0;
-                                _updateTickets(context);
-                              },
                               onPageChange: (page) {
                                 index = (index ?? 0) + page;
                                 if (page == 1 &&

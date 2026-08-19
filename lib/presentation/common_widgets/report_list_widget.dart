@@ -1,6 +1,5 @@
 // ignore_for_file: must_be_immutable
 
-import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -9,278 +8,181 @@ import 'package:ithelpdesk/core/constants/constants.dart';
 import 'package:ithelpdesk/core/enum/enum.dart';
 import 'package:ithelpdesk/core/extensions/build_context_extension.dart';
 import 'package:ithelpdesk/core/extensions/text_style_extension.dart';
-import 'package:ithelpdesk/data/remote/api_urls.dart';
-import 'package:ithelpdesk/domain/entities/dashboard_entity.dart';
-import 'package:ithelpdesk/domain/entities/master_data_entities.dart';
-import 'package:ithelpdesk/domain/entities/single_data_entity.dart';
-import 'package:ithelpdesk/domain/entities/user_entity.dart';
-import 'package:ithelpdesk/presentation/utils/dialogs.dart';
 import 'package:ithelpdesk/res/drawables/background_box_decoration.dart';
-import '../../injection_container.dart';
-import '../bloc/master_data/master_data_bloc.dart';
-import 'multi_select_dialog_widget.dart';
 
-class ReportListWidget extends StatelessWidget {
-  final List<dynamic> ticketsData;
-  final List<UserEntity>? assigniedEmployees;
-  final bool showActionButtons;
+class TableColumn<T> {
+  final String key;
+  final String title;
+  final double weight;
+  final bool sortable;
+  final int Function(T a, T b)? compare;
+  final Future<void> Function()? onHeaderTap;
+  final Widget Function(T item) cell;
+
+  TableColumn({
+    required this.key,
+    required this.title,
+    this.weight = 1,
+    this.sortable = false,
+    this.compare,
+    this.onHeaderTap,
+    required this.cell,
+  });
+}
+
+Widget ticketTableCell(
+  BuildContext context,
+  dynamic value, {
+  VoidCallback? onTap,
+  bool numeric = false,
+}) {
+  final style = numeric
+      ? context.textFontWeight600
+          .onFontSize(context.resources.fontSize.dp10)
+          .onFontFamily(fontFamily: fontFamilyEN)
+      : value is StatusType
+          ? context.textFontWeight600
+              .onFontSize(context.resources.fontSize.dp10)
+              .onColor(value.getColor())
+          : context.textFontWeight600
+              .onFontSize(context.resources.fontSize.dp10)
+              .onFontFamily(
+                  fontFamily: isStringArabic(value.toString())
+                      ? fontFamilyAR
+                      : fontFamilyEN);
+  return InkWell(
+    onTap: onTap,
+    child: Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 10),
+      child: Text(
+        '${value ?? ''}',
+        textAlign: TextAlign.left,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: style,
+      ),
+    ),
+  );
+}
+
+class ReportListWidget<T> extends StatelessWidget {
+  final List<T> ticketsData;
+  final List<TableColumn<T>> columns;
   final int pageIndex;
   final int? totalPagecount;
-  final int? ticketsCategory;
-  final Map<String, dynamic>? filters;
-  final Function(TicketEntity)? onTicketSelected;
   final Function(int)? onPageChange;
-  final Function(Map<String, dynamic>)? onFilterChange;
-  ReportListWidget(
-      {required this.ticketsData,
-      this.assigniedEmployees,
-      this.showActionButtons = false,
-      this.pageIndex = 1,
-      this.totalPagecount,
-      this.ticketsCategory = 1,
-      this.onTicketSelected,
-      this.filters,
-      this.onPageChange,
-      this.onFilterChange,
-      super.key});
+
+  ReportListWidget({
+    required this.ticketsData,
+    required this.columns,
+    this.pageIndex = 1,
+    this.totalPagecount,
+    this.onPageChange,
+    super.key,
+  });
 
   final ValueNotifier<bool> _onSortChange = ValueNotifier(false);
-  int dateSort = -1;
-  int prioritySort = -1;
-  String sortBy = '';
+  String? _sortKey;
+  int _sortDir = -1;
   int page = 1;
   int pageCount = 20;
-  final List<int> _selectedEmployees = List<int>.empty(growable: true);
-  final List<int> _selectedDepartments = List<int>.empty(growable: true);
-  final List<int> _selectedCategories = List<int>.empty(growable: true);
-  final List<int> _filteredStatus = List<int>.empty(growable: true);
-  final List<int> _filteredIssueType = List<int>.empty(growable: true);
-  final List<int> _filteredPriorities = List<int>.empty(growable: true);
-  bool _chargeable = false;
-  final _masterDataBloc = sl<MasterDataBloc>();
-  List<dynamic>? _employees;
-  List<dynamic>? _departments;
 
-  Future<List> _getEmpleyees() async {
-    if (_employees != null) {
-      return Future.value(_employees);
+  Future<void> _onSort(TableColumn<T> column) async {
+    if (_sortKey == column.key) {
+      _sortDir = _sortDir == 1 ? 0 : 1;
+    } else {
+      _sortKey = column.key;
+      _sortDir = 1;
     }
-    final result = await _masterDataBloc.getAssignedEmployees(
-        requestParams: {'ticketsCategory': ticketsCategory},
-        apiUrl: assignedEmployeesByUserApiUrl);
-    _employees = result.items;
-    return Future.value(_employees);
+    page = 1;
+    _onSortChange.value = !_onSortChange.value;
   }
 
-  Future<List> _getDepartments() async {
-    if (_departments != null) {
-      return Future.value(_departments);
-    }
-    final result = await _masterDataBloc.getDepartments(requestParams: {});
-    _departments = result.items;
-    final externalDpt = DepartmentEntity();
-    externalDpt.id = 0;
-    externalDpt.shortName = 'External';
-    externalDpt.name = 'External';
-    _departments?.add(externalDpt);
-    return Future.value(_departments);
+  IconData _headerIcon(TableColumn<T> column) {
+    if (!column.sortable) return Icons.filter_list;
+    if (_sortKey != column.key) return Icons.sort;
+    return _sortDir == 1
+        ? Icons.arrow_upward_sharp
+        : Icons.arrow_downward_sharp;
   }
 
-  IconData _getFilerOrSortIcon(NameIDEntity tableColumn) {
-    switch (tableColumn.id) {
-      case 9:
-        return (dateSort == 1
-            ? Icons.arrow_upward_sharp
-            : Icons.arrow_downward_sharp);
-      // case 6:
-      //   return prioritySort == 1
-      //       ? Icons.arrow_downward_sharp
-      //       : Icons.arrow_upward_sharp;
-      case 5:
-        return Icons.filter_list;
-      case 10:
-        return Icons.filter_list;
-      case 7:
-        return Icons.filter_list;
-      case 6:
-        return Icons.filter_list;
-      case 8:
-        return Icons.filter_list;
-      case 11:
-        return Icons.filter_list;
-      default:
-        return Icons.sort;
-    }
-  }
-
-  List<Widget> _getTicketData(BuildContext context, TicketEntity ticketEntity) {
-    final list = List<Widget>.empty(growable: true);
-    (isDesktop(context) ? ticketEntity.toJson() : ticketEntity.toMobileJson())
-        .forEach((key, value) {
-      list.add(
-        InkWell(
-          onTap: () {
-            onTicketSelected?.call(ticketEntity);
-          },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 10),
-            child: Text(
-              '$value',
+  Widget _headerCell(BuildContext context, TableColumn<T> column) {
+    final resources = context.resources;
+    final style = context.textFontWeight600
+        .onColor(resources.color.textColorLight)
+        .onFontSize(resources.fontSize.dp10);
+    final clickable = column.sortable || column.onHeaderTap != null;
+    return Padding(
+      padding: EdgeInsets.symmetric(
+          vertical: resources.dimen.dp10, horizontal: resources.dimen.dp10),
+      child: !clickable
+          ? Text(
+              column.title,
               textAlign: TextAlign.left,
-              maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: (key.toString().toLowerCase().contains('date') ||
-                      key.toString().toLowerCase().contains('id'))
-                  ? context.textFontWeight600
-                      .onFontSize(context.resources.fontSize.dp10)
-                      .onFontFamily(fontFamily: fontFamilyEN)
-                  : value is StatusType
-                      ? context.textFontWeight600
-                          .onFontSize(context.resources.fontSize.dp10)
-                          .onColor(value.getColor())
-                      : context.textFontWeight600
-                          .onFontSize(context.resources.fontSize.dp10)
-                          .onFontFamily(
-                              fontFamily: isStringArabic(value.toString())
-                                  ? fontFamilyAR
-                                  : fontFamilyEN),
+              style: style,
+            )
+          : InkWell(
+              onTap: () async {
+                if (column.sortable) await _onSort(column);
+                await column.onHeaderTap?.call();
+              },
+              child: Text.rich(
+                TextSpan(text: column.title, children: [
+                  WidgetSpan(
+                      alignment: PlaceholderAlignment.middle,
+                      child: Padding(
+                        padding: isSelectedLocalEn
+                            ? const EdgeInsets.only(left: 5.0)
+                            : const EdgeInsets.only(right: 5.0),
+                        child: Icon(
+                          _headerIcon(column),
+                          size: 16,
+                        ),
+                      ))
+                ]),
+                textAlign: TextAlign.left,
+                overflow: TextOverflow.ellipsis,
+                style: style,
+              ),
             ),
-          ),
-        ),
-      );
-    });
-    return list;
+    );
   }
 
-  int _getPageCount(
-    int cuttentpageCount,
-  ) {
+  int _getPageCount(int cuttentpageCount) {
     if (cuttentpageCount == ticketsData.length) {
       return totalPagecount ?? cuttentpageCount;
-    } else {
-      return cuttentpageCount;
     }
-  }
-
-  bool isClickableColumn(int id) {
-    return (onFilterChange != null
-            ? [9, 6, 5, 7, 3, 8, 10, 11]
-            : [
-                9,
-                6,
-              ])
-        .contains(id);
+    return cuttentpageCount;
   }
 
   @override
   Widget build(BuildContext context) {
     final resources = context.resources;
-    _selectedCategories.addAll(filters?['categories'] ?? []);
-    _filteredStatus.addAll(filters?['status'] ?? []);
-    _filteredIssueType.addAll(filters?['issueType'] ?? []);
-    _filteredPriorities.addAll(filters?['priority'] ?? []);
-    _selectedDepartments.addAll(filters?['departments'] ?? []);
-    _chargeable = filters?['chargeable'] ?? false;
-
     page = pageIndex;
-    final ticketsHeaderData = isDesktop(context)
-        ? [
-            NameIDEntity(1, resources.string.id),
-            NameIDEntity(2, resources.string.employeeName),
-            NameIDEntity(3, resources.string.category),
-            NameIDEntity(4, resources.string.subject),
-            NameIDEntity(5, resources.string.status),
-            NameIDEntity(10, resources.string.issueType),
-            NameIDEntity(11, resources.string.chargeable),
-            NameIDEntity(6, resources.string.priority),
-            NameIDEntity(7, resources.string.assignee),
-            NameIDEntity(8, resources.string.department),
-            NameIDEntity(9, resources.string.createDate),
-            NameIDEntity(9, resources.string.updateDate),
-          ]
-        : [
-            NameIDEntity(1, resources.string.id),
-            NameIDEntity(4, resources.string.subject),
-            NameIDEntity(5, resources.string.status),
-            NameIDEntity(6, resources.string.priority),
-            NameIDEntity(9, resources.string.updateDate),
-          ];
-    final ticketsTableColunwidths = isDesktop(context)
-        ? {
-            0: const FlexColumnWidth(2),
-            1: const FlexColumnWidth(3),
-            2: const FlexColumnWidth(2),
-            3: const FlexColumnWidth(3),
-            4: const FlexColumnWidth(2),
-            5: const FlexColumnWidth(2),
-            6: const FlexColumnWidth(2),
-            7: const FlexColumnWidth(2),
-            8: const FlexColumnWidth(2),
-            9: const FlexColumnWidth(2),
-            10: const FlexColumnWidth(3),
-            11: const FlexColumnWidth(3),
-          }
-        : {
-            0: const FlexColumnWidth(2),
-            1: const FlexColumnWidth(4),
-            2: const FlexColumnWidth(2),
-            3: const FlexColumnWidth(2),
-            4: const FlexColumnWidth(2),
-            5: const FlexColumnWidth(4),
-          };
+    final columnWidths = {
+      for (var i = 0; i < columns.length; i++)
+        i: FlexColumnWidth(columns[i].weight),
+    };
     return ValueListenableBuilder(
         valueListenable: _onSortChange,
         builder: (context, value, child) {
-          var filteredData = ticketsData;
-          // if (_selectedCategories.isNotEmpty) {
-          //   filteredData = filteredData
-          //       .where(
-          //           (item) => (_selectedCategories.contains(item.categoryID)))
-          //       .toList();
-          // }
-          // if (_filteredStatus.isNotEmpty) {
-          //   filteredData = filteredData
-          //       .where((item) => (_filteredStatus.contains(item.status) ||
-          //           (_filteredStatus.contains(StatusType.notAssigned) &&
-          //               item.assignedUserID == null)))
-          //       .toList();
-          // }
-          if (_selectedEmployees.isNotEmpty) {
-            filteredData = filteredData
-                .where((item) =>
-                    (_selectedEmployees.contains(item.assignedUserID)))
-                .toList();
+          var filteredData = List<T>.from(ticketsData);
+          if (_sortKey != null) {
+            TableColumn<T>? column;
+            for (final item in columns) {
+              if (item.key == _sortKey) {
+                column = item;
+                break;
+              }
+            }
+            if (column?.compare != null) {
+              filteredData.sort((a, b) {
+                final result = column!.compare!(a, b);
+                return _sortDir == 0 ? -result : result;
+              });
+            }
           }
-          // if (_selectedDepartments.isNotEmpty) {
-          //   filteredData = filteredData
-          //       .where((item) =>
-          //           (_selectedDepartments.contains(item.departmentID)))
-          //       .toList();
-          // }
-          if (sortBy == 'date') {
-            filteredData.sort(
-              (a, b) {
-                int aDate =
-                    getDateTimeByString('dd-MMM-yyyy HH:mm', a.createdOn)
-                        .microsecondsSinceEpoch;
-                int bDate =
-                    getDateTimeByString('dd-MMM-yyyy HH:mm', b.createdOn)
-                        .microsecondsSinceEpoch;
-                return dateSort == 0
-                    ? bDate.compareTo(aDate)
-                    : aDate.compareTo(bDate);
-              },
-            );
-          }
-          // if (sortBy == 'priority') {
-          //   filteredData.sort(
-          //     (a, b) {
-          //       return prioritySort == 0
-          //           ? a.priority.value.compareTo(b.priority.value)
-          //           : b.priority.value.compareTo(a.priority.value);
-          //     },
-          //   );
-          // }
           final startIndex = (page - 1) * pageCount;
           final currentPageData = filteredData.sublist(
               min(startIndex, filteredData.length),
@@ -288,430 +190,13 @@ class ReportListWidget extends StatelessWidget {
           return Column(
             children: [
               Table(
-                columnWidths: ticketsTableColunwidths,
+                columnWidths: columnWidths,
                 children: [
                   TableRow(
-                      children: List.generate(
-                          ticketsHeaderData.length,
-                          (index) => Padding(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: resources.dimen.dp10,
-                                    horizontal: resources.dimen.dp10),
-                                child: isClickableColumn(
-                                        ticketsHeaderData[index].id ?? 0)
-                                    ? InkWell(
-                                        onTap: () async {
-                                          if (ticketsHeaderData[index].id ==
-                                              9) {
-                                            sortBy = 'date';
-                                            if (dateSort == 1) {
-                                              dateSort = 0;
-                                            } else {
-                                              dateSort = 1;
-                                            }
-                                            page = 1;
-
-                                            _onSortChange.value =
-                                                !_onSortChange.value;
-                                          } else if (ticketsHeaderData[index]
-                                                  .id ==
-                                              6) {
-                                            // sortBy = 'priority';
-                                            // if (prioritySort == 1) {
-                                            //   prioritySort = 0;
-                                            // } else {
-                                            //   prioritySort = 1;
-                                            // }
-                                            // page = 1;
-                                            // _onSortChange.value =
-                                            //     !_onSortChange.value;
-                                            Dialogs.showDialogWithClose(
-                                                    context,
-                                                    MultiSelectDialogWidget<
-                                                        PriorityType>(
-                                                      list: getPriorityTypes(),
-                                                      selectedItems: getPriorityTypes()
-                                                          .where((e) =>
-                                                              _filteredPriorities
-                                                                  .contains(
-                                                                      e.value))
-                                                          .toList(),
-                                                    ),
-                                                    maxWidth: isDesktop(context)
-                                                        ? 250
-                                                        : null,
-                                                    showClose: false)
-                                                .then((value) {
-                                              if (value != null &&
-                                                  value is List<PriorityType>) {
-                                                _filteredPriorities.clear();
-                                                _filteredPriorities.addAll(
-                                                    value.map((e) => e.value));
-                                                page = 1;
-                                                onFilterChange?.call({
-                                                  'categories':
-                                                      _selectedCategories,
-                                                  'status': _filteredStatus,
-                                                  'issueType':
-                                                      _filteredIssueType,
-                                                  'employees':
-                                                      _selectedEmployees,
-                                                  'departments':
-                                                      _selectedDepartments,
-                                                  'chargeable': _chargeable,
-                                                  'priority':
-                                                      _filteredPriorities
-                                                });
-                                                // _onSortChange.value =
-                                                //     !_onSortChange.value;
-                                              }
-                                            });
-                                          } else if (ticketsHeaderData[index]
-                                                  .id ==
-                                              5) {
-                                            Dialogs.showDialogWithClose(
-                                                    context,
-                                                    MultiSelectDialogWidget<
-                                                        StatusType>(
-                                                      list: getStatusTypes(),
-                                                      selectedItems:
-                                                          getStatusTypes()
-                                                              .where((e) =>
-                                                                  _filteredStatus
-                                                                      .contains(
-                                                                          e.value))
-                                                              .toList(),
-                                                    ),
-                                                    maxWidth: isDesktop(context)
-                                                        ? 250
-                                                        : null,
-                                                    showClose: false)
-                                                .then((value) {
-                                              if (value != null &&
-                                                  value is List<StatusType>) {
-                                                _filteredStatus.clear();
-                                                _filteredStatus.addAll(
-                                                    value.map((e) => e.value));
-                                                page = 1;
-                                                onFilterChange?.call({
-                                                  'categories':
-                                                      _selectedCategories,
-                                                  'status': _filteredStatus,
-                                                  'issueType':
-                                                      _filteredIssueType,
-                                                  'employees':
-                                                      _selectedEmployees,
-                                                  'departments':
-                                                      _selectedDepartments,
-                                                  'chargeable': _chargeable,
-                                                  'priority':
-                                                      _filteredPriorities
-                                                });
-                                                // _onSortChange.value =
-                                                //     !_onSortChange.value;
-                                              }
-                                            });
-                                          } else if (ticketsHeaderData[index]
-                                                  .id ==
-                                              7) {
-                                            final items = await _getEmpleyees();
-                                            final selectedEmployees = items
-                                                .where((item) =>
-                                                    _selectedEmployees
-                                                        .contains(item.id))
-                                                .toList();
-                                            if (context.mounted) {
-                                              Dialogs.showDialogWithClose(
-                                                      context,
-                                                      MultiSelectDialogWidget(
-                                                        list: items,
-                                                        selectedItems:
-                                                            selectedEmployees,
-                                                      ),
-                                                      maxWidth:
-                                                          isDesktop(context)
-                                                              ? 400
-                                                              : null,
-                                                      showClose: false)
-                                                  .then((value) {
-                                                if (value != null) {
-                                                  _selectedEmployees.clear();
-                                                  final ids = (value as List)
-                                                      .map((item) =>
-                                                          (item.id ?? 0) as int)
-                                                      .toList();
-                                                  _selectedEmployees
-                                                      .addAll(ids);
-                                                  page = 1;
-                                                  // _onSortChange.value =
-                                                  //     !_onSortChange.value;
-                                                  onFilterChange?.call({
-                                                    'categories':
-                                                        _selectedCategories,
-                                                    'status': _filteredStatus,
-                                                    'issueType':
-                                                        _filteredIssueType,
-                                                    'employees':
-                                                        _selectedEmployees,
-                                                    'departments':
-                                                        _selectedDepartments,
-                                                    'chargeable': _chargeable,
-                                                    'priority':
-                                                        _filteredPriorities
-                                                  });
-                                                }
-                                              });
-                                            }
-                                          } else if (ticketsHeaderData[index]
-                                                  .id ==
-                                              8) {
-                                            final items =
-                                                await _getDepartments();
-                                            final selectedDepartments = items
-                                                .where((item) =>
-                                                    _selectedDepartments
-                                                        .contains(item.id))
-                                                .toList();
-                                            if (context.mounted) {
-                                              Dialogs.showDialogWithClose(
-                                                      context,
-                                                      MultiSelectDialogWidget(
-                                                        list: items,
-                                                        selectedItems:
-                                                            selectedDepartments,
-                                                      ),
-                                                      maxWidth:
-                                                          isDesktop(context)
-                                                              ? 400
-                                                              : null,
-                                                      showClose: false)
-                                                  .then((value) {
-                                                if (value != null) {
-                                                  _selectedDepartments.clear();
-                                                  final ids = (value as List)
-                                                      .map((item) =>
-                                                          (item.id ?? 0) as int)
-                                                      .toList();
-                                                  _selectedDepartments
-                                                      .addAll(ids);
-                                                  page = 1;
-
-                                                  onFilterChange?.call({
-                                                    'categories':
-                                                        _selectedCategories,
-                                                    'status': _filteredStatus,
-                                                    'issueType':
-                                                        _filteredIssueType,
-                                                    'departments':
-                                                        _selectedDepartments,
-                                                    'employees':
-                                                        _selectedEmployees,
-                                                    'chargeable': _chargeable,
-                                                    'priority':
-                                                        _filteredPriorities
-                                                  });
-                                                  // _onSortChange.value =
-                                                  //     !_onSortChange.value;
-                                                }
-                                              });
-                                            }
-                                          } else if (ticketsHeaderData[index]
-                                                  .id ==
-                                              3) {
-                                            final List<NameIDEntity> items = [
-                                              NameIDEntity(1, "IT Support",
-                                                  nameAr: "الدعم الفني"),
-                                              NameIDEntity(2, "ISO CR",
-                                                  nameAr:
-                                                      "نماذج طلبات التغيير"),
-                                              NameIDEntity(3, "Eservices",
-                                                  nameAr: "الخدمات"),
-                                              NameIDEntity(4, "Application",
-                                                  nameAr: "الانظمة"),
-                                            ];
-                                            final selectedCategories = items
-                                                .where((item) =>
-                                                    _selectedCategories
-                                                        .contains(item.id))
-                                                .toList();
-                                            if (context.mounted) {
-                                              Dialogs.showDialogWithClose(
-                                                      context,
-                                                      MultiSelectDialogWidget(
-                                                        list: items,
-                                                        selectedItems:
-                                                            selectedCategories,
-                                                      ),
-                                                      maxWidth:
-                                                          isDesktop(context)
-                                                              ? 400
-                                                              : null,
-                                                      showClose: false)
-                                                  .then((value) {
-                                                if (value != null) {
-                                                  _selectedCategories.clear();
-                                                  final ids = (value as List)
-                                                      .map((item) =>
-                                                          (item.id as int))
-                                                      .toList();
-                                                  _selectedCategories
-                                                      .addAll(ids);
-                                                  page = 1;
-
-                                                  onFilterChange?.call({
-                                                    'categories':
-                                                        _selectedCategories,
-                                                    'status': _filteredStatus,
-                                                    'issueType':
-                                                        _filteredIssueType,
-                                                    'departments':
-                                                        _selectedDepartments,
-                                                    'employees':
-                                                        _selectedEmployees,
-                                                    'chargeable': _chargeable
-                                                  });
-                                                  // _onSortChange.value =
-                                                  //     !_onSortChange.value;
-                                                }
-                                              });
-                                            }
-                                          } else if (ticketsHeaderData[index]
-                                                  .id ==
-                                              10) {
-                                            Dialogs.showDialogWithClose(
-                                                    context,
-                                                    MultiSelectDialogWidget<
-                                                        IssueType>(
-                                                      list: IssueType.values,
-                                                      selectedItems: IssueType
-                                                          .values
-                                                          .where((e) =>
-                                                              _filteredIssueType
-                                                                  .contains(
-                                                                      e.value))
-                                                          .toList(),
-                                                    ),
-                                                    maxWidth: isDesktop(context)
-                                                        ? 250
-                                                        : null,
-                                                    showClose: false)
-                                                .then((value) {
-                                              if (value != null &&
-                                                  value is List<IssueType>) {
-                                                _filteredIssueType.clear();
-                                                _filteredIssueType.addAll(
-                                                    value.map((e) => e.value));
-                                                page = 1;
-                                                onFilterChange?.call({
-                                                  'categories':
-                                                      _selectedCategories,
-                                                  'status': _filteredStatus,
-                                                  'issueType':
-                                                      _filteredIssueType,
-                                                  'employees':
-                                                      _selectedEmployees,
-                                                  'departments':
-                                                      _selectedDepartments,
-                                                  'chargeable': _chargeable
-                                                });
-                                                // _onSortChange.value =
-                                                //     !_onSortChange.value;
-                                              }
-                                            });
-                                          } else if (ticketsHeaderData[index]
-                                                  .id ==
-                                              11) {
-                                            final List<NameIDEntity> items = [
-                                              NameIDEntity(
-                                                1,
-                                                "Yes",
-                                              )
-                                            ];
-                                            if (context.mounted) {
-                                              Dialogs.showDialogWithClose(
-                                                      context,
-                                                      MultiSelectDialogWidget(
-                                                        list: items,
-                                                        selectedItems:
-                                                            _chargeable
-                                                                ? items
-                                                                : [],
-                                                      ),
-                                                      maxWidth:
-                                                          isDesktop(context)
-                                                              ? 400
-                                                              : null,
-                                                      showClose: false)
-                                                  .then((value) {
-                                                if (value != null) {
-                                                  final ids = (value as List)
-                                                      .map((item) =>
-                                                          (item.id as int))
-                                                      .toList();
-
-                                                  onFilterChange?.call({
-                                                    'categories':
-                                                        _selectedCategories,
-                                                    'status': _filteredStatus,
-                                                    'issueType':
-                                                        _filteredIssueType,
-                                                    'employees':
-                                                        _selectedEmployees,
-                                                    'departments':
-                                                        _selectedDepartments,
-                                                    'chargeable': ids.isNotEmpty
-                                                  });
-                                                  // _onSortChange.value =
-                                                  //     !_onSortChange.value;
-                                                }
-                                              });
-                                            }
-                                          }
-                                        },
-                                        child: Text.rich(
-                                          TextSpan(
-                                              text: ticketsHeaderData[index]
-                                                  .toString(),
-                                              children: [
-                                                WidgetSpan(
-                                                    alignment:
-                                                        PlaceholderAlignment
-                                                            .middle,
-                                                    child: Padding(
-                                                      padding: isSelectedLocalEn
-                                                          ? const EdgeInsets
-                                                              .only(left: 5.0)
-                                                          : const EdgeInsets
-                                                              .only(right: 5.0),
-                                                      child: Icon(
-                                                        _getFilerOrSortIcon(
-                                                            ticketsHeaderData[
-                                                                index]),
-                                                        size: 16,
-                                                      ),
-                                                    ))
-                                              ]),
-                                          textAlign: TextAlign.left,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: context.textFontWeight600
-                                              .onColor(resources
-                                                  .color.textColorLight)
-                                              .onFontSize(
-                                                  resources.fontSize.dp10),
-                                        ),
-                                      )
-                                    : Text(
-                                        ticketsHeaderData[index].toString(),
-                                        textAlign: TextAlign.left,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: context.textFontWeight600
-                                            .onColor(
-                                                resources.color.textColorLight)
-                                            .onFontSize(
-                                                resources.fontSize.dp10),
-                                      ),
-                              ))),
-                  for (var i = 0; i < currentPageData.length; i++) ...[
+                      children: columns
+                          .map((column) => _headerCell(context, column))
+                          .toList()),
+                  for (final row in currentPageData) ...[
                     TableRow(
                         decoration: BackgroundBoxDecoration(
                                 boxColor: resources.color.colorWhite,
@@ -723,7 +208,8 @@ class ReportListWidget extends StatelessWidget {
                                         color: resources.color.appScaffoldBg,
                                         width: 5)))
                             .roundedCornerBox,
-                        children: _getTicketData(context, currentPageData[i])),
+                        children:
+                            columns.map((column) => column.cell(row)).toList()),
                   ],
                 ],
               ),

@@ -302,6 +302,7 @@ class TicketsModel extends BaseModel {
   String? email;
   String? customerMobileNumber;
   int? daysOpen;
+  int? rating;
 
   TicketsModel.fromJson(Map<String, dynamic> ticketsJson) {
     final json = ticketsJson['data'] ?? ticketsJson;
@@ -359,6 +360,7 @@ class TicketsModel extends BaseModel {
     email = json['email'];
     customerMobileNumber = json['customerMobileNumber'];
     daysOpen = json['daysOpen'];
+    rating = json['rating'] is num ? (json['rating'] as num).toInt() : null;
     if (json['attachments'] is List) {
       attachments = List.empty(growable: true);
       json['attachments']
@@ -418,6 +420,7 @@ class TicketsModel extends BaseModel {
     ticketsEntity.email = email;
     ticketsEntity.customerMobileNumber = customerMobileNumber;
     ticketsEntity.daysOpen = daysOpen;
+    ticketsEntity.rating = rating;
     ticketsEntity.issueType =
         issueType != null ? IssueType.fromId(issueType ?? 4) : null;
     return ticketsEntity;

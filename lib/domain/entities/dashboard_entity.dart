@@ -123,6 +123,7 @@ class TicketEntity extends BaseEntity {
   String? email;
   String? customerMobileNumber;
   int? daysOpen;
+  int? rating;
 
   @override
   String toString() {
@@ -253,7 +254,7 @@ class TicketEntity extends BaseEntity {
 
   bool get showIssueType => (status == StatusType.closed && categoryID == 3);
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson({bool includeRating = false}) => {
         "id": id ?? '',
         "employeeName": creator ?? '',
         "Category": isSelectedLocalEn
@@ -269,16 +270,18 @@ class TicketEntity extends BaseEntity {
         "department": departmentName ?? '',
         "createDate": createdOn ?? '',
         "updateDate": updatedOn ?? '',
+        if (includeRating) "rating": (rating ?? 0) > 0 ? rating : '',
       };
-  Map<String, dynamic> toMobileJson() => {
+  Map<String, dynamic> toMobileJson({bool includeRating = false}) => {
         "id": id ?? '',
         "subject":
             isSelectedLocalEn ? subject ?? '' : subjectAr ?? (subject ?? ''),
         "status": status,
         "priority": priority,
         "updatedDate": updatedOn ?? createdOn ?? '',
+        if (includeRating) "rating": (rating ?? 0) > 0 ? rating : '',
       };
-  Map<String, dynamic> toITCategotyPrintJson() => {
+  Map<String, dynamic> toITCategotyPrintJson({bool includeRating = false}) => {
         "TicketNo": id ?? '',
         "Department": departmentName ?? '',
         "CreatedDate": createdOn ?? '',
@@ -290,6 +293,7 @@ class TicketEntity extends BaseEntity {
         "priority": priority,
         "TransferredBy": transferBy ?? '',
         "Charges": isChargeable ?? false ? '50' : '',
+        if (includeRating) "Rating": (rating ?? 0) > 0 ? rating : '',
       };
   Map<String, dynamic> toCreateJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -346,6 +350,7 @@ class TicketEntity extends BaseEntity {
         'isChargeable': isChargeable ?? false ? 'Yes' : 'No',
         "createDate": createdOn ?? '',
         "closedDate": closedOn ?? '',
+        if (rating != null) "rating": (rating ?? 0) > 0 ? rating : '',
       };
   Map<String, dynamic> toDelayedCasesJson() {
     final Map<String, dynamic> data = <String, dynamic>{};

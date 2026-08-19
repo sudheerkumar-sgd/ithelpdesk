@@ -43,7 +43,7 @@ class UserEntity extends BaseEntity {
   @override
   String toString() {
     if (showDept) {
-      return '$name - $department';
+      return '$name${department != null ? ' - $department' : ''}';
     }
     return name ?? '';
   }

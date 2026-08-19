@@ -380,6 +380,154 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
     super.dispose();
   }
 
+  int _compareCreatedOn(TicketEntity a, TicketEntity b) {
+    return getDateTimeByString('dd-MMM-yyyy HH:mm', a.createdOn ?? '')
+        .microsecondsSinceEpoch
+        .compareTo(getDateTimeByString('dd-MMM-yyyy HH:mm', b.createdOn ?? '')
+            .microsecondsSinceEpoch);
+  }
+
+  List<TableColumn<TicketEntity>> _tableColumns(BuildContext context) {
+    final resources = context.resources;
+    Widget cell(TicketEntity ticket, dynamic value, {bool numeric = false}) =>
+        ticketTableCell(
+          context,
+          value,
+          numeric: numeric,
+          onTap: () => ViewRequest.start(context, ticket,
+              isMyTicket: selectTicketCategory == 2),
+        );
+    if (!isDesktop(context)) {
+      return [
+        TableColumn(
+          key: 'id',
+          title: resources.string.id,
+          weight: 2,
+          cell: (ticket) => cell(ticket, ticket.id ?? '', numeric: true),
+        ),
+        TableColumn(
+          key: 'subject',
+          title: resources.string.subject,
+          weight: 4,
+          cell: (ticket) => cell(
+              ticket,
+              isSelectedLocalEn
+                  ? ticket.subject ?? ''
+                  : ticket.subjectAr ?? (ticket.subject ?? '')),
+        ),
+        TableColumn(
+          key: 'status',
+          title: resources.string.status,
+          weight: 2,
+          cell: (ticket) => cell(ticket, ticket.status),
+        ),
+        TableColumn(
+          key: 'priority',
+          title: resources.string.priority,
+          weight: 2,
+          cell: (ticket) => cell(ticket, ticket.priority),
+        ),
+        TableColumn(
+          key: 'updateDate',
+          title: resources.string.updateDate,
+          weight: 2,
+          sortable: true,
+          compare: _compareCreatedOn,
+          cell: (ticket) => cell(
+              ticket, ticket.updatedOn ?? ticket.createdOn ?? '',
+              numeric: true),
+        ),
+      ];
+    }
+    return [
+      TableColumn(
+        key: 'id',
+        title: resources.string.id,
+        weight: 2,
+        cell: (ticket) => cell(ticket, ticket.id ?? '', numeric: true),
+      ),
+      TableColumn(
+        key: 'employeeName',
+        title: resources.string.employeeName,
+        weight: 3,
+        cell: (ticket) => cell(ticket, ticket.creator ?? ''),
+      ),
+      TableColumn(
+        key: 'category',
+        title: resources.string.category,
+        weight: 2,
+        cell: (ticket) => cell(
+            ticket,
+            isSelectedLocalEn
+                ? ticket.categoryName ?? ''
+                : ticket.categoryNameAr ?? (ticket.categoryName ?? '')),
+      ),
+      TableColumn(
+        key: 'subject',
+        title: resources.string.subject,
+        weight: 3,
+        cell: (ticket) => cell(
+            ticket,
+            isSelectedLocalEn
+                ? ticket.subject ?? ''
+                : ticket.subjectAr ?? (ticket.subject ?? '')),
+      ),
+      TableColumn(
+        key: 'status',
+        title: resources.string.status,
+        weight: 2,
+        cell: (ticket) => cell(ticket, ticket.status),
+      ),
+      TableColumn(
+        key: 'issueType',
+        title: resources.string.issueType,
+        weight: 2,
+        cell: (ticket) => cell(ticket, ticket.issueType?.toString() ?? ''),
+      ),
+      TableColumn(
+        key: 'chargeable',
+        title: resources.string.chargeable,
+        weight: 2,
+        cell: (ticket) =>
+            cell(ticket, ticket.isChargeable == true ? 'Yes' : 'No'),
+      ),
+      TableColumn(
+        key: 'priority',
+        title: resources.string.priority,
+        weight: 2,
+        cell: (ticket) => cell(ticket, ticket.priority),
+      ),
+      TableColumn(
+        key: 'assignee',
+        title: resources.string.assignee,
+        weight: 2,
+        cell: (ticket) => cell(ticket, ticket.assignedTo ?? ''),
+      ),
+      TableColumn(
+        key: 'department',
+        title: resources.string.department,
+        weight: 2,
+        cell: (ticket) => cell(ticket, ticket.departmentName ?? ''),
+      ),
+      TableColumn(
+        key: 'createDate',
+        title: resources.string.createDate,
+        weight: 3,
+        sortable: true,
+        compare: _compareCreatedOn,
+        cell: (ticket) => cell(ticket, ticket.createdOn ?? '', numeric: true),
+      ),
+      TableColumn(
+        key: 'updateDate',
+        title: resources.string.updateDate,
+        weight: 3,
+        sortable: true,
+        compare: _compareCreatedOn,
+        cell: (ticket) => cell(ticket, ticket.updatedOn ?? '', numeric: true),
+      ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final resources = context.resources;
@@ -949,21 +1097,17 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                                 ? _getDashboradTickets()
                                 : _getAllTickets(),
                             builder: (context, snapShot) {
-                              final filterTickets =
-                                  List.from(snapShot.data?.entity?.items ?? []);
+                              final filterTickets = List<TicketEntity>.from(
+                                  snapShot.data?.entity?.items ?? []);
 
                               // .where((ticket) =>
                               //     ticket.status != StatusType.closed &&
                               //     ticket.status != StatusType.reject)
                               // .toList();
                               return filterTickets.isNotEmpty
-                                  ? ReportListWidget(
+                                  ? ReportListWidget<TicketEntity>(
                                       ticketsData: filterTickets,
-                                      onTicketSelected: (ticket) {
-                                        ViewRequest.start(context, ticket,
-                                            isMyTicket:
-                                                selectTicketCategory == 2);
-                                      },
+                                      columns: _tableColumns(context),
                                     )
                                   : Padding(
                                       padding: const EdgeInsets.only(top: 20.0),

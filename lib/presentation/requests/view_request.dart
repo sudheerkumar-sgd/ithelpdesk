@@ -941,7 +941,7 @@ class ViewRequest extends BaseScreenWidget {
 
   bool _canRateTicket() {
     return ticket.status == StatusType.closed &&
-        ticket.categoryID == 1 &&
+        (ticket.categoryID == 1 || ticket.categoryID == 4) &&
         ticket.userID == UserCredentialsEntity.details().id;
   }
 
